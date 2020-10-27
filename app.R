@@ -36,6 +36,7 @@ neon_vars <- read.csv("data/neon_variables.csv")
 
 # Load text input
 module_text <- read.csv("data/module_text.csv")
+EF_links <- read.csv("data/eco_forecast_examples.csv")
 
 # Icons
 neonIcons <- iconList(
@@ -102,9 +103,24 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                             img(src = "NSF-NEON-logo.png", title = "NEON - NSF logo")
                           ),
                           p("This module will introduce key concepts within Ecological forecasting through exploration of ",
-                            a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data"), ", building a model and then generating a short-term ecological forecast."),
+                            a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data"), ", building a model and then generating a short-term ecological forecast.")
                           
                           ),
+                 
+                 # 2. Exploration ----
+                 tabPanel(title = "Exploration",
+                          tags$style(type="text/css", "body {padding-top: 65px;}"),
+                          img(src = "eddie_banner_2018.v5.jpg", height = 100, 
+                              width = 1544, top = 5),
+                          h3("Examples of Current Ecological Forecasts"),
+                          tags$ul(
+                            tags$li(a(href = EF_links$webpage[1], EF_links$Forecast[1]), br(), p(EF_links$About[1])),
+                            tags$li(a(href = EF_links$webpage[2], EF_links$Forecast[2]), br(), p(EF_links$About[2])),
+                            tags$li(a(href = EF_links$webpage[3], EF_links$Forecast[3]), br(), p(EF_links$About[3])),
+                            tags$li(a(href = EF_links$webpage[4], EF_links$Forecast[4]), br(), p(EF_links$About[4]))
+                          )
+                          
+                 ),
                  
                  # 3. Get Data ----
                  tabPanel(title = "Get Data",
