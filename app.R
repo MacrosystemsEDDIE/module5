@@ -8,6 +8,8 @@ library(ggplot2)
 library(plotly)
 library(ncdf4)
 library(reshape)
+library(sortable)
+library(slickR)
 # library(DT)
 
 # Options for Spinner
@@ -46,6 +48,11 @@ neonIcons <- iconList(
 
 # plot types for forecast plot
 plot_types <- c("line", "distribution")
+
+# Sorting variables
+state_vars <- c("Phytoplankton", "Zooplankton", "Inorganic Nutrients")
+process_vars <- c("Grazing", "Mortality", "Uptake")
+
 
 
 ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting", 
@@ -189,7 +196,7 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                           # Data Exploration ----
                           h2("Data Exploration"),
                           selectInput("view_var", "Select variable", 
-                                      choices = neon_vars$Short_name),
+                                      choices = unique(neon_vars$Short_name), selected = "Air temperature"),
                           
                           fluidRow(
                             #** Data Table ----
@@ -238,8 +245,62 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                           img(src = "eddie_banner_2018.v5.jpg", height = 100, 
                               width = 1544, top = 5),
                           #* Intro text ====
-                          h3("What is a Model?"),
-                          h5("A model is...")
+                          fluidRow(
+                            # conditionalPanel(condition = "input.site_html > 1",
+                            #** NEON Intro ----
+                            column(4,
+                                   h3("What is a Model?"),
+                                   p(module_text$model1),
+                                   p(module_text$model2),
+                                   p(module_text$model3),
+                                   p("Click through the images to see how we can go from a conceptual model to a mathematical representation of primary production in a lake.")
+                            ),
+                            column(6,
+                                   slickROutput("slck_model")
+                                   # img(src = "concep_math_model.png", height = 600, width = 800))
+                                   )
+                          ),
+                          br(),
+                          br(),
+                          hr(),
+                          #* Sort state and process variables ====
+                          h2(tags$b("Exercise")),
+                          fluidRow(
+                            column(
+                              # tags$b("Exercise"),
+                              width = 9,
+                              bucket_list(
+                                header = "Drag the variables into 'Process' or 'State' boxes",
+                                group_name = "bucket_list_group",
+                                orientation = "horizontal",
+                                add_rank_list(
+                                  text = "Drag from here",
+                                  labels = sample(c(state_vars, process_vars)),
+                                  input_id = "rank_list_1"
+                                ),
+                                add_rank_list(
+                                  text = "State variables",
+                                  labels = NULL,
+                                  input_id = "rank_list_2"
+                                ),
+                                add_rank_list(
+                                  text = "Process variables",
+                                  labels = NULL,
+                                  input_id = "rank_list_2"
+                                )
+                              )
+                            ),
+                            column(3,
+                                   useShinyjs(),  # Set up shinyjs
+                                   actionButton("ans_btn", "Show answers"),
+                                   hidden(
+                                     tableOutput("ans_vars")
+                                   )
+                                   # shiny::tableOutput("ans_vars")
+                                   # textInput("text", "Text")
+                                   )
+                          )
+                          
                           ),
                  
                  # 5. Forecast! ----
@@ -343,13 +404,18 @@ server <- function(input, output, session) {#
   
   # Read in site data ----
   neon_DT <- eventReactive(input$view_var, {
+    read_var <<- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
     print(input$view_var)
     validate(
       need(input$view_var != "", "Please select a variable!")
     )
-    file <- file.path("data", paste0(siteID, "_data.csv"))
-    df <- read.csv("data/SITE_data.csv")
-    df[,1] <- as.POSIXct(df[,1], tz = "UTC")
+    file <- file.path("data", paste0(siteID, "_daily_", read_var, "_2019.csv"))
+    print(file)
+    df <- read.csv(file)
+    # df <- read.csv("data/SITE_data.csv")
+    df[, 1] <- as.POSIXct(df[,1], tz = "UTC")
+    df[, -1] <- signif(df[, -1], 4)
+    names(df)[ncol(df)] <- read_var
     return(df)
   })
   
@@ -359,13 +425,32 @@ server <- function(input, output, session) {#
   })
   # Site data plot ----
   output$var_plot <- renderPlotly({
-    p <- ggplot(neon_DT(), aes_string(names(neon_DT())[1], names(neon_DT())[2])) +
-      geom_line() +
-      ylab(input$view_var) +
-      xlab("Time") +
-      theme_classic(base_size = 16) +
-      theme(panel.border = element_rect(fill = NA, colour = "black"))
-    return(ggplotly(p, dynamicTicks = TRUE))
+    
+    if(read_var == "wtemp") {
+      
+      palet <- "RdYlBu"
+      p <- ggplot(neon_DT(), aes_string(names(neon_DT())[1], names(neon_DT())[2])) +
+        # geom_raster(aes_string(fill = names(neon_DT())[3])) +
+        geom_tile(aes_string(fill = names(neon_DT())[3])) +
+        scale_fill_distiller(palette = palet, na.value = "grey90") +
+        ylab("Depth (m)") +
+        xlab("Time") +
+        scale_y_reverse() +
+        # theme_classic(base_size = 16) +
+        theme_minimal(base_size = 16) +
+        theme(panel.border = element_rect(fill = NA, colour = "black"))
+    } else{
+      p <- ggplot(neon_DT(), aes_string(names(neon_DT())[1], names(neon_DT())[2])) +
+        # geom_line() +
+        geom_point() +
+        ylab(input$view_var) +
+        xlab("Time") +
+        # theme_classic(base_size = 16) +
+        theme_minimal(base_size = 16) #+
+        # theme(panel.border = element_rect(fill = NA, colour = "black"))
+      return(ggplotly(p, dynamicTicks = TRUE))
+    }
+    
   })
   
   observeEvent(input$load_fc, {
@@ -514,6 +599,29 @@ server <- function(input, output, session) {#
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, colour = 'black'))
     return(ggplotly(p, dynamicTicks = TRUE))
+  })
+  
+  
+  # Slickr model output
+  output$slck_model <- renderSlickR({
+    imgs <- list.files("www", pattern = "model0", full.names = TRUE)
+    slickR(imgs)
+  })
+  
+  #* Variables answer table ----
+  output$ans_vars <- renderTable({
+    data.frame("State variables" = state_vars,
+               "Process variables" = process_vars)
+  }) 
+  
+  #* Toggle for dataframe answers
+  observeEvent(input$ans_btn, {
+    # if(input$ans_btn %% 2 != 1 |){
+    #   hide(id = "ans_vars")
+    # }else{
+      show(id = "ans_vars")
+    # }
+    # toggle("ans_vars")
   })
   
 }
