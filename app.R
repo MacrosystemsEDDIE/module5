@@ -270,7 +270,7 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                                    p(module_text$model1),
                                    p(module_text$model2),
                                    p(module_text$model3),
-                                   p("Click through the images to see how we can go from a conceptual model to a mathematical representation of primary production in a lake.")
+                                   p("Click through the images to see how we can go from a conceptual food web model to a mathematical representation of the interaction of Nutrients (N), Phytoplankton (P) and Zooplankton (Z).")
                             ),
                             column(6,
                                    slickROutput("slck_model")
@@ -326,7 +326,16 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                               p("We are using observed data from the selected site in panel 'Get Data' to force this NPZ model."),
                               actionButton("run_mod_ann", label = "Run Model", icon = icon("running")),
                               p("Save the plot output"),
-                              checkboxInput("add_obs", "Add observations")
+                              checkboxInput("add_obs", "Add observations"),
+                              p("How does the model output compare to in-lake observations? Here are some things you should look out for:"),
+                              tags$ol(
+                                tags$li("Is the model in the same range as the observations?"),
+                                tags$li("Does it capture the seasonal patterns?"),
+                                tags$li("Does the model simulate capture events seen as spikes?")
+                              ),
+                              p("Can you think of any potential reasons why the model does not do so well"),
+                              p("We will explore some of these potential reasons later on.")
+                              
                               # actionButton("view_mod_ann", label = "View Model Output", icon = icon("chart-line"))
                               
                               ),
