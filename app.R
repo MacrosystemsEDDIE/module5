@@ -22,11 +22,15 @@ neon_sites <- readRDS("data/neon_sites.rds")
 neon_sites$uid <- paste0("M", seq_len(nrow(neon_sites)))
 source("download_phenocam.R")
 source("get_html.R")
+source("create_npz_inputs.R")
+source("NPZ_model.R")
+# source("")
 
 neon_sites_df <- read.csv("data/neon_sites.csv")
 neon_sites_df$long <- round(neon_sites_df$long, 3)
 neon_sites_df$lat <- round(neon_sites_df$lat, 3)
 neon_sites_df$uid <- paste0("M", seq_len(nrow(neon_sites_df))) # For leaflet map
+# siteID <- "XXXX"
 
 # Add type labels
 neon_sites$type[which(neon_sites$siteID %in% (neon_sites_df$siteID[neon_sites_df$type == "Aquatic"]))] <- "Aquatic"
@@ -52,6 +56,31 @@ plot_types <- c("line", "distribution")
 # Sorting variables
 state_vars <- c("Phytoplankton", "Zooplankton", "Inorganic Nutrients")
 process_vars <- c("Grazing", "Mortality", "Uptake")
+
+# Parameters for NPZ model
+parms <- c(
+  maxUptake = 1.0, #day-1
+  kspar=120, #uEinst m-2 s-1
+  ksdin=0.5, #mmol m-3
+  maxGrazing=1.0, # day-1
+  ksphyto=1, #mmol N m-3
+  pFaeces=0.3, #unitless
+  mortalityRate=0.4, #(mmmolN m-3)-1 day-1
+  excretionRate=0.1, #day-1
+  mineralizationRate=0.1, #day-1
+  Chl_Nratio = 1, #mg chl (mmolN)-1
+  Q10 = 2,  #unitless
+  addTEMP = 2,
+  scaleNLOAD = 1
+  
+)  
+
+# Initial conditions for NPZ
+yini <- c(
+  PHYTO = 5, #mmolN m-3
+  ZOO =0.8, #mmolN m-3
+  # DETRITUS = 1, #mmolN m-3
+  DIN = 9) #mmolN m-3
 
 
 
@@ -153,10 +182,7 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                                    h2("Map of NEON sites"),
                                    p("Click on a site on the map to see the latest image from the phenocam"),
                                    wellPanel(
-                                     leafletOutput("neonmap"),
-                                     # h3("Selected site:"),
-                                     # span(textOutput("site_name2"), style = "font-size: 20px;
-                                     #    font-style: bold;")
+                                     leafletOutput("neonmap")
                                      )
                                    )
                                    
@@ -167,23 +193,8 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                                    wellPanel(
                                      withSpinner(imageOutput("pheno"), type = 1,
                                                  hide.ui = FALSE
+                                                 )
                                      )
-                                   )
-                                   # useShinyjs(),
-                                   # div(
-                                   #   id = "loading_page",
-                                   #   h1("Select a site on the map to view the latest phenocam image")
-                                   # ),
-                                   # hidden(
-                                   #   div(
-                                   #     id = "main_content",
-                                   #     wellPanel(
-                                   #       withSpinner(imageOutput("pheno"), type = 1,
-                                   #                   hide.ui = FALSE
-                                   #                   )
-                                   #       )
-                                   #     )
-                                   #   )
                                    )
                           ),
                           span(textOutput("site_name1"), style = "font-size: 20px;
@@ -195,8 +206,10 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                           
                           # Data Exploration ----
                           h2("Data Exploration"),
-                          selectInput("view_var", "Select variable", 
-                                      choices = unique(neon_vars$Short_name), selected = "Air temperature"),
+                          conditionalPanel("input.table01_rows_selected > 0",
+                                           selectInput("view_var", "Select variable",
+                                                       choices = unique(neon_vars$Short_name))
+                          ),
                           
                           fluidRow(
                             #** Data Table ----
@@ -207,7 +220,11 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                             #** Plot of data ----
                             column(6,
                                    h3("Data Plot"),
-                                   plotlyOutput("var_plot")
+                                   wellPanel(
+                                     # conditionalPanel("input.var_plot", 
+                                       plotlyOutput("var_plot")
+                                     # )
+                                   )
                                   )
                             ), hr(),
                           fluidRow(
@@ -299,8 +316,24 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                                    # shiny::tableOutput("ans_vars")
                                    # textInput("text", "Text")
                                    )
+                            ),
+                          #* Run ecological model ====
+                          fluidRow(
+                            h2(tags$b("Simulate")),
+                            column(
+                              width = 4,
+                              p("Run the model for your lake system"),
+                              p("We are using observed data from the selected site in panel 'Get Data' to force this NPZ model."),
+                              actionButton("run_mod_ann", label = "Run Model", icon = icon("running")),
+                              p("Save the plot output"),
+                              checkboxInput("add_obs", "Add observations")
+                              # actionButton("view_mod_ann", label = "View Model Output", icon = icon("chart-line"))
+                              
+                              ),
+                            column(
+                              width = 6,
+                              plotlyOutput("mod_ann_plot"))
                           )
-                          
                           ),
                  
                  # 5. Forecast! ----
@@ -321,10 +354,13 @@ server <- function(input, output, session) {#
   
   # to keep track of previously selected row
   prev_row <- reactiveVal()
+  siteID <- reactiveVal()
   
   # new icon style
   my_icon = makeAwesomeIcon(icon = 'flag', markerColor = 'red', iconColor = 'white')
   
+  
+  # Select DT rows ----
   observeEvent(input$table01_rows_selected, {
     row_selected = neon_sites[input$table01_rows_selected, ]
     siteID <<- neon_sites$siteID[input$table01_rows_selected]
@@ -333,6 +369,7 @@ server <- function(input, output, session) {#
     row_selected = cbind(row_selected, coords)
     proxy <- leafletProxy('neonmap')
     print(row_selected)
+    print(ls())
     proxy %>%
       addAwesomeMarkers(layerId = as.character(row_selected$uid),
                         lng=row_selected$long, 
@@ -362,13 +399,17 @@ server <- function(input, output, session) {#
     
   })
   
+  
+  
+  
   # Download phenocam ----
   observeEvent(input$neonmap_marker_click, {
     p <- input$neonmap_marker_click  # typo was on this line
     idx <- which(neon_sites_df$uid == input$neonmap_marker_click$id)
     # output$site_name <- neon_sites$description[idx]
     url <- neon_sites_df$pheno_url[idx]
-    siteID <<- neon_sites_df$siteID[idx]
+    # siteID(neon_sites_df$siteID[idx])
+    # siteID <<- neon_sites_df$siteID[idx]
     img_file <- download_phenocam(url)
     print(img_file)
     output$pheno <- renderImage({
@@ -403,17 +444,16 @@ server <- function(input, output, session) {#
   })
   
   # Read in site data ----
-  neon_DT <- eventReactive(input$view_var, {
-    read_var <<- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
+  neon_DT <- eventReactive(input$view_var, { # view_var
+    siteID <- eventReactive(input$table01_rows_selected, {
+      neon_sites$siteID[input$table01_rows_selected]
+    }) 
+    read_var <- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
     print(input$view_var)
-    validate(
-      need(input$view_var != "", "Please select a variable!")
-    )
-    file <- file.path("data", paste0(siteID, "_daily_", read_var, "_2019.csv"))
-    print(file)
+    file <- file.path("data", paste0(siteID(), "_daily_", read_var, "_2019.csv"))
     df <- read.csv(file)
     # df <- read.csv("data/SITE_data.csv")
-    df[, 1] <- as.POSIXct(df[,1], tz = "UTC")
+    df[, 1] <- as.POSIXct(df[, 1], tz = "UTC")
     df[, -1] <- signif(df[, -1], 4)
     names(df)[ncol(df)] <- read_var
     return(df)
@@ -423,10 +463,23 @@ server <- function(input, output, session) {#
   output$neon_datatable <- DT::renderDT({
     neon_DT()
   })
+  
+  # Get NOAA forecast ----
+  output$sel_obs_vars <- renderUI({
+    # print(fc_vars)
+    selectInput("fc_var", "Choose variable", choices = fc_vars)
+  })
+  
+  
   # Site data plot ----
   output$var_plot <- renderPlotly({
     
-    if(read_var == "wtemp") {
+    validate(
+      need(input$view_var != "", "Please select a variable!")
+    )
+
+    
+    if(input$view_var == "Water temperature profile") {
       
       palet <- "RdYlBu"
       p <- ggplot(neon_DT(), aes_string(names(neon_DT())[1], names(neon_DT())[2])) +
@@ -439,7 +492,7 @@ server <- function(input, output, session) {#
         # theme_classic(base_size = 16) +
         theme_minimal(base_size = 16) +
         theme(panel.border = element_rect(fill = NA, colour = "black"))
-    } else{
+    } else {
       p <- ggplot(neon_DT(), aes_string(names(neon_DT())[1], names(neon_DT())[2])) +
         # geom_line() +
         geom_point() +
@@ -454,7 +507,6 @@ server <- function(input, output, session) {#
   })
   
   observeEvent(input$load_fc, {
-    # print("hello_world")
     # download forecasts to data/forecast_ncdf folder
     fpath <- file.path("data", "forecast_ncdf")
     fils <<- list.files(fpath)
@@ -622,6 +674,57 @@ server <- function(input, output, session) {#
       show(id = "ans_vars")
     # }
     # toggle("ans_vars")
+  })
+  
+  #* Run eco-model ----
+  mod_run <- eventReactive(input$run_mod_ann, {
+    par <- read.csv(file.path("data", paste0(siteID, "_daily_upar_2019.csv")))
+    wtemp <- read.csv(file.path("data", paste0(siteID, "_daily_wtemp_2019.csv")))
+    stemp <- wtemp[wtemp[, 2] == min(wtemp[, 2]), c(1, 3)]
+    if(sum(is.na(stemp[, 2])) > 0) {
+      stemp[, 2] <- zoo::na.approx(stemp[, 2])
+    }
+    
+    npz_inp <- merge(par, stemp, by = 1)
+    npz_inp[, 1] <- as.POSIXct(npz_inp[, 1], tz = "UTC")
+    times <- 1:nrow(npz_inp)
+    
+    inputs <- create_npz_inputs(time = npz_inp[, 1], PAR = npz_inp[, 2], temp = npz_inp[, 3])
+    
+    
+    
+    out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
+               method = "ode45", inputs = inputs)
+    out <- as.data.frame(out)
+    out$time <- npz_inp$Date
+    out <- out[, c("time", "Chlorophyll.Chl_Nratio")]
+    colnames(out)[2] <- "Chla"
+    return(out)
+    
+  })
+  
+  # Model output data ----
+  output$mod_ann_datatable <- DT::renderDT({
+    mod_run()
+  })
+  
+  output$mod_ann_plot <- renderPlotly({
+    
+    chla <- read.csv(file.path("data", paste0(siteID, "_daily_chla_2019.csv")))
+    chla[, 1] <- as.POSIXct(chla[, 1], tz = "UTC")
+    
+    validate(
+      need(input$run_mod_ann > 0, "Please run the model")
+    )
+    p <- ggplot() +
+      geom_line(data = mod_run(), aes_string(names(mod_run())[1], names(mod_run())[2])) +
+      ylab("Chla") +
+      xlab("") +
+      {if(input$add_obs) geom_point(data = chla, aes_string(names(chla)[1], names(chla)[2], colour = shQuote("Obs")))} +
+      theme_minimal(base_size = 16) +
+      theme(panel.background = element_rect(fill = NA, colour = 'black'))
+    return(ggplotly(p, dynamicTicks = TRUE))
+    
   })
   
 }
