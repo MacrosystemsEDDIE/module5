@@ -70,14 +70,14 @@ parms <- c(
   mineralizationRate=0.1, #day-1
   Chl_Nratio = 1, #mg chl (mmolN)-1
   Q10 = 2,  #unitless
-  addTEMP = 2,
-  scaleNLOAD = 1
+  addTEMP = 0, # added to temperature
+  scaleNLOAD = 1 # multiplier for N loading
   
 )  
 
 # Initial conditions for NPZ
 yini <- c(
-  PHYTO = 5, #mmolN m-3
+  PHYTO = 2, #mmolN m-3
   ZOO =0.8, #mmolN m-3
   # DETRITUS = 1, #mmolN m-3
   DIN = 9) #mmolN m-3
@@ -98,6 +98,9 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                           h3("Macrosystems Ecology"),
                           p(module_text$Macro),
                           # br(),
+                          h3("Ecological Forecasting"),
+                          HTML('<center><img src="TFC_v1.png"></center>'),
+                          # img(src = "TFC_v1.png"),
                           h3("Module Activities"),
                           tags$ol(
                             tags$li("Ecological Forecasting"),
@@ -206,9 +209,11 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                           
                           # Data Exploration ----
                           h2("Data Exploration"),
-                          conditionalPanel("input.table01_rows_selected > 0",
+                          # actionButton("load_data", "Load data", icon = icon("download")),
+                          # conditionalPanel("input.load_data",
                                            selectInput("view_var", "Select variable",
-                                                       choices = unique(neon_vars$Short_name))
+                                                       choices = unique(neon_vars$Short_name)
+                                                       # )
                           ),
                           
                           fluidRow(
@@ -280,8 +285,9 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                           br(),
                           br(),
                           hr(),
-                          #* Sort state and process variables ====
+                          #** Sort state and process variables ====
                           h2(tags$b("Exercise")),
+                          p("When working with Ecological models, the terms 'State variables' and 'Process variables' are used. Using the model diagram above, can you identify which are state or process variables"),
                           fluidRow(
                             column(
                               # tags$b("Exercise"),
@@ -317,12 +323,24 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                                    # textInput("text", "Text")
                                    )
                             ),
-                          #* Run ecological model ====
+                          #** Run ecological model ====
                           fluidRow(
                             h2(tags$b("Simulate")),
                             column(
                               width = 4,
-                              p("Run the model for your lake system"),
+                              p("To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates."),
+                              #** Update Hypothesis ----
+                              h3("Update hypothesis"),
+                              checkboxGroupInput("mod_sens", "Select which variables the model is sensitive to:",
+                                                 choices = list("Temperature", "Light", "Nutrient loading")),
+                              sliderInput("graz_rate", label = div(style='width:300px;', 
+                                                                   div(style='float:left;', 'Eat less'), 
+                                                                   div(style='float:right;', 'Eat more')),
+                                          min = 0, max = 2, value = 1, step = 0.1),
+                              sliderInput("nut_uptake", label = div(style='width:300px;', 
+                                                                    div(style='float:left;', 'Lower nutrient uptake'), 
+                                                                    div(style='float:right;', 'Higher nutrient uptake')),
+                                          min = 0, max = 2, value = 1, step = 0.1),
                               p("We are using observed data from the selected site in panel 'Get Data' to force this NPZ model."),
                               actionButton("run_mod_ann", label = "Run Model", icon = icon("running")),
                               p("Save the plot output"),
@@ -331,7 +349,7 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                               tags$ol(
                                 tags$li("Is the model in the same range as the observations?"),
                                 tags$li("Does it capture the seasonal patterns?"),
-                                tags$li("Does the model simulate capture events seen as spikes?")
+                                tags$li("Does the model simulate events seen as spikes?")
                               ),
                               p("Can you think of any potential reasons why the model does not do so well"),
                               p("We will explore some of these potential reasons later on.")
@@ -339,10 +357,13 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                               # actionButton("view_mod_ann", label = "View Model Output", icon = icon("chart-line"))
                               
                               ),
-                            column(
-                              width = 6,
-                              plotlyOutput("mod_ann_plot"))
-                          )
+                            # wellPanel(
+                              column(
+                                width = 6,
+                                plotlyOutput("mod_ann_plot")
+                                )
+                              # )
+                            ),
                           ),
                  
                  # 5. Forecast! ----
@@ -351,7 +372,33 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                           img(src = "eddie_banner_2018.v5.jpg", height = 100, 
                               width = 1544, top = 5),
                           #* Intro text ====
-                          h3("Forecasting...")
+                          h3("Forecasting..."),
+                          
+                          #** Climate Change Scenarios ====
+                          fluidRow(
+                            h2(tags$b("Climate Change Scenarios")),
+                            p("Two ways in which climate change can affect lakes is through changing temperatures and altering landuse."),
+                            column(
+                              width = 4,
+                              wellPanel(
+                                h3("Adjusting forcing data"),
+                                sliderInput(inputId = 'temp',
+                                            label = "Temperature Change",
+                                            min = -3, max = 3,
+                                            value = 0, step = 1),
+                                sliderInput('nload', 'Nutrient loading', min = 0, max = 2,
+                                            value = 1, step = 0.2),
+                                actionButton("base_plot", "Generate baseline plot",
+                                             icon = icon("chart-line")),
+                                actionButton("scen_plot", "Add scenario line to plot",
+                                             icon = icon("plus"))
+                                )
+                              ),
+                            column(
+                              width = 6,
+                              plotlyOutput("cc_plot")
+                              )
+                            )
                           )
                  )
 
@@ -431,9 +478,10 @@ server <- function(input, output, session) {#
   })
   
   # Download html ----
-  observeEvent(input$neonmap_marker_click, {
+  observeEvent(input$table01_rows_selected, {
     p <- input$neonmap_marker_click  # typo was on this line
-    idx <- which(neon_sites_df$uid == input$neonmap_marker_click$id)
+    sid <- neon_sites$siteID[input$table01_rows_selected]
+    idx <- which(neon_sites_df$siteID == sid)
     # output$site_name <- neon_sites$description[idx]
     output$site_html <- renderUI({
       return(get_html(site_id = neon_sites_df$siteID[idx]))
@@ -470,6 +518,14 @@ server <- function(input, output, session) {#
   
   # Site data datatable ----
   output$neon_datatable <- DT::renderDT({
+    siteID <- eventReactive(input$table01_rows_selected, {
+      neon_sites$siteID[input$table01_rows_selected]
+    }) 
+    read_var <- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
+    file <- file.path("data", paste0(siteID(), "_daily_", read_var, "_2019.csv"))
+    validate(
+      need(file.exists(file), message = "This variable is not available at this site. Please select a different variable or site.")
+    )
     neon_DT()
   })
   
@@ -483,8 +539,13 @@ server <- function(input, output, session) {#
   # Site data plot ----
   output$var_plot <- renderPlotly({
     
+    siteID <- eventReactive(input$table01_rows_selected, {
+      neon_sites$siteID[input$table01_rows_selected]
+    }) 
+    read_var <- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
+    file <- file.path("data", paste0(siteID(), "_daily_", read_var, "_2019.csv"))
     validate(
-      need(input$view_var != "", "Please select a variable!")
+      need(file.exists(file), message = "This variable is not available at this site. Please select a different variable or site.")
     )
 
     
@@ -686,9 +747,14 @@ server <- function(input, output, session) {#
   })
   
   #* Run eco-model ----
-  mod_run <- eventReactive(input$run_mod_ann, {
-    par <- read.csv(file.path("data", paste0(siteID, "_daily_upar_2019.csv")))
-    wtemp <- read.csv(file.path("data", paste0(siteID, "_daily_wtemp_2019.csv")))
+  mod_run1 <- eventReactive(input$run_mod_ann, {
+    
+    siteID <- eventReactive(input$table01_rows_selected, {
+      neon_sites$siteID[input$table01_rows_selected]
+    })
+    
+    par <- read.csv(file.path("data", paste0(siteID(), "_daily_upar_2019.csv")))
+    wtemp <- read.csv(file.path("data", paste0(siteID(), "_daily_wtemp_2019.csv")))
     stemp <- wtemp[wtemp[, 2] == min(wtemp[, 2]), c(1, 3)]
     if(sum(is.na(stemp[, 2])) > 0) {
       stemp[, 2] <- zoo::na.approx(stemp[, 2])
@@ -697,6 +763,10 @@ server <- function(input, output, session) {#
     npz_inp <- merge(par, stemp, by = 1)
     npz_inp[, 1] <- as.POSIXct(npz_inp[, 1], tz = "UTC")
     times <- 1:nrow(npz_inp)
+    
+    # Updated parameters
+    parms[1] <- as.numeric(input$nut_uptake)
+    parms[4] <- as.numeric(input$graz_rate)
     
     inputs <- create_npz_inputs(time = npz_inp[, 1], PAR = npz_inp[, 2], temp = npz_inp[, 3])
     
@@ -712,28 +782,123 @@ server <- function(input, output, session) {#
     
   })
   
-  # Model output data ----
+  #* Model annual output data ----
   output$mod_ann_datatable <- DT::renderDT({
-    mod_run()
+    mod_run1()
   })
   
+  #* Model annual output plot ----
   output$mod_ann_plot <- renderPlotly({
     
     chla <- read.csv(file.path("data", paste0(siteID, "_daily_chla_2019.csv")))
     chla[, 1] <- as.POSIXct(chla[, 1], tz = "UTC")
+    xlims <- range(mod_run1()[, 1])
+    ylims <- range(mod_run1()[, 2])
     
     validate(
       need(input$run_mod_ann > 0, "Please run the model")
     )
     p <- ggplot() +
-      geom_line(data = mod_run(), aes_string(names(mod_run())[1], names(mod_run())[2])) +
+      geom_line(data = mod_run1(), aes_string(names(mod_run1())[1], names(mod_run1())[2], colour = shQuote("Model"))) +
       ylab("Chla") +
       xlab("") +
       {if(input$add_obs) geom_point(data = chla, aes_string(names(chla)[1], names(chla)[2], colour = shQuote("Obs")))} +
+      coord_cartesian(xlim = xlims, ylim = ylims) +
       theme_minimal(base_size = 16) +
       theme(panel.background = element_rect(fill = NA, colour = 'black'))
     return(ggplotly(p, dynamicTicks = TRUE))
     
+  })
+  
+  plot.dat <- reactiveValues(main = NULL, layer1 = NULL)
+  observe({
+    validate(
+      need(!is.null(plot.dat$main), "Generate the baseline plot.")
+    )
+    output$cc_plot <- renderPlotly({ ggplotly((plot.dat$main + plot.dat$layer1 +
+                                                 scale_colour_manual(values = c('black',
+                                                                                'red')) +
+                                                 theme_minimal(base_size = 16) +
+                                                 theme(panel.background = element_rect(fill = NA, colour = 'black'))), 
+                                              dynamicTicks = TRUE) })
+  })
+  
+  observeEvent(input$base_plot, {
+
+    
+    # parms[7] <- as.numeric(input$mortRate)
+    # parms[8] <- as.numeric(input$excretRate)
+    # parms[1] <- as.numeric(input$nut_uptake)
+    # parms[4] <- as.numeric(input$graz_rate)
+    siteID <- eventReactive(input$table01_rows_selected, {
+      neon_sites$siteID[input$table01_rows_selected]
+    })
+    
+    par <- read.csv(file.path("data", paste0(siteID(), "_daily_upar_2019.csv")))
+    wtemp <- read.csv(file.path("data", paste0(siteID(), "_daily_wtemp_2019.csv")))
+    stemp <- wtemp[wtemp[, 2] == min(wtemp[, 2]), c(1, 3)]
+    if(sum(is.na(stemp[, 2])) > 0) {
+      stemp[, 2] <- zoo::na.approx(stemp[, 2])
+    }
+    
+    npz_inp <- merge(par, stemp, by = 1)
+    npz_inp[, 1] <- as.POSIXct(npz_inp[, 1], tz = "UTC")
+    times <- 1:nrow(npz_inp)
+    
+    inputs <- create_npz_inputs(time = npz_inp[, 1], PAR = npz_inp[, 2], temp = npz_inp[, 3])
+    
+    
+    
+    out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
+                        method = "ode45", inputs = inputs)
+    out <- as.data.frame(out)
+    out$time <- npz_inp$Date
+    out <- out[, c("time", "Chlorophyll.Chl_Nratio")]
+    colnames(out)[2] <- "Chla"
+    
+    plot.dat$layer1 <<- NULL
+    plot.dat$main <<- ggplot() +
+      geom_line(data = out, aes_string(names(out)[1], names(out)[2], colour = shQuote("Baseline"))) +
+      ylab("Chla") +
+      xlab("")
+  })
+  
+  observeEvent(input$scen_plot, {
+    
+    # parms[7] <- as.numeric(input$mortRate)
+    # parms[8] <- as.numeric(input$excretRate)
+    parms[12] <- as.numeric(input$temp)
+    parms[13] <- as.numeric(input$nload)
+    
+    siteID <- eventReactive(input$table01_rows_selected, {
+      neon_sites$siteID[input$table01_rows_selected]
+    })
+    
+    par <- read.csv(file.path("data", paste0(siteID(), "_daily_upar_2019.csv")))
+    wtemp <- read.csv(file.path("data", paste0(siteID(), "_daily_wtemp_2019.csv")))
+    stemp <- wtemp[wtemp[, 2] == min(wtemp[, 2]), c(1, 3)]
+    if(sum(is.na(stemp[, 2])) > 0) {
+      stemp[, 2] <- zoo::na.approx(stemp[, 2])
+    }
+    
+    npz_inp <- merge(par, stemp, by = 1)
+    npz_inp[, 1] <- as.POSIXct(npz_inp[, 1], tz = "UTC")
+    times <- 1:nrow(npz_inp)
+    
+    inputs <- create_npz_inputs(time = npz_inp[, 1], PAR = npz_inp[, 2], temp = npz_inp[, 3])
+    
+    
+    
+    out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
+                        method = "ode45", inputs = inputs)
+    out <- as.data.frame(out)
+    out$time <- npz_inp$Date
+    out <- out[, c("time", "Chlorophyll.Chl_Nratio")]
+    colnames(out)[2] <- "Chla"
+    
+    plot.dat$layer1 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+                                                  colour = shQuote("Scenario")),
+                                  linetype = "dashed")
   })
   
 }
