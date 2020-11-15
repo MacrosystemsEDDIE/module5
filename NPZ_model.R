@@ -49,7 +49,7 @@ NPZ_model <- function(time, states, parms, inputs){
   Chlorophyll <- Chl_Nratio*PHYTO
   
   dPHYTO <- N_Uptake - Grazing
-  dZOO <- Grazing -FaecesProduction - Excretion -  Mortality
+  dZOO <- Grazing - FaecesProduction - Excretion -  Mortality
   # dDETRITUS <- FaecesProduction + Mortality - Mineralization
   dDIN <- Excretion + Mineralization - N_Uptake + NLOAD
   
