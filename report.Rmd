@@ -1,0 +1,34 @@
+---
+title: "Beta Student Handout"
+output: pdf_document
+params:
+  name: NA
+  id_number: NA
+  a1: NA
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+```{r}
+name <- params$name
+id_number <- params$id_number
+a1 <- params$a1
+time <- Sys.time()
+
+```
+
+![](www/eddie_banner_2018.v5.jpg)
+
+## Completed student handout
+
+### Name: `r name`  
+#### Student ID: `r id_number`  
+#### Completed on: `r time`
+
+## Answers to questions
+### Activity A
+Q1. What is an ecological forecast? What is uncertainty?  
+Answer: `r a1`  
+
+
