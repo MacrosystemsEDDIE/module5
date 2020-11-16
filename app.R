@@ -10,6 +10,7 @@ library(ncdf4)
 library(reshape)
 library(sortable)
 library(slickR)
+library(tinytex)
 # library(DT)
 
 # Options for Spinner
@@ -39,6 +40,8 @@ neon_sites$type[which(neon_sites$siteID %in% (neon_sites_df$siteID[neon_sites_df
 # Reference for downloading variables
 neon_vars <- read.csv("data/neon_variables.csv")
 
+# Colours for plots
+cols <- RColorBrewer::brewer.pal(8, "Dark2")
 
 # Load text input
 module_text <- read.csv("data/module_text.csv")
@@ -54,7 +57,7 @@ neonIcons <- iconList(
 plot_types <- c("line", "distribution")
 
 # Sorting variables
-state_vars <- c("Phytoplankton", "Zooplankton", "Inorganic Nutrients")
+state_vars <- c("Phytoplankton", "Zooplankton", "Nutrients")
 process_vars <- c("Grazing", "Mortality", "Uptake")
 
 # Parameters for NPZ model
@@ -78,7 +81,7 @@ parms <- c(
 # Initial conditions for NPZ
 yini <- c(
   PHYTO = 2, #mmolN m-3
-  ZOO =0.8, #mmolN m-3
+  ZOO = 0.4, #mmolN m-3
   # DETRITUS = 1, #mmolN m-3
   DIN = 9) #mmolN m-3
 
@@ -92,6 +95,11 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                           tags$style(type="text/css", "body {padding-top: 65px;}"),
                           img(src = "eddie_banner_2018.v5.jpg", height = 100, 
                               width = 1544, top = 5),
+                          p(tags$b("Instructions")),
+                          p("For this module you will input your answers into this app which will allow you to generate a pdf report at the end of this module. Input your name and student ID below."),
+                          textInput(inputId = "name", label = "Name",
+                                    placeholder = "e.g. John Smith"),
+                          textInput(inputId = "id_number", label = "Student ID:", placeholder = "12345678"),
                           #* Module text ====
                           h3("Project EDDIE"),
                           p(module_text$EDDIE),
@@ -142,7 +150,10 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                             img(src = "NSF-NEON-logo.png", title = "NEON - NSF logo")
                           ),
                           p("This module will introduce key concepts within Ecological forecasting through exploration of ",
-                            a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data"), ", building a model and then generating a short-term ecological forecast.")
+                            a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data"), ", building a model and then generating a short-term ecological forecast."),
+                          h2(tags$b("Think about it!")),
+                          textInput(inputId = "q1", label = "Q1. What is an ecological forecast? What is uncertainty?",
+                                    placeholder = "An ecological forecast is...", width = "80%")
                           
                           ),
                  
@@ -202,8 +213,10 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                           ),
                           span(textOutput("site_name1"), style = "font-size: 20px;
                                         font-style: bold;"),
+                          h2(tags$b("About Site")),
                           wellPanel(
-                            uiOutput("site_html")
+                            uiOutput("site_html"),
+                            htmlOutput("site_link")
                           ),
                           hr(),
                           
@@ -309,16 +322,17 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                                 add_rank_list(
                                   text = "Process variables",
                                   labels = NULL,
-                                  input_id = "rank_list_2"
+                                  input_id = "rank_list_3"
                                 )
                               )
                             ),
                             column(3,
                                    useShinyjs(),  # Set up shinyjs
-                                   actionButton("ans_btn", "Show answers"),
-                                   hidden(
-                                     tableOutput("ans_vars")
-                                   )
+                                   actionButton("ans_btn", "Check answers"),
+                                   # hidden(
+                                   #   tableOutput("ans_vars")
+                                   # ),
+                                   verbatimTextOutput("state_ans")
                                    # shiny::tableOutput("ans_vars")
                                    # textInput("text", "Text")
                                    )
@@ -330,17 +344,33 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                               width = 4,
                               p("To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates."),
                               #** Update Hypothesis ----
-                              h3("Update hypothesis"),
-                              checkboxGroupInput("mod_sens", "Select which variables the model is sensitive to:",
-                                                 choices = list("Temperature", "Light", "Nutrient loading")),
-                              sliderInput("graz_rate", label = div(style='width:300px;', 
-                                                                   div(style='float:left;', 'Eat less'), 
-                                                                   div(style='float:right;', 'Eat more')),
-                                          min = 0, max = 2, value = 1, step = 0.1),
-                              sliderInput("nut_uptake", label = div(style='width:300px;', 
-                                                                    div(style='float:left;', 'Lower nutrient uptake'), 
-                                                                    div(style='float:right;', 'Higher nutrient uptake')),
-                                          min = 0, max = 2, value = 1, step = 0.1),
+                              # h3("Update hypothesis"),
+                              # wellPanel(
+                                h4(tags$b("Model Drivers")),
+                                checkboxGroupInput("mod_sens", "Select which variables the model is sensitive to:",
+                                                   choices = list("Temperature", "Light", "Nutrient loading"))
+                              # )
+                              ,
+                              # wellPanel(
+                                h4(tags$b("Zooplankton")),
+                                sliderInput("graz_rate", label = div(style='width:300px;', 
+                                                                     div(style='float:left;', 'Eat less'), 
+                                                                     div(style='float:right;', 'Eat more')),
+                                            min = 0.2, max = 1.6, value = 0.8, step = 0.1),
+                                sliderInput("mort_rate", label = div(style='width:300px;', 
+                                                                     div(style='float:left;', 'Lower death'), 
+                                                                     div(style='float:right;', 'Higher death')),
+                                            min = 0.1, max = 1, value = 0.5, step = 0.1)
+                              # )
+                              ,
+                              # wellPanel(
+                                h4(tags$b("Phytoplankton")),
+                                sliderInput("nut_uptake", label = div(style='width:300px;', 
+                                                                      div(style='float:left;', 'Low uptake'), 
+                                                                      div(style='float:right;', 'High uptake')),
+                                            min = 0.1, max = 1.7, value = 1.2, step = 0.1)
+                              # )
+                              ,
                               p("We are using observed data from the selected site in panel 'Get Data' to force this NPZ model."),
                               actionButton("run_mod_ann", label = "Run Model", icon = icon("running")),
                               p("Save the plot output"),
@@ -360,7 +390,8 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                             # wellPanel(
                               column(
                                 width = 6,
-                                plotlyOutput("mod_ann_plot")
+                                plotlyOutput("mod_ann_plot"),
+                                plotlyOutput("mod_phyto_plot")
                                 )
                               # )
                             ),
@@ -397,15 +428,23 @@ ui <- navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                             column(
                               width = 6,
                               plotlyOutput("cc_plot")
-                              )
+                              ),
+                            actionButton("generate", "Generate Report", icon = icon("file"), # This is the only button that shows up when the app is loaded
+                                         # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
+                            ),
+                            conditionalPanel(condition = "output.reportbuilt", # This button appears after the report has been generated and is ready for download.
+                                             downloadButton("download", "Download Report",
+                                                            # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
+                                             ))
                             )
                           )
                  )
 
+# Server ----
 server <- function(input, output, session) {#
   
   output$table01 <- DT::renderDT(
-    neon_sites_df[, c(1:3, 5:6)], selection = "single", options=list(stateSave = TRUE)
+    neon_sites_df[, c(1:3, 5:6)], selection = "single", options = list(stateSave = TRUE)
   )
   
   # to keep track of previously selected row
@@ -466,6 +505,7 @@ server <- function(input, output, session) {#
     url <- neon_sites_df$pheno_url[idx]
     # siteID(neon_sites_df$siteID[idx])
     # siteID <<- neon_sites_df$siteID[idx]
+    # if image exist don't redownload
     img_file <- download_phenocam(url)
     print(img_file)
     output$pheno <- renderImage({
@@ -485,6 +525,15 @@ server <- function(input, output, session) {#
     # output$site_name <- neon_sites$description[idx]
     output$site_html <- renderUI({
       return(get_html(site_id = neon_sites_df$siteID[idx]))
+    })
+  })
+  #** Create hyperlink ----
+  observeEvent(input$table01_rows_selected, {
+    sid <- neon_sites$siteID[input$table01_rows_selected]
+    url <- paste0("https://www.neonscience.org/field-sites/field-sites-map/", sid)
+    
+    output$site_link <- renderUI({
+      tags$a(href = url, "Click here for more site info")
     })
   })
   
@@ -746,6 +795,31 @@ server <- function(input, output, session) {#
     # toggle("ans_vars")
   })
   
+  observeEvent(input$ans_btn, {
+    print(length(input$rank_list_3))
+    if(length(input$rank_list_2) == 0) {
+      res <- "Drag answers into state variables!"
+    } else if(all(input$rank_list_2 %in% state_vars)) {
+      res <- "State variables are correct!"
+    } else {
+      res <- "Incorrect answer in state variables"
+    }
+    
+    if(length(input$rank_list_3) == 0) {
+      res2 <- "Drag answers into process variables!"
+    } else if(all(input$rank_list_3 %in% process_vars)) {
+      res2 <- "Process variables are correct!"
+    } else {
+      res2 <- "Incorrect answer in process variables"
+    }
+    
+    output$state_ans <- renderPrint({
+      print(res)
+      print(res2)
+      # return(res)
+    })
+  }) 
+  
   #* Run eco-model ----
   mod_run1 <- eventReactive(input$run_mod_ann, {
     
@@ -767,17 +841,29 @@ server <- function(input, output, session) {#
     # Updated parameters
     parms[1] <- as.numeric(input$nut_uptake)
     parms[4] <- as.numeric(input$graz_rate)
+    parms[7] <- as.numeric(input$mort_rate)
     
     inputs <- create_npz_inputs(time = npz_inp[, 1], PAR = npz_inp[, 2], temp = npz_inp[, 3])
     
+    # Alter sensitivities
+    if(!("Light" %in% input$mod_sens)) {
+      inputs$PAR <- mean(inputs$PAR, na.rm = T) 
+    }
+    if(!("Temperature" %in% input$mod_sens)) {
+      inputs$TEMP <- mean(inputs$TEMP, na.rm = T) 
+    }
+    if(!("Nutrient Loading" %in% input$mod_sens)) {
+      inputs$NLOAD <- mean(inputs$NLOAD, na.rm = T) 
+    }
+
     
     
     out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
                method = "ode45", inputs = inputs)
     out <- as.data.frame(out)
     out$time <- npz_inp$Date
-    out <- out[, c("time", "Chlorophyll.Chl_Nratio")]
-    colnames(out)[2] <- "Chla"
+    out <- out[, c("time", "Chlorophyll.Chl_Nratio", "PHYTO", "ZOO")]
+    colnames(out)[-1] <- c("Chla", "Phytoplankton", "Zooplankton")
     return(out)
     
   })
@@ -793,22 +879,45 @@ server <- function(input, output, session) {#
     chla <- read.csv(file.path("data", paste0(siteID, "_daily_chla_2019.csv")))
     chla[, 1] <- as.POSIXct(chla[, 1], tz = "UTC")
     xlims <- range(mod_run1()[, 1])
-    ylims <- range(mod_run1()[, 2])
+    ylims <- range(chla[, 2], na.rm = TRUE)
     
     validate(
       need(input$run_mod_ann > 0, "Please run the model")
     )
     p <- ggplot() +
       geom_line(data = mod_run1(), aes_string(names(mod_run1())[1], names(mod_run1())[2], colour = shQuote("Model"))) +
-      ylab("Chla") +
+      ylab("Chlorophyll-a") +
       xlab("") +
       {if(input$add_obs) geom_point(data = chla, aes_string(names(chla)[1], names(chla)[2], colour = shQuote("Obs")))} +
       coord_cartesian(xlim = xlims, ylim = ylims) +
       theme_minimal(base_size = 16) +
-      theme(panel.background = element_rect(fill = NA, colour = 'black'))
+      theme(panel.background = element_rect(fill = NA, colour = 'black')) +
+      scale_colour_manual(cols[1:2])
     return(ggplotly(p, dynamicTicks = TRUE))
     
   })
+  
+  #* Model annual output plot ----
+  output$mod_phyto_plot <- renderPlotly({
+    xlims <- range(mod_run1()[, 1])
+    mlt <- reshape2::melt(mod_run1()[, -2], id.vars = 1)
+
+    validate(
+      need(input$run_mod_ann > 0, "Please run the model")
+    )
+    p <- ggplot() +
+      geom_line(data = mlt, aes_string(names(mlt)[1], names(mlt)[3], colour = names(mlt)[2])) +
+      ylab("mmol N") +
+      xlab("") +
+      facet_wrap(~variable, nrow = 2) +
+      coord_cartesian(xlim = xlims) +
+      theme_minimal(base_size = 16) +
+      theme(panel.background = element_rect(fill = NA, colour = 'black'))+
+      scale_colour_manual(cols[3:4])
+    return(ggplotly(p, dynamicTicks = TRUE))
+    
+  })
+  
   
   plot.dat <- reactiveValues(main = NULL, layer1 = NULL)
   observe({
@@ -900,6 +1009,85 @@ server <- function(input, output, session) {#
                                                   colour = shQuote("Scenario")),
                                   linetype = "dashed")
   })
+  
+  #** Render Report ----
+  report <- reactiveValues(filepath = NULL) #This creates a short-term storage location for a filepath
+  
+  observeEvent(input$generate, {
+    
+    progress <- shiny::Progress$new()
+    # Make sure it closes when we exit this reactive, even if there's an error
+    on.exit(progress$close())
+    progress$set(message = "Gathering data and building report.", 
+                 detail = "This may take a while. This window will disappear  
+                     when the report is ready.", value = 1)
+   
+    # Set up parameters to pass to Rmd document
+    params <- list(name = input$name,
+                   id_number = input$id_number,
+                   a1 = input$q1)
+    
+    
+    tmp_file <- paste0(tempfile(), ".pdf") #Creating the temp where the .pdf is going to be stored
+    
+    rmarkdown::render("report.Rmd", 
+           output_format = "all", 
+           output_file = tmp_file,
+           params = params, 
+           envir = new.env(parent = globalenv()))
+    
+    report$filepath <- tmp_file #Assigning in the temp file where the .pdf is located to the reactive file created above
+    
+  })
+  
+  # Hide download button until report is generated
+  output$reportbuilt <- reactive({
+    return(!is.null(report$filepath))
+  })
+  outputOptions(output, 'reportbuilt', suspendWhenHidden= FALSE)
+  
+  
+  #** Download Report ----
+  
+  #Download report  
+  output$download <- downloadHandler(
+    
+    # This function returns a string which tells the client
+    # browser what name to use when saving the file.
+    filename = function() {
+      paste0("report_", input$name, ".pdf") %>%
+        gsub(" ", "_", .)
+    },
+    
+    # This function should write data to a file given to it by
+    # the argument 'file'.
+    content = function(file) {
+      
+      file.copy(report$filepath, file)
+      
+    }
+  )
+  
+  # output$report <- downloadHandler(
+  #   # For PDF output, change this to "report.pdf"
+  #   filename <- "report.pdf",
+  #   content <- function(file) {
+  #     # Copy the report file to a temporary directory before processing it, in
+  #     # case we don't have write permissions to the current working dir (which
+  #     # can happen when deployed).
+  #     tempReport <- file.path(tempdir(), "report.Rmd")
+  #     file.copy("report.Rmd", tempReport, overwrite = TRUE)
+  # 
+  #     
+  #     # Knit the document, passing in the `params` list, and eval it in a
+  #     # child of the global environment (this isolates the code in the document
+  #     # from the code in this app).
+  #     rmarkdown::render(tempReport, output_file = file,
+  #                       params = params,
+  #                       envir = new.env(parent = globalenv())
+  #     )
+  #   }
+  # )
   
 }
 
