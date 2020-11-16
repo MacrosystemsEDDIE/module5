@@ -880,7 +880,7 @@ server <- function(input, output, session) {#
     chla[, 1] <- as.POSIXct(chla[, 1], tz = "UTC")
     xlims <- range(mod_run1()[, 1])
     ylims <- range(chla[, 2], na.rm = TRUE)
-    
+
     validate(
       need(input$run_mod_ann > 0, "Please run the model")
     )
@@ -890,9 +890,10 @@ server <- function(input, output, session) {#
       xlab("") +
       {if(input$add_obs) geom_point(data = chla, aes_string(names(chla)[1], names(chla)[2], colour = shQuote("Obs")))} +
       coord_cartesian(xlim = xlims, ylim = ylims) +
+      scale_colour_manual(values = cols[1:2]) +
       theme_minimal(base_size = 16) +
-      theme(panel.background = element_rect(fill = NA, colour = 'black')) +
-      scale_colour_manual(cols[1:2])
+      theme(panel.background = element_rect(fill = NA, colour = 'black'))
+      
     return(ggplotly(p, dynamicTicks = TRUE))
     
   })
@@ -913,7 +914,7 @@ server <- function(input, output, session) {#
       coord_cartesian(xlim = xlims) +
       theme_minimal(base_size = 16) +
       theme(panel.background = element_rect(fill = NA, colour = 'black'))+
-      scale_colour_manual(cols[3:4])
+      scale_colour_manual(values = cols[3:4])
     return(ggplotly(p, dynamicTicks = TRUE))
     
   })
