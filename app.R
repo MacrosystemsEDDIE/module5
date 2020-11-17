@@ -25,6 +25,7 @@ source("download_phenocam.R")
 source("get_html.R")
 source("create_npz_inputs.R")
 source("NPZ_model.R")
+source("load_fcast.R") # Forecast used in Parameter & IC Uncertainty
 # source("")
 
 neon_sites_df <- read.csv("data/neon_sites.csv")
@@ -364,7 +365,7 @@ ui <- tagList(
                           # )
                           ,
                           # wellPanel(
-                          h4(tags$b("Zooplankton")),
+                          h4(tags$b("Zooplankton parameters")),
                           sliderInput("graz_rate", label = div(style='width:300px;', 
                                                                div(style='float:left;', 'Eat less'), 
                                                                div(style='float:right;', 'Eat more')),
@@ -376,7 +377,7 @@ ui <- tagList(
                           # )
                           ,
                           # wellPanel(
-                          h4(tags$b("Phytoplankton")),
+                          h4(tags$b("Phytoplankton parameters")),
                           sliderInput("nut_uptake", label = div(style='width:300px;', 
                                                                 div(style='float:left;', 'Low uptake'), 
                                                                 div(style='float:right;', 'High uptake')),
@@ -443,43 +444,98 @@ ui <- tagList(
                       hr(),
                       #* Driver Uncertainty ====
                       fluidRow(
-                        column(4,
+                        column(3,
                                h3("Driver Uncertainty"),
                                p(module_text["driver_uncert", ]),
                                br(),
                                p("We will now use the 16-day weather forecast data we loaded on the 'Get Data' tab.")
                         ),
-                        column(5, offset = 1,
-                               h4("Plot showing Driver Uncertainty")
-                               # plotlyOutput("mod_phyto_plot")
+                        column(3,
+                               wellPanel(
+                                 actionButton('load_fc2', label = div("Run Forecast!", icon("running")),
+                                              width = "60%"),
+                                 # br(), br(),
+                                 # actionButton('run_fc2', label = div("Run Forecast!", icon("running")),
+                                 #              width = "60%"),
+                                 # br(), br(),
+                                 # actionButton('plot_fc2', div("Plot Forecast!", icon("chart-line")),
+                                 #              width = "60%"),
+                                 # br(), br(),
+                                 # conditionalPanel("input.plot_fc2",
+                                                  numericInput('members2', 'No. of members', 10,
+                                                               min = 1, max = 21, step = 1),
+                                                  selectInput('type2', 'Plot type', plot_types,
+                                                              selected = plot_types[2])
+                                                  
+                                 # )
+                               )
+                               ),
+                        column(6,
+                               h4("Plot showing Driver Uncertainty"),
+                               plotlyOutput("plot_ecof2")
                         )
                       ),
                       hr(),
                       #* Parameter Uncertainty ====
                       fluidRow(
-                        column(4,
+                        column(3,
                                h3("Parameter Uncertainty"),
                                p(module_text["param_uncert", ]),
                                br(),
-                               p("We will now revisit the model we built to adjust the parameters to see how that influences forecast uncertainty. One forecast is used to drive the model.")
+                               p("We will now revisit the model we built to adjust the parameters to see how that influences forecast uncertainty. One weather forecast is used to drive the model."),
+                               p("Click on 'Generate forecast' to clear old plots.")
                         ),
-                        column(5, offset = 1,
-                               h4("Plot showing Parameter Uncertainty")
-                               # plotlyOutput("mod_phyto_plot")
+                        column(3,
+                               h4("Adjust parameters"),
+                               h5(tags$b("Zooplankton parameters")),
+                               sliderInput("graz_rate2", label = div(style='width:300px;', 
+                                                                    div(style='float:left;', 'Eat less'), 
+                                                                    div(style='float:right;', 'Eat more')),
+                                           min = 0.2, max = 1.6, value = 0.8, step = 0.1),
+                               sliderInput("mort_rate2", label = div(style='width:300px;', 
+                                                                    div(style='float:left;', 'Lower death'), 
+                                                                    div(style='float:right;', 'Higher death')),
+                                           min = 0.1, max = 1, value = 0.5, step = 0.1),
+                               # wellPanel(
+                               h5(tags$b("Phytoplankton parameter")),
+                               sliderInput("nut_uptake2", label = div(style='width:300px;', 
+                                                                     div(style='float:left;', 'Low uptake'), 
+                                                                     div(style='float:right;', 'High uptake')),
+                                           min = 0.1, max = 1.7, value = 1.2, step = 0.1),
+                               actionButton("base_plot2", label = div("Generate forecast plot", 
+                                                                     icon("chart-line")), width = "60%"),
+                               actionButton("scen_plot2", label = div("Add new forecast", 
+                                                                     icon("plus")), width = "60%")
+                               
+                               ),
+                        column(6,
+                               h4("Plot showing Parameter Uncertainty"),
+                               plotlyOutput("pars_plot")
                         )
                       ),
                       hr(),
                       #* Initial condition Uncertainty ====
                       fluidRow(
-                        column(4,
+                        column(3,
                                h3("Initial Condition Uncertainty"),
                                p(module_text["init_uncert", ]),
                                br(),
-                               p("We will now alter the initial conditions of the model to investigate what impact this has on the forecast. ")
+                               p("We will now alter the initial conditions of the model to investigate what impact this has on the forecast.")
                         ),
-                        column(5, offset = 1,
-                               h4("Plot showing Initial conditions Uncertainty")
-                               # plotlyOutput("mod_phyto_plot")
+                        column(3,
+                               h4("Adjust initial conditions"),
+                               br(),
+                               numericInput("phy_init", "Initial phytoplankton", min = 0.1, max = 10, step = 0.1, value = 2),
+                               numericInput("zoo_init", "Initial zooplankton", min = 0.1, max = 5, step = 0.1, value = 0.4),
+                               numericInput("nut_init", "Initial nutrients", min = 1, max = 20, step = 1, value = 9),
+                               actionButton("base_plot3", label = div("Generate forecast plot", 
+                                                                      icon("chart-line")), width = "60%"),
+                               actionButton("scen_plot3", label = div("Add new forecast", 
+                                                                      icon("plus")), width = "60%")
+                        ),
+                        column(6,
+                               h4("Plot showing Initial conditions Uncertainty"),
+                               plotlyOutput("ic_plot")
                         )
                       ),
                       #** Climate Change Scenarios ====
@@ -962,6 +1018,15 @@ server <- function(input, output, session) {#
   #* Model annual output plot ----
   output$mod_ann_plot <- renderPlotly({
     
+    validate(
+      need(!is.null(input$table01_rows_selected), "Please select a site on 'Get Data' tab!")
+    )
+
+    # siteID <- eventReactive(input$table01_rows_selected, {
+    #   neon_sites$siteID[input$table01_rows_selected]
+    # })
+    print(siteID)
+    
     chla <- read.csv(file.path("data", paste0(siteID, "_daily_chla_2019.csv")))
     chla[, 1] <- as.POSIXct(chla[, 1], tz = "UTC")
     xlims <- range(mod_run1()[, 1])
@@ -984,7 +1049,7 @@ server <- function(input, output, session) {#
     
   })
   
-  #* Model annual output plot ----
+  #* Model annual phyto-zoo plot ----
   output$mod_phyto_plot <- renderPlotly({
     xlims <- range(mod_run1()[, 1])
     mlt <- reshape2::melt(mod_run1()[, -2], id.vars = 1)
@@ -1005,97 +1070,326 @@ server <- function(input, output, session) {#
     
   })
   
+  # Forecast Plots  ----
+  #* Driver Uncertainty ====
+  driv_fc <- eventReactive(input$load_fc2, {
+    # download forecasts to data/forecast_ncdf folder
+    fpath <- file.path("data", "forecast_ncdf")
+    fils <- list.files(fpath)
+    vars <- c("air_temperature", "surface_downwelling_shortwave_flux_in_air", "precipitation_flux" )
+    npz_inp_list <- list() # Initialize empty list
+    
+    for( i in seq_len(length(fils))) {
+      fid <- ncdf4::nc_open(file.path("data", "forecast_ncdf", fils[i]))
+      airt <- ncdf4::ncvar_get(fid, "air_temperature") - 273.15
+      swr <- ncdf4::ncvar_get(fid, "surface_downwelling_shortwave_flux_in_air")
+      precip <- ncdf4::ncvar_get(fid, "precipitation_flux")
+      ncdf4::nc_close(fid)
+      
+      cnam <- paste0("ens", formatC(i, width = 2, format = "d", flag = "0"))
+      if(i == 1) {
+        
+        # Extract time
+        fid <- ncdf4::nc_open(file.path("data", "forecast_ncdf", fils[i]))
+        tim = ncvar_get(fid, "time")
+        tunits = ncatt_get(fid, "time")
+        lnam = tunits$long_name
+        tustr <- strsplit(tunits$units, " ")
+        step = tustr[[1]][1]
+        tdstr <- strsplit(unlist(tustr)[3], "-")
+        tmonth <- as.integer(unlist(tdstr)[2])
+        tday <- as.integer(unlist(tdstr)[3])
+        tyear <- as.integer(unlist(tdstr)[1])
+        tdstr <- strsplit(unlist(tustr)[4], ":")
+        thour <- as.integer(unlist(tdstr)[1])
+        tmin <- as.integer(unlist(tdstr)[2])
+        origin <- as.POSIXct(paste0(tyear, "-", tmonth, 
+                                    "-", tday, " ", thour, ":", tmin), 
+                             format = "%Y-%m-%d %H:%M", tz = "UTC")
+        if (step == "hours") {
+          tim <- tim * 60 * 60
+        }
+        if (step == "minutes") {
+          tim <- tim * 60
+        }
+        time = as.POSIXct(tim, origin = origin, tz = "UTC")
+        ncdf4::nc_close(fid)
+        
+        df2 <- data.frame(time = time, airt = airt, swr = swr, precip = precip)
+      } else {
+        df2 <- data.frame(time = time, airt = airt, swr = swr, precip = precip)
+      }
+      df2$date <- as.Date(df2$time)
+      df2$time <- NULL
+      df3 <- plyr::ddply(df2, "date", function(x){
+        colMeans(x[, 1:3], na.rm = TRUE)
+      })
+      df3 <- df3[2:16, ]
+      df3$wtemp <- 5 + 0.75 * df3$airt
+      
+      npz_inp_list[[i]] <- create_npz_inputs(time = df3$date, swr = df3$swr,
+                                             temp = df3$wtemp)
+    }
+    
+    # Parameters from 'Build Model'
+    parms[1] <- as.numeric(input$nut_uptake)
+    parms[4] <- as.numeric(input$graz_rate)
+    parms[7] <- as.numeric(input$mort_rate)
+    
+    fc_res <- lapply(npz_inp_list, function(x) {
+
+      times <- 1:nrow(x)
+      # Alter sensitivities
+      if(!("Light" %in% input$mod_sens)) {
+        x$PAR <- mean(x$PAR, na.rm = T) 
+      }
+      if(!("Temperature" %in% input$mod_sens)) {
+        x$TEMP <- mean(x$TEMP, na.rm = T) 
+      }
+      if(!("Nutrient Loading" %in% input$mod_sens)) {
+        x$NLOAD <- mean(x$NLOAD, na.rm = T) 
+      }
+      out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
+                          method = "ode45", inputs = x)
+      out <- as.data.frame(out)
+      # out$time <- npz_inp$Date
+      out <- out[, c("time", "Chlorophyll.Chl_Nratio")] #, "PHYTO", "ZOO")]
+      colnames(out)[-1] <- c("Chla") #, "Phytoplankton", "Zooplankton")
+      return(out)
+      
+      })
+    
+    mlt <- reshape2::melt(fc_res, id.vars = "time")
+    
+    return(mlt)
+    })
   
-  plot.dat <- reactiveValues(main = NULL, layer1 = NULL)
+  
+  output$plot_ecof2 <- renderPlotly({
+    
+    
+    sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
+    print(head(sub))
+    if(input$type2 == "distribution") {
+      
+      df3 <- plyr::ddply(sub, "time", function(x) {
+        quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+      })
+      # df3 <- as.data.frame(t(df3))
+      colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
+      colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
+      # df3$hours <- df2$hours
+      df2 <- df3
+    } else {
+      df2 <- sub
+      df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
+    }
+    
+    p <- ggplot()
+    if(input$type2 == "line"){
+      p <- p +
+        geom_line(data = df2, aes(time, value, colour = L1)) +
+        scale_colour_manual(values = rep("black", 21)) +
+        guides(colour = FALSE)
+    } 
+    if(input$type2 == "distribution") {
+      p <- p +
+        geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
+                    alpha = 0.2) +
+        geom_ribbon(data = df2, aes(time, ymin = p12.5, ymax = p87.5, fill = "75th"),
+                    alpha = 0.8) +
+        geom_line(data = df2, aes(time, p50, colour = "median")) +
+        scale_fill_manual(values = rep("grey", 2)) +
+        guides(fill = guide_legend(override.aes = list(alpha = c(0.8, 0.2)))) +
+        scale_colour_manual(values = c("black"))
+    }
+    p <- p + 
+      ylab("Chlorophyll-a") +
+      xlab("Forecast days") +
+      theme_classic(base_size = 12) +
+      theme(panel.background = element_rect(fill = NA, colour = 'black'))
+    return(ggplotly(p, dynamicTicks = TRUE))
+    
+  })
+  
+  
+  #* Parameter plot ====
+  plot.dat2 <- reactiveValues(main2 = NULL, layer1 = NULL, layer2 = NULL, layer3 = NULL,
+                             layer4 = NULL, layer5 = NULL)
   observe({
     validate(
-      need(!is.null(plot.dat$main), "Generate the baseline plot.")
+      need(!is.null(plot.dat2$main2), "Generate the baseline plot.")
     )
-    output$cc_plot <- renderPlotly({ ggplotly((plot.dat$main + plot.dat$layer1 +
-                                                 scale_colour_manual(values = c('black',
-                                                                                'red')) +
+    output$pars_plot <- renderPlotly({ ggplotly((plot.dat2$main2 + plot.dat2$layer1 +
+                                                 plot.dat2$layer2 + plot.dat2$layer3 +
+                                                 plot.dat2$layer4 + plot.dat2$layer5 +
+                                                 scale_colour_manual(values = rep("black", 6)) +
                                                  theme_minimal(base_size = 16) +
                                                  theme(panel.background = element_rect(fill = NA, colour = 'black'))), 
                                               dynamicTicks = TRUE) })
   })
   
-  observeEvent(input$base_plot, {
+  observeEvent(input$base_plot2, {
 
     
-    # parms[7] <- as.numeric(input$mortRate)
-    # parms[8] <- as.numeric(input$excretRate)
-    # parms[1] <- as.numeric(input$nut_uptake)
-    # parms[4] <- as.numeric(input$graz_rate)
-    siteID <- eventReactive(input$table01_rows_selected, {
-      neon_sites$siteID[input$table01_rows_selected]
-    })
+    # Parameters 
+    parms[1] <- as.numeric(input$nut_uptake2)
+    parms[4] <- as.numeric(input$graz_rate2)
+    parms[7] <- as.numeric(input$mort_rate2)
     
-    par <- read.csv(file.path("data", paste0(siteID(), "_daily_upar_2019.csv")))
-    wtemp <- read.csv(file.path("data", paste0(siteID(), "_daily_wtemp_2019.csv")))
-    stemp <- wtemp[wtemp[, 2] == min(wtemp[, 2]), c(1, 3)]
-    if(sum(is.na(stemp[, 2])) > 0) {
-      stemp[, 2] <- zoo::na.approx(stemp[, 2])
-    }
-    
-    npz_inp <- merge(par, stemp, by = 1)
-    npz_inp[, 1] <- as.POSIXct(npz_inp[, 1], tz = "UTC")
-    times <- 1:nrow(npz_inp)
-    
-    inputs <- create_npz_inputs(time = npz_inp[, 1], PAR = npz_inp[, 2], temp = npz_inp[, 3])
-    
-    
+    # Use forecast which was pre-loaded
+    inputs <- create_npz_inputs(time = fcast$date, swr = fcast$swr,
+                                             temp = fcast$wtemp)
+    times <- 1:nrow(inputs)
     
     out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
                         method = "ode45", inputs = inputs)
     out <- as.data.frame(out)
-    out$time <- npz_inp$Date
+    # out$time <- npz_inp$Date
     out <- out[, c("time", "Chlorophyll.Chl_Nratio")]
     colnames(out)[2] <- "Chla"
     
-    plot.dat$layer1 <<- NULL
-    plot.dat$main <<- ggplot() +
-      geom_line(data = out, aes_string(names(out)[1], names(out)[2], colour = shQuote("Baseline"))) +
+    plot.dat2$layer1 <<- NULL
+    plot.dat2$layer2 <<- NULL
+    plot.dat2$layer3 <<- NULL
+    plot.dat2$layer4 <<- NULL
+    plot.dat2$layer5 <<- NULL
+    plot.dat2$main2 <<- ggplot() +
+      geom_line(data = out, aes_string(names(out)[1], names(out)[2], colour = shQuote("ens01"))) +
       ylab("Chla") +
       xlab("")
+    # print("Create plot")
   })
   
-  observeEvent(input$scen_plot, {
+  observeEvent(input$scen_plot2, {
     
-    # parms[7] <- as.numeric(input$mortRate)
-    # parms[8] <- as.numeric(input$excretRate)
-    parms[12] <- as.numeric(input$temp)
-    parms[13] <- as.numeric(input$nload)
+    # Parameters 
+    parms[1] <- as.numeric(input$nut_uptake2)
+    parms[4] <- as.numeric(input$graz_rate2)
+    parms[7] <- as.numeric(input$mort_rate2)
     
-    siteID <- eventReactive(input$table01_rows_selected, {
-      neon_sites$siteID[input$table01_rows_selected]
-    })
-    
-    par <- read.csv(file.path("data", paste0(siteID(), "_daily_upar_2019.csv")))
-    wtemp <- read.csv(file.path("data", paste0(siteID(), "_daily_wtemp_2019.csv")))
-    stemp <- wtemp[wtemp[, 2] == min(wtemp[, 2]), c(1, 3)]
-    if(sum(is.na(stemp[, 2])) > 0) {
-      stemp[, 2] <- zoo::na.approx(stemp[, 2])
-    }
-    
-    npz_inp <- merge(par, stemp, by = 1)
-    npz_inp[, 1] <- as.POSIXct(npz_inp[, 1], tz = "UTC")
-    times <- 1:nrow(npz_inp)
-    
-    inputs <- create_npz_inputs(time = npz_inp[, 1], PAR = npz_inp[, 2], temp = npz_inp[, 3])
-    
-    
+    # Use forecast which was pre-loaded
+    inputs <- create_npz_inputs(time = fcast$date, swr = fcast$swr,
+                                temp = fcast$wtemp)
+    times <- 1:nrow(inputs)
     
     out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
                         method = "ode45", inputs = inputs)
     out <- as.data.frame(out)
-    out$time <- npz_inp$Date
+    # out$time <- npz_inp$Date
     out <- out[, c("time", "Chlorophyll.Chl_Nratio")]
     colnames(out)[2] <- "Chla"
     
-    plot.dat$layer1 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-                                                  colour = shQuote("Scenario")),
-                                  linetype = "dashed")
+    if(is.null(plot.dat2$layer1)) {
+      plot.dat2$layer1 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+                                                            colour = shQuote("ens02")))
+    } else if(is.null(plot.dat2$layer2)) {
+      plot.dat2$layer2 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+                                                            colour = shQuote("ens03")))
+    } else if(is.null(plot.dat2$layer3)) {
+      plot.dat2$layer3 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+                                                            colour = shQuote("ens04")))
+    } else if(is.null(plot.dat2$layer4)) {
+      plot.dat2$layer4 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+                                                            colour = shQuote("ens04")))
+    } else if(is.null(plot.dat2$layer5)) {
+      plot.dat2$layer5 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+                                                            colour = shQuote("ens05")))
+    }
+    
   })
+  
+  
+  #* Plot IC uncertainty ====
+  
+  plot.dat3 <- reactiveValues(main = NULL, layer1 = NULL, layer2 = NULL, layer3 = NULL,
+                              layer4 = NULL, layer5 = NULL)
+  observe({
+    validate(
+      need(!is.null(plot.dat3$main), "Generate the baseline plot.")
+    )
+    output$ic_plot <- renderPlotly({ 
+      p <- ggplotly((plot.dat3$main + plot.dat3$layer1 +
+                       plot.dat3$layer2 + plot.dat3$layer3 +
+                       plot.dat3$layer4 + plot.dat3$layer5 +
+                       scale_colour_manual(values = rep("black", 6)) +
+                       theme_minimal(base_size = 16) +
+                       theme(panel.background = element_rect(fill = NA, colour = 'black'))),
+                    dynamicTicks = TRUE) })
+    return(p)
+  })
+  
+  observeEvent(input$base_plot3, {
+    
+    # Initial Conditions
+    yini[1] <- input$phy_init
+    yini[2] <- input$zoo_init
+    yini[3] <- input$nut_init
+    
+    # Use forecast which was pre-loaded
+    inputs <- create_npz_inputs(time = fcast$date, swr = fcast$swr,
+                                temp = fcast$wtemp)
+    times <- 1:nrow(inputs)
+    
+    out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
+                        method = "ode45", inputs = inputs)
+    out <- as.data.frame(out)
+    # out$time <- npz_inp$Date
+    out <- out[, c("time", "Chlorophyll.Chl_Nratio")]
+    colnames(out)[2] <- "Chla"
+    
+    plot.dat3$layer1 <<- NULL
+    plot.dat3$layer2 <<- NULL
+    plot.dat3$layer3 <<- NULL
+    plot.dat3$layer4 <<- NULL
+    plot.dat3$layer5 <<- NULL
+    plot.dat3$main <<- ggplot() +
+      geom_line(data = out, aes_string(names(out)[1], names(out)[2], colour = shQuote("ens01"))) +
+      ylab("Chla") +
+      xlab("")
+    # print("Create plot")
+  })
+  
+  observeEvent(input$scen_plot3, {
+    
+    # Initial Conditions
+    yini[1] <- input$phy_init
+    yini[2] <- input$zoo_init
+    yini[3] <- input$nut_init
+    
+    # Use forecast which was pre-loaded
+    inputs <- create_npz_inputs(time = fcast$date, swr = fcast$swr,
+                                temp = fcast$wtemp)
+    times <- 1:nrow(inputs)
+    
+    out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
+                        method = "ode45", inputs = inputs)
+    out <- as.data.frame(out)
+    # out$time <- npz_inp$Date
+    out <- out[, c("time", "Chlorophyll.Chl_Nratio")]
+    colnames(out)[2] <- "Chla"
+    
+    if(is.null(plot.dat3$layer1)) {
+      plot.dat3$layer1 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+                                                            colour = shQuote("ens02")))
+    } else if(is.null(plot.dat3$layer2)) {
+      plot.dat3$layer2 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+                                                            colour = shQuote("ens03")))
+    } else if(is.null(plot.dat3$layer3)) {
+      plot.dat3$layer3 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+                                                            colour = shQuote("ens04")))
+    } else if(is.null(plot.dat3$layer4)) {
+      plot.dat3$layer4 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+                                                            colour = shQuote("ens04")))
+    } else if(is.null(plot.dat3$layer5)) {
+      plot.dat3$layer5 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+                                                            colour = shQuote("ens05")))
+    }
+    
+  })
+  
+  
+
   
   #** Render Report ----
   report <- reactiveValues(filepath = NULL) #This creates a short-term storage location for a filepath
