@@ -1,6 +1,6 @@
 ---
 title: "Beta Student Handout"
-output: pdf_document
+output: word_document
 params:
   name: NA
   id_number: NA
