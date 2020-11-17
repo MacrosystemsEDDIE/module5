@@ -41,7 +41,7 @@ neon_sites$type[which(neon_sites$siteID %in% (neon_sites_df$siteID[neon_sites_df
 # Reference for downloading variables
 neon_vars <- read.csv("data/neon_variables.csv")
 
-# Colours for plots
+# colors for plots
 cols <- RColorBrewer::brewer.pal(8, "Dark2")
 
 # Load text input
@@ -98,6 +98,9 @@ ui <- tagList(
                       tags$style(type="text/css", "body {padding-top: 65px;}"),
                       img(src = "eddie_banner_2018.v5.jpg", height = 100, 
                           width = 1544, top = 5),
+                      # p("Show"),
+                      useShinyjs(),
+                      div(checkboxInput(inputId = "ques", label = "Hide questions"), style = "font-size:90%"),
                       p(tags$b("Instructions")),
                       p("For this module you will input your answers into this app which will allow you to generate a pdf report at the end of this module. Input your name and student ID below."),
                       textInput(inputId = "name", label = "Name",
@@ -595,6 +598,7 @@ ui <- tagList(
                       tags$style(type="text/css", "body {padding-top: 65px;}"),
                       img(src = "eddie_banner_2018.v5.jpg", height = 100, 
                           width = 1544, top = 5),
+                      br(),
                       #* Generate report buttons ====
                       actionButton("generate", "Generate Report", icon = icon("file"), # This is the only button that shows up when the app is loaded
                                    # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
@@ -610,6 +614,16 @@ ui <- tagList(
 
 # Server ----
 server <- function(input, output, session) {#
+  
+  ## observe the Hide button being pressed
+  observeEvent(input$ques, {
+    
+    if(input$ques){
+      shinyjs::hide(id = "name"); shinyjs::hide(id = "id_number")
+    }else{
+      shinyjs::show(id = "name"); shinyjs::show(id = "id_number")
+    }
+  })
   
   output$table01 <- DT::renderDT(
     neon_sites_df[, c(1:3, 5:6)], selection = "single", options = list(stateSave = TRUE)
@@ -786,7 +800,7 @@ server <- function(input, output, session) {#
         scale_y_reverse() +
         # theme_classic(base_size = 16) +
         theme_minimal(base_size = 16) +
-        theme(panel.border = element_rect(fill = NA, colour = "black"))
+        theme(panel.border = element_rect(fill = NA, color = "black"))
     } else {
       p <- ggplot(neon_DT(), aes_string(names(neon_DT())[1], names(neon_DT())[2])) +
         # geom_line() +
@@ -795,7 +809,7 @@ server <- function(input, output, session) {#
         xlab("Time") +
         # theme_classic(base_size = 16) +
         theme_minimal(base_size = 16) #+
-        # theme(panel.border = element_rect(fill = NA, colour = "black"))
+        # theme(panel.border = element_rect(fill = NA, color = "black"))
       return(ggplotly(p, dynamicTicks = TRUE))
     }
     
@@ -924,9 +938,9 @@ server <- function(input, output, session) {#
     p <- ggplot()
     if(input$type == "line"){
       p <- p +
-        geom_line(data = mlt, aes(hours, value, colour = variable)) +
-        scale_colour_manual(values = rep('black', 21)) +
-        guides(colour = FALSE)
+        geom_line(data = mlt, aes(hours, value, color = variable)) +
+        scale_color_manual(values = rep('black', 21)) +
+        guides(color = FALSE)
     } 
     if(input$type == "distribution") {
       p <- p +
@@ -934,17 +948,17 @@ server <- function(input, output, session) {#
                     alpha = 0.2) +
         geom_ribbon(data = df3, aes(hours, ymin = p12.5, ymax = p87.5, fill = "75th"),
                     alpha = 0.8) +
-        geom_line(data = df3, aes(hours, p50, colour = "median")) +
+        geom_line(data = df3, aes(hours, p50, color = "median")) +
         scale_fill_manual(values = rep("grey", 2)) +
         guides(fill = guide_legend(override.aes = list(alpha = c(0.8, 0.2)))) +
-        scale_colour_manual(values = c("black"))
+        scale_color_manual(values = c("black"))
     }
     p <- p + 
       # ggtitle("Example Numerical Weather Forecast") +
       ylab(ylab) +
       xlab("Forecast hours") +
       theme_classic(base_size = 12) +
-      theme(panel.background = element_rect(fill = NA, colour = 'black'))
+      theme(panel.background = element_rect(fill = NA, color = 'black'))
     return(ggplotly(p, dynamicTicks = TRUE))
   })
   
@@ -1070,14 +1084,14 @@ server <- function(input, output, session) {#
       need(input$run_mod_ann > 0, "Please run the model")
     )
     p <- ggplot() +
-      geom_line(data = mod_run1(), aes_string(names(mod_run1())[1], names(mod_run1())[2], colour = shQuote("Model"))) +
+      geom_line(data = mod_run1(), aes_string(names(mod_run1())[1], names(mod_run1())[2], color = shQuote("Model"))) +
       ylab("Chlorophyll-a") +
       xlab("") +
-      {if(input$add_obs) geom_point(data = chla, aes_string(names(chla)[1], names(chla)[2], colour = shQuote("Obs")))} +
+      {if(input$add_obs) geom_point(data = chla, aes_string(names(chla)[1], names(chla)[2], color = shQuote("Obs")))} +
       coord_cartesian(xlim = xlims, ylim = ylims) +
-      scale_colour_manual(values = cols[1:2]) +
+      scale_color_manual(values = cols[1:2]) +
       theme_minimal(base_size = 16) +
-      theme(panel.background = element_rect(fill = NA, colour = 'black'))
+      theme(panel.background = element_rect(fill = NA, color = 'black'))
       
     return(ggplotly(p, dynamicTicks = TRUE))
     
@@ -1092,14 +1106,14 @@ server <- function(input, output, session) {#
       need(input$run_mod_ann > 0, "Please run the model")
     )
     p <- ggplot() +
-      geom_line(data = mlt, aes_string(names(mlt)[1], names(mlt)[3], colour = names(mlt)[2])) +
+      geom_line(data = mlt, aes_string(names(mlt)[1], names(mlt)[3], color = names(mlt)[2])) +
       ylab("mmol N") +
       xlab("") +
       facet_wrap(~variable, nrow = 2) +
       coord_cartesian(xlim = xlims) +
       theme_minimal(base_size = 16) +
-      theme(panel.background = element_rect(fill = NA, colour = 'black'))+
-      scale_colour_manual(values = cols[3:4])
+      theme(panel.background = element_rect(fill = NA, color = 'black'))+
+      scale_color_manual(values = cols[3:4])
     return(ggplotly(p, dynamicTicks = TRUE))
     
   })
@@ -1222,9 +1236,9 @@ server <- function(input, output, session) {#
     p <- ggplot()
     if(input$type2 == "line"){
       p <- p +
-        geom_line(data = df2, aes(time, value, colour = L1)) +
-        scale_colour_manual(values = rep("black", 21)) +
-        guides(colour = FALSE)
+        geom_line(data = df2, aes(time, value, color = L1)) +
+        scale_color_manual(values = rep("black", 21)) +
+        guides(color = FALSE)
     } 
     if(input$type2 == "distribution") {
       p <- p +
@@ -1232,16 +1246,16 @@ server <- function(input, output, session) {#
                     alpha = 0.2) +
         geom_ribbon(data = df2, aes(time, ymin = p12.5, ymax = p87.5, fill = "75th"),
                     alpha = 0.8) +
-        geom_line(data = df2, aes(time, p50, colour = "median")) +
+        geom_line(data = df2, aes(time, p50, color = "median")) +
         scale_fill_manual(values = rep("grey", 2)) +
         guides(fill = guide_legend(override.aes = list(alpha = c(0.8, 0.2)))) +
-        scale_colour_manual(values = c("black"))
+        scale_color_manual(values = c("black"))
     }
     p <- p + 
       ylab("Chlorophyll-a") +
       xlab("Forecast days") +
       theme_classic(base_size = 12) +
-      theme(panel.background = element_rect(fill = NA, colour = 'black'))
+      theme(panel.background = element_rect(fill = NA, color = 'black'))
     return(ggplotly(p, dynamicTicks = TRUE))
     
   })
@@ -1261,6 +1275,18 @@ server <- function(input, output, session) {#
     # Use forecast which was pre-loaded
     inputs <- create_npz_inputs(time = fcast$date, swr = fcast$swr,
                                 temp = fcast$wtemp)
+    
+    # Alter sensitivities
+    if(!("Light" %in% input$mod_sens)) {
+      inputs$PAR <- mean(inputs$PAR, na.rm = T) 
+    }
+    if(!("Temperature" %in% input$mod_sens)) {
+      inputs$TEMP <- mean(inputs$TEMP, na.rm = T) 
+    }
+    if(!("Nutrient Loading" %in% input$mod_sens)) {
+      inputs$NLOAD <- mean(inputs$NLOAD, na.rm = T) 
+    }
+    
     times <- 1:nrow(inputs)
     
     fc_res <- lapply(1:21, function(x) {
@@ -1309,9 +1335,9 @@ server <- function(input, output, session) {#
     p <- ggplot()
     if(input$type3 == "line"){
       p <- p +
-        geom_line(data = df2, aes(time, value, colour = L1)) +
-        scale_colour_manual(values = rep("black", 21)) +
-        guides(colour = FALSE)
+        geom_line(data = df2, aes(time, value, color = L1)) +
+        scale_color_manual(values = rep("black", 21)) +
+        guides(color = FALSE)
     } 
     if(input$type3 == "distribution") {
       p <- p +
@@ -1319,16 +1345,16 @@ server <- function(input, output, session) {#
                     alpha = 0.2) +
         geom_ribbon(data = df2, aes(time, ymin = p12.5, ymax = p87.5, fill = "75th"),
                     alpha = 0.8) +
-        geom_line(data = df2, aes(time, p50, colour = "median")) +
+        geom_line(data = df2, aes(time, p50, color = "median")) +
         scale_fill_manual(values = rep("grey", 2)) +
         guides(fill = guide_legend(override.aes = list(alpha = c(0.8, 0.2)))) +
-        scale_colour_manual(values = c("black"))
+        scale_color_manual(values = c("black"))
     }
     p <- p + 
       ylab("Chlorophyll-a") +
       xlab("Forecast days") +
       theme_classic(base_size = 12) +
-      theme(panel.background = element_rect(fill = NA, colour = 'black'))
+      theme(panel.background = element_rect(fill = NA, color = 'black'))
     return(ggplotly(p, dynamicTicks = TRUE))
     
   })
@@ -1342,9 +1368,9 @@ server <- function(input, output, session) {#
   #   output$pars_plot <- renderPlotly({ ggplotly((plot.dat2$main2 + plot.dat2$layer1 +
   #                                                plot.dat2$layer2 + plot.dat2$layer3 +
   #                                                plot.dat2$layer4 + plot.dat2$layer5 +
-  #                                                scale_colour_manual(values = rep("black", 6)) +
+  #                                                scale_color_manual(values = rep("black", 6)) +
   #                                                theme_minimal(base_size = 16) +
-  #                                                theme(panel.background = element_rect(fill = NA, colour = 'black'))), 
+  #                                                theme(panel.background = element_rect(fill = NA, color = 'black'))), 
   #                                             dynamicTicks = TRUE) })
   # })
   # 
@@ -1374,7 +1400,7 @@ server <- function(input, output, session) {#
   #   plot.dat2$layer4 <<- NULL
   #   plot.dat2$layer5 <<- NULL
   #   plot.dat2$main2 <<- ggplot() +
-  #     geom_line(data = out, aes_string(names(out)[1], names(out)[2], colour = shQuote("ens01"))) +
+  #     geom_line(data = out, aes_string(names(out)[1], names(out)[2], color = shQuote("ens01"))) +
   #     ylab("Chla") +
   #     xlab("")
   #   # print("Create plot")
@@ -1401,19 +1427,19 @@ server <- function(input, output, session) {#
   #   
   #   if(is.null(plot.dat2$layer1)) {
   #     plot.dat2$layer1 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-  #                                                           colour = shQuote("ens02")))
+  #                                                           color = shQuote("ens02")))
   #   } else if(is.null(plot.dat2$layer2)) {
   #     plot.dat2$layer2 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-  #                                                           colour = shQuote("ens03")))
+  #                                                           color = shQuote("ens03")))
   #   } else if(is.null(plot.dat2$layer3)) {
   #     plot.dat2$layer3 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-  #                                                           colour = shQuote("ens04")))
+  #                                                           color = shQuote("ens04")))
   #   } else if(is.null(plot.dat2$layer4)) {
   #     plot.dat2$layer4 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-  #                                                           colour = shQuote("ens04")))
+  #                                                           color = shQuote("ens04")))
   #   } else if(is.null(plot.dat2$layer5)) {
   #     plot.dat2$layer5 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-  #                                                           colour = shQuote("ens05")))
+  #                                                           color = shQuote("ens05")))
   #   }
   #   
   # })
@@ -1439,6 +1465,17 @@ server <- function(input, output, session) {#
     # Use forecast which was pre-loaded
     inputs <- create_npz_inputs(time = fcast$date, swr = fcast$swr,
                                 temp = fcast$wtemp)
+    # Alter sensitivities
+    if(!("Light" %in% input$mod_sens)) {
+      inputs$PAR <- mean(inputs$PAR, na.rm = T) 
+    }
+    if(!("Temperature" %in% input$mod_sens)) {
+      inputs$TEMP <- mean(inputs$TEMP, na.rm = T) 
+    }
+    if(!("Nutrient Loading" %in% input$mod_sens)) {
+      inputs$NLOAD <- mean(inputs$NLOAD, na.rm = T) 
+    }
+    
     times <- 1:nrow(inputs)
     
     fc_res <- lapply(1:21, function(x) {
@@ -1487,9 +1524,9 @@ server <- function(input, output, session) {#
     p <- ggplot()
     if(input$type4 == "line"){
       p <- p +
-        geom_line(data = df2, aes(time, value, colour = L1)) +
-        scale_colour_manual(values = rep("black", 21)) +
-        guides(colour = FALSE)
+        geom_line(data = df2, aes(time, value, color = L1)) +
+        scale_color_manual(values = rep("black", 21)) +
+        guides(color = FALSE)
     } 
     if(input$type4 == "distribution") {
       p <- p +
@@ -1497,16 +1534,16 @@ server <- function(input, output, session) {#
                     alpha = 0.2) +
         geom_ribbon(data = df2, aes(time, ymin = p12.5, ymax = p87.5, fill = "75th"),
                     alpha = 0.8) +
-        geom_line(data = df2, aes(time, p50, colour = "median")) +
+        geom_line(data = df2, aes(time, p50, color = "median")) +
         scale_fill_manual(values = rep("grey", 2)) +
         guides(fill = guide_legend(override.aes = list(alpha = c(0.8, 0.2)))) +
-        scale_colour_manual(values = c("black"))
+        scale_color_manual(values = c("black"))
     }
     p <- p + 
       ylab("Chlorophyll-a") +
       xlab("Forecast days") +
       theme_classic(base_size = 12) +
-      theme(panel.background = element_rect(fill = NA, colour = 'black'))
+      theme(panel.background = element_rect(fill = NA, color = 'black'))
     return(ggplotly(p, dynamicTicks = TRUE))
     
   })
@@ -1521,9 +1558,9 @@ server <- function(input, output, session) {#
   #     p <- ggplotly((plot.dat3$main + plot.dat3$layer1 +
   #                      plot.dat3$layer2 + plot.dat3$layer3 +
   #                      plot.dat3$layer4 + plot.dat3$layer5 +
-  #                      scale_colour_manual(values = rep("black", 6)) +
+  #                      scale_color_manual(values = rep("black", 6)) +
   #                      theme_minimal(base_size = 16) +
-  #                      theme(panel.background = element_rect(fill = NA, colour = 'black'))),
+  #                      theme(panel.background = element_rect(fill = NA, color = 'black'))),
   #                   dynamicTicks = TRUE) })
   #   return(p)
   # })
@@ -1553,7 +1590,7 @@ server <- function(input, output, session) {#
   #   plot.dat3$layer4 <<- NULL
   #   plot.dat3$layer5 <<- NULL
   #   plot.dat3$main <<- ggplot() +
-  #     geom_line(data = out, aes_string(names(out)[1], names(out)[2], colour = shQuote("ens01"))) +
+  #     geom_line(data = out, aes_string(names(out)[1], names(out)[2], color = shQuote("ens01"))) +
   #     ylab("Chla") +
   #     xlab("")
   #   # print("Create plot")
@@ -1580,19 +1617,19 @@ server <- function(input, output, session) {#
   #   
   #   if(is.null(plot.dat3$layer1)) {
   #     plot.dat3$layer1 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-  #                                                           colour = shQuote("ens02")))
+  #                                                           color = shQuote("ens02")))
   #   } else if(is.null(plot.dat3$layer2)) {
   #     plot.dat3$layer2 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-  #                                                           colour = shQuote("ens03")))
+  #                                                           color = shQuote("ens03")))
   #   } else if(is.null(plot.dat3$layer3)) {
   #     plot.dat3$layer3 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-  #                                                           colour = shQuote("ens04")))
+  #                                                           color = shQuote("ens04")))
   #   } else if(is.null(plot.dat3$layer4)) {
   #     plot.dat3$layer4 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-  #                                                           colour = shQuote("ens04")))
+  #                                                           color = shQuote("ens04")))
   #   } else if(is.null(plot.dat3$layer5)) {
   #     plot.dat3$layer5 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-  #                                                           colour = shQuote("ens05")))
+  #                                                           color = shQuote("ens05")))
   #   }
   #   
   # })
@@ -1618,7 +1655,7 @@ server <- function(input, output, session) {#
                    a1 = input$q1)
     
     
-    tmp_file <- paste0(tempfile(), ".pdf") #Creating the temp where the .pdf is going to be stored
+    tmp_file <- paste0(tempfile(), ".doc") #Creating the temp where the .pdf is going to be stored
     
     rmarkdown::render("report.Rmd", 
            output_format = "all", 
@@ -1645,7 +1682,7 @@ server <- function(input, output, session) {#
     # This function returns a string which tells the client
     # browser what name to use when saving the file.
     filename = function() {
-      paste0("report_", input$name, ".pdf") %>%
+      paste0("report_", input$name, ".doc") %>%
         gsub(" ", "_", .)
     },
     
