@@ -1140,7 +1140,7 @@ server <- function(input, output, session) {#
     fpath2 <- file.path(fpath, fold[1], "00")
     fils <- list.files(fpath2)
     fils <- fils[-c(grep("ens00", fils))]
-    membs2 <<- length(fils)
+    # membs2 <<- length(fils)
     npz_inp_list <- list() # Initialize empty list
     
     for( i in seq_len(length(fils))) {
@@ -1231,14 +1231,14 @@ server <- function(input, output, session) {#
   # Get NOAA forecast members ----
   output$eco_fc_members <- renderUI({
     numericInput('members2', 'No. of members', 16,
-                 min = 1, max = membs2, step = 1)
+                 min = 1, max = membs, step = 1)
   })
   
   output$plot_ecof2 <- renderPlotly({
     
     validate(
-      need(input$members2 >= 1 & input$members2 <= membs2, 
-           message = paste0("The number of members must be between 1 and ", membs2))
+      need(input$members2 >= 1 & input$members2 <= membs, 
+           message = paste0("The number of members must be between 1 and ", membs))
     )
     
     sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
@@ -1262,7 +1262,7 @@ server <- function(input, output, session) {#
     if(input$type2 == "line"){
       p <- p +
         geom_line(data = df2, aes(time, value, color = L1)) +
-        scale_color_manual(values = rep("black", membs2)) +
+        scale_color_manual(values = rep("black", membs)) +
         guides(color = FALSE)
     } 
     if(input$type2 == "distribution") {
