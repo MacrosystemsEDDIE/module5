@@ -40,9 +40,11 @@ neon_sites$type[which(neon_sites$siteID %in% (neon_sites_df$siteID[neon_sites_df
 
 # Reference for downloading variables
 neon_vars <- read.csv("data/neon_variables.csv")
+noaa_dic <- read.csv("data/noaa_dict.csv")
 
 # colors for plots
 cols <- RColorBrewer::brewer.pal(8, "Dark2")
+l.cols <- RColorBrewer::brewer.pal(8, "Set2")
 
 # Load text input
 module_text <- read.csv("data/module_text.csv", row.names = 1, header = FALSE)
@@ -269,8 +271,7 @@ ui <- tagList(
                                wellPanel(
                                  conditionalPanel("input.load_fc",
                                                   uiOutput("sel_fc_vars"),
-                                                  numericInput('members', 'No. of members', 5,
-                                                               min = 1, max = 21, step = 1),
+                                                  uiOutput("sel_fc_members"),
                                                   selectInput('type', 'Plot type', plot_types,
                                                               selected = plot_types[1])
                                                   
@@ -455,7 +456,7 @@ ui <- tagList(
                                p(module_text["driver_uncert", ]),
                                br(),
                                p("A key component of what makes an ecological forecast a 'forecast', is that the model is driven by forecasted driving variables."),
-                               p("We will now use the 16-day weather forecast data we loaded on the 'Get Data' tab to drive the calibrated model we built on the 'Build Model' tab to forecast chlorophyll-a concentrations over the next 16 days.")
+                               p("We will now use the weather forecast data we loaded on the 'Get Data' tab to drive the calibrated model we built on the 'Build Model' tab to forecast chlorophyll-a concentrations into the future.")
                         ),
                         column(3,
                                wellPanel(
@@ -469,10 +470,12 @@ ui <- tagList(
                                  #              width = "60%"),
                                  # br(), br(),
                                  # conditionalPanel("input.plot_fc2",
-                                                  numericInput('members2', 'No. of members', 10,
-                                                               min = 1, max = 21, step = 1),
+                                 conditionalPanel("input.load_fc2",
+                                                  uiOutput("eco_fc_members"),
                                                   selectInput('type2', 'Plot type', plot_types,
                                                               selected = plot_types[2])
+                                                  )
+                                                  
                                                   
                                  # )
                                )
@@ -816,19 +819,28 @@ server <- function(input, output, session) {#
   })
   
   observeEvent(input$load_fc, {
-    # download forecasts to data/forecast_ncdf folder
-    fpath <- file.path("data", "forecast_ncdf")
-    fils <<- list.files(fpath)
-    fid <- nc_open(file.path(fpath, fils[1]))
+    fpath <- file.path("data", "NOAAGEFS_1hr", siteID)
+    fold <<- list.files(fpath)
+    fpath2 <- file.path(fpath, fold[1], "00")
+    fils <<- list.files(fpath2)
+    fils <<- fils[-c(grep("ens00", fils))]
+    fid <- nc_open(file.path(fpath2, fils[1]))
     vars <- fid$var
     nc_close(fid)
     fc_vars <<- names(vars)
+    membs <<- length(fils)
   })
   
-  # Get NOAA forecast ----
+  # Get NOAA forecast variables ----
   output$sel_fc_vars <- renderUI({
-    print(fc_vars)
-    selectInput("fc_var", "Choose variable", choices = fc_vars)
+    fc_idx <- which(noaa_dic$noaa_name %in% fc_vars)
+    selectInput("fc_var", "Choose variable", choices = noaa_dic$display_name[fc_idx])
+  })
+  
+  # Get NOAA forecast members ----
+  output$sel_fc_members <- renderUI({
+    numericInput('members', 'No. of members', 16,
+                 min = 1, max = membs, step = 1)
   })
   
   # plot NOAA forecast ----
@@ -839,15 +851,21 @@ server <- function(input, output, session) {#
         need(input$members != 1, "Please select more than 1 member for the distribution plot")
       )
     }
+    validate(
+      need(input$members >= 1 & input$members <= membs, paste0("Please select a number of members between 1 and ", membs))
+    )
     
     
     # sel_mem <- sample(length(fils), input$members)
     sel_mem <- 1:input$members
     fils <- fils[sel_mem]
+    var_idx <- which(noaa_dic$display_name == input$fc_var)
+
     
     for( i in seq_len(length(fils))) {
-      fid <- ncdf4::nc_open(file.path("data", "forecast_ncdf", fils[i]))
-      vec <- ncdf4::ncvar_get(fid, input$fc_var)
+      fid <- ncdf4::nc_open(file.path("data", "NOAAGEFS_1hr", siteID, fold[1],
+                                      "00", fils[i]))
+      vec <- ncdf4::ncvar_get(fid, noaa_dic$noaa_name[var_idx])
       ncdf4::nc_close(fid)
       
       
@@ -856,7 +874,8 @@ server <- function(input, output, session) {#
       if(i == 1) {
         
         # Extract time
-        fid <- ncdf4::nc_open(file.path("data", "forecast_ncdf", fils[i]))
+        fid <- ncdf4::nc_open(file.path("data", "NOAAGEFS_1hr", siteID, fold[1],
+                                        "00", fils[i]))
         tim = ncvar_get(fid, "time")
         tunits = ncatt_get(fid, "time")
         lnam = tunits$long_name
@@ -889,32 +908,19 @@ server <- function(input, output, session) {#
       }
     }
     
-    if(input$fc_var == "air_temperature") {
+    if(input$fc_var == "Air temperature") {
       df2[, -1] <- df2[, -1] - 273.15
-      ylab <- "Temperature (\u00B0C)"
-    }
-    if(input$fc_var == "relative_humidity") {
+      ylab <- "Air temperature (\u00B0C)"
+    } else {
+      ylab <- paste0(noaa_dic$display_name[var_idx] , " (", noaa_dic$units[var_idx], ")")
+      }
+    if(input$fc_var == "Relative humidity") {
       df2[, -1] <- df2[, -1] * 100
-      ylab <- "Relative Humidity (%)"
     }
-    if(input$fc_var == "surface_downwelling_longwave_flux_in_air") {
-      ylab <- "Downwelling Longwave Radiation (W/m2)"
-    }
-    if(input$fc_var == "surface_downwelling_shortwave_flux_in_air") {
-      ylab <- "Downwelling Shortwave Radiation (W/m2)"
-    }
-    if(input$fc_var == "precipitation_flux") {
-      ylab <- "Precipitation (m/hour)"
-    }
-    if(input$fc_var == "wind_speed") {
-      ylab <- "Wind Speed (m/s)"
-    }
-    
-    
-    
+
     # if(input$type == "line") {
-    df2$hours <- as.numeric(difftime(df2$time, df2$time[1], units = "hour"))
-    mlt <- reshape::melt(df2[, -1], id.vars = "hours")
+    df2$days <- as.numeric(difftime(df2$time, df2$time[1], units = "day"))
+    mlt <- reshape::melt(df2[, -1], id.vars = "days")
     # }
     
     
@@ -927,7 +933,7 @@ server <- function(input, output, session) {#
       colnames(df3) <- gsub("%", "", colnames(df3))
       colnames(df3) <- paste0('p', colnames(df3))
       print(dim(df3))
-      df3$hours <- df2$hours
+      df3$days <- df2$days
       df2 <- df3
     }
     
@@ -938,25 +944,25 @@ server <- function(input, output, session) {#
     p <- ggplot()
     if(input$type == "line"){
       p <- p +
-        geom_line(data = mlt, aes(hours, value, color = variable)) +
-        scale_color_manual(values = rep('black', 21)) +
+        geom_line(data = mlt, aes(days, value, color = variable)) +
+        scale_color_manual(values = rep('black', membs)) +
         guides(color = FALSE)
     } 
     if(input$type == "distribution") {
       p <- p +
-        geom_ribbon(data = df3, aes(hours, ymin = p2.5, ymax = p97.5, fill = "95th"),
-                    alpha = 0.2) +
-        geom_ribbon(data = df3, aes(hours, ymin = p12.5, ymax = p87.5, fill = "75th"),
-                    alpha = 0.8) +
-        geom_line(data = df3, aes(hours, p50, color = "median")) +
-        scale_fill_manual(values = rep("grey", 2)) +
-        guides(fill = guide_legend(override.aes = list(alpha = c(0.8, 0.2)))) +
+        geom_ribbon(data = df3, aes(days, ymin = p2.5, ymax = p97.5, fill = "95th",
+                                    alpha = 0.9)) +
+        # geom_ribbon(data = df3, aes(days, ymin = p12.5, ymax = p87.5, fill = "75th"),
+        #             alpha = 0.8) +
+        geom_line(data = df3, aes(days, p50, color = "median")) +
+        scale_fill_manual(values = l.cols[2]) +
+        guides(fill = guide_legend(override.aes = list(alpha = c(0.9)))) +
         scale_color_manual(values = c("black"))
     }
     p <- p + 
       # ggtitle("Example Numerical Weather Forecast") +
       ylab(ylab) +
-      xlab("Forecast hours") +
+      xlab("Forecast days") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
     return(ggplotly(p, dynamicTicks = TRUE))
@@ -1121,14 +1127,24 @@ server <- function(input, output, session) {#
   # Forecast Plots  ----
   #* Driver Uncertainty ====
   driv_fc <- eventReactive(input$load_fc2, {
-    # download forecasts to data/forecast_ncdf folder
-    fpath <- file.path("data", "forecast_ncdf")
-    fils <- list.files(fpath)
-    vars <- c("air_temperature", "surface_downwelling_shortwave_flux_in_air", "precipitation_flux" )
+    
+    progress <- shiny::Progress$new()
+    # Make sure it closes when we exit this reactive, even if there's an error
+    on.exit(progress$close())
+    progress$set(message = paste0("Running the NPZ model with ", membs, "forecasts"), 
+                 detail = "This may take a while. This window will disappear  
+                     when it is finished running.", value = 1)
+
+    fpath <- file.path("data", "NOAAGEFS_1hr", siteID)
+    fold <- list.files(fpath)
+    fpath2 <- file.path(fpath, fold[1], "00")
+    fils <- list.files(fpath2)
+    fils <- fils[-c(grep("ens00", fils))]
+    membs2 <<- length(fils)
     npz_inp_list <- list() # Initialize empty list
     
     for( i in seq_len(length(fils))) {
-      fid <- ncdf4::nc_open(file.path("data", "forecast_ncdf", fils[i]))
+      fid <- ncdf4::nc_open(file.path(fpath2, fils[i]))
       airt <- ncdf4::ncvar_get(fid, "air_temperature") - 273.15
       swr <- ncdf4::ncvar_get(fid, "surface_downwelling_shortwave_flux_in_air")
       precip <- ncdf4::ncvar_get(fid, "precipitation_flux")
@@ -1138,7 +1154,7 @@ server <- function(input, output, session) {#
       if(i == 1) {
         
         # Extract time
-        fid <- ncdf4::nc_open(file.path("data", "forecast_ncdf", fils[i]))
+        fid <- ncdf4::nc_open(file.path(fpath2, fils[i]))
         tim = ncvar_get(fid, "time")
         tunits = ncatt_get(fid, "time")
         lnam = tunits$long_name
@@ -1172,7 +1188,7 @@ server <- function(input, output, session) {#
       df3 <- plyr::ddply(df2, "date", function(x){
         colMeans(x[, 1:3], na.rm = TRUE)
       })
-      df3 <- df3[2:16, ]
+      # df3 <- df3[2:16, ]
       df3$wtemp <- 5 + 0.75 * df3$airt
       
       npz_inp_list[[i]] <- create_npz_inputs(time = df3$date, swr = df3$swr,
@@ -1212,12 +1228,21 @@ server <- function(input, output, session) {#
     return(mlt)
     })
   
+  # Get NOAA forecast members ----
+  output$eco_fc_members <- renderUI({
+    numericInput('members2', 'No. of members', 16,
+                 min = 1, max = membs2, step = 1)
+  })
   
   output$plot_ecof2 <- renderPlotly({
     
+    validate(
+      need(input$members2 >= 1 & input$members2 <= membs2, 
+           message = paste0("The number of members must be between 1 and ", membs2))
+    )
     
     sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
-    print(head(sub))
+    print(head(sub, 45))
     if(input$type2 == "distribution") {
       
       df3 <- plyr::ddply(sub, "time", function(x) {
@@ -1237,18 +1262,18 @@ server <- function(input, output, session) {#
     if(input$type2 == "line"){
       p <- p +
         geom_line(data = df2, aes(time, value, color = L1)) +
-        scale_color_manual(values = rep("black", 21)) +
+        scale_color_manual(values = rep("black", membs2)) +
         guides(color = FALSE)
     } 
     if(input$type2 == "distribution") {
       p <- p +
         geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
-                    alpha = 0.2) +
-        geom_ribbon(data = df2, aes(time, ymin = p12.5, ymax = p87.5, fill = "75th"),
                     alpha = 0.8) +
+        # geom_ribbon(data = df2, aes(time, ymin = p12.5, ymax = p87.5, fill = "75th"),
+                    # alpha = 0.8) +
         geom_line(data = df2, aes(time, p50, color = "median")) +
-        scale_fill_manual(values = rep("grey", 2)) +
-        guides(fill = guide_legend(override.aes = list(alpha = c(0.8, 0.2)))) +
+        scale_fill_manual(values = l.cols[2]) +
+        guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
         scale_color_manual(values = c("black"))
     }
     p <- p + 
