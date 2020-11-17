@@ -667,6 +667,14 @@ server <- function(input, output, session) {#
   
   # Download phenocam ----
   observeEvent(input$neonmap_marker_click, {
+    
+    progress <- shiny::Progress$new()
+    # Make sure it closes when we exit this reactive, even if there's an error
+    on.exit(progress$close())
+    progress$set(message = "Accessing and downloading phenocam image", 
+                 detail = "This may take a while. This window will disappear  
+                     when it is downloaded.", value = 1)
+    
     p <- input$neonmap_marker_click  # typo was on this line
     idx <- which(neon_sites_df$uid == input$neonmap_marker_click$id)
     # output$site_name <- neon_sites$description[idx]
