@@ -366,22 +366,25 @@ ui <- tagList(
                           ,
                           # wellPanel(
                           h4(tags$b("Zooplankton parameters")),
+                          p(tags$em("Grazing")),
                           sliderInput("graz_rate", label = div(style='width:300px;', 
                                                                div(style='float:left;', 'Eat less'), 
                                                                div(style='float:right;', 'Eat more')),
-                                      min = 0.2, max = 1.6, value = 0.8, step = 0.1),
+                                      min = 0.2, max = 1.6, value = 1.2, step = 0.1),
+                          p(tags$em("Mortality")),
                           sliderInput("mort_rate", label = div(style='width:300px;', 
                                                                div(style='float:left;', 'Lower death'), 
                                                                div(style='float:right;', 'Higher death')),
-                                      min = 0.1, max = 1, value = 0.5, step = 0.1)
+                                      min = 0.1, max = 1, value = 0.3, step = 0.1)
                           # )
                           ,
                           # wellPanel(
                           h4(tags$b("Phytoplankton parameters")),
+                          p(tags$em("Uptake")),
                           sliderInput("nut_uptake", label = div(style='width:300px;', 
                                                                 div(style='float:left;', 'Low uptake'), 
                                                                 div(style='float:right;', 'High uptake')),
-                                      min = 0.1, max = 1.7, value = 1.2, step = 0.1)
+                                      min = 0.1, max = 1.7, value = 0.8, step = 0.1)
                           # )
                           ,
                           p("We are using observed data from the selected site in panel 'Get Data' to force this NPZ model."),
@@ -448,7 +451,8 @@ ui <- tagList(
                                h3("Driver Uncertainty"),
                                p(module_text["driver_uncert", ]),
                                br(),
-                               p("We will now use the 16-day weather forecast data we loaded on the 'Get Data' tab.")
+                               p("A key component of what makes an ecological forecast a 'forecast', is that the model is driven by forecasted driving variables."),
+                               p("We will now use the 16-day weather forecast data we loaded on the 'Get Data' tab to drive the calibrated model we built on the 'Build Model' tab to forecast chlorophyll-a concentrations over the next 16 days.")
                         ),
                         column(3,
                                wellPanel(
@@ -482,30 +486,42 @@ ui <- tagList(
                                h3("Parameter Uncertainty"),
                                p(module_text["param_uncert", ]),
                                br(),
-                               p("We will now revisit the model we built to adjust the parameters to see how that influences forecast uncertainty. One weather forecast is used to drive the model."),
-                               p("Click on 'Generate forecast' to clear old plots.")
+                               p("We will now revisit the model we built to adjust the parameters to see how that influences forecast uncertainty. One weather forecast is used to drive the model. Instead of selecting one value we will select a range. The width of the range highlights how certain we are about that parameter. The model will sample 21 random values between that range to represent the potential different values of that parameter."),
+                               p(" Each time you click 'Run Forecast!', it will re-run the forecast with new parameters."),
+                               p("You can adjust the number of members which are displayed in the forecast plot and also select between a line plot or a distribution plot.")
                         ),
                         column(3,
-                               h4("Adjust parameters"),
+                               h4("Adjust parameter ranges"),
                                h5(tags$b("Zooplankton parameters")),
+                               p(tags$em("Grazing")),
                                sliderInput("graz_rate2", label = div(style='width:300px;', 
                                                                     div(style='float:left;', 'Eat less'), 
                                                                     div(style='float:right;', 'Eat more')),
-                                           min = 0.2, max = 1.6, value = 0.8, step = 0.1),
+                                           min = 0.2, max = 1.6, value = c(0.2, 1.6), step = 0.1),
+                               p(tags$em("Mortality")),
                                sliderInput("mort_rate2", label = div(style='width:300px;', 
                                                                     div(style='float:left;', 'Lower death'), 
                                                                     div(style='float:right;', 'Higher death')),
-                                           min = 0.1, max = 1, value = 0.5, step = 0.1),
+                                           min = 0.1, max = 1, value = c(0.1, 1), step = 0.1),
                                # wellPanel(
                                h5(tags$b("Phytoplankton parameter")),
+                               p(tags$em("Uptake")),
                                sliderInput("nut_uptake2", label = div(style='width:300px;', 
                                                                      div(style='float:left;', 'Low uptake'), 
                                                                      div(style='float:right;', 'High uptake')),
-                                           min = 0.1, max = 1.7, value = 1.2, step = 0.1),
-                               actionButton("base_plot2", label = div("Generate forecast plot", 
-                                                                     icon("chart-line")), width = "60%"),
-                               actionButton("scen_plot2", label = div("Add new forecast", 
-                                                                     icon("plus")), width = "60%")
+                                           min = 0.1, max = 1.7, value = c(0.1, 1.7), step = 0.1),
+                               # Old buttons -
+                               # actionButton("base_plot2", label = div("Generate forecast plot", 
+                               #                                       icon("chart-line")), width = "60%"),
+                               # actionButton("scen_plot2", label = div("Add forecast", 
+                               #                                       icon("plus")), width = "60%")
+                               # New buttons
+                               actionButton('load_fc3', label = div("Run Forecast!", icon("running")),
+                                            width = "60%"),
+                               numericInput('members3', 'No. of members', 10,
+                                            min = 1, max = 21, step = 1),
+                               selectInput('type3', 'Plot type', plot_types,
+                                           selected = plot_types[2])
                                
                                ),
                         column(6,
@@ -520,18 +536,28 @@ ui <- tagList(
                                h3("Initial Condition Uncertainty"),
                                p(module_text["init_uncert", ]),
                                br(),
-                               p("We will now alter the initial conditions of the model to investigate what impact this has on the forecast.")
+                               p("We will now alter the initial conditions of the model to investigate what impact this has on the forecast."),
+                               p("Similarly to the parameter values, you will now select a range of potential initial values for the model. A small range represents times when we have up-to-date data which represents current conditions while a large range might be used when the last measurement was from greater than one week ago."),
+                               p("The parameters used in this model will come from the calibrated values in the 'Build Model' tab and the driving data will be one of the meteorological forecasts from the 'Get Data' tab.")
                         ),
                         column(3,
                                h4("Adjust initial conditions"),
                                br(),
-                               numericInput("phy_init", "Initial phytoplankton", min = 0.1, max = 10, step = 0.1, value = 2),
-                               numericInput("zoo_init", "Initial zooplankton", min = 0.1, max = 5, step = 0.1, value = 0.4),
-                               numericInput("nut_init", "Initial nutrients", min = 1, max = 20, step = 1, value = 9),
-                               actionButton("base_plot3", label = div("Generate forecast plot", 
-                                                                      icon("chart-line")), width = "60%"),
-                               actionButton("scen_plot3", label = div("Add new forecast", 
-                                                                      icon("plus")), width = "60%")
+                               sliderInput("phy_init", "Initial phytoplankton", min = 0.1, max = 10, step = 0.1, value = c(1.9, 2.1)),
+                               sliderInput("zoo_init", "Initial zooplankton", min = 0.1, max = 5, step = 0.1, value = c(0.3, 0.5)),
+                               sliderInput("nut_init", "Initial nutrients", min = 1, max = 20, step = 1, value = c(8,10)),
+                               # Old Buttons
+                               # actionButton("base_plot3", label = div("Generate forecast plot", 
+                               #                                        icon("chart-line")), width = "60%"),
+                               # actionButton("scen_plot3", label = div("Add new forecast", 
+                               #                                        icon("plus")), width = "60%")
+                               # New buttons
+                               actionButton('load_fc4', label = div("Run Forecast!", icon("running")),
+                                            width = "60%"),
+                               numericInput('members4', 'No. of members', 10,
+                                            min = 1, max = 21, step = 1),
+                               selectInput('type4', 'Plot type', plot_types,
+                                           selected = plot_types[2])
                         ),
                         column(6,
                                h4("Plot showing Initial conditions Uncertainty"),
@@ -1214,179 +1240,354 @@ server <- function(input, output, session) {#
   
   
   #* Parameter plot ====
-  plot.dat2 <- reactiveValues(main2 = NULL, layer1 = NULL, layer2 = NULL, layer3 = NULL,
-                             layer4 = NULL, layer5 = NULL)
-  observe({
-    validate(
-      need(!is.null(plot.dat2$main2), "Generate the baseline plot.")
-    )
-    output$pars_plot <- renderPlotly({ ggplotly((plot.dat2$main2 + plot.dat2$layer1 +
-                                                 plot.dat2$layer2 + plot.dat2$layer3 +
-                                                 plot.dat2$layer4 + plot.dat2$layer5 +
-                                                 scale_colour_manual(values = rep("black", 6)) +
-                                                 theme_minimal(base_size = 16) +
-                                                 theme(panel.background = element_rect(fill = NA, colour = 'black'))), 
-                                              dynamicTicks = TRUE) })
-  })
-  
-  observeEvent(input$base_plot2, {
+  par_fc <- eventReactive(input$load_fc3, {
+    
+    # Create 21 params
+    uptake_vals <- rnorm(21, mean(input$nut_uptake2), 
+                         (mean(input$nut_uptake2) - input$nut_uptake2[1])/3)
+    graz_vals <- rnorm(21, mean(input$graz_rate2), 
+                         (mean(input$graz_rate2) - input$graz_rate2[1])/3)
+    mort_vals <- rnorm(21, mean(input$mort_rate2), 
+                         (mean(input$mort_rate2) - input$mort_rate2[1])/3)
 
-    
-    # Parameters 
-    parms[1] <- as.numeric(input$nut_uptake2)
-    parms[4] <- as.numeric(input$graz_rate2)
-    parms[7] <- as.numeric(input$mort_rate2)
-    
-    # Use forecast which was pre-loaded
-    inputs <- create_npz_inputs(time = fcast$date, swr = fcast$swr,
-                                             temp = fcast$wtemp)
-    times <- 1:nrow(inputs)
-    
-    out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
-                        method = "ode45", inputs = inputs)
-    out <- as.data.frame(out)
-    # out$time <- npz_inp$Date
-    out <- out[, c("time", "Chlorophyll.Chl_Nratio")]
-    colnames(out)[2] <- "Chla"
-    
-    plot.dat2$layer1 <<- NULL
-    plot.dat2$layer2 <<- NULL
-    plot.dat2$layer3 <<- NULL
-    plot.dat2$layer4 <<- NULL
-    plot.dat2$layer5 <<- NULL
-    plot.dat2$main2 <<- ggplot() +
-      geom_line(data = out, aes_string(names(out)[1], names(out)[2], colour = shQuote("ens01"))) +
-      ylab("Chla") +
-      xlab("")
-    # print("Create plot")
-  })
-  
-  observeEvent(input$scen_plot2, {
-    
-    # Parameters 
-    parms[1] <- as.numeric(input$nut_uptake2)
-    parms[4] <- as.numeric(input$graz_rate2)
-    parms[7] <- as.numeric(input$mort_rate2)
-    
     # Use forecast which was pre-loaded
     inputs <- create_npz_inputs(time = fcast$date, swr = fcast$swr,
                                 temp = fcast$wtemp)
     times <- 1:nrow(inputs)
     
-    out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
-                        method = "ode45", inputs = inputs)
-    out <- as.data.frame(out)
-    # out$time <- npz_inp$Date
-    out <- out[, c("time", "Chlorophyll.Chl_Nratio")]
-    colnames(out)[2] <- "Chla"
+    fc_res <- lapply(1:21, function(x) {
+      
+      # Parameters 
+      parms[1] <- uptake_vals[x]
+      parms[4] <- graz_vals[x]
+      parms[7] <- mort_vals[x]
+      
+
+      out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
+                          method = "ode45", inputs = inputs)
+      out <- as.data.frame(out)
+      # out$time <- npz_inp$Date
+      out <- out[, c("time", "Chlorophyll.Chl_Nratio")] #, "PHYTO", "ZOO")]
+      colnames(out)[-1] <- c("Chla") #, "Phytoplankton", "Zooplankton")
+      return(out)
+      
+    })
     
-    if(is.null(plot.dat2$layer1)) {
-      plot.dat2$layer1 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-                                                            colour = shQuote("ens02")))
-    } else if(is.null(plot.dat2$layer2)) {
-      plot.dat2$layer2 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-                                                            colour = shQuote("ens03")))
-    } else if(is.null(plot.dat2$layer3)) {
-      plot.dat2$layer3 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-                                                            colour = shQuote("ens04")))
-    } else if(is.null(plot.dat2$layer4)) {
-      plot.dat2$layer4 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-                                                            colour = shQuote("ens04")))
-    } else if(is.null(plot.dat2$layer5)) {
-      plot.dat2$layer5 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-                                                            colour = shQuote("ens05")))
+    mlt <- reshape2::melt(fc_res, id.vars = "time")
+    
+    return(mlt)
+  })
+  
+  output$pars_plot <- renderPlotly({
+    
+    
+    sub <- par_fc()[as.numeric(par_fc()$L1) <= input$members3, ]
+    print(head(sub))
+    if(input$type3 == "distribution") {
+      
+      df3 <- plyr::ddply(sub, "time", function(x) {
+        quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+      })
+      # df3 <- as.data.frame(t(df3))
+      colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
+      colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
+      # df3$hours <- df2$hours
+      df2 <- df3
+    } else {
+      df2 <- sub
+      df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
     }
     
+    p <- ggplot()
+    if(input$type3 == "line"){
+      p <- p +
+        geom_line(data = df2, aes(time, value, colour = L1)) +
+        scale_colour_manual(values = rep("black", 21)) +
+        guides(colour = FALSE)
+    } 
+    if(input$type3 == "distribution") {
+      p <- p +
+        geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
+                    alpha = 0.2) +
+        geom_ribbon(data = df2, aes(time, ymin = p12.5, ymax = p87.5, fill = "75th"),
+                    alpha = 0.8) +
+        geom_line(data = df2, aes(time, p50, colour = "median")) +
+        scale_fill_manual(values = rep("grey", 2)) +
+        guides(fill = guide_legend(override.aes = list(alpha = c(0.8, 0.2)))) +
+        scale_colour_manual(values = c("black"))
+    }
+    p <- p + 
+      ylab("Chlorophyll-a") +
+      xlab("Forecast days") +
+      theme_classic(base_size = 12) +
+      theme(panel.background = element_rect(fill = NA, colour = 'black'))
+    return(ggplotly(p, dynamicTicks = TRUE))
+    
   })
+  
+  # plot.dat2 <- reactiveValues(main2 = NULL, layer1 = NULL, layer2 = NULL, layer3 = NULL,
+  #                            layer4 = NULL, layer5 = NULL)
+  # observe({
+  #   validate(
+  #     need(!is.null(plot.dat2$main2), "Generate the baseline plot.")
+  #   )
+  #   output$pars_plot <- renderPlotly({ ggplotly((plot.dat2$main2 + plot.dat2$layer1 +
+  #                                                plot.dat2$layer2 + plot.dat2$layer3 +
+  #                                                plot.dat2$layer4 + plot.dat2$layer5 +
+  #                                                scale_colour_manual(values = rep("black", 6)) +
+  #                                                theme_minimal(base_size = 16) +
+  #                                                theme(panel.background = element_rect(fill = NA, colour = 'black'))), 
+  #                                             dynamicTicks = TRUE) })
+  # })
+  # 
+  # observeEvent(input$base_plot2, {
+  # 
+  #   
+  #   # Parameters 
+  #   parms[1] <- as.numeric(input$nut_uptake2)
+  #   parms[4] <- as.numeric(input$graz_rate2)
+  #   parms[7] <- as.numeric(input$mort_rate2)
+  #   
+  #   # Use forecast which was pre-loaded
+  #   inputs <- create_npz_inputs(time = fcast$date, swr = fcast$swr,
+  #                                            temp = fcast$wtemp)
+  #   times <- 1:nrow(inputs)
+  #   
+  #   out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
+  #                       method = "ode45", inputs = inputs)
+  #   out <- as.data.frame(out)
+  #   # out$time <- npz_inp$Date
+  #   out <- out[, c("time", "Chlorophyll.Chl_Nratio")]
+  #   colnames(out)[2] <- "Chla"
+  #   
+  #   plot.dat2$layer1 <<- NULL
+  #   plot.dat2$layer2 <<- NULL
+  #   plot.dat2$layer3 <<- NULL
+  #   plot.dat2$layer4 <<- NULL
+  #   plot.dat2$layer5 <<- NULL
+  #   plot.dat2$main2 <<- ggplot() +
+  #     geom_line(data = out, aes_string(names(out)[1], names(out)[2], colour = shQuote("ens01"))) +
+  #     ylab("Chla") +
+  #     xlab("")
+  #   # print("Create plot")
+  # })
+  # 
+  # observeEvent(input$scen_plot2, {
+  #   
+  #   # Parameters 
+  #   parms[1] <- as.numeric(input$nut_uptake2)
+  #   parms[4] <- as.numeric(input$graz_rate2)
+  #   parms[7] <- as.numeric(input$mort_rate2)
+  #   
+  #   # Use forecast which was pre-loaded
+  #   inputs <- create_npz_inputs(time = fcast$date, swr = fcast$swr,
+  #                               temp = fcast$wtemp)
+  #   times <- 1:nrow(inputs)
+  #   
+  #   out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
+  #                       method = "ode45", inputs = inputs)
+  #   out <- as.data.frame(out)
+  #   # out$time <- npz_inp$Date
+  #   out <- out[, c("time", "Chlorophyll.Chl_Nratio")]
+  #   colnames(out)[2] <- "Chla"
+  #   
+  #   if(is.null(plot.dat2$layer1)) {
+  #     plot.dat2$layer1 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+  #                                                           colour = shQuote("ens02")))
+  #   } else if(is.null(plot.dat2$layer2)) {
+  #     plot.dat2$layer2 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+  #                                                           colour = shQuote("ens03")))
+  #   } else if(is.null(plot.dat2$layer3)) {
+  #     plot.dat2$layer3 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+  #                                                           colour = shQuote("ens04")))
+  #   } else if(is.null(plot.dat2$layer4)) {
+  #     plot.dat2$layer4 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+  #                                                           colour = shQuote("ens04")))
+  #   } else if(is.null(plot.dat2$layer5)) {
+  #     plot.dat2$layer5 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+  #                                                           colour = shQuote("ens05")))
+  #   }
+  #   
+  # })
   
   
   #* Plot IC uncertainty ====
   
-  plot.dat3 <- reactiveValues(main = NULL, layer1 = NULL, layer2 = NULL, layer3 = NULL,
-                              layer4 = NULL, layer5 = NULL)
-  observe({
-    validate(
-      need(!is.null(plot.dat3$main), "Generate the baseline plot.")
-    )
-    output$ic_plot <- renderPlotly({ 
-      p <- ggplotly((plot.dat3$main + plot.dat3$layer1 +
-                       plot.dat3$layer2 + plot.dat3$layer3 +
-                       plot.dat3$layer4 + plot.dat3$layer5 +
-                       scale_colour_manual(values = rep("black", 6)) +
-                       theme_minimal(base_size = 16) +
-                       theme(panel.background = element_rect(fill = NA, colour = 'black'))),
-                    dynamicTicks = TRUE) })
-    return(p)
-  })
-  
-  observeEvent(input$base_plot3, {
+  ic_fc <- eventReactive(input$load_fc4, {
     
-    # Initial Conditions
-    yini[1] <- input$phy_init
-    yini[2] <- input$zoo_init
-    yini[3] <- input$nut_init
+    # Create 21 params
+    phyto_vals <- rnorm(21, mean(input$phy_init), 
+                         (mean(input$phy_init) - input$phy_init[1])/3)
+    zoo_vals <- rnorm(21, mean(input$zoo_init), 
+                       (mean(input$zoo_init) - input$zoo_init[1])/3)
+    nut_vals <- rnorm(21, mean(input$nut_init), 
+                       (mean(input$nut_init) - input$mort_rate2[1])/3)
+    
+    # Updated parameters
+    parms[1] <- as.numeric(input$nut_uptake)
+    parms[4] <- as.numeric(input$graz_rate)
+    parms[7] <- as.numeric(input$mort_rate)
     
     # Use forecast which was pre-loaded
     inputs <- create_npz_inputs(time = fcast$date, swr = fcast$swr,
                                 temp = fcast$wtemp)
     times <- 1:nrow(inputs)
     
-    out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
-                        method = "ode45", inputs = inputs)
-    out <- as.data.frame(out)
-    # out$time <- npz_inp$Date
-    out <- out[, c("time", "Chlorophyll.Chl_Nratio")]
-    colnames(out)[2] <- "Chla"
+    fc_res <- lapply(1:21, function(x) {
+      
+      # Initial conditions
+      yini[1] <- phyto_vals[x]
+      yini[2] <- zoo_vals[x]
+      yini[3] <- nut_vals[x]
+      
+      
+      out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
+                          method = "ode45", inputs = inputs)
+      out <- as.data.frame(out)
+      # out$time <- npz_inp$Date
+      out <- out[, c("time", "Chlorophyll.Chl_Nratio")] #, "PHYTO", "ZOO")]
+      colnames(out)[-1] <- c("Chla") #, "Phytoplankton", "Zooplankton")
+      return(out)
+      
+    })
     
-    plot.dat3$layer1 <<- NULL
-    plot.dat3$layer2 <<- NULL
-    plot.dat3$layer3 <<- NULL
-    plot.dat3$layer4 <<- NULL
-    plot.dat3$layer5 <<- NULL
-    plot.dat3$main <<- ggplot() +
-      geom_line(data = out, aes_string(names(out)[1], names(out)[2], colour = shQuote("ens01"))) +
-      ylab("Chla") +
-      xlab("")
-    # print("Create plot")
+    mlt <- reshape2::melt(fc_res, id.vars = "time")
+    
+    return(mlt)
   })
   
-  observeEvent(input$scen_plot3, {
+  output$ic_plot <- renderPlotly({
     
-    # Initial Conditions
-    yini[1] <- input$phy_init
-    yini[2] <- input$zoo_init
-    yini[3] <- input$nut_init
     
-    # Use forecast which was pre-loaded
-    inputs <- create_npz_inputs(time = fcast$date, swr = fcast$swr,
-                                temp = fcast$wtemp)
-    times <- 1:nrow(inputs)
-    
-    out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
-                        method = "ode45", inputs = inputs)
-    out <- as.data.frame(out)
-    # out$time <- npz_inp$Date
-    out <- out[, c("time", "Chlorophyll.Chl_Nratio")]
-    colnames(out)[2] <- "Chla"
-    
-    if(is.null(plot.dat3$layer1)) {
-      plot.dat3$layer1 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-                                                            colour = shQuote("ens02")))
-    } else if(is.null(plot.dat3$layer2)) {
-      plot.dat3$layer2 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-                                                            colour = shQuote("ens03")))
-    } else if(is.null(plot.dat3$layer3)) {
-      plot.dat3$layer3 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-                                                            colour = shQuote("ens04")))
-    } else if(is.null(plot.dat3$layer4)) {
-      plot.dat3$layer4 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-                                                            colour = shQuote("ens04")))
-    } else if(is.null(plot.dat3$layer5)) {
-      plot.dat3$layer5 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
-                                                            colour = shQuote("ens05")))
+    sub <- ic_fc()[as.numeric(ic_fc()$L1) <= input$members4, ]
+    print(head(sub))
+    if(input$type4 == "distribution") {
+      
+      df3 <- plyr::ddply(sub, "time", function(x) {
+        quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+      })
+      # df3 <- as.data.frame(t(df3))
+      colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
+      colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
+      # df3$hours <- df2$hours
+      df2 <- df3
+    } else {
+      df2 <- sub
+      df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
     }
     
+    p <- ggplot()
+    if(input$type4 == "line"){
+      p <- p +
+        geom_line(data = df2, aes(time, value, colour = L1)) +
+        scale_colour_manual(values = rep("black", 21)) +
+        guides(colour = FALSE)
+    } 
+    if(input$type4 == "distribution") {
+      p <- p +
+        geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
+                    alpha = 0.2) +
+        geom_ribbon(data = df2, aes(time, ymin = p12.5, ymax = p87.5, fill = "75th"),
+                    alpha = 0.8) +
+        geom_line(data = df2, aes(time, p50, colour = "median")) +
+        scale_fill_manual(values = rep("grey", 2)) +
+        guides(fill = guide_legend(override.aes = list(alpha = c(0.8, 0.2)))) +
+        scale_colour_manual(values = c("black"))
+    }
+    p <- p + 
+      ylab("Chlorophyll-a") +
+      xlab("Forecast days") +
+      theme_classic(base_size = 12) +
+      theme(panel.background = element_rect(fill = NA, colour = 'black'))
+    return(ggplotly(p, dynamicTicks = TRUE))
+    
   })
+  
+  # plot.dat3 <- reactiveValues(main = NULL, layer1 = NULL, layer2 = NULL, layer3 = NULL,
+  #                             layer4 = NULL, layer5 = NULL)
+  # observe({
+  #   validate(
+  #     need(!is.null(plot.dat3$main), "Generate the baseline plot.")
+  #   )
+  #   output$ic_plot <- renderPlotly({ 
+  #     p <- ggplotly((plot.dat3$main + plot.dat3$layer1 +
+  #                      plot.dat3$layer2 + plot.dat3$layer3 +
+  #                      plot.dat3$layer4 + plot.dat3$layer5 +
+  #                      scale_colour_manual(values = rep("black", 6)) +
+  #                      theme_minimal(base_size = 16) +
+  #                      theme(panel.background = element_rect(fill = NA, colour = 'black'))),
+  #                   dynamicTicks = TRUE) })
+  #   return(p)
+  # })
+  # 
+  # observeEvent(input$base_plot3, {
+  #   
+  #   # Initial Conditions
+  #   yini[1] <- input$phy_init
+  #   yini[2] <- input$zoo_init
+  #   yini[3] <- input$nut_init
+  #   
+  #   # Use forecast which was pre-loaded
+  #   inputs <- create_npz_inputs(time = fcast$date, swr = fcast$swr,
+  #                               temp = fcast$wtemp)
+  #   times <- 1:nrow(inputs)
+  #   
+  #   out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
+  #                       method = "ode45", inputs = inputs)
+  #   out <- as.data.frame(out)
+  #   # out$time <- npz_inp$Date
+  #   out <- out[, c("time", "Chlorophyll.Chl_Nratio")]
+  #   colnames(out)[2] <- "Chla"
+  #   
+  #   plot.dat3$layer1 <<- NULL
+  #   plot.dat3$layer2 <<- NULL
+  #   plot.dat3$layer3 <<- NULL
+  #   plot.dat3$layer4 <<- NULL
+  #   plot.dat3$layer5 <<- NULL
+  #   plot.dat3$main <<- ggplot() +
+  #     geom_line(data = out, aes_string(names(out)[1], names(out)[2], colour = shQuote("ens01"))) +
+  #     ylab("Chla") +
+  #     xlab("")
+  #   # print("Create plot")
+  # })
+  # 
+  # observeEvent(input$scen_plot3, {
+  #   
+  #   # Initial Conditions
+  #   yini[1] <- input$phy_init
+  #   yini[2] <- input$zoo_init
+  #   yini[3] <- input$nut_init
+  #   
+  #   # Use forecast which was pre-loaded
+  #   inputs <- create_npz_inputs(time = fcast$date, swr = fcast$swr,
+  #                               temp = fcast$wtemp)
+  #   times <- 1:nrow(inputs)
+  #   
+  #   out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
+  #                       method = "ode45", inputs = inputs)
+  #   out <- as.data.frame(out)
+  #   # out$time <- npz_inp$Date
+  #   out <- out[, c("time", "Chlorophyll.Chl_Nratio")]
+  #   colnames(out)[2] <- "Chla"
+  #   
+  #   if(is.null(plot.dat3$layer1)) {
+  #     plot.dat3$layer1 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+  #                                                           colour = shQuote("ens02")))
+  #   } else if(is.null(plot.dat3$layer2)) {
+  #     plot.dat3$layer2 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+  #                                                           colour = shQuote("ens03")))
+  #   } else if(is.null(plot.dat3$layer3)) {
+  #     plot.dat3$layer3 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+  #                                                           colour = shQuote("ens04")))
+  #   } else if(is.null(plot.dat3$layer4)) {
+  #     plot.dat3$layer4 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+  #                                                           colour = shQuote("ens04")))
+  #   } else if(is.null(plot.dat3$layer5)) {
+  #     plot.dat3$layer5 <<- geom_line(data = out, aes_string(names(out)[1], names(out)[2],
+  #                                                           colour = shQuote("ens05")))
+  #   }
+  #   
+  # })
   
   
 
