@@ -1,6 +1,6 @@
 require(rvest)
 get_html <- function(site_id) {
-  url <- "https://www.neonscience.org/field-sites/field-sites-map/"
+  url <- "https://www.neonscience.org/field-sites/"
   myurl <- read_html(paste0(url, site_id))
   
   tst <- myurl %>% 
