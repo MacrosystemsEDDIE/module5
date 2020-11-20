@@ -90,536 +90,539 @@ yini <- c(
 
 
 
-ui <- tagList(
-  shinythemes::themeSelector(),
-  navbarPage(title = "Module 5: Introduction to Ecological Forecasting", 
-             position = "fixed-top", 
-             
-             # 1. Module Overview ----
-             tabPanel(title = "Module Overview",
-                      tags$style(type="text/css", "body {padding-top: 65px;}"),
-                      img(src = "eddie_banner_2018.v5.jpg", height = 100, 
-                          width = 1544, top = 5),
-                      # p("Show"),
-                      useShinyjs(),
-                      div(checkboxInput(inputId = "ques", label = "Hide questions"), style = "font-size:90%"),
-                      p(tags$b("Instructions")),
-                      p("For this module you will input your answers into this app which will allow you to generate a pdf report at the end of this module. Input your name and student ID below."),
-                      textInput(inputId = "name", label = "Name",
-                                placeholder = "e.g. John Smith"),
-                      textInput(inputId = "id_number", label = "Student ID:", placeholder = "12345678"),
-                      #* Module text ====
-                      h3("Project EDDIE"),
-                      p(module_text["EDDIE", ]),
-                      h3("Macrosystems Ecology"),
-                      p(module_text["Macro", ]),
-                      # br(),
-                      h3("Ecological Forecasting"),
-                      HTML('<center><img src="TFC_v1.png"></center>'),
-                      # img(src = "TFC_v1.png"),
-                      h3("Module Activities"),
-                      tags$ol(
-                        tags$li("Ecological Forecasting"),
-                        tags$li("Exploring NEON Data"),
-                        tags$li("Building a model to represent ecological processes"),
-                        tags$li("Producing an ecological forecasting")
-                      ),
-                      # br(),
-                      h3("Learning Outcomes"),
-                      tags$line(),
-                      tags$ul(
-                        tags$li(module_text["LO1", ]),
-                        tags$li(module_text["LO2", ]),
-                        tags$li(module_text["LO3", ]),
-                        tags$li(module_text["LO4", ]),
-                        tags$li(module_text["LO5", ])
-                      )
-             ),
-             
-             # 2. Introduction ----
-             tabPanel(title = "Introduction",
-                      tags$style(type="text/css", "body {padding-top: 65px;}"),
-                      img(src = "eddie_banner_2018.v5.jpg", height = 100, 
-                          width = 1544, top = 5),
-                      #* Intro text ====
-                      h2("Introduction"),
-                      h3("Ecological Forecasting"),
-                      p(module_text["eco_forecast", ]),
-                      br(),
-                      h3("Overview of Activities"),
-                      tags$ul(
-                        tags$li("Activity A - Making a forecast"),
-                        tags$li("Activity B - Exploring Uncertainty"),
-                        tags$li("Activity C - Cross-scale differences")
-                      ),
-                      h4("Data sources"),
-                      a(
-                        href = "https://www.neonscience.org/",
-                        img(src = "NSF-NEON-logo.png", title = "NEON - NSF logo")
-                      ),
-                      p("This module will introduce key concepts within Ecological forecasting through exploration of ",
-                        a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data"), ", building a model and then generating a short-term ecological forecast."),
-                      h2(tags$b("Think about it!")),
-                      textInput(inputId = "q1", label = "Q1. What is an ecological forecast? What is uncertainty?",
-                                placeholder = "An ecological forecast is...", width = "80%")
-                      
-             ),
-             
-             # 2. Exploration ----
-             tabPanel(title = "Exploration",
-                      tags$style(type="text/css", "body {padding-top: 65px;}"),
-                      img(src = "eddie_banner_2018.v5.jpg", height = 100, 
-                          width = 1544, top = 5),
-                      h3("Examples of Current Ecological Forecasts"),
-                      tags$ul(
-                        tags$li(a(href = EF_links$webpage[1], EF_links$Forecast[1]), br(), p(EF_links$About[1])),
-                        tags$li(a(href = EF_links$webpage[2], EF_links$Forecast[2]), br(), p(EF_links$About[2])),
-                        tags$li(a(href = EF_links$webpage[3], EF_links$Forecast[3]), br(), p(EF_links$About[3])),
-                        tags$li(a(href = EF_links$webpage[4], EF_links$Forecast[4]), br(), p(EF_links$About[4]))
-                      )
-                      
-             ),
-             
-             # 3. Get Data ----
-             tabPanel(title = "Get Data",
-                      tags$style(type="text/css", "body {padding-top: 65px;}"),
-                      img(src = "eddie_banner_2018.v5.jpg", height = 100, 
-                          width = 1544, top = 5),
-                      #* NEON Map ====
-                      fluidRow(
-                        # conditionalPanel(condition = "input.site_html > 1",
-                        #** NEON Intro ----
-                        column(5,
-                               h2("Site Description"),
-                               p("Select a site in the table to highlight on the map"),
-                               DT::DTOutput("table01"),
-                               
-                               
-                               # p("Blah blah blah"),
-                               # selectInput('site', 'Site', c('Toolik', 'Muggs')),
-                               # radioButtons("ecotype", "Ecological Type", c("Aquatic", "Terrestrial"))
+ui <- function(req){
+  
+  tagList(
+    shinythemes::themeSelector(),
+    navbarPage(title = "Module 5: Introduction to Ecological Forecasting", 
+               position = "fixed-top", 
+               
+               # 1. Module Overview ----
+               tabPanel(title = "Module Overview",
+                        tags$style(type="text/css", "body {padding-top: 65px;}"),
+                        img(src = "eddie_banner_2018.v5.jpg", height = 100, 
+                            width = 1544, top = 5),
+                        # p("Show"),
+                        useShinyjs(),
+                        div(checkboxInput(inputId = "ques", label = "Hide questions"), style = "font-size:90%"),
+                        p(tags$b("Instructions")),
+                        p("For this module you will input your answers into this app which will allow you to generate a pdf report at the end of this module. Input your name and student ID below."),
+                        textInput(inputId = "name", label = "Name",
+                                  placeholder = "e.g. John Smith"),
+                        textInput(inputId = "id_number", label = "Student ID:", placeholder = "12345678"),
+                        #* Module text ====
+                        h3("Project EDDIE"),
+                        p(module_text["EDDIE", ]),
+                        h3("Macrosystems Ecology"),
+                        p(module_text["Macro", ]),
+                        # br(),
+                        h3("Ecological Forecasting"),
+                        HTML('<center><img src="TFC_v1.png"></center>'),
+                        # img(src = "TFC_v1.png"),
+                        h3("Module Activities"),
+                        tags$ol(
+                          tags$li("Ecological Forecasting"),
+                          tags$li("Exploring NEON Data"),
+                          tags$li("Building a model to represent ecological processes"),
+                          tags$li("Producing an ecological forecasting")
                         ),
-                        #** Site map ----
-                        column(4,
-                               h2("Map of NEON sites"),
-                               p("Click on a site on the map to see the latest image from the phenocam"),
-                               wellPanel(
-                                 leafletOutput("neonmap")
-                               )
+                        # br(),
+                        h3("Learning Outcomes"),
+                        tags$line(),
+                        tags$ul(
+                          tags$li(module_text["LO1", ]),
+                          tags$li(module_text["LO2", ]),
+                          tags$li(module_text["LO3", ]),
+                          tags$li(module_text["LO4", ]),
+                          tags$li(module_text["LO5", ])
+                        )
+               ),
+               
+               # 2. Introduction ----
+               tabPanel(title = "Introduction",
+                        tags$style(type="text/css", "body {padding-top: 65px;}"),
+                        img(src = "eddie_banner_2018.v5.jpg", height = 100, 
+                            width = 1544, top = 5),
+                        #* Intro text ====
+                        h2("Introduction"),
+                        h3("Ecological Forecasting"),
+                        p(module_text["eco_forecast", ]),
+                        br(),
+                        h3("Overview of Activities"),
+                        tags$ul(
+                          tags$li("Activity A - Making a forecast"),
+                          tags$li("Activity B - Exploring Uncertainty"),
+                          tags$li("Activity C - Cross-scale differences")
+                        ),
+                        h4("Data sources"),
+                        a(
+                          href = "https://www.neonscience.org/",
+                          img(src = "NSF-NEON-logo.png", title = "NEON - NSF logo")
+                        ),
+                        p("This module will introduce key concepts within Ecological forecasting through exploration of ",
+                          a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data"), ", building a model and then generating a short-term ecological forecast."),
+                        h2(tags$b("Think about it!")),
+                        textInput(inputId = "q1", label = "Q1. What is an ecological forecast? What is uncertainty?",
+                                  placeholder = "An ecological forecast is...", width = "80%")
+                        
+               ),
+               
+               # 2. Exploration ----
+               tabPanel(title = "Exploration",
+                        tags$style(type="text/css", "body {padding-top: 65px;}"),
+                        img(src = "eddie_banner_2018.v5.jpg", height = 100, 
+                            width = 1544, top = 5),
+                        h3("Examples of Current Ecological Forecasts"),
+                        tags$ul(
+                          tags$li(a(href = EF_links$webpage[1], EF_links$Forecast[1]), br(), p(EF_links$About[1])),
+                          tags$li(a(href = EF_links$webpage[2], EF_links$Forecast[2]), br(), p(EF_links$About[2])),
+                          tags$li(a(href = EF_links$webpage[3], EF_links$Forecast[3]), br(), p(EF_links$About[3])),
+                          tags$li(a(href = EF_links$webpage[4], EF_links$Forecast[4]), br(), p(EF_links$About[4]))
                         )
                         
-                        ,
-                        #** Site photo ----
-                        column(3,
-                               h2("Phenocam"),
-                               wellPanel(
-                                 withSpinner(imageOutput("pheno"), type = 1,
-                                             hide.ui = FALSE
+               ),
+               
+               # 3. Get Data ----
+               tabPanel(title = "Get Data",
+                        tags$style(type="text/css", "body {padding-top: 65px;}"),
+                        img(src = "eddie_banner_2018.v5.jpg", height = 100, 
+                            width = 1544, top = 5),
+                        #* NEON Map ====
+                        fluidRow(
+                          # conditionalPanel(condition = "input.site_html > 1",
+                          #** NEON Intro ----
+                          column(5,
+                                 h2("Site Description"),
+                                 p("Select a site in the table to highlight on the map"),
+                                 DT::DTOutput("table01"),
+                                 
+                                 
+                                 # p("Blah blah blah"),
+                                 # selectInput('site', 'Site', c('Toolik', 'Muggs')),
+                                 # radioButtons("ecotype", "Ecological Type", c("Aquatic", "Terrestrial"))
+                          ),
+                          #** Site map ----
+                          column(4,
+                                 h2("Map of NEON sites"),
+                                 p("Click on a site on the map to see the latest image from the phenocam"),
+                                 wellPanel(
+                                   leafletOutput("neonmap")
                                  )
-                               )
-                        )
-                      ),
-                      span(textOutput("site_name1"), style = "font-size: 20px;
-                                        font-style: bold;"),
-                      h2(tags$b("About Site")),
-                      wellPanel(
-                        uiOutput("site_html"),
-                        htmlOutput("site_link")
-                      ),
-                      hr(),
-                      
-                      # Data Exploration ----
-                      h2("Data Exploration"),
-                      p("Now we will explore the data measured at the selected site. This is data that has been downloaded from the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal"), ". The variables shown have been selected for this module but there are a wide range of variables collected at each NEON site. Further details can be found on the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal"), "."),
-                      # actionButton("load_data", "Load data", icon = icon("download")),
-                      # conditionalPanel("input.load_data",
-                      selectInput("view_var", "Select variable",
-                                  choices = unique(neon_vars$Short_name)
-                                  # )
-                      ),
-                      
-                      fluidRow(
-                        #** Data Table ----
-                        column(6,
-                               h3("Data Table"),
-                               DT::DTOutput("neon_datatable")
-                        ),
-                        #** Plot of data ----
-                        column(6,
-                               h3("Data Plot"),
-                               wellPanel(
-                                 # conditionalPanel("input.var_plot", 
-                                 plotlyOutput("var_plot")
-                                 # )
-                               )
-                        )
-                      ), hr(),
-                      fluidRow(
-                        #** Weather Forecast ----
-                        column(3,
-                               h3("Weather Forecast"),
-                               p(module_text["weather_forecast1", ]),
-                               p("Weather forecast are produced using ", tags$b("ensemble modelling"), "."),
-                               p(module_text["ens_mod1", ]),
-                               p(module_text["weather_forecast2", ])
-                        ),
-                        column(3,
-                               p("Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS"), " forecast."),
-                               p("Inspect the different meteorological outputs. You can adjust the number of members, which is the number of forecasts and also how it is visualized. A line plot shows each individual member while the distribution  shows the median 75th and 95th percentile."),
-                               actionButton('load_fc', "Load Forecast", icon = icon("download")),
-                               actionButton('plot_fc', "Plot Forecast!", icon = icon("chart-line")),
-                               wellPanel(
-                                 conditionalPanel("input.load_fc",
-                                                  uiOutput("sel_fc_vars"),
-                                                  uiOutput("sel_fc_members"),
-                                                  selectInput('type', 'Plot type', plot_types,
-                                                              selected = plot_types[1])
-                                                  
+                          )
+                          
+                          ,
+                          #** Site photo ----
+                          column(3,
+                                 h2("Phenocam"),
+                                 wellPanel(
+                                   withSpinner(imageOutput("pheno"), type = 1,
+                                               hide.ui = FALSE
+                                   )
                                  )
-                               )
-                        ),
-                        column(6,
-                               
-                               # h3("Weather Forecast"),
-                               wellPanel(
-                                 conditionalPanel("input.plot_fc",
-                                                  plotlyOutput("fc_plot")
-                                 )
-                               )
-                        )
-                      )
-             ),
-             
-             # 4. Build Model ----
-             tabPanel(title = "Build Model",
-                      tags$style(type="text/css", "body {padding-top: 65px;}"),
-                      img(src = "eddie_banner_2018.v5.jpg", height = 100, 
-                          width = 1544, top = 5),
-                      #* Intro text ====
-                      fluidRow(
-                        # conditionalPanel(condition = "input.site_html > 1",
-                        #** NEON Intro ----
-                        column(4,
-                               h3("What is a Model?"),
-                               p(module_text["model1", ]),
-                               p(module_text["model2", ]),
-                               p(module_text["model3", ]),
-                               p(module_text["mod_desc", ]),
-                               p("Click through the images to see how we can go from a conceptual food web model to a mathematical representation of the interaction of Nutrients (N), Phytoplankton (P) and Zooplankton (Z).")
-                        ),
-                        column(6,
-                               slickROutput("slck_model")
-                               # img(src = "concep_math_model.png", height = 600, width = 800))
-                        )
-                      ),
-                      br(),
-                      br(),
-                      hr(),
-                      #** Sort state and process variables ====
-                      h2(tags$b("Exercise")),
-                      p("When working with Ecological models, the terms 'State variables' and 'Process variables' are used. Using the model diagram above, can you identify which are state or process variables"),
-                      fluidRow(
-                        column(
-                          # tags$b("Exercise"),
-                          width = 9,
-                          bucket_list(
-                            header = "Drag the variables into 'Process' or 'State' boxes",
-                            group_name = "bucket_list_group",
-                            orientation = "horizontal",
-                            add_rank_list(
-                              text = "Drag from here",
-                              labels = sample(c(state_vars, process_vars)),
-                              input_id = "rank_list_1"
-                            ),
-                            add_rank_list(
-                              text = "State variables",
-                              labels = NULL,
-                              input_id = "rank_list_2"
-                            ),
-                            add_rank_list(
-                              text = "Process variables",
-                              labels = NULL,
-                              input_id = "rank_list_3"
-                            )
                           )
                         ),
-                        column(3,
-                               useShinyjs(),  # Set up shinyjs
-                               actionButton("ans_btn", "Check answers"),
-                               # hidden(
-                               #   tableOutput("ans_vars")
-                               # ),
-                               verbatimTextOutput("state_ans")
-                               # shiny::tableOutput("ans_vars")
-                               # textInput("text", "Text")
-                        )
-                      ),
-                      #** Run ecological model ====
-                      fluidRow(
-                        h2(tags$b("Simulate")),
-                        column(
-                          width = 4,
-                          p("To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates."),
-                          #** Update Hypothesis ----
-                          # h3("Update hypothesis"),
-                          # wellPanel(
-                          h4(tags$b("Model Drivers")),
-                          checkboxGroupInput("mod_sens", "Select which variables the model is sensitive to:",
-                                             choices = list("Temperature", "Light", "Nutrient loading"))
-                          # )
-                          ,
-                          # wellPanel(
-                          h4(tags$b("Zooplankton parameters")),
-                          p(tags$em("Grazing")),
-                          sliderInput("graz_rate", label = div(style='width:300px;', 
-                                                               div(style='float:left;', 'Eat less'), 
-                                                               div(style='float:right;', 'Eat more')),
-                                      min = 0.2, max = 1.6, value = 1.2, step = 0.1),
-                          p(tags$em("Mortality")),
-                          sliderInput("mort_rate", label = div(style='width:300px;', 
-                                                               div(style='float:left;', 'Lower death'), 
-                                                               div(style='float:right;', 'Higher death')),
-                                      min = 0.1, max = 1, value = 0.3, step = 0.1)
-                          # )
-                          ,
-                          # wellPanel(
-                          h4(tags$b("Phytoplankton parameters")),
-                          p(tags$em("Uptake")),
-                          sliderInput("nut_uptake", label = div(style='width:300px;', 
-                                                                div(style='float:left;', 'Low uptake'), 
-                                                                div(style='float:right;', 'High uptake')),
-                                      min = 0.1, max = 1.7, value = 0.8, step = 0.1),
-                          h4(tags$b("Initial conditions")),
-                          sliderInput("phy_init", "Initial phytoplankton", min = 0.1, max = 10, step = 0.1, value = 2),
-                          sliderInput("zoo_init", "Initial zooplankton", min = 0.1, max = 5, step = 0.1, value = 0.4),
-                          sliderInput("nut_init", "Initial nutrients", min = 1, max = 20, step = 1, value = 9)
-                          # )
-                          ,
-                          p("We are using observed data from the selected site in panel 'Get Data' to force this NPZ model."),
-                          actionButton("run_mod_ann", label = "Run Model", icon = icon("running")),
-                          p("Save the plot output"),
-                          checkboxInput("add_obs", "Add observations"),
-                          p("How does the model output compare to in-lake observations? Here are some things you should look out for:"),
-                          tags$ol(
-                            tags$li("Is the model in the same range as the observations?"),
-                            tags$li("Does it capture the seasonal patterns?"),
-                            tags$li("Does the model simulate events seen as spikes?")
+                        span(textOutput("site_name1"), style = "font-size: 20px;
+                                        font-style: bold;"),
+                        h2(tags$b("About Site")),
+                        wellPanel(
+                          uiOutput("site_html"),
+                          htmlOutput("site_link")
+                        ),
+                        hr(),
+                        
+                        # Data Exploration ----
+                        h2("Data Exploration"),
+                        p("Now we will explore the data measured at the selected site. This is data that has been downloaded from the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal"), ". The variables shown have been selected for this module but there are a wide range of variables collected at each NEON site. Further details can be found on the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal"), "."),
+                        # actionButton("load_data", "Load data", icon = icon("download")),
+                        # conditionalPanel("input.load_data",
+                        selectInput("view_var", "Select variable",
+                                    choices = unique(neon_vars$Short_name)
+                                    # )
+                        ),
+                        
+                        fluidRow(
+                          #** Data Table ----
+                          column(6,
+                                 h3("Data Table"),
+                                 DT::DTOutput("neon_datatable")
                           ),
-                          p("Can you think of any potential reasons why the model does not do so well"),
-                          p("We will explore some of these potential reasons later on.")
-                          
-                          # actionButton("view_mod_ann", label = "View Model Output", icon = icon("chart-line"))
-                          
-                        ),
-                        # wellPanel(
-                        column(
-                          width = 6,
-                          plotlyOutput("mod_ann_plot"),
-                          plotlyOutput("mod_phyto_plot")
+                          #** Plot of data ----
+                          column(6,
+                                 h3("Data Plot"),
+                                 wellPanel(
+                                   # conditionalPanel("input.var_plot", 
+                                   plotlyOutput("var_plot")
+                                   # )
+                                 )
+                          )
+                        ), hr(),
+                        fluidRow(
+                          #** Weather Forecast ----
+                          column(3,
+                                 h3("Weather Forecast"),
+                                 p(module_text["weather_forecast1", ]),
+                                 p("Weather forecast are produced using ", tags$b("ensemble modelling"), "."),
+                                 p(module_text["ens_mod1", ]),
+                                 p(module_text["weather_forecast2", ])
+                          ),
+                          column(3,
+                                 p("Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS"), " forecast."),
+                                 p("Inspect the different meteorological outputs. You can adjust the number of members, which is the number of forecasts and also how it is visualized. A line plot shows each individual member while the distribution  shows the median 75th and 95th percentile."),
+                                 actionButton('load_fc', "Load Forecast", icon = icon("download")),
+                                 actionButton('plot_fc', "Plot Forecast!", icon = icon("chart-line")),
+                                 wellPanel(
+                                   conditionalPanel("input.load_fc",
+                                                    uiOutput("sel_fc_vars"),
+                                                    uiOutput("sel_fc_members"),
+                                                    selectInput('type', 'Plot type', plot_types,
+                                                                selected = plot_types[1])
+                                                    
+                                   )
+                                 )
+                          ),
+                          column(6,
+                                 
+                                 # h3("Weather Forecast"),
+                                 wellPanel(
+                                   conditionalPanel("input.plot_fc",
+                                                    plotlyOutput("fc_plot")
+                                   )
+                                 )
+                          )
                         )
-                        # )
-                      ),
-             ),
-             
-             # 5. Forecast! ----
-             tabPanel(title = "Forecast!",
-                      tags$style(type="text/css", "body {padding-top: 65px;}"),
-                      img(src = "eddie_banner_2018.v5.jpg", height = 100, 
-                          width = 1544, top = 5),
-                      #* Forecasting text ====
-                      fluidRow(
-                        column(4,
-                               h3("Forecasting"),
-                               p(module_text["eco_forecast", ]),
-                               br(),
-                               p("For this exercise we will forecast 16 days into the future using the weather forecast data we loaded on the 'Get Data' tab."),
-                               p("But before we dive in to this, we will need to understand what we mean we mean when we talk about uncertainty.")
+               ),
+               
+               # 4. Build Model ----
+               tabPanel(title = "Build Model",
+                        tags$style(type="text/css", "body {padding-top: 65px;}"),
+                        img(src = "eddie_banner_2018.v5.jpg", height = 100, 
+                            width = 1544, top = 5),
+                        #* Intro text ====
+                        fluidRow(
+                          # conditionalPanel(condition = "input.site_html > 1",
+                          #** NEON Intro ----
+                          column(4,
+                                 h3("What is a Model?"),
+                                 p(module_text["model1", ]),
+                                 p(module_text["model2", ]),
+                                 p(module_text["model3", ]),
+                                 p(module_text["mod_desc", ]),
+                                 p("Click through the images to see how we can go from a conceptual food web model to a mathematical representation of the interaction of Nutrients (N), Phytoplankton (P) and Zooplankton (Z).")
+                          ),
+                          column(6,
+                                 slickROutput("slck_model")
+                                 # img(src = "concep_math_model.png", height = 600, width = 800))
+                          )
                         ),
-                        column(5, offset = 1,
-                               HTML('<center><img src="What_is_EF.png"></center>'),
-                        )
-                      ),
-                      hr(),
-                      #* What is Uncertainty? ====
-                      fluidRow(
-                        column(4,
-                               h3("What is Uncertainty?"),
-                               p(module_text["uncert1", ]),
-                               br(),
-                               p("We will now use the model you built on the 'Build Model' tab to step through the different sources of uncertainty in an ecological forecast.")
+                        br(),
+                        br(),
+                        hr(),
+                        #** Sort state and process variables ====
+                        h2(tags$b("Exercise")),
+                        p("When working with Ecological models, the terms 'State variables' and 'Process variables' are used. Using the model diagram above, can you identify which are state or process variables"),
+                        fluidRow(
+                          column(
+                            # tags$b("Exercise"),
+                            width = 9,
+                            bucket_list(
+                              header = "Drag the variables into 'Process' or 'State' boxes",
+                              group_name = "bucket_list_group",
+                              orientation = "horizontal",
+                              add_rank_list(
+                                text = "Drag from here",
+                                labels = sample(c(state_vars, process_vars)),
+                                input_id = "rank_list_1"
+                              ),
+                              add_rank_list(
+                                text = "State variables",
+                                labels = NULL,
+                                input_id = "rank_list_2"
+                              ),
+                              add_rank_list(
+                                text = "Process variables",
+                                labels = NULL,
+                                input_id = "rank_list_3"
+                              )
+                            )
+                          ),
+                          column(3,
+                                 useShinyjs(),  # Set up shinyjs
+                                 actionButton("ans_btn", "Check answers"),
+                                 # hidden(
+                                 #   tableOutput("ans_vars")
+                                 # ),
+                                 verbatimTextOutput("state_ans")
+                                 # shiny::tableOutput("ans_vars")
+                                 # textInput("text", "Text")
+                          )
                         ),
-                        column(5, offset = 1,
-                               HTML('<center><img src="What_is_uncert.png"></center>'),
-                        )
-                      ),
-                      hr(),
-                      #* Driver Uncertainty ====
-                      fluidRow(
-                        column(3,
-                               h3("Driver Uncertainty"),
-                               p(module_text["driver_uncert", ]),
-                               br(),
-                               p("A key component of what makes an ecological forecast a 'forecast', is that the model is driven by forecasted driving variables."),
-                               p("We will now use the weather forecast data we loaded on the 'Get Data' tab to drive the calibrated model we built on the 'Build Model' tab to forecast chlorophyll-a concentrations into the future.")
+                        #** Run ecological model ====
+                        fluidRow(
+                          h2(tags$b("Simulate")),
+                          column(
+                            width = 4,
+                            p("To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates."),
+                            #** Update Hypothesis ----
+                            # h3("Update hypothesis"),
+                            # wellPanel(
+                            h4(tags$b("Model Drivers")),
+                            checkboxGroupInput("mod_sens", "Select which variables the model is sensitive to:",
+                                               choices = list("Temperature", "Light", "Nutrient loading"))
+                            # )
+                            ,
+                            # wellPanel(
+                            h4(tags$b("Zooplankton parameters")),
+                            p(tags$em("Grazing")),
+                            sliderInput("graz_rate", label = div(style='width:300px;', 
+                                                                 div(style='float:left;', 'Eat less'), 
+                                                                 div(style='float:right;', 'Eat more')),
+                                        min = 0.2, max = 1.6, value = 1.2, step = 0.1),
+                            p(tags$em("Mortality")),
+                            sliderInput("mort_rate", label = div(style='width:300px;', 
+                                                                 div(style='float:left;', 'Lower death'), 
+                                                                 div(style='float:right;', 'Higher death')),
+                                        min = 0.1, max = 1, value = 0.3, step = 0.1)
+                            # )
+                            ,
+                            # wellPanel(
+                            h4(tags$b("Phytoplankton parameters")),
+                            p(tags$em("Uptake")),
+                            sliderInput("nut_uptake", label = div(style='width:300px;', 
+                                                                  div(style='float:left;', 'Low uptake'), 
+                                                                  div(style='float:right;', 'High uptake')),
+                                        min = 0.1, max = 1.7, value = 0.8, step = 0.1),
+                            h4(tags$b("Initial conditions")),
+                            sliderInput("phy_init", "Initial phytoplankton", min = 0.1, max = 10, step = 0.1, value = 2),
+                            sliderInput("zoo_init", "Initial zooplankton", min = 0.1, max = 5, step = 0.1, value = 0.4),
+                            sliderInput("nut_init", "Initial nutrients", min = 1, max = 20, step = 1, value = 9)
+                            # )
+                            ,
+                            p("We are using observed data from the selected site in panel 'Get Data' to force this NPZ model."),
+                            actionButton("run_mod_ann", label = "Run Model", icon = icon("running")),
+                            p("Save the plot output"),
+                            checkboxInput("add_obs", "Add observations"),
+                            p("How does the model output compare to in-lake observations? Here are some things you should look out for:"),
+                            tags$ol(
+                              tags$li("Is the model in the same range as the observations?"),
+                              tags$li("Does it capture the seasonal patterns?"),
+                              tags$li("Does the model simulate events seen as spikes?")
+                            ),
+                            p("Can you think of any potential reasons why the model does not do so well"),
+                            p("We will explore some of these potential reasons later on.")
+                            
+                            # actionButton("view_mod_ann", label = "View Model Output", icon = icon("chart-line"))
+                            
+                          ),
+                          # wellPanel(
+                          column(
+                            width = 6,
+                            plotlyOutput("mod_ann_plot"),
+                            plotlyOutput("mod_phyto_plot")
+                          )
+                          # )
                         ),
-                        column(3,
-                               wellPanel(
-                                 actionButton('load_fc2', label = div("Run Forecast!", icon("running")),
+               ),
+               
+               # 5. Forecast! ----
+               tabPanel(title = "Forecast!",
+                        tags$style(type="text/css", "body {padding-top: 65px;}"),
+                        img(src = "eddie_banner_2018.v5.jpg", height = 100, 
+                            width = 1544, top = 5),
+                        #* Forecasting text ====
+                        fluidRow(
+                          column(4,
+                                 h3("Forecasting"),
+                                 p(module_text["eco_forecast", ]),
+                                 br(),
+                                 p("For this exercise we will forecast 16 days into the future using the weather forecast data we loaded on the 'Get Data' tab."),
+                                 p("But before we dive in to this, we will need to understand what we mean we mean when we talk about uncertainty.")
+                          ),
+                          column(5, offset = 1,
+                                 HTML('<center><img src="What_is_EF.png"></center>'),
+                          )
+                        ),
+                        hr(),
+                        #* What is Uncertainty? ====
+                        fluidRow(
+                          column(4,
+                                 h3("What is Uncertainty?"),
+                                 p(module_text["uncert1", ]),
+                                 br(),
+                                 p("We will now use the model you built on the 'Build Model' tab to step through the different sources of uncertainty in an ecological forecast.")
+                          ),
+                          column(5, offset = 1,
+                                 HTML('<center><img src="What_is_uncert.png"></center>'),
+                          )
+                        ),
+                        hr(),
+                        #* Driver Uncertainty ====
+                        fluidRow(
+                          column(3,
+                                 h3("Driver Uncertainty"),
+                                 p(module_text["driver_uncert", ]),
+                                 br(),
+                                 p("A key component of what makes an ecological forecast a 'forecast', is that the model is driven by forecasted driving variables."),
+                                 p("We will now use the weather forecast data we loaded on the 'Get Data' tab to drive the calibrated model we built on the 'Build Model' tab to forecast chlorophyll-a concentrations into the future.")
+                          ),
+                          column(3,
+                                 wellPanel(
+                                   actionButton('load_fc2', label = div("Run Forecast!", icon("running")),
+                                                width = "60%"),
+                                   # br(), br(),
+                                   # actionButton('run_fc2', label = div("Run Forecast!", icon("running")),
+                                   #              width = "60%"),
+                                   # br(), br(),
+                                   # actionButton('plot_fc2', div("Plot Forecast!", icon("chart-line")),
+                                   #              width = "60%"),
+                                   # br(), br(),
+                                   # conditionalPanel("input.plot_fc2",
+                                   conditionalPanel("input.load_fc2",
+                                                    numericInput('members2', 'No. of members', 16,
+                                                                 min = 1, max = 30, step = 1),
+                                                    # uiOutput("eco_fc_members"),
+                                                    selectInput('type2', 'Plot type', plot_types,
+                                                                selected = plot_types[2])
+                                   )
+                                   
+                                   
+                                   # )
+                                 )
+                          ),
+                          column(6,
+                                 h4("Plot showing Driver Uncertainty"),
+                                 plotlyOutput("plot_ecof2")
+                          )
+                        ),
+                        hr(),
+                        #* Parameter Uncertainty ====
+                        fluidRow(
+                          column(3,
+                                 h3("Parameter Uncertainty"),
+                                 p(module_text["param_uncert", ]),
+                                 br(),
+                                 p("We will now revisit the model we built to adjust the parameters to see how that influences forecast uncertainty. One weather forecast is used to drive the model. Instead of selecting one value we will select a range. The width of the range highlights how certain we are about that parameter. The model will sample 21 random values between that range to represent the potential different values of that parameter."),
+                                 p(" Each time you click 'Run Forecast!', it will re-run the forecast with new parameters."),
+                                 p("You can adjust the number of members which are displayed in the forecast plot and also select between a line plot or a distribution plot.")
+                          ),
+                          column(3,
+                                 h4("Adjust parameter ranges"),
+                                 h5(tags$b("Zooplankton parameters")),
+                                 p(tags$em("Grazing")),
+                                 sliderInput("graz_rate2", label = div(style='width:300px;', 
+                                                                       div(style='float:left;', 'Eat less'), 
+                                                                       div(style='float:right;', 'Eat more')),
+                                             min = 0.2, max = 1.6, value = c(0.2, 1.6), step = 0.1),
+                                 p(tags$em("Mortality")),
+                                 sliderInput("mort_rate2", label = div(style='width:300px;', 
+                                                                       div(style='float:left;', 'Lower death'), 
+                                                                       div(style='float:right;', 'Higher death')),
+                                             min = 0.1, max = 1, value = c(0.1, 1), step = 0.1),
+                                 # wellPanel(
+                                 h5(tags$b("Phytoplankton parameter")),
+                                 p(tags$em("Uptake")),
+                                 sliderInput("nut_uptake2", label = div(style='width:300px;', 
+                                                                        div(style='float:left;', 'Low uptake'), 
+                                                                        div(style='float:right;', 'High uptake')),
+                                             min = 0.1, max = 1.7, value = c(0.1, 1.7), step = 0.1),
+                                 # Old buttons -
+                                 # actionButton("base_plot2", label = div("Generate forecast plot", 
+                                 #                                       icon("chart-line")), width = "60%"),
+                                 # actionButton("scen_plot2", label = div("Add forecast", 
+                                 #                                       icon("plus")), width = "60%")
+                                 # New buttons
+                                 actionButton('load_fc3', label = div("Run Forecast!", icon("running")),
                                               width = "60%"),
-                                 # br(), br(),
-                                 # actionButton('run_fc2', label = div("Run Forecast!", icon("running")),
-                                 #              width = "60%"),
-                                 # br(), br(),
-                                 # actionButton('plot_fc2', div("Plot Forecast!", icon("chart-line")),
-                                 #              width = "60%"),
-                                 # br(), br(),
-                                 # conditionalPanel("input.plot_fc2",
-                                 conditionalPanel("input.load_fc2",
-                                                  numericInput('members2', 'No. of members', 16,
-                                                               min = 1, max = 30, step = 1),
-                                                  # uiOutput("eco_fc_members"),
-                                                  selectInput('type2', 'Plot type', plot_types,
-                                                              selected = plot_types[2])
-                                                  )
-                                                  
-                                                  
-                                 # )
-                               )
-                               ),
-                        column(6,
-                               h4("Plot showing Driver Uncertainty"),
-                               plotlyOutput("plot_ecof2")
-                        )
-                      ),
-                      hr(),
-                      #* Parameter Uncertainty ====
-                      fluidRow(
-                        column(3,
-                               h3("Parameter Uncertainty"),
-                               p(module_text["param_uncert", ]),
-                               br(),
-                               p("We will now revisit the model we built to adjust the parameters to see how that influences forecast uncertainty. One weather forecast is used to drive the model. Instead of selecting one value we will select a range. The width of the range highlights how certain we are about that parameter. The model will sample 21 random values between that range to represent the potential different values of that parameter."),
-                               p(" Each time you click 'Run Forecast!', it will re-run the forecast with new parameters."),
-                               p("You can adjust the number of members which are displayed in the forecast plot and also select between a line plot or a distribution plot.")
+                                 numericInput('members3', 'No. of members', 10,
+                                              min = 1, max = 21, step = 1),
+                                 selectInput('type3', 'Plot type', plot_types,
+                                             selected = plot_types[2])
+                                 
+                          ),
+                          column(6,
+                                 h4("Plot showing Parameter Uncertainty"),
+                                 plotlyOutput("pars_plot")
+                          )
                         ),
-                        column(3,
-                               h4("Adjust parameter ranges"),
-                               h5(tags$b("Zooplankton parameters")),
-                               p(tags$em("Grazing")),
-                               sliderInput("graz_rate2", label = div(style='width:300px;', 
-                                                                    div(style='float:left;', 'Eat less'), 
-                                                                    div(style='float:right;', 'Eat more')),
-                                           min = 0.2, max = 1.6, value = c(0.2, 1.6), step = 0.1),
-                               p(tags$em("Mortality")),
-                               sliderInput("mort_rate2", label = div(style='width:300px;', 
-                                                                    div(style='float:left;', 'Lower death'), 
-                                                                    div(style='float:right;', 'Higher death')),
-                                           min = 0.1, max = 1, value = c(0.1, 1), step = 0.1),
-                               # wellPanel(
-                               h5(tags$b("Phytoplankton parameter")),
-                               p(tags$em("Uptake")),
-                               sliderInput("nut_uptake2", label = div(style='width:300px;', 
-                                                                     div(style='float:left;', 'Low uptake'), 
-                                                                     div(style='float:right;', 'High uptake')),
-                                           min = 0.1, max = 1.7, value = c(0.1, 1.7), step = 0.1),
-                               # Old buttons -
-                               # actionButton("base_plot2", label = div("Generate forecast plot", 
-                               #                                       icon("chart-line")), width = "60%"),
-                               # actionButton("scen_plot2", label = div("Add forecast", 
-                               #                                       icon("plus")), width = "60%")
-                               # New buttons
-                               actionButton('load_fc3', label = div("Run Forecast!", icon("running")),
-                                            width = "60%"),
-                               numericInput('members3', 'No. of members', 10,
-                                            min = 1, max = 21, step = 1),
-                               selectInput('type3', 'Plot type', plot_types,
-                                           selected = plot_types[2])
-                               
-                               ),
-                        column(6,
-                               h4("Plot showing Parameter Uncertainty"),
-                               plotlyOutput("pars_plot")
-                        )
-                      ),
-                      hr(),
-                      #* Initial condition Uncertainty ====
-                      fluidRow(
-                        column(3,
-                               h3("Initial Condition Uncertainty"),
-                               p(module_text["init_uncert", ]),
-                               br(),
-                               p("We will now alter the initial conditions of the model to investigate what impact this has on the forecast."),
-                               p("Similarly to the parameter values, you will now select a range of potential initial values for the model. A small range represents times when we have up-to-date data which represents current conditions while a large range might be used when the last measurement was from greater than one week ago."),
-                               p("The parameters used in this model will come from the calibrated values in the 'Build Model' tab and the driving data will be one of the meteorological forecasts from the 'Get Data' tab.")
+                        hr(),
+                        #* Initial condition Uncertainty ====
+                        fluidRow(
+                          column(3,
+                                 h3("Initial Condition Uncertainty"),
+                                 p(module_text["init_uncert", ]),
+                                 br(),
+                                 p("We will now alter the initial conditions of the model to investigate what impact this has on the forecast."),
+                                 p("Similarly to the parameter values, you will now select a range of potential initial values for the model. A small range represents times when we have up-to-date data which represents current conditions while a large range might be used when the last measurement was from greater than one week ago."),
+                                 p("The parameters used in this model will come from the calibrated values in the 'Build Model' tab and the driving data will be one of the meteorological forecasts from the 'Get Data' tab.")
+                          ),
+                          column(3,
+                                 h4("Adjust initial conditions"),
+                                 br(),
+                                 sliderInput("phy_init2", "Initial phytoplankton", min = 0.1, max = 10, step = 0.1, value = c(1.9, 2.1)),
+                                 sliderInput("zoo_init2", "Initial zooplankton", min = 0.1, max = 5, step = 0.1, value = c(0.3, 0.5)),
+                                 sliderInput("nut_init2", "Initial nutrients", min = 1, max = 20, step = 1, value = c(8,10)),
+                                 # Old Buttons
+                                 # actionButton("base_plot3", label = div("Generate forecast plot", 
+                                 #                                        icon("chart-line")), width = "60%"),
+                                 # actionButton("scen_plot3", label = div("Add new forecast", 
+                                 #                                        icon("plus")), width = "60%")
+                                 # New buttons
+                                 actionButton('load_fc4', label = div("Run Forecast!", icon("running")),
+                                              width = "60%"),
+                                 numericInput('members4', 'No. of members', 10,
+                                              min = 1, max = 21, step = 1),
+                                 selectInput('type4', 'Plot type', plot_types,
+                                             selected = plot_types[2])
+                          ),
+                          column(6,
+                                 h4("Plot showing Initial conditions Uncertainty"),
+                                 plotlyOutput("ic_plot")
+                          )
                         ),
-                        column(3,
-                               h4("Adjust initial conditions"),
-                               br(),
-                               sliderInput("phy_init2", "Initial phytoplankton", min = 0.1, max = 10, step = 0.1, value = c(1.9, 2.1)),
-                               sliderInput("zoo_init2", "Initial zooplankton", min = 0.1, max = 5, step = 0.1, value = c(0.3, 0.5)),
-                               sliderInput("nut_init2", "Initial nutrients", min = 1, max = 20, step = 1, value = c(8,10)),
-                               # Old Buttons
-                               # actionButton("base_plot3", label = div("Generate forecast plot", 
-                               #                                        icon("chart-line")), width = "60%"),
-                               # actionButton("scen_plot3", label = div("Add new forecast", 
-                               #                                        icon("plus")), width = "60%")
-                               # New buttons
-                               actionButton('load_fc4', label = div("Run Forecast!", icon("running")),
-                                            width = "60%"),
-                               numericInput('members4', 'No. of members', 10,
-                                            min = 1, max = 21, step = 1),
-                               selectInput('type4', 'Plot type', plot_types,
-                                           selected = plot_types[2])
+                        #** Climate Change Scenarios ====
+                        # fluidRow(
+                        #   h2(tags$b("Climate Change Scenarios")),
+                        #   p("Two ways in which climate change can affect lakes is through changing temperatures and altering landuse."),
+                        #   column(
+                        #     width = 4,
+                        #     wellPanel(
+                        #       h3("Adjusting forcing data"),
+                        #       sliderInput(inputId = 'temp',
+                        #                   label = "Temperature Change",
+                        #                   min = -3, max = 3,
+                        #                   value = 0, step = 1),
+                        #       sliderInput('nload', 'Nutrient loading', min = 0, max = 2,
+                        #                   value = 1, step = 0.2),
+                        #       actionButton("base_plot", "Generate baseline plot",
+                        #                    icon = icon("chart-line")),
+                        #       actionButton("scen_plot", "Add scenario line to plot",
+                        #                    icon = icon("plus"))
+                        #       )
+                        #     ),
+                        #   column(
+                        #     width = 6,
+                        #     plotlyOutput("cc_plot")
+                        #     )
+                        #   )
+               ),
+               # 6. Generate Report ----
+               tabPanel(title = "Generate Report",
+                        tags$style(type="text/css", "body {padding-top: 65px;}"),
+                        img(src = "eddie_banner_2018.v5.jpg", height = 100, 
+                            width = 1544, top = 5),
+                        br(),
+                        #* Generate report buttons ====
+                        actionButton("generate", "Generate Report", icon = icon("file"), # This is the only button that shows up when the app is loaded
+                                     # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
                         ),
-                        column(6,
-                               h4("Plot showing Initial conditions Uncertainty"),
-                               plotlyOutput("ic_plot")
-                        )
-                      ),
-                      #** Climate Change Scenarios ====
-                      # fluidRow(
-                      #   h2(tags$b("Climate Change Scenarios")),
-                      #   p("Two ways in which climate change can affect lakes is through changing temperatures and altering landuse."),
-                      #   column(
-                      #     width = 4,
-                      #     wellPanel(
-                      #       h3("Adjusting forcing data"),
-                      #       sliderInput(inputId = 'temp',
-                      #                   label = "Temperature Change",
-                      #                   min = -3, max = 3,
-                      #                   value = 0, step = 1),
-                      #       sliderInput('nload', 'Nutrient loading', min = 0, max = 2,
-                      #                   value = 1, step = 0.2),
-                      #       actionButton("base_plot", "Generate baseline plot",
-                      #                    icon = icon("chart-line")),
-                      #       actionButton("scen_plot", "Add scenario line to plot",
-                      #                    icon = icon("plus"))
-                      #       )
-                      #     ),
-                      #   column(
-                      #     width = 6,
-                      #     plotlyOutput("cc_plot")
-                      #     )
-                      #   )
-             ),
-             # 6. Generate Report ----
-             tabPanel(title = "Generate Report",
-                      tags$style(type="text/css", "body {padding-top: 65px;}"),
-                      img(src = "eddie_banner_2018.v5.jpg", height = 100, 
-                          width = 1544, top = 5),
-                      br(),
-                      #* Generate report buttons ====
-                      actionButton("generate", "Generate Report", icon = icon("file"), # This is the only button that shows up when the app is loaded
-                                   # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
-                      ),
-                      conditionalPanel(condition = "output.reportbuilt", # This button appears after the report has been generated and is ready for download.
-                                       downloadButton("download", "Download Report",
-                                                      # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
-                                                      ))
-                      )
-             )
+                        conditionalPanel(condition = "output.reportbuilt", # This button appears after the report has been generated and is ready for download.
+                                         downloadButton("download", "Download Report",
+                                                        # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
+                                         ))
+               )
+    )
   ) 
-
+  
+}
 
 # Server ----
 server <- function(input, output, session) {#
@@ -825,6 +828,9 @@ server <- function(input, output, session) {#
   })
   
   observeEvent(input$load_fc, {
+    validate(
+      need(exists("siteID"), "Please select a site from the table")
+    )
     fpath <- file.path("data", "NOAAGEFS_1hr", siteID)
     fold <<- list.files(fpath)
     fpath2 <- file.path(fpath, fold[1], "00")
@@ -1746,6 +1752,17 @@ server <- function(input, output, session) {#
     }
   )
   
+  # Bookmarking shiny app ----
+  # observe({
+  #   # Trigger this observer every time an input changes
+  #   print("input")
+  #   reactiveValuesToList(input)
+  #   session$doBookmark()
+  # })
+  # onBookmarked(function(url) {
+  #   updateQueryString(url)
+  # })
+  
   # output$report <- downloadHandler(
   #   # For PDF output, change this to "report.pdf"
   #   filename <- "report.pdf",
@@ -1768,5 +1785,5 @@ server <- function(input, output, session) {#
   # )
   
 }
-
+# enableBookmarking("url") # Needed for bookmarking currently not working
 shinyApp(ui, server)
