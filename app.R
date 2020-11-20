@@ -388,7 +388,11 @@ ui <- tagList(
                           sliderInput("nut_uptake", label = div(style='width:300px;', 
                                                                 div(style='float:left;', 'Low uptake'), 
                                                                 div(style='float:right;', 'High uptake')),
-                                      min = 0.1, max = 1.7, value = 0.8, step = 0.1)
+                                      min = 0.1, max = 1.7, value = 0.8, step = 0.1),
+                          h4(tags$b("Initial conditions")),
+                          sliderInput("phy_init", "Initial phytoplankton", min = 0.1, max = 10, step = 0.1, value = 2),
+                          sliderInput("zoo_init", "Initial zooplankton", min = 0.1, max = 5, step = 0.1, value = 0.4),
+                          sliderInput("nut_init", "Initial nutrients", min = 1, max = 20, step = 1, value = 9)
                           # )
                           ,
                           p("We are using observed data from the selected site in panel 'Get Data' to force this NPZ model."),
@@ -471,7 +475,9 @@ ui <- tagList(
                                  # br(), br(),
                                  # conditionalPanel("input.plot_fc2",
                                  conditionalPanel("input.load_fc2",
-                                                  uiOutput("eco_fc_members"),
+                                                  numericInput('members2', 'No. of members', 16,
+                                                               min = 1, max = 30, step = 1),
+                                                  # uiOutput("eco_fc_members"),
                                                   selectInput('type2', 'Plot type', plot_types,
                                                               selected = plot_types[2])
                                                   )
@@ -549,9 +555,9 @@ ui <- tagList(
                         column(3,
                                h4("Adjust initial conditions"),
                                br(),
-                               sliderInput("phy_init", "Initial phytoplankton", min = 0.1, max = 10, step = 0.1, value = c(1.9, 2.1)),
-                               sliderInput("zoo_init", "Initial zooplankton", min = 0.1, max = 5, step = 0.1, value = c(0.3, 0.5)),
-                               sliderInput("nut_init", "Initial nutrients", min = 1, max = 20, step = 1, value = c(8,10)),
+                               sliderInput("phy_init2", "Initial phytoplankton", min = 0.1, max = 10, step = 0.1, value = c(1.9, 2.1)),
+                               sliderInput("zoo_init2", "Initial zooplankton", min = 0.1, max = 5, step = 0.1, value = c(0.3, 0.5)),
+                               sliderInput("nut_init2", "Initial nutrients", min = 1, max = 20, step = 1, value = c(8,10)),
                                # Old Buttons
                                # actionButton("base_plot3", label = div("Generate forecast plot", 
                                #                                        icon("chart-line")), width = "60%"),
@@ -1019,12 +1025,12 @@ server <- function(input, output, session) {#
   #* Run eco-model ----
   mod_run1 <- eventReactive(input$run_mod_ann, {
     
-    siteID <- eventReactive(input$table01_rows_selected, {
-      neon_sites$siteID[input$table01_rows_selected]
-    })
-    
-    par <- read.csv(file.path("data", paste0(siteID(), "_daily_upar_2019.csv")))
-    wtemp <- read.csv(file.path("data", paste0(siteID(), "_daily_wtemp_2019.csv")))
+    # siteID <- eventReactive(input$table01_rows_selected, {
+    #   neon_sites$siteID[input$table01_rows_selected]
+    # })
+
+    par <- read.csv(file.path("data", paste0(siteID, "_daily_upar_2019.csv")))
+    wtemp <- read.csv(file.path("data", paste0(siteID, "_daily_wtemp_2019.csv")))
     stemp <- wtemp[wtemp[, 2] == min(wtemp[, 2]), c(1, 3)]
     if(sum(is.na(stemp[, 2])) > 0) {
       stemp[, 2] <- zoo::na.approx(stemp[, 2])
@@ -1051,16 +1057,37 @@ server <- function(input, output, session) {#
     if(!("Nutrient Loading" %in% input$mod_sens)) {
       inputs$NLOAD <- mean(inputs$NLOAD, na.rm = T) 
     }
+    
+    # Alter Initial conditions
+    yini[1] <- input$phy_init
+    yini[2] <- input$zoo_init
+    yini[3] <- input$nut_init
 
+    res <- matrix(NA, nrow = length(times), ncol = 5)
+    colnames(res) <- c("time", "Chla", "Phytoplankton", "Zooplankton", "Nutrients")
+    res[, 1] <- times
+    res[1, -1] <- c(yini[1], yini)
     
+    # Looped model version
+    for(i in 2:length(times)) {
+      out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NPZ_model,
+                                    parms = parms, method = "ode45", inputs = inputs))
+      res[i, -1] <- out[2, c(5, 2, 3, 4)]
+      yini <- out[2, c(2:4)]
+      
+    }
+    res <- as.data.frame(res)
+    res$time <- npz_inp$Date
+    return(res)
     
-    out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
-               method = "ode45", inputs = inputs)
-    out <- as.data.frame(out)
-    out$time <- npz_inp$Date
-    out <- out[, c("time", "Chlorophyll.Chl_Nratio", "PHYTO", "ZOO")]
-    colnames(out)[-1] <- c("Chla", "Phytoplankton", "Zooplankton")
-    return(out)
+    ## Old version
+    # out <- deSolve::ode(y = yini, times = times, func = NPZ_model, parms = parms,
+    #            method = "ode45", inputs = inputs)
+    # out <- as.data.frame(out)
+    # out$time <- npz_inp$Date
+    # out <- out[, c("time", "Chlorophyll.Chl_Nratio", "PHYTO", "ZOO")]
+    # colnames(out)[-1] <- c("Chla", "Phytoplankton", "Zooplankton")
+    # return(out)
     
   })
   
@@ -1115,11 +1142,11 @@ server <- function(input, output, session) {#
       geom_line(data = mlt, aes_string(names(mlt)[1], names(mlt)[3], color = names(mlt)[2])) +
       ylab("mmol N") +
       xlab("") +
-      facet_wrap(~variable, nrow = 2) +
+      facet_wrap(~variable, ncol = 1) +
       coord_cartesian(xlim = xlims) +
       theme_minimal(base_size = 16) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))+
-      scale_color_manual(values = cols[3:4])
+      scale_color_manual(values = cols[3:6])
     return(ggplotly(p, dynamicTicks = TRUE))
     
   })
@@ -1131,7 +1158,7 @@ server <- function(input, output, session) {#
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
-    progress$set(message = paste0("Running the NPZ model with ", membs, "forecasts"), 
+    progress$set(message = paste0("Running the NPZ model with 30 forecasts"), 
                  detail = "This may take a while. This window will disappear  
                      when it is finished running.", value = 1)
 
@@ -1229,20 +1256,19 @@ server <- function(input, output, session) {#
     })
   
   # Get NOAA forecast members ----
-  output$eco_fc_members <- renderUI({
-    numericInput('members2', 'No. of members', 16,
-                 min = 1, max = membs, step = 1)
-  })
+  # output$eco_fc_members <- renderUI({
+  #   numericInput('members2', 'No. of members', 16,
+  #                min = 1, max = membs, step = 1)
+  # })
   
   output$plot_ecof2 <- renderPlotly({
     
-    validate(
-      need(input$members2 >= 1 & input$members2 <= membs, 
-           message = paste0("The number of members must be between 1 and ", membs))
-    )
+    # validate(
+    #   need(input$members2 >= 1 & input$members2 <= membs, 
+    #        message = paste0("The number of members must be between 1 and ", membs))
+    # )
     
     sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
-    print(head(sub, 45))
     if(input$type2 == "distribution") {
       
       df3 <- plyr::ddply(sub, "time", function(x) {
@@ -1475,12 +1501,12 @@ server <- function(input, output, session) {#
   ic_fc <- eventReactive(input$load_fc4, {
     
     # Create 21 params
-    phyto_vals <- rnorm(21, mean(input$phy_init), 
-                         (mean(input$phy_init) - input$phy_init[1])/3)
-    zoo_vals <- rnorm(21, mean(input$zoo_init), 
-                       (mean(input$zoo_init) - input$zoo_init[1])/3)
-    nut_vals <- rnorm(21, mean(input$nut_init), 
-                       (mean(input$nut_init) - input$mort_rate2[1])/3)
+    phyto_vals <- rnorm(21, mean(input$phy_init2), 
+                         (mean(input$phy_init2) - input$phy_init2[1])/3)
+    zoo_vals <- rnorm(21, mean(input$zoo_init2), 
+                       (mean(input$zoo_init2) - input$zoo_init2[1])/3)
+    nut_vals <- rnorm(21, mean(input$nut_init2), 
+                       (mean(input$nut_init2) - input$mort_rate2[1])/3)
     
     # Updated parameters
     parms[1] <- as.numeric(input$nut_uptake)
