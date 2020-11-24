@@ -25,7 +25,7 @@ NPZ_model <- function(time, states, parms, inputs){
   #USE THE PAR INPUT AND TIME-STEP INDEX TO GET THE CURRENT PAR VALUE
   PAR <- inputs[time, 2]  
   TEMP <- inputs[time, 3] + parms[12]   
-  NLOAD <- inputs[time, 4] * parms[13]
+  # NLOAD <- inputs[time, 4] * parms[13]
   
   #FLUX EQUATIONS HERE
   #f1 = N_Uptake 
@@ -51,10 +51,10 @@ NPZ_model <- function(time, states, parms, inputs){
   dPHYTO <- N_Uptake - Grazing
   dZOO <- Grazing - FaecesProduction - Excretion -  Mortality
   # dDETRITUS <- FaecesProduction + Mortality - Mineralization
-  dDIN <- Excretion + Mineralization - N_Uptake + NLOAD
+  dDIN <- Excretion + Mineralization - N_Uptake #+ NLOAD
   
   return(list(c(dPHYTO,dZOO,
                 # dDETRITUS,
                 dDIN),                          # the rate of change
-              c(Chlorophyll = Chlorophyll, PAR=PAR, NLOAD = NLOAD)))   # the ordinary output variables
+              c(Chlorophyll = Chlorophyll, PAR=PAR)))   # the ordinary output variables
 }
