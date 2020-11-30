@@ -107,61 +107,143 @@ ui <- function(req) {
                         tags$style(type="text/css", "body {padding-top: 65px;}"),
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
                             width = 1544, top = 5),
-                        
-                        #* Module text ====
-                        h3("Project EDDIE"),
-                        p(module_text["EDDIE", ]),
-                        h3("Macrosystems Ecology"),
-                        p(module_text["Macro", ]),
-                        # br(),
-                        h3("Ecological Forecasting"),
-                        HTML('<center><img src="TFC_v1.png"></center>'),
-                        # img(src = "TFC_v1.png"),
-                        h3("Module Activities"),
-                        tags$ol(
-                          tags$li("Ecological Forecasting"),
-                          tags$li("Exploring NEON Data"),
-                          tags$li("Building a model to represent ecological processes"),
-                          tags$li("Producing an ecological forecasting")
+                        tags$style(HTML("
+                        #first {
+                        border: 4px double red;
+                        }
+                        #second {
+                        border: 2px solid blue;
+                        }
+                                        ")),
+                        fluidRow(
+                          column(6,
+                                 #* Module text ====
+                                 h2("Introduction to Ecological Forecasting"),
+                                 h3("Summary"),
+                                 p(module_text["intro_eco_forecast", ]),
+                                 p(module_text["this_module", ]),
+                                 p(module_text["goal", ]),
+                                 h3("Ecological Forecasting"),
+                                 p(module_text["eco_forecast1", ]),
+                                 h3("Module Activities"),
+                                 tags$ul(
+                                   tags$li(module_text["act_A", ]),
+                                   tags$li(module_text["act_B", ]),
+                                   tags$li(module_text["act_C", ])
+                                 ),
+                                 # br(),
+                                 h3("Learning Outcomes"),
+                                 tags$line(),
+                                 tags$ul(
+                                   tags$li(module_text["LO1", ]),
+                                   tags$li(module_text["LO2", ]),
+                                   tags$li(module_text["LO3", ]),
+                                   tags$li(module_text["LO4", ]),
+                                   tags$li(module_text["LO5", ])
+                                 )
+                                 ),
+                          column(5, offset = 1,
+                                 br(), br(), br(), br(), br(), br(), br(),
+                                 br(), br(), br(), br(), br(), br(), br(),
+                                 img(src = "mod5_viz_v2.png", height = "80%", 
+                                     width = "80%", align = "left")
+                                 )
+                          ),
+                        fluidRow(
+                          column(6,
+                                 
+                                 ),
+                          column(6,
+                                 )
+                          
+                        ), hr(),
+                        fluidRow(
+                          column(6,
+                                 h3("Project EDDIE"),
+                                 p(module_text["EDDIE", ]),
+                                 p("For more about Project EDDIE, you can visit the website ", a("here", href = "https://serc.carleton.edu/eddie/index.html"), "."),
+                                 h3("Macrosystems Ecology"),
+                                 p(module_text["Macro", ]),
+                                 p("For more about Macrosystems EDDIE, you can visit the website ", a("here", href = "https://serc.carleton.edu/eddie/macrosystems/index.html"), "."),
+                                 ),
+                          column(6, 
+                                 # id = "second", # Add border
+                                 br(), br(), 
+                                 img(src = "MacroEDDIE Logo.png", height = "90%", 
+                                     width = "90%", align = "right")
+                                 )
+                          ),
                         ),
-                        # br(),
-                        h3("Learning Outcomes"),
-                        tags$line(),
-                        tags$ul(
-                          tags$li(module_text["LO1", ]),
-                          tags$li(module_text["LO2", ]),
-                          tags$li(module_text["LO3", ]),
-                          tags$li(module_text["LO4", ]),
-                          tags$li(module_text["LO5", ])
-                        )
-               ),
-               
                # 2. Introduction ----
                tabPanel(title = "Introduction",
                         tags$style(type="text/css", "body {padding-top: 65px;}"),
                         img(src = "eddie_banner_2018.v5.jpg", height = 100, 
                             width = 1544, top = 5),
+                        fluidRow(
+                          column(6,
+                                 br(), br(),
+                                 h2("Our overarching questions today", 
+                                    align = "center"),
+                                 HTML('<center><img src="slide_01.png" width="70%"></center>')
+                                 
+                                 ),
+                          column(6,
+                                 br(), br(), br(),
+                                 h3("In brief:"),
+                                 tags$ul(
+                                   tags$li(module_text["what_forecast", ]),
+                                   tags$li(module_text["why_forecast", ]),
+                                   tags$li(module_text["how_forecast", ])
+                                   )
+                                 # img(src = "slide_01.png", height = "50%", 
+                                 #     width = "50%", align = "centre")
+                                 )
+                        ),
+                        fluidRow(
+                          column(6,
+                                 h2("What is an Ecological Forecast?"),
+                                 p(module_text["eco_forecast1", ]),
+                                 p("It is a repeated cycle (e.g. iterative) and is described as 'The Forecast Cycle'."),
+                                 img(src = "mod5_viz_v2.png", height = "70%", 
+                                     width = "70%", align = "left")
+                                 
+                                 ),
+                          column(6,
+                                 h3("Workflow for this module"),
+                                 tags$ol(
+                                   tags$li(module_text["workflow1", ]),
+                                   tags$li(module_text["workflow2", ]),
+                                   tags$li(module_text["workflow3", ]),
+                                   tags$li(module_text["workflow4", ]),
+                                   tags$li(module_text["workflow5", ])
+                                   )
+                                 )
+                        ), hr(),
+                        fluidRow(
+                          column(6,
+                                 h3("Data sources"),
+                                 p("This module will introduce key concepts within Ecological forecasting through exploration of ",
+                                   a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data"), ", building a model and then generating a short-term ecological forecast.")
+                                 ),
+                          column(6,
+                                 a(
+                                   href = "https://www.neonscience.org/",
+                                   img(src = "NSF-NEON-logo.png", title = "NEON - NSF logo",
+                                       aligh = "right")
+                                   )
+                                 )
+                        ),
+                        fluidRow(
+                          column(8,
+                                 h2("Before you start..."),
+                                 p("Answer questions 1-5 in the 'Think about it' section of the student handout.")
+                                 ),
+                        )
                         #* Intro text ====
-                        h2("Introduction"),
-                        h3("Ecological Forecasting"),
-                        p(module_text["eco_forecast", ]),
-                        br(),
-                        h3("Overview of Activities"),
-                        tags$ul(
-                          tags$li("Activity A - Making a forecast"),
-                          tags$li("Activity B - Exploring Uncertainty"),
-                          tags$li("Activity C - Cross-scale differences")
-                        ),
-                        h4("Data sources"),
-                        a(
-                          href = "https://www.neonscience.org/",
-                          img(src = "NSF-NEON-logo.png", title = "NEON - NSF logo")
-                        ),
-                        p("This module will introduce key concepts within Ecological forecasting through exploration of ",
-                          a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data"), ", building a model and then generating a short-term ecological forecast."),
-                        h2(tags$b("Think about it!")),
-                        textInput(inputId = "q1", label = "Q1. What is an ecological forecast? What is uncertainty?",
-                                  placeholder = "An ecological forecast is...", width = "80%")
+                       # Embed questions
+                        # h2(tags$b("Think about it!")),
+                        # textInput(inputId = "q1", label = "Q1. What is an ecological forecast? What is uncertainty?",
+                        #           placeholder = "An ecological forecast is...", width = "80%")
                         
                ),
                
@@ -185,6 +267,15 @@ ui <- function(req) {
                         tags$style(type="text/css", "body {padding-top: 65px;}"),
                         img(src = "eddie_banner_2018.v5.jpg", height = 100, 
                             width = 1544, top = 5),
+                        #* Objective 1 ====
+                        fluidRow(
+                          column(12,
+                                 wellPanel(
+                                   h3("Objective 1 - Select a Site"),
+                                   p(module_text["obj_01", ])
+                                   )
+                          )
+                        ),
                         #* NEON Map ====
                         fluidRow(
                           # conditionalPanel(condition = "input.site_html > 1",
@@ -228,23 +319,25 @@ ui <- function(req) {
                         ),
                         hr(),
                         
-                        # Data Exploration ----
-                        h2("Data Exploration"),
-                        p("Now we will explore the data measured at the selected site. This is data that has been downloaded from the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal"), ". The variables shown have been selected for this module but there are a wide range of variables collected at each NEON site. Further details can be found on the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal"), "."),
-                        # actionButton("load_data", "Load data", icon = icon("download")),
-                        # conditionalPanel("input.load_data",
-                        useShinyjs(),  # Set up shinyjs
-                        selectizeInput("view_var", "Select variable",
-                                       choices = unique(neon_vars$Short_name),
-                                       options = list(
-                                         placeholder = 'Please select a variable',
-                                         onInitialize = I('function() { this.setValue(""); }')),
-                        # selectInput("view_var", "Select variable",
-                        #             choices = unique(neon_vars$Short_name)
-                                    # )
-                        ),
-                        
+                        #* Objective 2 - Explore the Data ====
                         fluidRow(
+                          column(12,
+                                 wellPanel(
+                                   h3("Objective 2 - Explore the Data"),
+                                   p(module_text["obj_02", ]),
+                                   p("If there are some variables which you do not understand what they are, visit the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal"), "and click 'Explore Data Products' and look up the different variables and how they are collected."),
+                                   p("Answer questions X-Y in the student handout related to data exploration.")
+                                 ),
+                                 useShinyjs(),  # Set up shinyjs
+                                 selectizeInput("view_var", "Select variable",
+                                                choices = unique(neon_vars$Short_name),
+                                                options = list(
+                                                  placeholder = 'Please select a variable',
+                                                  onInitialize = I('function() { this.setValue(""); }')),
+                                                )
+                                 )
+                          ),
+                         fluidRow(
                           #** Data Table ----
                           column(6,
                                  h3("Data Table"),
@@ -254,12 +347,23 @@ ui <- function(req) {
                           column(6,
                                  h3("Data Plot"),
                                  wellPanel(
-                                   # conditionalPanel("input.var_plot", 
                                    plotlyOutput("var_plot")
-                                   # )
                                  )
                           )
                         ), hr(),
+                        #* Objective 3 - Explore variable relationships ====
+                        fluidRow(
+                          column(6,
+                                 wellPanel(
+                                   h3("Objective 3 - Explore variable relationships"),
+                                   p(module_text["obj_03", ])
+                                   )
+                                 ),
+                          column(6,
+                                 img(src = "01-hypothesis.png", height = "60%", 
+                                     width = "60%", align = "left")
+                                 )
+                          ),
                         #** Explore variable relationships ----
                         fluidRow(
                           #** Data Table ----
@@ -286,51 +390,37 @@ ui <- function(req) {
                                    # conditionalPanel("input.var_plot", 
                                    plotlyOutput("xy_plot")
                                    # )
-                                 )
-                          )
-                        ), hr(),
-                        fluidRow(
-                          #** Weather Forecast ----
-                          column(3,
-                                 h3("Weather Forecast"),
-                                 p(module_text["weather_forecast1", ]),
-                                 p("Weather forecast are produced using ", tags$b("ensemble modelling"), "."),
-                                 p(module_text["ens_mod1", ]),
-                                 p(module_text["weather_forecast2", ])
-                          ),
-                          column(3,
-                                 p("Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS"), " forecast."),
-                                 p("Inspect the different meteorological outputs. You can adjust the number of members, which is the number of forecasts and also how it is visualized. A line plot shows each individual member while the distribution  shows the median 75th and 95th percentile."),
-                                 actionButton('load_fc', "Load Forecast", icon = icon("download")),
-                                 # actionButton('plot_fc', "Plot Forecast!", icon = icon("chart-line")),
-                                 wellPanel(
-                                   conditionalPanel("input.load_fc",
-                                                    uiOutput("sel_fc_vars"),
-                                                    uiOutput("sel_fc_dates"),
-                                                    uiOutput("sel_fc_members"),
-                                                    selectInput('type', 'Plot type', plot_types,
-                                                                selected = plot_types[1])
-                                                    
                                    )
                                  )
                           ),
-                          column(6,
-                                 
-                                 # h3("Weather Forecast"),
-                                 wellPanel(
-                                   # conditionalPanel("input.plot_fc",
-                                                    plotlyOutput("fc_plot")
-                                   # )
+                        #** Recap ====
+                        fluidRow(
+                          column(12,
+                                 h3("Next step"),
+                                 p("Next we will use this data and the identified related variables to help build our ecological model."),
+                                 p("Answer questions 10 and 11 in the student handout before moving to the 'Build Model' tab.")
                                  )
                           )
-                        )
-               ),
+                        ),
                
                # 4. Build Model ----
                tabPanel(title = "Build Model",
                         tags$style(type="text/css", "body {padding-top: 65px;}"),
                         img(src = "eddie_banner_2018.v5.jpg", height = 100, 
                             width = 1544, top = 5),
+                        #* Objective 4 - Build a simple ecological model ====
+                        fluidRow(
+                          column(6,
+                                 wellPanel(
+                                   h3("Objective 4 - Build a simple ecological model"),
+                                   p(module_text["obj_04", ])
+                                 )
+                          ),
+                          column(6,
+                                 img(src = "02-build-model.png", height = "60%", 
+                                     width = "60%", align = "left")
+                                 )
+                        ), br(), br(), hr(),
                         #* Intro text ====
                         fluidRow(
                           # conditionalPanel(condition = "input.site_html > 1",
@@ -359,7 +449,7 @@ ui <- function(req) {
                             # tags$b("Exercise"),
                             width = 9,
                             bucket_list(
-                              header = "Drag the variables into 'Action' or 'State' boxes",
+                              header = "Drag the variables into 'Interactions' or 'State' boxes",
                               group_name = "bucket_list_group",
                               orientation = "horizontal",
                               add_rank_list(
@@ -373,7 +463,7 @@ ui <- function(req) {
                                 input_id = "rank_list_2"
                               ),
                               add_rank_list(
-                                text = "Actionas",
+                                text = "Interactions",
                                 labels = NULL,
                                 input_id = "rank_list_3"
                               )
@@ -390,17 +480,33 @@ ui <- function(req) {
                                  # textInput("text", "Text")
                           )
                         ),
+                        fluidRow(
+                          column(12,
+                                 p("Compare your answers in Q 11. Did you sort them correctly?"))
+                        ),
                         #** Run ecological model ====
                         fluidRow(
-                          h2(tags$b("Simulate")),
-                          p("We will use observed data from the selected site in panel 'Get Data' to force the NPZ model."),
-                            column(6,
-                                   h3("States"),
-                                   plotlyOutput("mod_phyto_plot")
-                          ),
+                          column(12,
+                                 # h2(tags$b("Simulate")),
+                                 wellPanel(
+                                   h3("Objective 5 - Test scenarios and calibrate model"),
+                                   p(module_text["obj_05", ])
+                                 ),
+                                 p("We will use observed data from the selected site on the 'Get Data' tab to force the NPZ model."),
+                                 p("Before running the model, Answer Q 12."),
+                                 p("Run the scenarios described in Q 13 and describe how the model responds.")
+                                 ),
                           column(6,
-                                 h3("Productivity"),
-                                 plotlyOutput("mod_ann_plot")
+                                   h3("States"),
+                                 wellPanel(
+                                   plotlyOutput("mod_phyto_plot")
+                                   )
+                                 ),
+                          column(6,
+                                 h3("Primary Productivity"),
+                                 wellPanel(
+                                   plotlyOutput("mod_ann_plot")
+                                   )
                                  )
                         ),
                         fluidRow(
@@ -441,47 +547,63 @@ ui <- function(req) {
                           ),
                             column(3,
                             h3(tags$b("Initial conditions")),
+                            p("Return to the 'Get Data' tab to find suitable values to input for each of the states."),
                             sliderInput("phy_init", "Phytoplankton", min = 0.1, max = 10, step = 0.1, value = 2),
                             sliderInput("zoo_init", "Zooplankton", min = 0.1, max = 5, step = 0.1, value = 0.4),
-                            sliderInput("nut_init", "Nutrients", min = 1, max = 20, step = 1, value = 9),
+                            sliderInput("nut_init", "Nutrients", min = 0.11, max = 20, step = 0.1, value = 9),
                             ),
                             column(3,
-                            actionButton("run_mod_ann", label = "Run Model", icon = icon("running")),
-                            # p("Save the plot output"),
-                            checkboxInput("add_obs", "Add observations"),
-                            p("How does the model output compare to in-lake observations? Here are some things you should look out for:"),
-                            tags$ol(
-                              tags$li("Is the model in the same range as the observations?"),
-                              tags$li("Does it capture the seasonal patterns?"),
-                              tags$li("Does the model simulate events seen as spikes?")
-                            ),
-                            p("Can you think of any potential reasons why the model does not do so well"),
-                            p("We will explore some of these potential reasons later on.")
-                            
-                            # actionButton("view_mod_ann", label = "View Model Output", icon = icon("chart-line"))
-                            
+                                   actionButton("run_mod_ann", label = div("Run Model", icon("running")),
+                                                width = "60%"),
+                                   br(),
+                                   wellPanel(
+                                     p("After running the scenarios in Q 13, adjust the model parameters to get the best fit with the pattern seen in the observed data. Not the values into the table in Q 14."),
+                                     # p("Save the plot output"),
+                                     checkboxInput("add_obs", "Add observations"),
+                                     p("How does the model output compare to in-lake observations? Here are some things you should look out for:"),
+                                     tags$ol(
+                                       tags$li("Is the model in the same range as the observations?"),
+                                       tags$li("Does it capture the seasonal patterns?"),
+                                       tags$li("Does the model simulate events seen as spikes?")
+                                     ),
+                                     p("Can you think of any potential reasons why the model does not do so well"),
+                                     p("We will explore some of these potential reasons later on.")
+                                     ),
+                                   ),
                           ),
-                          
-                          # )
-                        ),
+                        fluidRow(
+                          column(12,
+                                 h4("Next step"),
+                                 p("Now we have built our model we are going to use this to forecast short-term primary productivity"))
+                        )
                ),
                
                # 5. Forecast! ----
-               tabPanel(title = "Forecast!",
+               tabPanel(title = "Forecast",
                         tags$style(type="text/css", "body {padding-top: 65px;}"),
                         img(src = "eddie_banner_2018.v5.jpg", height = 100, 
                             width = 1544, top = 5),
                         #* Forecasting text ====
                         fluidRow(
+                          column(12,
+                                 wellPanel(
+                                   h3("Objective 6 - Understand uncertainty and explore a weather forecast"),
+                                   p(module_text["obj_06", ])
+                                 ))
+                        ),
+                        fluidRow(
                           column(4,
                                  h3("Forecasting"),
-                                 p(module_text["eco_forecast", ]),
+                                 p(module_text["eco_forecast2", ]),
                                  br(),
-                                 p("For this exercise we will forecast 16 days into the future using the weather forecast data we loaded on the 'Get Data' tab."),
-                                 p("But before we dive in to this, we will need to understand what we mean we mean when we talk about uncertainty.")
+                                 p("For this exercise we will forecast 30 days into the future using NOAA weather forecast data."),
+                                 p("Before we dive in to this, we will need to understand what we mean we mean when we talk about uncertainty.")
                           ),
-                          column(5, offset = 1,
-                                 HTML('<center><img src="What_is_EF.png"></center>'),
+                          column(7, offset = 1,
+                                 br(), br(),
+                                 img(src = "03-quantify-uncertainty.png", height = "60%", 
+                                     width = "60%", align = "left")
+                                 # HTML('<center><img src="What_is_EF.png"></center>'),
                           )
                         ),
                         hr(),
@@ -491,34 +613,85 @@ ui <- function(req) {
                                  h3("What is Uncertainty?"),
                                  p(module_text["uncert1", ]),
                                  br(),
-                                 p("We will now use the model you built on the 'Build Model' tab to step through the different sources of uncertainty in an ecological forecast.")
+                                 p("We will use the model you built on the 'Build Model' tab to create an ecological forecast."),
+                                 p("One source of uncertainty is the data used to drive the model. For your forecast, you will be using actual NOAA weather forecast to drive your model. Load and examine this data below.")
                           ),
                           column(5, offset = 1,
                                  HTML('<center><img src="What_is_uncert.png"></center>'),
                           )
                         ),
                         hr(),
+                        fluidRow(
+                          #** Weather Forecast ----
+                          column(3,
+                                 h3("Weather Forecast"),
+                                 p(module_text["weather_forecast1", ]),
+                                 p("Weather forecast are produced using ", tags$b("ensemble modelling"), "."),
+                                 p(module_text["ens_mod1", ]),
+                                 p(module_text["weather_forecast2", ])
+                          ),
+                          column(3,
+                                 p("Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS"), " forecast."),
+                                 p("Inspect the different meteorological outputs. You can adjust the number of members, which is the number of forecasts and also how it is visualized. A line plot shows each individual member while the distribution  shows the median 95th percentile."),
+                                 actionButton('load_fc', "Load Forecast", icon = icon("download")),
+                                 # actionButton('plot_fc', "Plot Forecast!", icon = icon("chart-line")),
+                                 wellPanel(
+                                   conditionalPanel("input.load_fc",
+                                                    uiOutput("sel_fc_vars"),
+                                                    uiOutput("sel_fc_dates"),
+                                                    uiOutput("sel_fc_members"),
+                                                    selectInput('type', 'Plot type', plot_types,
+                                                                selected = plot_types[1])
+                                                    
+                                   )
+                                 )
+                          ),
+                          column(6,
+                                 
+                                 # h3("Weather Forecast"),
+                                 wellPanel(
+                                   # conditionalPanel("input.plot_fc",
+                                   plotlyOutput("fc_plot")
+                                   # )
+                                 )
+                          )
+                        ),
+                        fluidRow(
+                          column(12,
+                                 p("Answer questions 18-20 based on the weather forecast data."))
+                        ), hr(),
                         #* Run Forecast ====
                         #* Driver Uncertainty ====
                         fluidRow(
+                          column(12,
+                               wellPanel(
+                                 h3("Objective 7 - Generate an Ecological Forecast"),
+                                 p(module_text["obj_07", ])
+                                 )
+                               )
+                        ),
+                        fluidRow(
                           column(6,
+                                 h3("Driver uncertainty"),
                                  p(module_text["driver_uncert", ]),
                                  br(),
-                                 p("A key component of what makes an ecological forecast a 'forecast', is that the model is driven by forecasted driving variables."),
-                                 p("We will now use the weather forecast data we loaded on the 'Get Data' tab to drive the calibrated model we built on the 'Build Model' tab to forecast chlorophyll-a concentrations into the future.")
+                                 p("A key component of what makes an ecological forecast a 'forecast', is that the model is driven by ", tags$b("forecasted"), "driving variables."),
+                                 # p("We will now use the weather forecast data loaded above to drive the calibrated model we built on the 'Build Model' tab to forecast chlorophyll-a concentrations into the future.")
                           ),
                           column(6,
-                                 h4("Schematic of driver uncertainty")
+                                 # h4("Schematic of driver uncertainty")
+                                 img(src = "04-generate-forecast.png", height = "60%", 
+                                     width = "60%", align = "left")
                                  )
                         ),
                         fluidRow(
-                          column(3,
-                                 h3("Run Forecast!"),
+                          column(4,
+                                 h3("Run Forecast"),
                                  wellPanel(
-                                   actionButton('load_fc2', label = div("Run Forecast!", icon("running")),
+                                   actionButton('load_fc2', label = div("Load Forecast inputs", icon("download")),
                                                 width = "60%"),
                                    # br(), br(),
-                                   actionButton('run_fc2', label = div("Plot Forecast!", icon("running")),
+                                   actionButton('run_fc2', label = div("Run Forecast", icon("running")),
                                                 width = "60%"),
                                    conditionalPanel("input.load_fc2",
                                                     numericInput('members2', 'No. of members', 16,
@@ -526,7 +699,12 @@ ui <- function(req) {
                                                     # uiOutput("eco_fc_members"),
                                                     selectInput('type2', 'Plot type', plot_types,
                                                                 selected = plot_types[2])
-                                   )
+                                   ),
+                                   h3(tags$b("Initial conditions")),
+                                   p("Return to the 'Get Data' tab to find suitable values to input for each of the states. Use the start date of the weather forecast loaded above. If there is no value, choose a value based on the observed range."),
+                                   sliderInput("phy_init2", "Phytoplankton", min = 0.1, max = 10, step = 0.1, value = 2),
+                                   sliderInput("zoo_init2", "Zooplankton", min = 0.1, max = 5, step = 0.1, value = 0.4),
+                                   sliderInput("nut_init2", "Nutrients", min = 0.11, max = 20, step = 0.1, value = 9)
                                    
                                    
                                    # )
@@ -536,24 +714,46 @@ ui <- function(req) {
                                  # h4("Plot showing Driver Uncertainty"),
                                  wellPanel(
                                    plotlyOutput("plot_ecof2")
-                                 )
+                                 ),
+                                 p("Answer Q 21-22")
                                  
                                  )
                         ),
                         fluidRow(
+                          column(6,
+                                 h3("Communicate Forecast"),
+                                 p(module_text["comm_forecast", ]),
+                                 ),
+                          column(6,
+                                 img(src = "05-communicate-forecast.png", height = "60%", 
+                                     width = "60%", align = "left")
+                                 )
+                        ), br(), br(), hr(),
+                        
+                        fluidRow(
+                          column(6,
+                                 h3("One week later..."),
+                                 p("A week has passed since the forecast and you have collected a week of data. Now you are curious as to how well did your forecast actually do. Now we can run an actual comparison to see how the forecast predictions compare to actual observed data"),
+                          ),
+                          column(6,
+                                 img(src = "06-assess-forecast.png", height = "60%", 
+                                     width = "60%", align = "left")
+                                 )
+                        ),
+                        fluidRow(
                           column(3,
-                                 h4("One week later"),
-                                 p("One week has passed since the forecast and you have collected a week of data. Now you are curious as to how well did your forecast actually do. Now we can run an actual comparison to see how the forecast data compares to actual observed data"),
                                  wellPanel(
+                                   br(), br(),
                                    h4("Assess forecast performance"),
                                    p("Comparing forecast results to actual measurements. This gives us an indication of how accurately our model is forecasting."),
-                                   p("This is an important step as it indicates whether or not we need to update the model."),
+                                   p("This is an important step as it indicates how well our model represents the system."),
                                    checkboxInput("add_newobs", label = "Add new observations", FALSE),
                                    conditionalPanel("input.add_newobs",
                                                     actionButton('assess_fc3', label = div("Assess forecast",
                                                                                            icon("clipboard-check"))))
                                    
                                    ),
+                                 p("Answer Q 24")
                                  ),
                           column(5,
                                  h3(tags$b("Add in new observations")),
@@ -567,88 +767,102 @@ ui <- function(req) {
                                    plotlyOutput("assess_plot")
                                    )
                                  ),
-                          column(3,
-                                 wellPanel(
-                                   h4("Update forecast"),
-                                   p("As new observations are made, we can update the model (parameters, initial conditions, etc.) to better match the data. The aim of this is to reduce the error in the next forecast."),
-                                   
-                                   actionButton('update_fc2', label = div("Update forecast",
-                                                                          icon("redo-alt")))
-                                   )
-                                 ),
-                          column(3,
-                                 wellPanel(
-                                   h4("Next forecast"),
-                                   p("And the cycle starts again. Now with our updated model we create the next forecast and repeat the cycle."),
-                                   actionButton('next_fc2', label = div("Next Forecast", icon("chart-line")),
-                                                width = "60%")
-                                 )
-                          )
-                        ),
-                        #* Assess Forecast ====
-                        fluidRow(
-                          column(6,
-                                 h3("Assess forecasts"),
-                                 p("Assessing a forecast means to...."),
-                                 br()
                           ),
-                          column(6,
-                                 h4("Schematic of Forecast uncertainty")
-                          )
-                        ),
-                        fluidRow(
-                          column(8, offset = 2,
-                                 h4("Plot showing Forecasts + Data"),
-                                 wellPanel(
-                                   # plotlyOutput("plot_ecof3")
-                                 )
-                                 
-                          )
-                        ),
                         #* Update Model ====
                         fluidRow(
                           column(6,
                                  h3("Update Model"),
-                                 p("When data is collected it allows the forecast to be assessed"),
-                                 br()
+                                 p("How did your forecast do compared to the observations?"),
+                                 p("What does this tell you about the model?"),
+                                 p("One of the best thing about ecological forecasting is that it allows us to test our hypothesis (e.g our model) and see if it is representing what is seen within the environment. If there is a bad fit between our model and observed data, this indicates our model is not capturing the processes."),
+                                 p("One of the reasons for this poor fit could be that the parameters that best represent then annual pattern might not work best on shorter time sceles. If you have a poor model fit, adjust the parameters to see if you can improve the forecast."),
                           ),
                           column(6,
-                                 h4("Schematic of Update Model")
+                                 img(src = "07-update-model.png", height = "60%", 
+                                     width = "60%", align = "left")
+                                 )
+                        ), br(), hr(),
+                        fluidRow(
+                          column(4,
+                                 h3("Parameters"),
+                                 h4(tags$b("Zooplankton parameters")),
+                                 p(tags$em("Grazing")),
+                                 sliderInput("graz_rate2", label = div(style='width:300px;', 
+                                                                      div(style='float:left;', 'Eat less'), 
+                                                                      div(style='float:right;', 'Eat more')),
+                                             min = 0.2, max = 1.6, value = 1.2, step = 0.1),
+                                 p(tags$em("Mortality")),
+                                 sliderInput("mort_rate2", label = div(style='width:300px;', 
+                                                                      div(style='float:left;', 'Lower death'), 
+                                                                      div(style='float:right;', 'Higher death')),
+                                             min = 0.1, max = 1, value = 0.3, step = 0.1)
+                                 # )
+                                 ,
+                                 # wellPanel(
+                                 h4(tags$b("Phytoplankton parameters")),
+                                 p(tags$em("Uptake")),
+                                 sliderInput("nut_uptake2", label = div(style='width:300px;', 
+                                                                       div(style='float:left;', 'Low uptake'), 
+                                                                       div(style='float:right;', 'High uptake')),
+                                             min = 0.1, max = 1.7, value = 0.8, step = 0.1),
+                                 actionButton('update_fc2', label = div("Update forecast",
+                                                                        icon("redo-alt")))
+                          ),
+                          column(8,
+                                 # h4("Schematic of Forecast uncertainty"),
+                                 wellPanel(
+                                   plotlyOutput("update_plot")
+                                 ),
+                                 p("Answer Q 25")
                           )
                         ),
+                        #* New Forecast ====
                         fluidRow(
-                          column(8, offset = 2,
-                                 h4("Plot showing Forecasts + Data + Update"),
+                          column(4,
+                                 h3("New Forecast"),
+                                 p("With an updated model, we can now generate the next forecast driven by a new weather forecast"),
+                                 h3(tags$b("Initial conditions")),
+                                 p("Remember, you will need to update the initial conditions based on the latest observed data."),
+                                 sliderInput("phy_init3", "Phytoplankton", min = 0.1, max = 10, step = 0.1, value = 2),
+                                 sliderInput("zoo_init3", "Zooplankton", min = 0.1, max = 5, step = 0.1, value = 0.4),
+                                 sliderInput("nut_init3", "Nutrients", min = 0.11, max = 20, step = 0.1, value = 9),
+                                 wellPanel(
+                                   actionButton('load_fc3', label = div("Load Forecast inputs", icon("download")),
+                                                width = "60%"),
+                                   # br(), br(),
+                                   actionButton('run_fc3', label = div("Run Forecast", icon("running")),
+                                                width = "60%"),
+                                   conditionalPanel("input.load_fc3",
+                                                    numericInput('members3', 'No. of members', 20,
+                                                                 min = 1, max = 30, step = 1),
+                                                    # uiOutput("eco_fc_members"),
+                                                    selectInput('type3', 'Plot type', plot_types,
+                                                                selected = plot_types[2])
+                                   )
+                                   
+                                   
+                                   # )
+                                 ),
+                                 p("Answer Q 26")
+                          ),
+                          column(8,
+                                 h4("New Forecast plot"),
                                  wellPanel(
                                    plotlyOutput("plot_ecof4")
                                  )
-                                 
                           )
                         ),
                         fluidRow(
-                          column(6,
-                                 h5("Update Model"),
-                                 p("To learn more about how data can be used to update the model, check out Module 7 'Confronting Forecasts with Data'"),
-                          )
-                        ),
-                        #* Next Forecast ====
-                        fluidRow(
-                          column(6,
-                                 h3("Next Forecast"),
-                                 p("As time moves forward we will then create a new updated forecast"),
-                                 br()
-                          ),
-                          column(6,
-                                 h4("Schematic of New Forecast")
-                          )
+                          column(12, 
+                                 h3("The Forecast Cycle"),
+                                 p("We have stepped through each of the steps within the forecast cycle"),
+                                 ),
                         ),
                         fluidRow(
-                          column(8, offset = 2,
-                                 h4("Plot showing New Forecast"),
-                                 wellPanel(
-                                   plotlyOutput("plot_ecof5")
-                                 )
-                                 
+                          column(12, 
+                                 h2("Activity C"),
+                                 p("For Activity C, we want you to make a hypothesis about how you expect your model to work at a different NEON site."),
+                                 p("Answer Q 27-29")
                           )
                         )
                ),
@@ -727,6 +941,20 @@ server <- function(input, output, session) {#
     }
     # set new value to reactiveVal 
     prev_row(row_selected)
+    
+    fpath <- file.path("data", "NOAAGEFS_1hr", siteID)
+    fc_date <<- list.files(fpath)
+    fpath2 <- file.path(fpath, fc_date[1], "00")
+    fils <<- list.files(fpath2)
+    fils <<- fils[-c(grep("ens00", fils))]
+    fid <- nc_open(file.path(fpath2, fils[1]))
+    on.exit({
+      nc_close(fid)
+    })
+    vars <- fid$var # Extract variable names for selection
+    nc_close(fid)
+    fc_vars <<- names(vars)
+    membs <<- length(fils)
   })
 
   # Neon map ----
@@ -799,6 +1027,7 @@ server <- function(input, output, session) {#
   
   
   output$site_name1 <- eventReactive(input$table01_rows_selected, { 
+    
     # p <- input$neonmap_marker_click  
     idx <- input$table01_rows_selected
     print(neon_sites_df$location[idx])
@@ -812,12 +1041,14 @@ server <- function(input, output, session) {#
   
   # Read in site data ----
   neon_DT <- eventReactive(input$view_var, { # view_var
-    siteID <- eventReactive(input$table01_rows_selected, {
-      neon_sites$siteID[input$table01_rows_selected]
-    }) 
+    validate(
+      need(input$table01_rows_selected != "",
+           message = "Please select a site in the table above.")
+    )
+    
     read_var <- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
     units <- neon_vars$units[which(neon_vars$Short_name == input$view_var)][1]
-    file <- file.path("data", paste0(siteID(), "_", read_var, "_", units, ".csv"))
+    file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
     print(file)
     df <- read.csv(file)
     # df <- read.csv("data/SITE_data.csv")
@@ -829,12 +1060,13 @@ server <- function(input, output, session) {#
   
   # Site data datatable ----
   output$neon_datatable <- DT::renderDT({
-    siteID <- eventReactive(input$table01_rows_selected, {
-      neon_sites$siteID[input$table01_rows_selected]
-    }) 
+    validate(
+      need(input$table01_rows_selected != "",
+           message = "Please select a site in the table above.")
+    ) 
     read_var <- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
     units <- neon_vars$units[which(neon_vars$Short_name == input$view_var)][1]
-    file <- file.path("data", paste0(siteID(), "_", read_var, "_", units, ".csv"))
+    file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
     validate(
       need(file.exists(file), message = "This variable is not available at this site. Please select a different variable or site.")
     )
@@ -964,7 +1196,7 @@ server <- function(input, output, session) {#
       on.exit(progress$close())
       progress$set(message = paste0("Loading all NOAA forecast data"), 
                    detail = "This may take a while. This window will disappear  
-                     when it is finished running.", value = 1)
+                     when it is finished loading.", value = 0.1)
       
       validate(
         need(exists("siteID"), "Please select a site from the table")
@@ -975,6 +1207,9 @@ server <- function(input, output, session) {#
       fils <<- list.files(fpath2)
       fils <<- fils[-c(grep("ens00", fils))]
       fid <- nc_open(file.path(fpath2, fils[1]))
+      on.exit({
+        nc_close(fid)
+      })
       vars <- fid$var # Extract variable names for selection
       nc_close(fid)
       fc_vars <<- names(vars)
@@ -995,10 +1230,6 @@ server <- function(input, output, session) {#
 
         for( i in seq_len(length(fils))) {
           
-          fid <- ncdf4::nc_open(file.path("data", "NOAAGEFS_1hr", siteID, dat,
-                                          "00", fils[i]))
-          
-          # Extract time
           fid <- ncdf4::nc_open(file.path("data", "NOAAGEFS_1hr", siteID, dat,
                                           "00", fils[i]))
           tim = ncvar_get(fid, "time")
@@ -1045,6 +1276,7 @@ server <- function(input, output, session) {#
           }
           
         }
+        progress$set(value = idx/length(fc_date))
         return(df2)
       })
       
@@ -1066,7 +1298,8 @@ server <- function(input, output, session) {#
   })
   # Get NOAA forecast variables ----
   output$sel_fc_dates <- renderUI({
-    checkboxGroupInput("fc_date", "Select date of Forecast", choices = fc_date, selected = fc_date[1])
+    checkboxGroupInput("fc_date", "Select date of Forecast", choices = fc_date,
+                       selected = fc_date[1])
   })
   
   # Get NOAA forecast members ----
@@ -1081,9 +1314,20 @@ server <- function(input, output, session) {#
     #* plot NOAA forecast ----
   output$fc_plot <- renderPlotly({
     
+    
     validate(
-      need(!is.null(input$fc_date), "Please select a date"),
+      need(input$table01_rows_selected != "",
+           message = "Please select a site on the 'Get Data' tab")
+      )
+    validate(
+      need(input$load_fc > 0, "Please load the forecast")
+    )
+    validate(
+      need(!is.null(input$fc_date), "Please select a date")
+    )
+    validate(
       need(input$members >= 1 & input$members <= membs, paste0("Please select a number of members between 1 and ", membs))
+      
     )
     
     p <- ggplot()
@@ -1172,7 +1416,7 @@ server <- function(input, output, session) {#
   #* Variables answer table ----
   output$ans_vars <- renderTable({
     data.frame("State variables" = state_vars,
-               "Process variables" = process_vars)
+               "Interactions" = process_vars)
   }) 
   
   #* Toggle for dataframe answers
@@ -1310,7 +1554,7 @@ server <- function(input, output, session) {#
   output$mod_ann_plot <- renderPlotly({
     
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on 'Get Data' tab!")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data' tab!")
     )
 
     # siteID <- eventReactive(input$table01_rows_selected, {
@@ -1387,80 +1631,48 @@ server <- function(input, output, session) {#
   
   # Forecast Plots  ----
   #* Driver Uncertainty ====
-  driv_fc <- eventReactive(input$load_fc2, {
-    
+  npz_fc_data <- reactive({
+    if(input$load_fc2) {
+      
+      fpath <- file.path("data", "NOAAGEFS_1hr", siteID)
+      fold <- list.files(fpath)
+      fc_date <- as.character(as.Date(fold[1]))
+      print(fc_date)
+      fc_idx <- which(names(fc_data()) == fc_date)
+      
+      npz_inp_list <- lapply(1:30, function(x) {
+        df <- fc_data()[[fc_idx]]
+        sub <- df[(df[, 2] %in% c("air_temperature",
+                                  "surface_downwelling_shortwave_flux_in_air",
+                                  "precipitation_flux")), c(1, 2, 2 + x)]
+        df2 <- tidyr::pivot_wider(data = sub, id_cols = time, names_from = L1, values_from = 3)
+        df2$air_temperature <- df2$air_temperature - 273.15
+        df2$date <- as.Date(df2$time)
+        df2$time <- NULL
+        df3 <- plyr::ddply(df2, "date", function(x){
+          colMeans(x[, 1:3], na.rm = TRUE)
+        })
+        # df3 <- df3[2:16, ]
+        fc_out_dates <<- df3$date
+        df3$wtemp <- 5 + 0.75 * df3$air_temperature
+        
+        create_npz_inputs(time = df3$date, swr = df3$surface_downwelling_shortwave_flux_in_air,
+                          temp = df3$wtemp)
+      })
+      
+      return(npz_inp_list)
+    }
+  })
+  
+  
+  driv_fc <- eventReactive(input$run_fc2, {
+
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
     progress$set(message = paste0("Running the NPZ model with 30 forecasts"), 
                  detail = "This may take a while. This window will disappear  
-                     when it is finished running.", value = 0)
-
-    validate(
-      need(exists("siteID"), "Select a site!")
-    )
-    
-    fpath <- file.path("data", "NOAAGEFS_1hr", siteID)
-    fold <- list.files(fpath)
-    fpath2 <- file.path(fpath, fold[1], "00")
-    fils <- list.files(fpath2)
-    fils <- fils[-c(grep("ens00", fils))]
-    # membs2 <<- length(fils)
-    npz_inp_list <- list() # Initialize empty list
-    
-    # Increment the progress bar, and update the detail text.
-    progress$inc(0.33, detail = "Preparing inputs")
-    for( i in seq_len(length(fils))) {
-      fid <- ncdf4::nc_open(file.path(fpath2, fils[i]))
-      airt <- ncdf4::ncvar_get(fid, "air_temperature") - 273.15
-      swr <- ncdf4::ncvar_get(fid, "surface_downwelling_shortwave_flux_in_air")
-      precip <- ncdf4::ncvar_get(fid, "precipitation_flux")
-      ncdf4::nc_close(fid)
-      
-      cnam <- paste0("ens", formatC(i, width = 2, format = "d", flag = "0"))
-      if(i == 1) {
-        
-        # Extract time
-        fid <- ncdf4::nc_open(file.path(fpath2, fils[i]))
-        tim = ncvar_get(fid, "time")
-        tunits = ncatt_get(fid, "time")
-        lnam = tunits$long_name
-        tustr <- strsplit(tunits$units, " ")
-        step = tustr[[1]][1]
-        tdstr <- strsplit(unlist(tustr)[3], "-")
-        tmonth <- as.integer(unlist(tdstr)[2])
-        tday <- as.integer(unlist(tdstr)[3])
-        tyear <- as.integer(unlist(tdstr)[1])
-        tdstr <- strsplit(unlist(tustr)[4], ":")
-        thour <- as.integer(unlist(tdstr)[1])
-        tmin <- as.integer(unlist(tdstr)[2])
-        origin <- as.POSIXct(paste0(tyear, "-", tmonth, 
-                                    "-", tday, " ", thour, ":", tmin), 
-                             format = "%Y-%m-%d %H:%M", tz = "UTC")
-        if (step == "hours") {
-          tim <- tim * 60 * 60
-        }
-        if (step == "minutes") {
-          tim <- tim * 60
-        }
-        time = as.POSIXct(tim, origin = origin, tz = "UTC")
-        ncdf4::nc_close(fid)
-        
-        df2 <- data.frame(time = time, airt = airt, swr = swr, precip = precip)
-      } else {
-        df2 <- data.frame(time = time, airt = airt, swr = swr, precip = precip)
-      }
-      df2$date <- as.Date(df2$time)
-      df2$time <- NULL
-      df3 <- plyr::ddply(df2, "date", function(x){
-        colMeans(x[, 1:3], na.rm = TRUE)
-      })
-      # df3 <- df3[2:16, ]
-      df3$wtemp <- 5 + 0.75 * df3$airt
-      
-      npz_inp_list[[i]] <- create_npz_inputs(time = df3$date, swr = df3$swr,
-                                             temp = df3$wtemp)
-    }
+                     when it is finished running.", value = 0.01)
     
     # Parameters from 'Build Model'
     parms[1] <- as.numeric(input$nut_uptake)
@@ -1468,15 +1680,18 @@ server <- function(input, output, session) {#
     parms[7] <- as.numeric(input$mort_rate)
     
     # Alter Initial conditions
-    yini[1] <- input$phy_init
-    yini[2] <- input$zoo_init
-    yini[3] <- input$nut_init
+    yini[1] <- input$phy_init2
+    yini[2] <- input$zoo_init2
+    yini[3] <- input$nut_init2
     
-    progress$inc(0.33, detail = "Running the model")
-    
-    fc_res <- lapply(npz_inp_list, function(x) {
+    # progress$inc(0.33, detail = "Running the model")
+    fc_length <- length(npz_fc_data())
 
-      times <- 1:nrow(x)
+    fc_res <- lapply(1:fc_length, function(x) {
+      
+      npz_inputs <- npz_fc_data()[[x]]
+
+      times <- 1:nrow(npz_inputs)
       
       res <- matrix(NA, nrow = length(times), ncol = 5)
       colnames(res) <- c("time", "Chla", "Phytoplankton", "Zooplankton", "Nutrients")
@@ -1489,10 +1704,10 @@ server <- function(input, output, session) {#
         if(!("Temperature" %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i],
                                         func = NPZ_model_noT, parms = parms,
-                                        method = "ode45", inputs = x))
+                                        method = "ode45", inputs = npz_inputs))
         } else {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NPZ_model,
-                                        parms = parms, method = "ode45", inputs = x))
+                                        parms = parms, method = "ode45", inputs = npz_inputs))
         }
         
         res[i, -1] <- out[2, c(5, 2, 3, 4)]
@@ -1500,11 +1715,12 @@ server <- function(input, output, session) {#
         
       }
       res <- as.data.frame(res)
-      res$time <- df3$date
+      res$time <- fc_out_dates
 
       # out$time <- npz_inp$Date
       out <- res[, c("time", "Chla")] #, "PHYTO", "ZOO")]
       # colnames(out)[-1] <- c("Chla") #, "Phytoplankton", "Zooplankton")
+      progress$set(value = x/fc_length)
       return(out)
       
       })
@@ -1514,10 +1730,7 @@ server <- function(input, output, session) {#
     return(mlt)
     })
   
-  # Get NOAA forecast members ----
-  # output$eco_fc_members <- renderUI({
-  #                min = 1, max = membs, step = 1)
-  # })
+  
   
   output$plot_ecof2 <- renderPlotly({
     
@@ -1526,7 +1739,16 @@ server <- function(input, output, session) {#
            message = paste0("The number of members must be between 1 and 30"))
     )
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on 'Get Data' tab!")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data' tab!")
+    )
+    validate(
+      need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Get Data' tab.")
+    )
+    validate(
+      need(input$load_fc2 > 0, "Load Forecast inputs")
+    )
+    validate(
+      need(input$run_fc2 > 0, "Click 'Run Forecast'")
     )
     
     # Load Chl-a observations
@@ -1539,6 +1761,22 @@ server <- function(input, output, session) {#
     }
     chla_obs <- chla[(chla[, 1] >= as.Date((driv_fc()[1, 1] - (7)))) &
                        chla[, 1] < as.Date(driv_fc()[1, 1]), ]
+    
+    sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
+    if(input$type2 == "distribution") {
+      
+      df3 <- plyr::ddply(sub, "time", function(x) {
+        quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+      })
+      # df3 <- as.data.frame(t(df3))
+      colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
+      colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
+      # df3$hours <- df2$hours
+      df2 <- df3
+    } else {
+      df2 <- sub
+      df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
+    }
     
     sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
     if(input$type2 == "distribution") {
@@ -1581,6 +1819,8 @@ server <- function(input, output, session) {#
       xlab("Forecast days") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
+
+   
     return(ggplotly(p, dynamicTicks = TRUE))
     
   })
@@ -1594,7 +1834,7 @@ server <- function(input, output, session) {#
            message = paste0("The number of members must be between 1 and 30"))
     )
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on 'Get Data' tab!")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data' tab!")
     )
     
     # Load Chl-a observations
@@ -1697,6 +1937,348 @@ server <- function(input, output, session) {#
     
     
   })
+  
+  #* Update model ====
+  fc_update <- eventReactive(input$update_fc2,{
+    
+    progress <- shiny::Progress$new()
+    # Make sure it closes when we exit this reactive, even if there's an error
+    on.exit(progress$close())
+    progress$set(message = paste0("Running the NPZ model with 30 forecasts"), 
+                 detail = "This may take a while. This window will disappear  
+                     when it is finished running.", value = 0.01)
+    
+    
+    # Load Chl-a observations
+    read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
+    units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
+    file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
+    if(file.exists(file)) {
+      chla <- read.csv(file)
+      chla[, 1] <- as.Date(chla[, 1], tz = "UTC")
+    }
+    chla_obs <- chla[(chla[, 1] >= as.Date((driv_fc()[1, 1] - (7)))) &
+                       chla[, 1] < as.Date(driv_fc()[1, 1]), ]
+    new_obs <- chla[chla[, 1] >= as.Date((driv_fc()[1, 1])) &
+                      chla[, 1] <= (as.Date(driv_fc()[1, 1]) + 7), ]
+    
+    # Parameters from 'Build Model'
+    parms[1] <- as.numeric(input$nut_uptake2)
+    parms[4] <- as.numeric(input$graz_rate2)
+    parms[7] <- as.numeric(input$mort_rate2)
+    
+    # Alter Initial conditions
+    yini[1] <- input$phy_init2
+    yini[2] <- input$zoo_init2
+    yini[3] <- input$nut_init2
+    
+    # progress$inc(0.33, detail = "Running the model")
+    fc_length <- length(npz_fc_data())
+    
+    fc_res <- lapply(1:fc_length, function(x) {
+      
+      npz_inputs <- npz_fc_data()[[x]]
+      
+      times <- 1:nrow(npz_inputs)
+      
+      res <- matrix(NA, nrow = length(times), ncol = 5)
+      colnames(res) <- c("time", "Chla", "Phytoplankton", "Zooplankton", "Nutrients")
+      res[, 1] <- times
+      res[1, -1] <- c(yini[1], yini)
+      
+      # Looped model version
+      for(i in 2:length(times)) {
+        
+        if(!("Temperature" %in% input$mod_sens)) {
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i],
+                                        func = NPZ_model_noT, parms = parms,
+                                        method = "ode45", inputs = npz_inputs))
+        } else {
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NPZ_model,
+                                        parms = parms, method = "ode45", inputs = npz_inputs))
+        }
+        
+        res[i, -1] <- out[2, c(5, 2, 3, 4)]
+        yini <- out[2, c(2:4)]
+        
+      }
+      res <- as.data.frame(res)
+      
+      res$time <- fc_out_dates
+
+      out <- res[, c("time", "Chla")] #, "PHYTO", "ZOO")]
+      progress$set(value = x/fc_length)
+      return(out)
+      
+    })
+    
+    mlt <- reshape2::melt(fc_res, id.vars = "time")
+    
+  })
+  
+  plots <- list(main = NULL, l1 = NULL)
+  
+  #* Data Assim plot ====
+  output$update_plot <- renderPlotly({
+    
+    validate(
+      need(input$update_fc2 > 0, message = paste0("Click 'Update model'"))
+    )
+    
+    # Load Chl-a observations
+    read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
+    units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
+    file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
+    if(file.exists(file)) {
+      chla <- read.csv(file)
+      chla[, 1] <- as.Date(chla[, 1], tz = "UTC")
+    }
+    chla_obs <- chla[(chla[, 1] >= as.Date((driv_fc()[1, 1] - (7)))) &
+                       chla[, 1] < as.Date(driv_fc()[1, 1]), ]
+    new_obs <- chla[chla[, 1] >= as.Date((driv_fc()[1, 1])) &
+                      chla[, 1] <= (as.Date(driv_fc()[1, 1]) + 7), ]
+    
+    sub <- driv_fc() #[as.numeric(driv_fc()$L1) <= input$members2, ]
+
+    df3 <- plyr::ddply(sub, "time", function(x) {
+      quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+    })
+    colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
+    colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
+
+    
+    p <- ggplot()
+    p <- p +
+      geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = "Original"),
+                  alpha = 0.8) +
+      geom_line(data = df3, aes(time, p50, color = "median")) #+
+      # scale_fill_manual(values = l.cols[2]) +
+      # guides(fill = guide_legend(override.aes = list(alpha = c(0.8))))
+    
+    # Updated model
+    sub <- fc_update()
+    df4 <- plyr::ddply(sub, "time", function(x) {
+      quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+    })
+    colnames(df4)[-1] <- gsub("%", "", colnames(df4)[-1])
+    colnames(df4)[-1] <- paste0('p', colnames(df4)[-1])
+    
+    p <- p +
+      geom_ribbon(data = df4, aes(time, ymin = p2.5, ymax = p97.5, fill = "Updated"),
+                  alpha = 0.8) +
+      geom_line(data = df4, aes(time, p50, color = "median_updated")) +
+      scale_fill_manual(values = l.cols) +
+      guides(fill = guide_legend(override.aes = list(alpha = c(0.8, 0.8))))
+    
+    # df2 <- sub
+    # df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
+    # 
+    # p <- p +
+    #   geom_line(data = df2, aes(time, value, color = L1)) +
+    #   scale_color_manual(values = c(rep("black", 30), cols)) +
+    #   guides(color = FALSE)
+
+    p <- p + 
+      geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
+      geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs"))) +
+      geom_vline(xintercept = driv_fc()[1, 1], linetype = "dashed") +
+      ylab("Chlorophyll-a") +
+      xlab("Forecast days") +
+      theme_classic(base_size = 12) +
+      theme(panel.background = element_rect(fill = NA, color = 'black'))
+    
+    
+    
+    
+    return(ggplotly(p, dynamicTicks = TRUE))
+  })
+  
+  #* New Forecast ====
+  npz_fc_data2 <- reactive({
+    if(input$load_fc3) {
+      
+      fpath <- file.path("data", "NOAAGEFS_1hr", siteID)
+      fold <- list.files(fpath)
+      fc_date <- as.character(as.Date(fold[1]) + 7)
+      print(fc_date)
+      fc_idx <- which(names(fc_data()) == fc_date)
+      npz_inp_list <- lapply(1:30, function(x) {
+        df <- fc_data()[[fc_idx]]
+        sub <- df[(df[, 2] %in% c("air_temperature",
+                                  "surface_downwelling_shortwave_flux_in_air",
+                                  "precipitation_flux")), c(1, 2, 2 + x)]
+        df2 <- tidyr::pivot_wider(data = sub, id_cols = time, names_from = L1, values_from = 3)
+        df2$air_temperature <- df2$air_temperature - 273.15
+        df2$date <- as.Date(df2$time)
+        df2$time <- NULL
+        df3 <- plyr::ddply(df2, "date", function(x){
+          colMeans(x[, 1:3], na.rm = TRUE)
+        })
+        # df3 <- df3[2:16, ]
+        fc_out_dates <<- df3$date
+        df3$wtemp <- 5 + 0.75 * df3$air_temperature
+        
+        create_npz_inputs(time = df3$date, swr = df3$surface_downwelling_shortwave_flux_in_air,
+                          temp = df3$wtemp)
+      })
+      
+      return(npz_inp_list)
+    }
+  })
+  #** Generate New Forecast ----
+  new_fc <- eventReactive(input$run_fc3, {
+    
+    progress <- shiny::Progress$new()
+    # Make sure it closes when we exit this reactive, even if there's an error
+    on.exit(progress$close())
+    progress$set(message = paste0("Running the NPZ model with 30 forecasts"), 
+                 detail = "This may take a while. This window will disappear  
+                     when it is finished running.", value = 0.01)
+    
+    # Parameters from 'Build Model'
+    parms[1] <- as.numeric(input$nut_uptake2)
+    parms[4] <- as.numeric(input$graz_rate2)
+    parms[7] <- as.numeric(input$mort_rate2)
+    
+    # Alter Initial conditions
+    yini[1] <- input$phy_init3
+    yini[2] <- input$zoo_init3
+    yini[3] <- input$nut_init3
+    
+    # progress$inc(0.33, detail = "Running the model")
+    fc_length <- length(npz_fc_data2())
+    
+    fc_res <- lapply(1:fc_length, function(x) {
+      
+      npz_inputs <- npz_fc_data2()[[x]]
+      
+      times <- 1:nrow(npz_inputs)
+      
+      res <- matrix(NA, nrow = length(times), ncol = 5)
+      colnames(res) <- c("time", "Chla", "Phytoplankton", "Zooplankton", "Nutrients")
+      res[, 1] <- times
+      res[1, -1] <- c(yini[1], yini)
+      
+      # Looped model version
+      for(i in 2:length(times)) {
+        
+        if(!("Temperature" %in% input$mod_sens)) {
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i],
+                                        func = NPZ_model_noT, parms = parms,
+                                        method = "ode45", inputs = npz_inputs))
+        } else {
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NPZ_model,
+                                        parms = parms, method = "ode45", inputs = npz_inputs))
+        }
+        
+        res[i, -1] <- out[2, c(5, 2, 3, 4)]
+        yini <- out[2, c(2:4)]
+        
+      }
+      res <- as.data.frame(res)
+      res$time <- fc_out_dates
+      
+      # out$time <- npz_inp$Date
+      out <- res[, c("time", "Chla")] #, "PHYTO", "ZOO")]
+      # colnames(out)[-1] <- c("Chla") #, "Phytoplankton", "Zooplankton")
+      progress$set(value = x/fc_length)
+      return(out)
+      
+    })
+    
+    mlt <- reshape2::melt(fc_res, id.vars = "time")
+    
+    return(mlt)
+  })
+  
+  output$plot_ecof4 <- renderPlotly({
+    
+    validate(
+      need(input$members3 >= 1 & input$members3 <= 30,
+           message = paste0("The number of members must be between 1 and 30"))
+    )
+    validate(
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data' tab!")
+    )
+    
+    # Load Chl-a observations
+    read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
+    units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
+    file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
+    if(file.exists(file)) {
+      chla <- read.csv(file)
+      chla[, 1] <- as.Date(chla[, 1], tz = "UTC")
+    }
+    chla_obs <- chla[(chla[, 1] >= as.Date((new_fc()[1, 1] - (14)))) &
+                       chla[, 1] < as.Date(new_fc()[1, 1]), ]
+    
+    # Make old forecast 
+    sub <- driv_fc() #[as.numeric(driv_fc()$L1) <= input$members2, ]
+    
+    print(head(sub))
+    
+    df3 <- plyr::ddply(sub, "time", function(x) {
+      quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+    })
+    colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
+    colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
+    df3$fc_date <- as.character(df3[1, 1])
+    
+    
+    
+    p <- ggplot()
+    p <- p +
+      geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date),
+                  alpha = 0.8) +
+      geom_line(data = df3, aes(time, p50, color = "median"))
+    
+    sub <- new_fc()[as.numeric(new_fc()$L1) <= input$members3, ]
+
+    print(head(sub))
+    if(input$type3 == "distribution") {
+      
+      df3 <- plyr::ddply(sub, "time", function(x) {
+        quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+      })
+      # df3 <- as.data.frame(t(df3))
+      colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
+      colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
+      df3$fc_date <- as.character(df3[1, 1])
+      df2 <- df3
+    } else {
+      df2 <- sub
+      df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
+    }
+    
+    # p <- ggplot()
+    if(input$type3 == "line"){
+      p <- p +
+        geom_line(data = df2, aes(time, value, color = L1)) +
+        scale_color_manual(values = c(rep("black", (input$members3 + 1)), cols[1:2])) +
+        guides(color = FALSE)
+    } 
+    if(input$type3 == "distribution") {
+      p <- p +
+        geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date),
+                    alpha = 0.8) +
+        # geom_ribbon(data = df2, aes(time, ymin = p12.5, ymax = p87.5, fill = "75th"),
+        # alpha = 0.8) +
+        geom_line(data = df2, aes(time, p50, color = "median")) +
+        scale_fill_manual(values = l.cols) +
+        guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
+        scale_color_manual(values = c("black", cols[1:2]))
+    }
+    p <- p + 
+      geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
+      geom_vline(xintercept = (new_fc()[1, 1]), linetype = "dashed") +
+      ylab("Chlorophyll-a") +
+      xlab("Forecast days") +
+      theme_classic(base_size = 12) +
+      theme(panel.background = element_rect(fill = NA, color = 'black'))
+    return(ggplotly(p, dynamicTicks = TRUE))
+    
+  })
+
   
   #** Render Report ----
   report <- reactiveValues(filepath = NULL) #This creates a short-term storage location for a filepath
