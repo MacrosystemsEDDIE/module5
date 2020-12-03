@@ -27,8 +27,12 @@ obj_02,Explore the data measured at the selected site. This is data that has bee
 obj_03,For our measurements of primary productivity we will be using the data from the Chlorophyll-a sensor. Using the options below explore if there are any relationships between Chlorophyll-a and the other variables. This information will be used to build the model.
 obj_04,"Using your understanding of primary production within aquatic ecosystems, you will build a simple ecological model to represent the processes observed."
 obj_05,Test different scenarios with your model to understand how it will respond under different scenarios. Use observed data to calibrate the model (i.e. make your model match the observed data).
-obj_06,Gain an understanding of what uncertainty is in the context of an ecological forecast and examine weather forecast data
+obj_06,Gain an understanding of what uncertainty is in the context of an ecological forecast and explore weather forecast data. Demonstrate how uncertainty can be quantified.
 obj_07,Use weather forecast data to drive the calibrated ecological model built on the 'Build Model' tab to forecast primary productivity.
+obj_08,Forecasts that are effectively communicated to the public and managers will be most useful for aiding decision-making. Here you will think about how to communicate your forecast to an end-user.
+obj_09,A fundamental part of the forecast cycle is assessing how well your forecast did to observations. Here we will use a simple assessment of plotting forecast results against observations.
+obj_10,Update our model/hypothesis to improve our forecasts based on the recent observations that have been collected.
+obj_11,The forecast cycle is an iterative process. Now after communicating and assessing our forecast and updating our model we will now generate the next forecast.
 weather_forecast1,A weather forecast is probably the most widely used and applied forecast. Here we will examine the output from a weather forecast model from NOAA.
 weather_forecast2,"Weather forecasts use multiple simulations from the same model, but alter the initial conditions of the model to generate different potential futures. A forecast is a combination of the future condtions and the uncertainty associated with it."
 model1,"A model is a representation (physical, conceptual or mathematical) of a real phenomenon that is difficult to observe directly."
@@ -40,4 +44,4 @@ uncert1,"Uncertainty comes from natural variation and imperfect knowledge. Repli
 driver_uncert,"Driver uncertainty comes from uncertainty related to the variables used to drive the model. The key driver variables of our NPZ model are water temperature, photosynthetic active radiation (PAR) and nutrient loading. We do not know what these variables will be in the future but we can use weather forecast data to predict what they will be and then use that to drive the model."
 param_uncert,"Parameter uncertainty refers to the uncertainty in the model parameter values, which can be due to uncertainties in the data or the calibration process used."
 init_uncert,Initial conditions uncertainty refers to uncertainty arising because the initial conditions are not precisely known or because the calculations cannot be performed with the precise initial conditions.
-comm_forecast,Forecasts that are effectively communicated to the public and managers will be most useful for aiding decision-making. Answer Q 23 in the student handout.
+comm_forecast,Answer Q 23 in the student handout.
