@@ -1,6 +1,6 @@
 ---
 title: "Beta Student Handout"
-output: word_document
+output: odt_document
 params:
   name: NA
   id_number: NA
@@ -18,7 +18,7 @@ time <- Sys.time()
 
 ```
 
-![](www/eddie_banner_2018.v5.jpg)
+![](www/project-eddie-banner-2020_green.png)
 
 ## Completed student handout
 
