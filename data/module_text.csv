@@ -7,7 +7,7 @@ act_A,"Activity A: Students visualize data from a selected NEON site, which is u
 act_B,Activity B: Students use their model to generate a forecast with uncertainty
 act_C,Activity C: Students then apply a forecast to a different NEON site and compare the different forecasts
 what_forecast,A forecast is a prediction of future conditions with uncertainty.
-why_forecast,We forecast because it help us to make decisions and forecasts are used to plan for the future.
+why_forecast,We forecast because it help us to make decisions and the information is used to plan for the future.
 how_forecast,This module will guide you through the key steps within the forecast cycle and explain how we create ecological forecasts.
 eco_forecast1,An ecological forecast is a prediction of future environmental conditions with uncertainty.
 eco_forecast2,"An ecological forecast predicts changes in ecosystems and ecosystem components in response to an environmental driver such as climate variability, extreme weather conditions, pollution, or habitat change. It also provides information about how people, economies, and communities may be affected. Local authorities and members of the public use these early warnings to make decisions to protect the health and well-being of a particular area."
