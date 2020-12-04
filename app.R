@@ -195,14 +195,19 @@ ui <- function(req) {
                         fluidRow(
                           column(6,
                                  br(), br(), br(),
-                                 h3("In brief:"),
+                                 h3("Presentation Recap"),
+                                 p("The presentation accompanying this module covers the introduction to forecasting, the nutrient-phytoplankton-zooplankton model (NPZ) and the importance and relevance of Ecological Forecast."),
+                                 p("What is a forecast?"),
                                  tags$ul(
-                                   tags$li(module_text["what_forecast", ]),
-                                   tags$li(module_text["why_forecast", ]),
+                                   tags$li(module_text["what_forecast", ])
+                                 ),
+                                 p("Why do we forecast?"),
+                                 tags$ul(
+                                   tags$li(module_text["why_forecast", ])
+                                 ),
+                                 p("How do we generate a forecast?"),tags$ul(
                                    tags$li(module_text["how_forecast", ])
                                  )
-                                 # img(src = "slide_01.png", height = "50%", 
-                                 #     width = "50%", align = "centre")
                           ),
                           column(6, align = "center",
                                  br(), br(),
@@ -275,16 +280,34 @@ ui <- function(req) {
                         # tags$style(type="text/css", "body {padding-top: 65px;}"),
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
                             width = 1544, top = 5),
-                        h3("Examples of Current Ecological Forecasts"),
-                        p("Here are links to some current examples of ecological forecasts."),
-                        tags$ul(
-                          tags$li(a(href = EF_links$webpage[1], EF_links$Forecast[1]), br(), p(EF_links$About[1])),
-                          tags$li(a(href = EF_links$webpage[2], EF_links$Forecast[2]), br(), p(EF_links$About[2])),
-                          tags$li(a(href = EF_links$webpage[3], EF_links$Forecast[3]), br(), p(EF_links$About[3])),
-                          tags$li(a(href = EF_links$webpage[4], EF_links$Forecast[4]), br(), p(EF_links$About[4]))
-                        )
-                        
-               ),
+                        fluidRow(
+                          column(12,
+                                 h3("Examples of Current Ecological Forecasts"),
+                                 p("Here are links to some current examples of ecological forecasts."))
+                        ),
+                        fluidRow(
+                          column(5, offset = 1,
+                                 tags$ul(
+                                   tags$li(id = "txt_j", a(href = EF_links$webpage[1], EF_links$Forecast[1]), br(), p(EF_links$About[1])),
+                                   img(src = "fc_examples/npn.png", height = "50%",
+                                       width = "50%"), br(), hr(),
+                                   tags$li(id = "txt_j", a(href = EF_links$webpage[2], EF_links$Forecast[2]), br(), p(EF_links$About[2])),
+                                   img(src = "fc_examples/flare.png", height = "50%",
+                                       width = "50%")
+                                   )
+                                 ),
+                          column(5, 
+                                 tags$ul(
+                                   tags$li(id = "txt_j", a(href = EF_links$webpage[3], EF_links$Forecast[3]), br(), p(EF_links$About[3])),
+                                   img(src = "fc_examples/ecocast.png", height = "50%",
+                                       width = "50%"), br(), hr(),
+                                   tags$li(id = "txt_j", a(href = EF_links$webpage[4], EF_links$Forecast[4]), br(), p(EF_links$About[4])),
+                                   img(src = "fc_examples/sturgeon.png", height = "50%",
+                                       width = "50%")
+                                   )
+                                 )
+                          )
+                        ),
                
                # 4. Get Data ----
                tabPanel(title = "Get Data", value = "mtab4",
@@ -551,12 +574,13 @@ ui <- function(req) {
                                               h3("Objective 5 - Test scenarios and calibrate model"),
                                               p(module_text["obj_05", ])
                                             ),
-                                            p("We will use observed data from the selected site on the 'Get Data' tab to force the NPZ model."),
+                                            p("We will use observed data from the selected site on the 'Get Data' tab to drive the NPZ model."),
                                             p("Before running the model, Answer Q 12."),
+                                            p("You will need to scroll past the two panels below to find the controls for running the model."),
                                             p("Run the scenarios described in Q 13 and describe how the model responds.")
                                      ),
                                      column(6,
-                                            h3("States"),
+                                            h3("Model States"),
                                             wellPanel(
                                               plotlyOutput("mod_phyto_plot")
                                             )
@@ -570,11 +594,16 @@ ui <- function(req) {
                                    ),
                                    fluidRow(
                                      
-                                     column(
-                                       width = 3,
+                                     column(width = 3,
+                                            h3("Run Model"),
+                                            actionButton("run_mod_ann",
+                                                         label = div("Run Model",
+                                                                     icon("running")),
+                                                         width = "60%"),
                                        p("To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates."),
+                                       br(),
                                        # wellPanel(
-                                       h4(tags$b("Drivers")),
+                                       h3("Drivers"),
                                        checkboxGroupInput("mod_sens", "Select which variables are used in the model:",
                                                           choices = list("Temperature"))
                                        # )
@@ -605,15 +634,22 @@ ui <- function(req) {
                                                         min = 0.1, max = 1.7, value = 0.8, step = 0.1)
                                      ),
                                      column(3,
-                                            h3(tags$b("Initial conditions")),
+                                            h3("Initial conditions"),
                                             p("Return to the 'Get Data' tab to find suitable values to input for each of the states."),
-                                            sliderInput("phy_init", "Phytoplankton", min = 0.1, max = 10, step = 0.1, value = 2),
-                                            sliderInput("zoo_init", "Zooplankton", min = 0.1, max = 5, step = 0.1, value = 0.4),
-                                            sliderInput("nut_init", "Nutrients", min = 0.11, max = 20, step = 0.1, value = 9),
+                                            p(tags$b("Phytoplankton")),
+                                            sliderInput("phy_init", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
+                                                                                div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
+                                                        min = 0.1, max = 10, step = 0.1, value = 2),
+                                            p(tags$b("Zooplankton")),
+                                            sliderInput("zoo_init", label = div(style='width:300px;', div(style='float:left;', img(src = "zoop.png", height = "50px", width = "50px")),
+                                                                                div(style='float:right;', img(src = "zoops.png", height = "50px", width = "50px", align = "right"))),
+                                                        min = 0.1, max = 5, step = 0.1, value = 0.4),
+                                            p(tags$b("Nutrients")),
+                                            sliderInput("nut_init", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
+                                                                                div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
+                                                        min = 0.11, max = 20, step = 0.1, value = 9),
                                      ),
                                      column(3,
-                                            actionButton("run_mod_ann", label = div("Run Model", icon("running")),
-                                                         width = "60%"),
                                             br(),
                                             wellPanel(
                                               p("After running the scenarios in Q 13, adjust the model parameters to get the best fit with the pattern seen in the observed data. Not the values into the table in Q 14."),
@@ -769,7 +805,7 @@ ui <- function(req) {
                                      )
                                    ),
                                    fluidRow(
-                                     column(4,
+                                     column(3,
                                             h3("Run Forecast"),
                                             wellPanel(
                                               actionButton('load_fc2', label = div("Load Forecast inputs", icon("download")),
@@ -787,7 +823,10 @@ ui <- function(req) {
                                               h3(tags$b("Initial conditions")),
                                               p(id = "txt_j", "Return to the 'Get Data' tab to find suitable values to input for each of the states. Use the start date of the weather forecast loaded above. If there is no value, choose a value based on the observed range."),
                                               sliderInput("phy_init2", "Phytoplankton", min = 0.1, max = 10, step = 0.1, value = 2),
-                                              sliderInput("zoo_init2", "Zooplankton", min = 0.1, max = 5, step = 0.1, value = 0.4),
+                                              p(tags$b("Zooplankton")),
+                                              sliderInput("zoo_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "zoop.png", height = "50px", width = "50px")),
+                                                                                   div(style='float:right;', img(src = "zoops.png", height = "50px", width = "50px", align = "right"))),
+                                                          min = 0.1, max = 5, step = 0.1, value = 0.4),
                                               sliderInput("nut_init2", "Nutrients", min = 0.11, max = 20, step = 0.1, value = 9)
                                               
                                               
@@ -903,8 +942,7 @@ ui <- function(req) {
                                             h3("Parameters"),
                                             h4(tags$b("Zooplankton parameters")),
                                             p(tags$em("Grazing")),
-                                            sliderInput("graz_rate2", label = div(style='width:300px;', 
-                                                                                  div(style='float:left;', 'Eat less'), 
+                                            sliderInput("graz_rate2", label = div(style='width:300px;', div(style='float:left;', 'Eat less'), div(img(src = "zoops.png", height = "60px", width = "60px")), 
                                                                                   div(style='float:right;', 'Eat more')),
                                                         min = 0.2, max = 1.6, value = 1.2, step = 0.1),
                                             p(tags$em("Mortality")),
@@ -1757,6 +1795,11 @@ server <- function(input, output, session) {#
   
   #* Model annual phyto-zoo plot ----
   output$mod_phyto_plot <- renderPlotly({
+    
+    validate(
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data' tab!")
+    )
+    
     xlims <- range(mod_run1()[, 1])
     mlt <- reshape2::melt(mod_run1()[, -c(2)], id.vars = 1)
 
