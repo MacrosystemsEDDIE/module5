@@ -194,33 +194,27 @@ ui <- function(req) {
                             width = 1544, top = 5),
                         fluidRow(
                           column(6,
-                                 br(), br(),
-                                 h2("Our overarching questions today", 
-                                    align = "center"),
-                                 HTML('<center><img src="slide_01.png" width="70%"></center>')
-                                 
-                                 ),
-                          column(6,
                                  br(), br(), br(),
                                  h3("In brief:"),
                                  tags$ul(
                                    tags$li(module_text["what_forecast", ]),
                                    tags$li(module_text["why_forecast", ]),
                                    tags$li(module_text["how_forecast", ])
-                                   )
+                                 )
                                  # img(src = "slide_01.png", height = "50%", 
                                  #     width = "50%", align = "centre")
-                                 )
-                        ),
-                        fluidRow(
-                          column(6,
-                                 h2("What is an Ecological Forecast?"),
-                                 p(module_text["eco_forecast1", ]),
-                                 p("It is a repeated cycle (e.g. iterative) and is described as 'The Forecast Cycle'."),
-                                 img(src = "mod5_viz_v2.png", height = "70%", 
-                                     width = "70%", align = "left")
+                          ),
+                          column(6, align = "center",
+                                 br(), br(),
+                                 h2("Our overarching question today", 
+                                    align = "center"),
+                                 img(src = "What_is_EF.png", height = "70%", 
+                                     width = "70%", align = "center")
+                                 # HTML('<center><img src="slide_01.png" width="70%"></center>')
                                  
-                                 ),
+                                 )
+                        ), hr(),
+                        fluidRow(
                           column(6,
                                  h3("Workflow for this module"),
                                  tags$ol(
@@ -229,7 +223,15 @@ ui <- function(req) {
                                    tags$li(id = "txt_j", module_text["workflow3", ]),
                                    tags$li(id = "txt_j", module_text["workflow4", ]),
                                    tags$li(id = "txt_j", module_text["workflow5", ])
-                                   )
+                                 )
+                          ),
+                          column(6, align = "center",
+                                 # h2("What is an Ecological Forecast?"),
+                                 # p(module_text["eco_forecast1", ]),
+                                 # p("It is a repeated cycle (e.g. iterative) and is described as 'The Forecast Cycle'."),
+                                 img(src = "mod5_viz_v2.png", height = "70%",
+                                     width = "70%")
+                                 
                                  )
                         ), hr(),
                         fluidRow(
@@ -238,12 +240,20 @@ ui <- function(req) {
                                  p("This module will introduce key concepts within Ecological forecasting through exploration of ",
                                    a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data"), ", building a model and then generating a short-term ecological forecast.")
                                  ),
-                          column(6,
+                          column(6, align = "center",
                                  a(
                                    href = "https://www.neonscience.org/",
-                                   img(src = "NSF-NEON-logo.png", title = "NEON - NSF logo",
-                                       aligh = "right")
+                                   img(src = "NSF-NEON-logo.png", title = "NEON - NSF logo")
                                    )
+                                 )
+                        ), hr(),
+                        fluidRow(
+                          column(12, align = "center",
+                                 img(src = "neon_ecoclimatic domains-hires.jpg", 
+                                     title = "NEON - Ecoclimatic domains",
+                                     height = "50%", width = "50%", 
+                                     style = "display: block; margin-left: auto; margin-right: auto;"),
+                                 p("Map of NEON field sites and ecoclimatic domains")
                                  )
                         ),
                         fluidRow(
@@ -266,6 +276,7 @@ ui <- function(req) {
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
                             width = 1544, top = 5),
                         h3("Examples of Current Ecological Forecasts"),
+                        p("Here are links to some current examples of ecological forecasts."),
                         tags$ul(
                           tags$li(a(href = EF_links$webpage[1], EF_links$Forecast[1]), br(), p(EF_links$About[1])),
                           tags$li(a(href = EF_links$webpage[2], EF_links$Forecast[2]), br(), p(EF_links$About[2])),
@@ -385,9 +396,9 @@ ui <- function(req) {
                                               p(id = "txt_j", module_text["obj_03", ])
                                             )
                                      ),
-                                     column(6,
+                                     column(6, align = "center",
                                             img(src = "01-hypothesis.png", height = "60%", 
-                                                width = "60%", align = "left")
+                                                width = "60%")
                                      )
                                    ),
                                    #** Explore variable relationships ----
@@ -462,9 +473,9 @@ ui <- function(req) {
                                               p(module_text["obj_04", ])
                                             )
                                      ),
-                                     column(6,
+                                     column(6, align = "center",
                                             img(src = "02-build-model.png", height = "60%", 
-                                                width = "60%", align = "left")
+                                                width = "60%")
                                      )
                                    ), br(), br(), hr(),
                                    #* Intro text ====
@@ -668,10 +679,10 @@ ui <- function(req) {
                                             p(id = "txt_j", "For this exercise we will forecast 30 days into the future using NOAA weather forecast data."),
                                             p(id = "txt_j", "Before we dive in to this, we will need to understand what we mean we mean when we talk about uncertainty.")
                                      ),
-                                     column(7, offset = 1,
+                                     column(8, align = "center",
                                             br(), br(),
                                             img(src = "03-quantify-uncertainty.png", height = "60%", 
-                                                width = "60%", align = "left")
+                                                width = "60%")
                                             # HTML('<center><img src="What_is_EF.png"></center>'),
                                      )
                                    ),
@@ -685,8 +696,9 @@ ui <- function(req) {
                                             p("We will use the model you built on the 'Build Model' tab to create an ecological forecast."),
                                             p("One source of uncertainty is the data used to drive the model. For your forecast, you will be using actual NOAA weather forecast to drive your model. Load and examine this data below.")
                                      ),
-                                     column(5, offset = 1,
-                                            HTML('<center><img src="What_is_uncert.png"></center>'),
+                                     column(8, align = "center",
+                                            img(src = "What_is_uncert.png", height = "60%", 
+                                                width = "60%")
                                      )
                                    ),
                                    hr(),
@@ -700,6 +712,7 @@ ui <- function(req) {
                                             p(id = "txt_j", module_text["weather_forecast2", ])
                                      ),
                                      column(3,
+                                            br(), br(),
                                             p(id = "txt_j", "Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS"), " forecast."),
                                             p(id = "txt_j", "Inspect the different meteorological outputs. You can adjust the number of members, which is the number of forecasts and also how it is visualized. A line plot shows each individual member while the distribution  shows the median 95th percentile."),
                                             actionButton('load_fc', "Load Forecast", icon = icon("download")),
@@ -749,10 +762,10 @@ ui <- function(req) {
                                             p(id = "txt_j", "A key component of what makes an ecological forecast a 'forecast', is that the model is driven by ", tags$b("forecasted"), "driving variables."),
                                             # p("We will now use the weather forecast data loaded above to drive the calibrated model we built on the 'Build Model' tab to forecast chlorophyll-a concentrations into the future.")
                                      ),
-                                     column(6,
+                                     column(6, align = "center",
                                             # h4("Schematic of driver uncertainty")
                                             img(src = "04-generate-forecast.png", height = "60%", 
-                                                width = "60%", align = "left")
+                                                width = "60%")
                                      )
                                    ),
                                    fluidRow(
@@ -804,10 +817,10 @@ ui <- function(req) {
                                             h3("Communicate Forecast"),
                                             p(id = "txt_j", module_text["comm_forecast", ]),
                                      ),
-                                     column(6,
+                                     column(6, align = "center",
                                             img(src = "05-communicate-forecast.png",
                                                 height = "70%", 
-                                                width = "70%", align = "center")
+                                                width = "70%")
                                             )
                                      )
                                    ),
@@ -825,10 +838,10 @@ ui <- function(req) {
                                             h3("One week later..."),
                                             p(id = "txt_j", "A week has passed since the forecast and you have collected a week of data. Now you are curious as to how well your forecast did. Now we can run an actual comparison to see how the forecast predictions compare to actual observed data"),
                                      ),
-                                     column(6,
+                                     column(6, align = "center",
                                             img(src = "06-assess-forecast.png",
                                                 height = "70%", 
-                                                width = "70%", align = "center")
+                                                width = "70%")
                                      )
                                    ),
                                    fluidRow(
@@ -879,10 +892,10 @@ ui <- function(req) {
                                             p(id = "txt_j", "One of the best thing about ecological forecasting is that it allows us to test our hypothesis (e.g our model) and see if it is representing what is seen within the environment. If there is a bad fit between our model and observed data, this indicates our model is not capturing the processes."),
                                             p(id = "txt_j", "One of the reasons for this poor fit could be that the parameters that best represent then annual pattern might not work best on shorter time sceles. If you have a poor model fit, adjust the parameters to see if you can improve the forecast."),
                                      ),
-                                     column(6,
+                                     column(6, align = "center",
                                             img(src = "07-update-model.png",
                                                 height = "70%", 
-                                                width = "70%", align = "center")
+                                                width = "70%")
                                      )
                                    ), br(), hr(),
                                    fluidRow(
@@ -964,7 +977,13 @@ ui <- function(req) {
                                               plotlyOutput("plot_ecof4")
                                               )
                                             )
-                                     )
+                                     ),
+                                   fluidRow(
+                                     column(12, 
+                                            h3("The Forecast Cycle"),
+                                            p("We have stepped through each of the steps within the forecast cycle"),
+                                     ),
+                                   )
                                    ),
                           br(), hr(),
                           fluidRow(
@@ -977,13 +996,6 @@ ui <- function(req) {
                           ),
                           h5("Use buttons to navigate between the objective tabs", align = "center"),
                           hr(), br()
-                          
-                        ),
-                        fluidRow(
-                          column(12, 
-                                 h3("The Forecast Cycle"),
-                                 p("We have stepped through each of the steps within the forecast cycle"),
-                                 ),
                           )
                         ),
                tabPanel(title = "Activity C", value = "mtab7",
@@ -1003,13 +1015,20 @@ ui <- function(req) {
                             width = 1544, top = 5),
                         br(),
                         #* Generate report buttons ====
-                        actionButton("generate", "Generate Report", icon = icon("file"), # This is the only button that shows up when the app is loaded
-                                     # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
-                        ),
-                        conditionalPanel(condition = "output.reportbuilt", # This button appears after the report has been generated and is ready for download.
-                                         downloadButton("download", "Download Report",
-                                                        # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
-                                         ))
+                        fluidRow(
+                          column(6,
+                                 h3("Generate Report"),
+                                 p("This will take the answers you have input into the document and generate an OpenDocument Text (ODT) document with your answers which you can download and make further edits before submitting."),
+                                 actionButton("generate", "Generate Report", icon = icon("file"), # This is the only button that shows up when the app is loaded
+                                              # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
+                                 ),
+                                 conditionalPanel(condition = "output.reportbuilt", # This button appears after the report has been generated and is ready for download.
+                                                  downloadButton("download", "Download Report",
+                                                                 # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
+                                                  ))
+                                 ),
+                          ),
+                        
                         ),
                # Tab navigation buttons ----
                br(), hr(),
@@ -1096,7 +1115,6 @@ server <- function(input, output, session) {#
       nc_close(fid)
     })
     vars <- fid$var # Extract variable names for selection
-    nc_close(fid)
     fc_vars <<- names(vars)
     membs <<- length(fils)
   })
@@ -1355,7 +1373,6 @@ server <- function(input, output, session) {#
         nc_close(fid)
       })
       vars <- fid$var # Extract variable names for selection
-      nc_close(fid)
       fc_vars <<- names(vars)
       membs <<- length(fils)
       
@@ -1424,6 +1441,7 @@ server <- function(input, output, session) {#
         return(df2)
       })
       
+      progress$close()
       names(out) <- fc_date
       return(out)
       
@@ -2442,7 +2460,7 @@ server <- function(input, output, session) {#
                    a1 = input$q1)
     
     
-    tmp_file <- paste0(tempfile(), ".doc") #Creating the temp where the .pdf is going to be stored
+    tmp_file <- paste0(tempfile(), ".odt") #Creating the temp where the .pdf is going to be stored
     
     rmarkdown::render("report.Rmd", 
            output_format = "all", 
@@ -2469,7 +2487,7 @@ server <- function(input, output, session) {#
     # This function returns a string which tells the client
     # browser what name to use when saving the file.
     filename = function() {
-      paste0("report_", input$name, ".doc") %>%
+      paste0("report_", input$name, ".odt") %>%
         gsub(" ", "_", .)
     },
     
@@ -2483,28 +2501,29 @@ server <- function(input, output, session) {#
   )
   # Navigating Tabs ----
   #* Main Tab ====
-  rv1 <- reactiveValues(page = 1)
+  rv1 <- reactiveValues(prev = 0, nxt = 2)
+  observeEvent(input$maintab, {
+    curr_tab <- input$maintab
+    rv1$prev <- readr::parse_number(curr_tab) - 1
+    rv1$nxt <- readr::parse_number(curr_tab) + 1
+  })
   
   observe({
-    toggleState(id = "prevBtn1", condition = rv1$page > 1)
-    toggleState(id = "nextBtn1", condition = rv1$page < 9)
+    toggleState(id = "prevBtn1", condition = rv1$prev > 0)
+    toggleState(id = "nextBtn1", condition = rv1$nxt < 9)
     hide(selector = ".page")
-    show(paste0("mtab", rv1$page))
+    show(paste0("mtab", rv1$nxt))
   })
   
   observeEvent(input$nextBtn1, {
-    curr_tab <- input$maintab
-    rv1$page <- readr::parse_number(curr_tab) + 1
     updateTabsetPanel(session, "maintab",
-                      selected = paste0("mtab", rv1$page))
+                      selected = paste0("mtab", rv1$nxt))
     shinyjs::runjs("window.scrollTo(0, 0)") # scroll to top of page
   })
   
   observeEvent(input$prevBtn1, {
-    curr_tab <- input$maintab
-    rv1$page <- readr::parse_number(curr_tab) - 1
     updateTabsetPanel(session, "maintab",
-                      selected = paste0("mtab", rv1$page))
+                      selected = paste0("mtab", rv1$prev))
     shinyjs::runjs("window.scrollTo(0, 0)")
     
   })
@@ -2514,8 +2533,9 @@ server <- function(input, output, session) {#
   rv1a <- reactiveValues(page = 1)
   
   observe({
+    print(rv1a$page)
     toggleState(id = "prevBtn1a", condition = rv1a$page > 1)
-    toggleState(id = "nextBtn1a", condition = rv1a$page < 4)
+    toggleState(id = "nextBtn1a", condition = rv1a$page < 3)
     hide(selector = ".page")
     show(paste0("obj", rv1a$page))
   })
