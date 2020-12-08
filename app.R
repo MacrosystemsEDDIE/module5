@@ -1,6 +1,7 @@
 library(shiny)
 library(shinycssloaders)
 library(shinyjs)
+library(shinydashboard)
 library(leaflet)
 library(htmltools)
 library(sf)
@@ -45,6 +46,9 @@ neon_sites$type[which(neon_sites$siteID %in% (neon_sites_df$siteID[neon_sites_df
 # Subset to aquatic
 neon_sites <- neon_sites[neon_sites$type == "Aquatic", ]
 neon_sites_df <- neon_sites_df[neon_sites_df$type == "Aquatic", ]
+
+# Read in assessment questions
+quest <- read.csv("data/assess_questions.csv", row.names = 1)
 
 # Reference for downloading variables
 neon_vars <- read.csv("data/neon_variables.csv")
@@ -122,14 +126,17 @@ ui <- function(req) {
                         #first {
                         border: 4px double red;
                         }
-                        #second {
-                        border: 2px solid blue;
+                        #bla_border {
+                        border: 2px solid black;
                         }
                         #txt_j {
                         text-align: justify;
                         }
                         #txt_c {
                         text-align: center;
+                        }
+                        #wh_link a {
+                        color: #FFFFFF
                         }
                         ")),
                         fluidRow(
@@ -197,6 +204,43 @@ ui <- function(req) {
                             width = 1544, top = 5),
                         fluidRow(
                           column(6,
+                                 h3("Workflow for this module"),
+                                 tags$ol(
+                                   tags$li(id = "txt_j", module_text["workflow1", ]),
+                                   tags$li(id = "txt_j", module_text["workflow2", ]),
+                                   tags$li(id = "txt_j", module_text["workflow3", ]),
+                                   tags$li(id = "txt_j", module_text["workflow4", ]),
+                                   tags$li(id = "txt_j", module_text["workflow5", ])
+                                 )
+                          ),
+                          column(6, align = "center",
+                                 br(), br(),
+                                 img(src = "mod5_overview.png", height = "80%", id = "bla_border",
+                                     width = "80%", tags$style("border: solid 2px black;"))
+                                 
+                          )
+                        ), hr(),
+                        fluidRow(
+                          column(8,
+                                 h3("Before you start..."),
+                                 p("Input your name and Student ID and this will be added to your final report."),
+                                 textInput("name", "Name:", placeholder = ),
+                                 textInput("id_number", "ID number:"),
+                                 p("Check the box below to show the questions"),
+                                 checkboxInput("show_q1", "Show questions"),
+                                 box(id = "box1",
+                                     p("Answer questions 1-5 before you begin."),
+                                     
+                                     textAreaInput(inputId = "q1", label = quest["q1", 1], width = "600px"),
+                                     textAreaInput(inputId = "q2", label = quest["q2", 1], width = "600px"),
+                                     textAreaInput(inputId = "q3", label = quest["q3", 1], width = "600px"),
+                                     textAreaInput(inputId = "q4", label = quest["q4", 1], width = "600px"),
+                                     textAreaInput(inputId = "q5", label = quest["q5", 1], width = "600px"),
+                                     ),
+                                 ),
+                        ),
+                        fluidRow(
+                          column(6,
                                  br(), br(), br(),
                                  h3("Presentation Recap"),
                                  p("The presentation accompanying this module covers the introduction to forecasting, the nutrient-phytoplankton-zooplankton model (NPZ) and the importance and relevance of Ecological Forecast."),
@@ -224,26 +268,6 @@ ui <- function(req) {
                         ), hr(),
                         fluidRow(
                           column(6,
-                                 h3("Workflow for this module"),
-                                 tags$ol(
-                                   tags$li(id = "txt_j", module_text["workflow1", ]),
-                                   tags$li(id = "txt_j", module_text["workflow2", ]),
-                                   tags$li(id = "txt_j", module_text["workflow3", ]),
-                                   tags$li(id = "txt_j", module_text["workflow4", ]),
-                                   tags$li(id = "txt_j", module_text["workflow5", ])
-                                 )
-                          ),
-                          column(6, align = "center",
-                                 # h2("What is an Ecological Forecast?"),
-                                 # p(module_text["eco_forecast1", ]),
-                                 # p("It is a repeated cycle (e.g. iterative) and is described as 'The Forecast Cycle'."),
-                                 img(src = "mod5_viz_v2.png", height = "70%",
-                                     width = "70%")
-                                 
-                                 )
-                        ), hr(),
-                        fluidRow(
-                          column(6,
                                  h3("Data sources"),
                                  p("This module will introduce key concepts within Ecological forecasting through exploration of ",
                                    a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data"), ", building a model and then generating a short-term ecological forecast.")
@@ -263,12 +287,6 @@ ui <- function(req) {
                                      style = "display: block; margin-left: auto; margin-right: auto;"),
                                  p("Map of NEON field sites and ecoclimatic domains")
                                  )
-                        ),
-                        fluidRow(
-                          column(8,
-                                 h2("Before you start..."),
-                                 p("Answer questions 1-5 in the 'Think about it' section of the student handout.")
-                                 ),
                         )
                         #* Intro text ====
                        # Embed questions
@@ -312,8 +330,23 @@ ui <- function(req) {
                           )
                         ),
                
-               # 4. Get Data ----
+               # 4. Get Data & Build Model ----
                tabPanel(title = "Get Data & Build Model", value = "mtab4",
+                        tags$style(".nav-tabs {
+  background-color: #DDE4E1;
+  border-color: #FFF;
+  
+}
+
+.nav-tabs-custom .nav-tabs li.active:hover a, .nav-tabs-custom .nav-tabs li.active a {
+background-color: #4D6A5C;
+border-color: #FFF;
+}
+
+.nav-tabs-custom .nav-tabs li.active {
+    border-top-color: #FFF;
+    background-color: #4D6A5C;
+}"),
                         # tags$style(type="text/css", "body {padding-top: 65px;}"),
                         img(src = "project-eddie-banner-2020_green.png", height = 100,
                             width = 1544, top = 5),
@@ -324,7 +357,8 @@ ui <- function(req) {
                                  )
                         ),
                         tabsetPanel(id = "tabseries1",
-                          tabPanel(title = "Objective 1 - Select and view site", value = "obj1",
+                          tabPanel(title = "Objective 1 - Select and view site", value = "obj1", id = "wh_link",
+                                   tags$style("outline: 5px dotted green;"),
                                    #* Objective 1 ====
                                    fluidRow(
                                      column(12,
@@ -1072,7 +1106,7 @@ ui <- function(req) {
                         fluidRow(
                           column(6,
                                  h3("Generate Report"),
-                                 p("This will take the answers you have input into the document and generate an OpenDocument Text (ODT) document with your answers which you can download and make further edits before submitting."),
+                                 p("This will take the answers you have input into the document and generate a Microsoft Word document (.docx) document with your answers which you can download and make further edits before submitting."),
                                  actionButton("generate", "Generate Report", icon = icon("file"), # This is the only button that shows up when the app is loaded
                                               # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
                                  ),
@@ -1112,12 +1146,12 @@ ui <- function(req) {
 server <- function(input, output, session) {#
   
   ## observe the Hide button being pressed
-  observeEvent(input$ques, {
+  observeEvent(input$show_q1, {
     
-    if(input$ques){
-      shinyjs::hide(id = "name"); shinyjs::hide(id = "id_number")
+    if(input$show_q1){
+      shinyjs::show(id = "box1")
     }else{
-      shinyjs::show(id = "name"); shinyjs::show(id = "id_number")
+      shinyjs::hide(id = "box1")
     }
   })
   
@@ -2527,10 +2561,15 @@ server <- function(input, output, session) {#
     # Set up parameters to pass to Rmd document
     params <- list(name = input$name,
                    id_number = input$id_number,
-                   a1 = input$q1)
+                   a1 = input$q1,
+                   a2 = input$q2,
+                   a3 = input$q3,
+                   a4 = input$q4,
+                   a5 = input$q5
+    )
     
     
-    tmp_file <- paste0(tempfile(), ".odt") #Creating the temp where the .pdf is going to be stored
+    tmp_file <- paste0(tempfile(), ".docx") #Creating the temp where the .pdf is going to be stored
     
     rmarkdown::render("report.Rmd", 
            output_format = "all", 
@@ -2557,7 +2596,7 @@ server <- function(input, output, session) {#
     # This function returns a string which tells the client
     # browser what name to use when saving the file.
     filename = function() {
-      paste0("report_", input$name, ".odt") %>%
+      paste0("report_", input$name, ".docx") %>%
         gsub(" ", "_", .)
     },
     
