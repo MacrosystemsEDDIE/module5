@@ -1,34 +1,53 @@
 ---
-title: "Beta Student Handout"
-output: odt_document
+title: "Module 5: Introduction to Ecological Forecasting - Student Handout"
+output: 
+   word_document:
+    reference_docx: my-styles.docx
 params:
   name: NA
   id_number: NA
   a1: NA
+  a2: NA
+  a3: NA
+  a4: NA
+  a5: NA
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
 ```{r}
-name <- params$name
-id_number <- params$id_number
-a1 <- params$a1
 time <- Sys.time()
+
+# Read in assessment questions
+quest <- read.csv("data/assess_questions.csv", row.names = 1)
+
 
 ```
 
-![](www/project-eddie-banner-2020_green.png)
+![](www/report-header.png)
 
-## Completed student handout
 
-### Name: `r name`  
-#### Student ID: `r id_number`  
+### Name: `r params$name`  
+#### Student ID: `r params$id_number`  
 #### Completed on: `r time`
 
-## Answers to questions
+### Assessment Questions
 ### Activity A
-Q1. What is an ecological forecast? What is uncertainty?  
-Answer: `r a1`  
+`r quest["q1", 1]`  
+**Answer:** `r params$a1`  
+\
+`r quest["q2", 1]`  
+**Answer:** `r params$a2`  
+\
+`r quest["q3", 1]`  
+**Answer:** `r params$a3`  
+\
+`r quest["q4", 1]`  
+**Answer:** `r params$a4`  
+\
+`r quest["q5", 1]`  
+**Answer:** `r params$a5`  
+\
 
 
