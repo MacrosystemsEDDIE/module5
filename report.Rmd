@@ -2,7 +2,7 @@
 title: "Module 5: Introduction to Ecological Forecasting - Student Handout"
 output: 
    word_document:
-    reference_docx: my-styles.docx
+    reference_docx: report-style.docx
 params:
   name: NA
   id_number: NA
@@ -10,7 +10,7 @@ params:
   a2: NA
   a3: NA
   a4: NA
-  a5: NA
+  a5: "Incomplete"
 ---
 
 ```{r setup, include=FALSE}
@@ -27,13 +27,14 @@ quest <- read.csv("data/assess_questions.csv", row.names = 1)
 
 ![](www/report-header.png)
 
-
+***
 ### Name: `r params$name`  
-#### Student ID: `r params$id_number`  
+### Student ID: `r params$id_number` 
 #### Completed on: `r time`
+***
 
-### Assessment Questions
-### Activity A
+### Assessment Answers
+#### Activity A
 `r quest["q1", 1]`  
 **Answer:** `r params$a1`  
 \
