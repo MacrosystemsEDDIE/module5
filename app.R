@@ -16,6 +16,7 @@ library(rvest)
 library(LakeMetabolizer)
 library(rLakeAnalyzer)
 library(DT)
+library(rintrojs)
 
 # Options for Spinner
 options(spinner.color="#0275D8", spinner.color.background="#ffffff", spinner.size=2)
@@ -49,6 +50,9 @@ neon_sites_df <- neon_sites_df[neon_sites_df$type == "Aquatic", ]
 
 # Read in assessment questions
 quest <- read.csv("data/assess_questions.csv", row.names = 1)
+
+# Help documentation
+help_text <- read.csv("data/help_text.csv", row.names = 1)
 
 # Reference for downloading variables
 neon_vars <- read.csv("data/neon_variables.csv")
@@ -107,9 +111,18 @@ yini <- c(
 
 ui <- function(req) {
   
+  
   tagList( # Added functionality for not losing your settings
     # shinythemes::themeSelector(), # user-defined theme
     tags$style(type = "text/css", "text-align: justify"),
+    fixedPanel(
+      introBox(
+        actionButton("help", label = "Help!"), data.step = 7, data.intro = help_text["help", 1]
+      ),
+      right = 10,
+      top = 70
+      
+    ),
     navbarPage(title = "Module 5: Introduction to Ecological Forecasting", 
                position = "static-top", id = "maintab",
                # HTML('<p style="text-align:justify">'),
@@ -117,11 +130,22 @@ ui <- function(req) {
                # img(src = "project-eddie-banner-2020_green.png", height = 100, 
                #     width = 1544, top = 5),
                
+               
+               
+               
                # 1. Module Overview ----
-               tabPanel(title = "Module Overview", value = "mtab1",
-                        # tags$style(type="text/css", "body {padding-top: 65px;}"),
-                        img(src = "project-eddie-banner-2020_green.png", height = 100, 
-                            width = 1544, top = 5),
+               tabPanel(introBox("Module Overview",
+                                 data.step = 2,
+                                 data.intro = help_text["tab_nav1", 1]
+                                 ),
+                        value = "mtab1",
+                        introjsUI(), # must include in UI
+                        introBox(
+                          img(src = "project-eddie-banner-2020_green.png", height = 100, 
+                              width = 1544, top = 5),
+                          data.step = 1,
+                          data.intro = help_text["welcome", 1]
+                        ),
                         tags$style(HTML("
                         #first {
                         border: 4px double red;
@@ -138,6 +162,14 @@ ui <- function(req) {
                         #wh_link a {
                         color: #FFFFFF
                         }
+                        .box.box-solid.box-primary>.box-header {
+
+                }
+
+                .box.box-solid.box-primary{
+
+                background:#B8E0CD
+                }
                         ")),
                         fluidRow(
                           column(6,
@@ -224,18 +256,22 @@ ui <- function(req) {
                           column(8,
                                  h3("Before you start..."),
                                  p("Input your name and Student ID and this will be added to your final report."),
-                                 textInput("name", "Name:", placeholder = ),
+                                 textInput("name", "Name:"),
                                  textInput("id_number", "ID number:"),
                                  p("Check the box below to show the questions"),
-                                 checkboxInput("show_q1", "Show questions"),
-                                 box(id = "box1",
-                                     p("Answer questions 1-5 before you begin."),
+                                 checkboxInput("show_q1", "Show questions", value = TRUE),
+                                 box(id = "box1", status = "primary", solidHeader = TRUE, 
+                                     introBox(
+                                       p("Answer questions 1-5 before you begin."),
+                                       textAreaInput(inputId = "q1", label = quest["q1", 1], width = "100%"),
+                                       data.step = 5, data.intro = help_text["questions", 1]
+                                     ),
+                                       textAreaInput(inputId = "q2", label = quest["q2", 1]),
+                                       textAreaInput(inputId = "q3", label = quest["q3", 1]),
+                                       textAreaInput(inputId = "q4", label = quest["q4", 1]),
+                                       textAreaInput(inputId = "q5", label = quest["q5", 1]),
+                                       
                                      
-                                     textAreaInput(inputId = "q1", label = quest["q1", 1], width = "600px"),
-                                     textAreaInput(inputId = "q2", label = quest["q2", 1], width = "600px"),
-                                     textAreaInput(inputId = "q3", label = quest["q3", 1], width = "600px"),
-                                     textAreaInput(inputId = "q4", label = quest["q4", 1], width = "600px"),
-                                     textAreaInput(inputId = "q5", label = quest["q5", 1], width = "600px"),
                                      ),
                                  ),
                         ),
@@ -357,17 +393,22 @@ border-color: #FFF;
                                  )
                         ),
                         tabsetPanel(id = "tabseries1",
-                          tabPanel(title = "Objective 1 - Select and view site", value = "obj1", id = "wh_link",
+                          tabPanel(title = "Objective 1 - Select and view site",
+                                   
+                                   value = "obj1", id = "wh_link",
+                                   
                                    tags$style("outline: 5px dotted green;"),
                                    #* Objective 1 ====
-                                   fluidRow(
-                                     column(12,
-                                            wellPanel(style = paste0("background: ", obj_bg),
-                                              h3("Objective 1 - Select a Site"),
-                                              p(module_text["obj_01", ])
+                                   introBox(
+                                            fluidRow(
+                                              column(12,
+                                                     wellPanel(style = paste0("background: ", obj_bg),
+                                                               h3("Objective 1 - Select a Site"),
+                                                               p(module_text["obj_01", ])
+                                                     )
                                               )
-                                            )
-                                     ),
+                                            ),
+                                   data.step = 4, data.intro = help_text["objectives", 1], data.position = "top"),
                                    #* NEON Map ====
                                    fluidRow(
                                      # conditionalPanel(condition = "input.site_html > 1",
@@ -1105,11 +1146,15 @@ border-color: #FFF;
                         #* Generate report buttons ====
                         fluidRow(
                           column(6,
-                                 h3("Generate Report"),
-                                 p("This will take the answers you have input into the document and generate a Microsoft Word document (.docx) document with your answers which you can download and make further edits before submitting."),
-                                 actionButton("generate", "Generate Report", icon = icon("file"), # This is the only button that shows up when the app is loaded
-                                              # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
+                                 introBox(
+                                   h3("Generate Report"),
+                                   p("This will take the answers you have input into the document and generate a Microsoft Word document (.docx) document with your answers which you can download and make further edits before submitting."),
+                                   actionButton("generate", "Generate Report", icon = icon("file"), # This is the only button that shows up when the app is loaded
+                                                # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
+                                   ),
+                                   data.step = 6, data.intro = help_text["finish", 1]
                                  ),
+                                 
                                  conditionalPanel(condition = "output.reportbuilt", # This button appears after the report has been generated and is ready for download.
                                                   downloadButton("download", "Download Report",
                                                                  # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
@@ -1118,17 +1163,25 @@ border-color: #FFF;
                           ),
                         
                         ),
+               # introBox(
+               #   tags$script(
+               #     HTML("var header = $('.navbar > .container-fluid');
+               #                header.append('<div data-step=\"7\" data-intro=\"TEST\" style=\"float:right; padding-top: 8px\"><button id=\"help\" type=\"button\" class=\"btn btn-primary action-button\" onclick=\"signIn()\">Help!</button></div>')")
+               #   ), data.step = 7, data.intro = help_text["help", 1]
+               # ),
                # Tab navigation buttons ----
                br(), hr(),
-               fluidRow(
-                 column(6, align = "right",
-                        actionButton("prevBtn1", "< Previous", 
-                                     style = "color: #fff; background-color: #6DB08D; border-color: #00664B; padding:15px; font-size:22px") ,
-                 ),
-                 column(6, align = "left",
-                        actionButton("nextBtn1", "Next >",
-                                     style = "color: #fff; background-color: #6DB08D; border-color: #00664B; padding:15px; font-size:22px")
-                 )
+               introBox(
+                 fluidRow(
+                   column(6, align = "right",
+                          actionButton("prevBtn1", "< Previous", 
+                                       style = "color: #fff; background-color: #6DB08D; border-color: #00664B; padding:15px; font-size:22px") ,
+                   ),
+                   column(6, align = "left",
+                          actionButton("nextBtn1", "Next >",
+                                       style = "color: #fff; background-color: #6DB08D; border-color: #00664B; padding:15px; font-size:22px")
+                   )
+                 ), data.step = 3, data.intro = help_text["tab_nav2", 1]
                ),
                h4("Use buttons to navigate between the activity tabs", align = "center"),
                br(), br(),
@@ -1144,6 +1197,14 @@ border-color: #FFF;
 
 # Server ----
 server <- function(input, output, session) {#
+  
+  # Help button ----
+  introjs(session, events = list(onbeforechange = readCallback("switchTabs")))
+  observeEvent(input$help, {
+    introjs(session, events = list(onbeforechange = readCallback("switchTabs")))
+  })
+  
+  
   
   ## observe the Hide button being pressed
   observeEvent(input$show_q1, {
