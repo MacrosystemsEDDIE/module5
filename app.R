@@ -31,6 +31,7 @@ source("get_html.R")
 source("create_npz_inputs.R")
 source("NPZ_model.R")
 source("NPZ_model_no_temp.R")
+source("textAreaInput2.R")
 # source("load_fcast.R") # Forecast used in Parameter & IC Uncertainty
 # source("")
 
@@ -117,10 +118,10 @@ ui <- function(req) {
     tags$style(type = "text/css", "text-align: justify"),
     fixedPanel(
       introBox(
-        actionButton("help", label = "Help!"), data.step = 7, data.intro = help_text["help", 1]
+        actionButton("help", label = "", icon = icon("question-circle")), data.step = 7, data.intro = help_text["help", 1]
       ),
       right = 10,
-      top = 70
+      top = 110
       
     ),
     navbarPage(title = "Module 5: Introduction to Ecological Forecasting", 
@@ -158,6 +159,9 @@ ui <- function(req) {
                         }
                         #txt_c {
                         text-align: center;
+                        }
+                        #txt_l {
+                        text-align: left;
                         }
                         #wh_link a {
                         color: #FFFFFF
@@ -259,21 +263,29 @@ ui <- function(req) {
                                  textInput("name", "Name:"),
                                  textInput("id_number", "ID number:"),
                                  p("Check the box below to show the questions"),
-                                 checkboxInput("show_q1", "Show questions", value = TRUE),
-                                 box(id = "box1", status = "primary", solidHeader = TRUE, 
+                                 checkboxInput("show_q1", "Show questions", value = TRUE)
+                                 )
+                        ),
+                        fluidRow(
+                          column(8, align = "center", offset = 2,
+                                 box(id = "box1", status = "primary", solidHeader = TRUE,
+                                     width = NULL,
                                      introBox(
-                                       p("Answer questions 1-5 before you begin."),
-                                       textAreaInput(inputId = "q1", label = quest["q1", 1], width = "100%"),
+                                       h3("Questions"),
+                                       textAreaInput2(inputId = "q1", label = quest["q1", 1] , width = "90%"),
+                                       tags$style(type="text/css", "#string { height: 50px; width: 100%; text-align:left; font-size: 30px; display: block;}"),
                                        data.step = 5, data.intro = help_text["questions", 1]
                                      ),
-                                       textAreaInput(inputId = "q2", label = quest["q2", 1]),
-                                       textAreaInput(inputId = "q3", label = quest["q3", 1]),
-                                       textAreaInput(inputId = "q4", label = quest["q4", 1]),
-                                       textAreaInput(inputId = "q5", label = quest["q5", 1]),
+                                       textAreaInput2(inputId = "q2", label = quest["q2", 1], width = "90%"),
+                                       textAreaInput2(inputId = "q3", label = quest["q3", 1], width = "90%"),
+                                       textAreaInput2(inputId = "q4", label = quest["q4", 1], width = "90%"),
+                                       textAreaInput2(inputId = "q5", label = quest["q5", 1], width = "90%"),
+                                     br()
                                        
                                      
                                      ),
                                  ),
+                          hr()
                         ),
                         fluidRow(
                           column(6,
@@ -346,21 +358,25 @@ ui <- function(req) {
                           column(5, offset = 1,
                                  tags$ul(
                                    tags$li(id = "txt_j", a(href = EF_links$webpage[1], EF_links$Forecast[1]), br(), p(EF_links$About[1])),
-                                   img(src = "fc_examples/npn.png", height = "50%",
-                                       width = "50%"), br(), hr(),
+                                   a(img(src = "fc_examples/npn.png", height = "50%",
+                                       width = "50%"), href = EF_links$webpage[1]), br(), hr(),
                                    tags$li(id = "txt_j", a(href = EF_links$webpage[2], EF_links$Forecast[2]), br(), p(EF_links$About[2])),
-                                   img(src = "fc_examples/flare.png", height = "50%",
-                                       width = "50%")
+                                   a(img(src = "fc_examples/flare.png", height = "50%",
+                                       width = "50%"), href = EF_links$webpage[2]),
+                                   tags$li(id = "txt_j", a(href = EF_links$webpage[3], EF_links$Forecast[3]), br(), p(EF_links$About[3])),
+                                   a(img(src = "fc_examples/ecocast.png", height = "50%",
+                                       width = "50%"), href = EF_links$webpage[3])
                                    )
                                  ),
                           column(5, 
                                  tags$ul(
-                                   tags$li(id = "txt_j", a(href = EF_links$webpage[3], EF_links$Forecast[3]), br(), p(EF_links$About[3])),
-                                   img(src = "fc_examples/ecocast.png", height = "50%",
-                                       width = "50%"), br(), hr(),
+                                   br(), br(), br(), br(),
                                    tags$li(id = "txt_j", a(href = EF_links$webpage[4], EF_links$Forecast[4]), br(), p(EF_links$About[4])),
-                                   img(src = "fc_examples/sturgeon.png", height = "50%",
-                                       width = "50%")
+                                   a(img(src = "fc_examples/sturgeon.png", height = "50%",
+                                       width = "50%"), href = EF_links$webpage[4]), br(), br(), hr(),
+                                   tags$li(id = "txt_j", a(href = EF_links$webpage[5], EF_links$Forecast[5]), br(), p(EF_links$About[5])),
+                                   a(img(src = "fc_examples/grasslands.png", height = "50%",
+                                       width = "50%"), href = EF_links$webpage[5])
                                    )
                                  )
                           )
@@ -417,7 +433,7 @@ border-color: #FFF;
                                             h2("Site Description"),
                                             p("Select a site in the table to highlight on the map"),
                                             DT::DTOutput("table01"),
-                                            p("Click below to see the latest image from the webcam on site (this may take 10-30s)."),
+                                            p("Click below to see the latest image from the webcam on site (this may take 10-30 seconds)."),
                                             actionButton("view_webcam", label = "View live feed")
                                             
                                             
@@ -1217,7 +1233,7 @@ server <- function(input, output, session) {#
   })
   
   output$table01 <- DT::renderDT(
-    neon_sites_df[, c(1:3, 5:6)], selection = "single", options = list(stateSave = TRUE)
+    neon_sites_df[, c(1:2)], selection = "single", options = list(stateSave = TRUE)
   )
   
   # to keep track of previously selected row
@@ -1297,17 +1313,14 @@ server <- function(input, output, session) {#
     idx <- which(neon_sites_df$siteID == siteID)
     # output$site_name <- neon_sites$description[idx]
     url <- neon_sites_df$pheno_url[idx]
-    # siteID(neon_sites_df$siteID[idx])
-    # siteID <<- neon_sites_df$siteID[idx]
-    # if image exist don't redownload
     img_file <- download_phenocam(url)
     print(img_file)
     progress$set(value = 1)
     output$pheno <- renderImage({
       list(src = img_file,
            alt = "Image failed to render",
-           height = 420, 
-           width = 567)
+           height = 320, 
+           width = 350)
     }, deleteFile = FALSE)
     # show("main_content")
   })
