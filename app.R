@@ -66,6 +66,7 @@ l.cols <- RColorBrewer::brewer.pal(8, "Set2")
 
 # colors for theme
 obj_bg <- "#D4ECE1"
+ques_bg <- "#B8E0CD"
 
 # Load text input
 module_text <- read.csv("data/module_text.csv", row.names = 1, header = FALSE)
@@ -182,8 +183,7 @@ ui <- function(req) {
                                  h2("Introduction to Ecological Forecasting"),
                                  h3("Summary"),
                                  p(id = "txt_j", module_text["intro_eco_forecast", ]),
-                                 p(id = "txt_j", module_text["this_module", ]),
-                                 p(id = "txt_j", module_text["goal", ]),
+                                 p(id = "txt_j", module_text["this_module", ])
                           ), column(5, offset = 1,
                                     br(), br(), br(),
                                     img(src = "mod5_viz_v2.png", height = "80%", 
@@ -263,28 +263,22 @@ ui <- function(req) {
                                  p("Input your name and Student ID and this will be added to your final report."),
                                  textInput("name", "Name:"),
                                  textInput("id_number", "ID number:"),
-                                 p("Check the box below to show the questions"),
-                                 checkboxInput("show_q1", "Show questions", value = TRUE)
+                                 # p("Check the box below to show the questions"),
+                                 # checkboxInput("show_q1", "Show questions", value = TRUE)
                                  )
                         ),
                         fluidRow(
-                          column(8, align = "center", offset = 2,
-                                 box(id = "box1", status = "primary", solidHeader = TRUE,
-                                     width = NULL,
-                                     introBox(
-                                       h3("Questions"),
-                                       textAreaInput2(inputId = "q1", label = quest["q1", 1] , width = "90%"),
-                                       tags$style(type="text/css", "#string { height: 50px; width: 100%; text-align:left; font-size: 30px; display: block;}"),
-                                       data.step = 5, data.intro = help_text["questions", 1]
-                                     ),
-                                       textAreaInput2(inputId = "q2", label = quest["q2", 1], width = "90%"),
-                                       textAreaInput2(inputId = "q3", label = quest["q3", 1], width = "90%"),
-                                       textAreaInput2(inputId = "q4", label = quest["q4", 1], width = "90%"),
-                                       textAreaInput2(inputId = "q5", label = quest["q5", 1], width = "90%"),
-                                     br()
-                                       
-                                     
-                                     ),
+                          column(8, align = "left", offset = 2, style = paste0("background: ", ques_bg),
+                                 introBox(
+                                   h3(tags$b("Questions")),
+                                   textAreaInput2(inputId = "q1", label = quest["q1", 1] , width = "90%"),
+                                   data.step = 5, data.intro = help_text["questions", 1]
+                                   ),
+                                 textAreaInput2(inputId = "q2", label = quest["q2", 1], width = "90%"),
+                                 textAreaInput2(inputId = "q3", label = quest["q3", 1], width = "90%"),
+                                 textAreaInput2(inputId = "q4", label = quest["q4", 1], width = "90%"),
+                                 textAreaInput2(inputId = "q5", label = quest["q5", 1], width = "90%"),
+                                 br()
                                  ),
                           hr()
                         ),
@@ -327,24 +321,8 @@ ui <- function(req) {
                                    img(src = "NSF-NEON-logo.png", title = "NEON - NSF logo")
                                    )
                                  )
-                        ), hr(),
-                        fluidRow(
-                          column(12, align = "center",
-                                 img(src = "neon_ecoclimatic domains-hires.jpg", 
-                                     title = "NEON - Ecoclimatic domains",
-                                     height = "50%", width = "50%", 
-                                     style = "display: block; margin-left: auto; margin-right: auto;"),
-                                 p("Map of NEON field sites and ecoclimatic domains")
-                                 )
-                        )
-                        #* Intro text ====
-                       # Embed questions
-                        # h2(tags$b("Think about it!")),
-                        # textInput(inputId = "q1", label = "Q1. What is an ecological forecast? What is uncertainty?",
-                        #           placeholder = "An ecological forecast is...", width = "80%")
-                        
-               ),
-               
+                          )
+                        ),
                # 3. Exploration ----
                tabPanel(title = "Exploration", value = "mtab3",
                         # tags$style(type="text/css", "body {padding-top: 65px;}"),
@@ -470,7 +448,23 @@ border-color: #FFF;
                                        p("Follow the link below to find the information to answer Q6."),
                                        htmlOutput("site_link")
                                        ),
+                                     ),
+                                   fluidRow(
+                                     column(5, offset = 1, align = "left", style = paste0("background: ", ques_bg),
+                                                h4("Q. 6 Fill out information about the selected NEON site:"),
+                                                textInput(inputId = "q6a", label = quest["q6a", 1] , width = "90%"),
+                                                textInput(inputId = "q6b", label = quest["q6b", 1], width = "90%"),
+                                                textInput(inputId = "q6c", label = quest["q6c", 1], width = "90%"),
+                                            br()
+                                            ),
+                                     column(5,  align = "left", style = paste0("background: ", ques_bg),
+                                            h4("Test", style = paste0("color: ", ques_bg)),
+                                            textInput(inputId = "q6d", label = quest["q6d", 1] , width = "90%"),
+                                            textInput(inputId = "q6e", label = quest["q6e", 1], width = "90%"),
+                                            textInput(inputId = "q6f", label = quest["q6f", 1], width = "90%"),
+                                            br()
                                      )
+                                   )
                                    ),
                           tabPanel(title = "Objective 2 - Explore data",  value = "obj2",
                                    #* Objective 2 - Explore the Data ====
