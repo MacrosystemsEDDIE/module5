@@ -10,6 +10,7 @@ library(plotly)
 library(ncdf4)
 library(reshape)
 library(sortable)
+# remotes::install_github('yonicd/slickR') # removed from CRAN - now only on GitHub
 library(slickR)
 library(tinytex)
 library(rvest)
