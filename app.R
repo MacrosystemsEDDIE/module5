@@ -1252,8 +1252,6 @@ server <- function(input, output, session) {#
     colnames(coords) <- c("long", "lat")
     row_selected = cbind(row_selected, coords)
     proxy <- leafletProxy('neonmap')
-    print(row_selected)
-    print(ls())
     proxy %>%
       addAwesomeMarkers(layerId = as.character(row_selected$uid),
                         lng=row_selected$long, 
@@ -1314,7 +1312,6 @@ server <- function(input, output, session) {#
     # output$site_name <- neon_sites$description[idx]
     url <- neon_sites_df$pheno_url[idx]
     img_file <- download_phenocam(url)
-    print(img_file)
     progress$set(value = 1)
     output$pheno <- renderImage({
       list(src = img_file,
@@ -1355,7 +1352,6 @@ server <- function(input, output, session) {#
     
     # p <- input$neonmap_marker_click  
     idx <- input$table01_rows_selected
-    print(neon_sites_df$location[idx])
     return(neon_sites_df$location[idx])
   })
   output$site_name2 <- eventReactive(input$neonmap_marker_click, { 
@@ -1374,7 +1370,6 @@ server <- function(input, output, session) {#
     read_var <- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
     units <- neon_vars$units[which(neon_vars$Short_name == input$view_var)][1]
     file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
-    print(file)
     df <- read.csv(file)
     # df <- read.csv("data/SITE_data.csv")
     df[, 1] <- as.POSIXct(df[, 1], tz = "UTC")
@@ -1410,7 +1405,6 @@ server <- function(input, output, session) {#
   
   # Get NOAA forecast ----
   output$sel_obs_vars <- renderUI({
-    # print(fc_vars)
     selectInput("fc_var", "Choose variable", choices = fc_vars)
   })
   
@@ -1765,7 +1759,6 @@ server <- function(input, output, session) {#
   })
   
   observeEvent(input$ans_btn, {
-    print(length(input$rank_list_3))
     if(length(input$rank_list_2) == 0) {
       res <- "Drag answers into state variables!"
     } else if(all(input$rank_list_2 %in% state_vars)) {
@@ -1891,11 +1884,6 @@ server <- function(input, output, session) {#
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data' tab!")
     )
-
-    # siteID <- eventReactive(input$table01_rows_selected, {
-    #   neon_sites$siteID[input$table01_rows_selected]
-    # })
-    print(siteID)
     
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -1977,7 +1965,6 @@ server <- function(input, output, session) {#
       fpath <- file.path("data", "NOAAGEFS_1hr", siteID)
       fold <- list.files(fpath)
       fc_date <- as.character(as.Date(fold[1]))
-      print(fc_date)
       fc_idx <- which(names(fc_data()) == fc_date)
       
       npz_inp_list <- lapply(1:30, function(x) {
@@ -2440,7 +2427,6 @@ server <- function(input, output, session) {#
       fpath <- file.path("data", "NOAAGEFS_1hr", siteID)
       fold <- list.files(fpath)
       fc_date <- as.character(as.Date(fold[1]) + 7)
-      print(fc_date)
       fc_idx <- which(names(fc_data()) == fc_date)
       npz_inp_list <- lapply(1:30, function(x) {
         df <- fc_data()[[fc_idx]]
@@ -2555,8 +2541,6 @@ server <- function(input, output, session) {#
     # Make old forecast 
     sub <- driv_fc() #[as.numeric(driv_fc()$L1) <= input$members2, ]
     
-    print(head(sub))
-    
     df3 <- plyr::ddply(sub, "time", function(x) {
       quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
     })
@@ -2574,7 +2558,6 @@ server <- function(input, output, session) {#
     
     sub <- new_fc()[as.numeric(new_fc()$L1) <= input$members3, ]
 
-    print(head(sub))
     if(input$type3 == "distribution") {
       
       df3 <- plyr::ddply(sub, "time", function(x) {
@@ -2716,7 +2699,6 @@ server <- function(input, output, session) {#
   rv1a <- reactiveValues(page = 1)
   
   observe({
-    print(rv1a$page)
     toggleState(id = "prevBtn1a", condition = rv1a$page > 1)
     toggleState(id = "nextBtn1a", condition = rv1a$page < 5)
     hide(selector = ".page")
