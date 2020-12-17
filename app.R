@@ -118,14 +118,13 @@ ui <- function(req) {
   tagList( # Added functionality for not losing your settings
     # shinythemes::themeSelector(), # user-defined theme
     tags$style(type = "text/css", "text-align: justify"),
-    fixedPanel(
-      introBox(
-        actionButton("help", label = "", icon = icon("question-circle")), data.step = 7, data.intro = help_text["help", 1]
+    fluidPage(
+      column(1, offset = 11, align = "right",
+             introBox(
+               actionButton("help", label = "", icon = icon("question-circle")), data.step = 7, data.intro = help_text["help", 1]
+               )
+             )
       ),
-      right = 10,
-      top = 110
-      
-    ),
     navbarPage(title = "Module 5: Introduction to Ecological Forecasting", 
                position = "static-top", id = "maintab",
                # HTML('<p style="text-align:justify">'),
@@ -240,7 +239,7 @@ ui <- function(req) {
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
                             width = 1544, top = 5),
                         fluidRow(
-                          column(6,
+                          column(5,
                                  h3("Workflow for this module"),
                                  tags$ol(
                                    tags$li(id = "txt_j", module_text["workflow1", ]),
@@ -250,7 +249,7 @@ ui <- function(req) {
                                    tags$li(id = "txt_j", module_text["workflow5", ])
                                  )
                           ),
-                          column(6, align = "center",
+                          column(6, align = "center", offset = 1,
                                  br(), br(),
                                  img(src = "mod5_overview.png", height = "80%", id = "bla_border",
                                      width = "80%", tags$style("border: solid 2px black;"))
@@ -259,16 +258,18 @@ ui <- function(req) {
                         ), hr(),
                         fluidRow(
                           column(8,
-                                 h3("Before you start..."),
-                                 p("Input your name and Student ID and this will be added to your final report."),
-                                 textInput("name", "Name:"),
-                                 textInput("id_number", "ID number:"),
+                                 
                                  # p("Check the box below to show the questions"),
                                  # checkboxInput("show_q1", "Show questions", value = TRUE)
                                  )
                         ),
                         fluidRow(
-                          column(8, align = "left", offset = 2, style = paste0("background: ", ques_bg),
+                          
+                          column(8, align = "left", offset = 0, style = paste0("background: ", ques_bg),
+                                 h3("Before you start..."),
+                                 p("Input your name and Student ID and this will be added to your final report."),
+                                 textInput("name", "Name:"),
+                                 textInput("id_number", "ID number:"),
                                  introBox(
                                    h3(tags$b("Questions")),
                                    textAreaInput2(inputId = "q1", label = quest["q1", 1] , width = "90%"),
@@ -679,7 +680,7 @@ border-color: #FFF;
                                             p("To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates."),
                                             br(),
                                             # wellPanel(
-                                            h3("Drivers"),
+                                            h3("Inputs"),
                                             checkboxGroupInput("mod_sens", "Select which variables are used in the model:",
                                                                choices = list("Temperature"))
                                             # )
@@ -883,7 +884,7 @@ border-color: #FFF;
                           ),
                           tabPanel(title = "Objective 7 - Forecast", value = "obj7",
                                    #* Objective 7 - Run Forecast ====
-                                   #** Driver Uncertainty ====
+                                   #** Input Uncertainty ====
                                    fluidRow(
                                      column(12,
                                             wellPanel(style = paste0("background: ", obj_bg),
@@ -894,14 +895,14 @@ border-color: #FFF;
                                    ),
                                    fluidRow(
                                      column(6,
-                                            h3("Driver uncertainty"),
+                                            h3("Input uncertainty"),
                                             p(id = "txt_j", module_text["driver_uncert", ]),
                                             br(),
                                             p(id = "txt_j", "A key component of what makes an ecological forecast a 'forecast', is that the model is driven by ", tags$b("forecasted"), "driving variables."),
                                             # p("We will now use the weather forecast data loaded above to drive the calibrated model we built on the 'Build Model' tab to forecast chlorophyll-a concentrations into the future.")
                                      ),
                                      column(6, align = "center",
-                                            # h4("Schematic of driver uncertainty")
+                                            # h4("Schematic of Input uncertainty")
                                             img(src = "04-generate-forecast.png", height = "60%", 
                                                 width = "60%")
                                      )
@@ -911,10 +912,8 @@ border-color: #FFF;
                                             h3("Run Forecast"),
                                             wellPanel(
                                               actionButton('load_fc2', label = div("Load Forecast inputs", icon("download")),
-                                                           width = "60%"),
+                                                           width = "70%"),
                                               # br(), br(),
-                                              actionButton('run_fc2', label = div("Run Forecast", icon("running")),
-                                                           width = "60%"),
                                               conditionalPanel("input.load_fc2",
                                                                numericInput('members2', 'No. of members', 16,
                                                                             min = 1, max = 30, step = 1),
@@ -929,14 +928,16 @@ border-color: #FFF;
                                               sliderInput("zoo_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "zoop.png", height = "50px", width = "50px")),
                                                                                    div(style='float:right;', img(src = "zoops.png", height = "50px", width = "50px", align = "right"))),
                                                           min = 0.1, max = 5, step = 0.1, value = 0.4),
-                                              sliderInput("nut_init2", "Nutrients", min = 0.11, max = 20, step = 0.1, value = 9)
+                                              sliderInput("nut_init2", "Nutrients", min = 0.11, max = 20, step = 0.1, value = 9),
+                                              actionButton('run_fc2', label = div("Run Forecast", icon("running")),
+                                                           width = "70%")
                                               
                                               
                                               # )
                                             )
                                      ),
                                      column(8,
-                                            # h4("Plot showing Driver Uncertainty"),
+                                            # h4("Plot showing Input Uncertainty"),
                                             wellPanel(
                                               plotlyOutput("plot_ecof2")
                                             ),
@@ -1094,7 +1095,7 @@ border-color: #FFF;
                                             sliderInput("nut_init3", "Nutrients", min = 0.11, max = 20, step = 0.1, value = 9),
                                             wellPanel(
                                               actionButton('load_fc3', label = div("Load Forecast inputs", icon("download")),
-                                                           width = "60%"),
+                                                           width = "70%"),
                                               # br(), br(),
                                               actionButton('run_fc3', label = div("Run Forecast", icon("running")),
                                                            width = "60%"),
@@ -1122,8 +1123,8 @@ border-color: #FFF;
                                      column(12, 
                                             h3("The Forecast Cycle"),
                                             p("We have stepped through each of the steps within the forecast cycle"),
-                                     ),
-                                   )
+                                            ),
+                                     )
                                    ),
                           br(), hr(),
                           fluidRow(
@@ -1139,6 +1140,9 @@ border-color: #FFF;
                           )
                         ),
                tabPanel(title = "Scale", value = "mtab7",
+                        img(src = "project-eddie-banner-2020_green.png", height = 100, 
+                            width = 1544, top = 5),
+                        br(),
                         fluidRow(
                           column(12, 
                                  h2("Activity C"),
@@ -1195,15 +1199,9 @@ border-color: #FFF;
                  ), data.step = 3, data.intro = help_text["tab_nav2", 1]
                ),
                h4("Use buttons to navigate between the activity tabs", align = "center"),
-               br(), br(),
-               tags$script(" $(document).ready(function () {
-         $('#inTabset a[data-toggle=\"tab\"]').bind('click', function (e) {
-               $(document).load().scrollTop(0);
-               });
-
-               });")
+               br(), br()
                )
-  )
+    )
   }
 
 # Server ----
@@ -1359,7 +1357,7 @@ server <- function(input, output, session) {#
   neon_DT <- eventReactive(input$view_var, { # view_var
     validate(
       need(input$table01_rows_selected != "",
-           message = "Please select a site in the table above.")
+           message = "Please select a site in Objective 1.")
     )
     
     read_var <- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
@@ -1377,7 +1375,7 @@ server <- function(input, output, session) {#
   output$neon_datatable <- DT::renderDT({
     validate(
       need(input$table01_rows_selected != "",
-           message = "Please select a site in the table above.")
+           message = "Please select a site in Objective 1.")
     ) 
     read_var <- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
     units <- neon_vars$units[which(neon_vars$Short_name == input$view_var)][1]
@@ -1392,7 +1390,7 @@ server <- function(input, output, session) {#
   output$txt_out <- renderText({
     validate(
       need(input$table01_rows_selected != "",
-           message = "Please select a site in the table above.")
+           message = "Please select a site in Objective 1.")
     ) 
     out_txt <- neon_vars$description[which(neon_vars$Short_name == input$view_var)][1]
     return(out_txt)
@@ -1409,7 +1407,7 @@ server <- function(input, output, session) {#
     
     validate(
       need(input$table01_rows_selected != "",
-           message = "Please select a site in the table above.")
+           message = "Please select a site in Objective 1.")
     )
     
 
@@ -1453,7 +1451,7 @@ server <- function(input, output, session) {#
     
     validate(
       need(input$table01_rows_selected != "",
-           message = "Please select a site in the table above.")
+           message = "Please select a site in Objective 1.")
     )
     
     validate(
@@ -1617,12 +1615,12 @@ server <- function(input, output, session) {#
   
   # Get NOAA forecast variables ----
   output$sel_fc_vars <- renderUI({
-    fc_idx <- which(noaa_dic$noaa_name %in% fc_vars)
+    fc_idx <- c(2, 6) # which(noaa_dic$noaa_name %in% fc_vars)
     selectInput("fc_var", "Choose variable", choices = noaa_dic$display_name[fc_idx])
   })
   # Get NOAA forecast variables ----
   output$sel_fc_dates <- renderUI({
-    checkboxGroupInput("fc_date", "Select date of Forecast", choices = fc_date,
+    checkboxGroupInput("fc_date", "Select date of Forecast", choices = fc_date[1],
                        selected = fc_date[1])
   })
   
@@ -1953,7 +1951,7 @@ server <- function(input, output, session) {#
   })
   
   # Forecast Plots  ----
-  #* Driver Uncertainty ====
+  #* Input Uncertainty ====
   npz_fc_data <- reactive({
     if(input$load_fc2) {
       
@@ -2752,7 +2750,7 @@ server <- function(input, output, session) {#
   
   observe({
     toggleState(id = "prevBtn3a", condition = rv3a$page > 6)
-    toggleState(id = "nextBtn3a", condition = rv3a$page < 12)
+    toggleState(id = "nextBtn3a", condition = rv3a$page < 11)
     hide(selector = ".page")
     show(paste0("obj", rv3a$page))
   })
