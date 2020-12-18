@@ -750,50 +750,26 @@ border-color: #FFF;
                                             h4("Next step"),
                                             p("Now we have built our model we are going to use this to forecast short-term primary productivity"))
                                    )
-                          ),
-                          br(), hr(),
-                          fluidRow(
-                            column(6, align = "right",
-                                   actionButton("prevBtn1a", "< Previous", 
-                                                style = "width: 100px")
-                                   ),
-                            column(6, align = "left",
-                                   actionButton("nextBtn1a", "Next >", 
-                                                style = "width: 100px")
                                    )
-                            ),
-                          h5("Use buttons to navigate between the objective tabs", align = "center"),
-                          hr(), br()
+                          
                           ),
+                        br(), hr(),
+                        fluidRow(
+                          column(6, align = "right",
+                                 actionButton("prevBtn1a", "< Previous", 
+                                              style = "width: 100px")
+                          ),
+                          column(6, align = "left",
+                                 actionButton("nextBtn1a", "Next >", 
+                                              style = "width: 100px")
+                          )
+                        ),
+                        h5("Use buttons to navigate between the objective tabs", align = "center"),
+                        hr(), br()
                         ),
                
-               # # 5. Build Model ----
-               # tabPanel(title = "Build Model", value = "mtab5",
-               #          # tags$style(type="text/css", "body {padding-top: 65px;}"),
-               #          img(src = "project-eddie-banner-2020_green.png", height = 100, 
-               #              width = 1544, top = 5),
-               #          fluidRow(
-               #            column(12,
-               #                   h3("Activity A: Build an ecosystem model for your site"),
-               #                   p("Complete objectives 4-5 to learn about the model and to build it for your site.")
-               #            )
-               #          ),
-               #          # tabsetPanel(id = "tabseries2",
-               #          #   ),
-               #          br(), hr(),
-               #          fluidRow(
-               #            column(6, align = "right",
-               #                   actionButton("prevBtn2a", "< Previous")
-               #            ),
-               #            column(6, align = "left",
-               #                   actionButton("nextBtn2a", "Next >")
-               #            )
-               #          ),
-               #          h5("Use buttons to navigate between the objective tabs", align = "center"),
-               #          hr(), br()
-               #          ),
                
-               # 6. Forecast! ----
+               # 5. Forecast! ----
                tabPanel(title = "Forecast!", value = "mtab5",
                         # tags$style(type="text/css", "body {padding-top: 65px;}"),
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
@@ -804,7 +780,7 @@ border-color: #FFF;
                                  p("Complete objectives 6-11 to complete the steps involved with the forecast.")
                           )
                         ),
-                        tabsetPanel(id = "tabseries3",
+                        tabsetPanel(id = "tabseries2",
                           tabPanel(title = "Objective 6 - Quantify uncertainty", value = "obj6",
                                    #* Forecasting text ====
                                    fluidRow(
@@ -1136,21 +1112,21 @@ border-color: #FFF;
                                             p("We have stepped through each of the steps within the forecast cycle"),
                                             ),
                                      )
-                                   ),
-                          br(), hr(),
-                          fluidRow(
-                            column(6, align = "right",
-                                   actionButton("prevBtn3a", "< Previous", 
-                                                style = "width: 100px")
-                            ),
-                            column(6, align = "left",
-                                   actionButton("nextBtn3a", "Next >", 
-                                                style = "width: 100px")
-                            )
+                                   )
                           ),
-                          h5("Use buttons to navigate between the objective tabs", align = "center"),
-                          hr(), br()
+                        br(), hr(),
+                        fluidRow(
+                          column(6, align = "right",
+                                 actionButton("prevBtn2a", "< Previous", 
+                                              style = "width: 100px")
+                          ),
+                          column(6, align = "left",
+                                 actionButton("nextBtn2a", "Next >", 
+                                              style = "width: 100px")
                           )
+                        ),
+                        h5("Use buttons to navigate between the objective tabs", align = "center"),
+                        hr(), br()
                         ),
                tabPanel(title = "Scale", value = "mtab6",
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
@@ -1199,30 +1175,25 @@ border-color: #FFF;
                                  ),
                           ),
                         
-                        ),
-               # introBox(
-               #   tags$script(
-               #     HTML("var header = $('.navbar > .container-fluid');
-               #                header.append('<div data-step=\"7\" data-intro=\"TEST\" style=\"float:right; padding-top: 8px\"><button id=\"help\" type=\"button\" class=\"btn btn-primary action-button\" onclick=\"signIn()\">Help!</button></div>')")
-               #   ), data.step = 7, data.intro = help_text["help", 1]
-               # ),
-               # Tab navigation buttons ----
-               br(), hr(),
-               introBox(
-                 fluidRow(
-                   column(6, align = "right",
-                          actionButton("prevBtn1", "< Previous", 
-                                       style = "color: #fff; background-color: #6DB08D; border-color: #00664B; padding:15px; font-size:22px; width:180px") ,
-                   ),
-                   column(6, align = "left",
-                          actionButton("nextBtn1", "Next >",
-                                       style = "color: #fff; background-color: #6DB08D; border-color: #00664B; padding:15px; font-size:22px; width:180px")
-                   )
-                 ), data.step = 3, data.intro = help_text["tab_nav2", 1]
+                        )
+               
                ),
-               h4("Use buttons to navigate between the activity tabs", align = "center"),
-               br(), br()
-               )
+    # Tab navigation buttons ----
+    br(), hr(),
+    introBox(
+      fluidRow(
+        column(6, align = "right",
+               actionButton("prevBtn1", "< Previous", 
+                            style = "color: #fff; background-color: #6DB08D; border-color: #00664B; padding:15px; font-size:22px; width:180px") ,
+        ),
+        column(6, align = "left",
+               actionButton("nextBtn1", "Next >",
+                            style = "color: #fff; background-color: #6DB08D; border-color: #00664B; padding:15px; font-size:22px; width:180px")
+        )
+      ), data.step = 3, data.intro = help_text["tab_nav2", 1]
+    ),
+    h4("Use buttons to navigate between the activity tabs", align = "center"),
+    br(), br()
     )
   }
 
@@ -2699,6 +2670,7 @@ server <- function(input, output, session) {#
     curr_tab1 <- input$maintab
     rv1$prev <- readr::parse_number(curr_tab1) - 1
     rv1$nxt <- readr::parse_number(curr_tab1) + 1
+    print(input$maintab)
   })
   
   observe({
@@ -2723,89 +2695,65 @@ server <- function(input, output, session) {#
   })
   
   #* Tab 1a ----
-  
-  rv1a <- reactiveValues(page = 1)
+  rv1a <- reactiveValues(prev = 0, nxt = 2)
+  observeEvent(input$tabseries1, {
+    curr_tab1 <- input$tabseries1
+    rv1a$prev <- readr::parse_number(curr_tab1) - 1
+    rv1a$nxt <- readr::parse_number(curr_tab1) + 1
+  })
   
   observe({
-    toggleState(id = "prevBtn1a", condition = rv1a$page > 1)
-    toggleState(id = "nextBtn1a", condition = rv1a$page < 5)
+    toggleState(id = "prevBtn1a", condition = rv1a$prev > 0)
+    toggleState(id = "nextBtn1a", condition = rv1a$nxt < 6)
     hide(selector = ".page")
-    show(paste0("obj", rv1a$page))
+    show(paste0("mtab", rv1a$nxt))
   })
   
   observeEvent(input$nextBtn1a, {
-    curr_tab1a <- input$tabseries1
-    rv1a$page <- readr::parse_number(curr_tab1a) + 1
+    print(rv1a$nxt)
     updateTabsetPanel(session, "tabseries1",
-                      selected = paste0("obj", rv1a$page))
-    shinyjs::runjs("window.scrollTo(0, 50)") # scroll to top of page
+                      selected = paste0("obj", rv1a$nxt))
+    shinyjs::runjs("window.scrollTo(0, 0)") # scroll to top of page
   })
   
   observeEvent(input$prevBtn1a, {
-    curr_tab1a <- input$tabseries1
-    rv1a$page <- readr::parse_number(curr_tab1a) - 1
     updateTabsetPanel(session, "tabseries1",
-                      selected = paste0("obj", rv1a$page))
-    shinyjs::runjs("window.scrollTo(0, 50)")
+                      selected = paste0("obj", rv1a$prev))
+    shinyjs::runjs("window.scrollTo(0, 0)")
     
   })
   
   
   #* Tab 2a ----
   
-  rv2a <- reactiveValues(page = 4)
+  rv2a <- reactiveValues(prev = 0, nxt = 2)
+  observeEvent(input$tabseries2, {
+    curr_tab1 <- input$tabseries2
+    rv2a$prev <- readr::parse_number(curr_tab1) - 1
+    rv2a$nxt <- readr::parse_number(curr_tab1) + 1
+  })
   
   observe({
-    toggleState(id = "prevBtn2a", condition = rv2a$page > 4)
-    toggleState(id = "nextBtn2a", condition = rv2a$page < 5)
+    toggleState(id = "prevBtn2a", condition = rv2a$prev > 5)
+    toggleState(id = "nextBtn2a", condition = rv2a$nxt < 12)
     hide(selector = ".page")
-    show(paste0("obj", rv2a$page))
+    show(paste0("mtab", rv2a$nxt))
   })
   
   observeEvent(input$nextBtn2a, {
-    curr_tab <- input$tabseries2
-    rv2a$page <- readr::parse_number(curr_tab) + 1
+    print(rv2a$nxt)
     updateTabsetPanel(session, "tabseries2",
-                      selected = paste0("obj", rv2a$page))
-    shinyjs::runjs("window.scrollTo(0, 50)") # scroll to top of page
+                      selected = paste0("obj", rv2a$nxt))
+    shinyjs::runjs("window.scrollTo(0, 0)") # scroll to top of page
   })
   
   observeEvent(input$prevBtn2a, {
-    curr_tab <- input$tabseries2
-    rv2a$page <- readr::parse_number(curr_tab) - 1
     updateTabsetPanel(session, "tabseries2",
-                      selected = paste0("obj", rv2a$page))
-    shinyjs::runjs("window.scrollTo(0, 50)")
+                      selected = paste0("obj", rv2a$prev))
+    shinyjs::runjs("window.scrollTo(0, 0)")
     
   })
-  
-  #* Tab 3a ----
-  
-  rv3a <- reactiveValues(page = 6)
-  
-  observe({
-    toggleState(id = "prevBtn3a", condition = rv3a$page > 6)
-    toggleState(id = "nextBtn3a", condition = rv3a$page < 11)
-    hide(selector = ".page")
-    show(paste0("obj", rv3a$page))
-  })
-  
-  observeEvent(input$nextBtn3a, {
-    curr_tab <- input$tabseries3
-    rv3a$page <- readr::parse_number(curr_tab) + 1
-    updateTabsetPanel(session, "tabseries3",
-                      selected = paste0("obj", rv3a$page))
-    shinyjs::runjs("window.scrollTo(0, 50)") # scroll to top of page
-  })
-  
-  observeEvent(input$prevBtn3a, {
-    curr_tab <- input$tabseries3
-    rv3a$page <- readr::parse_number(curr_tab) - 1
-    updateTabsetPanel(session, "tabseries3",
-                      selected = paste0("obj", rv3a$page))
-    shinyjs::runjs("window.scrollTo(0, 50)")
-    
-  })
+
 
   # Bookmarking shiny app ----
   # observe({
