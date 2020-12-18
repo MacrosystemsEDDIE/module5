@@ -656,13 +656,22 @@ border-color: #FFF;
                                             )
                                      ),
                                    fluidRow(
-                                     column(6,
+                                     column(2,
+                                            br(), br(), br(), br(), br(),
+                                            h3("Run Model"),
+                                            actionButton("run_mod_ann",
+                                                         label = div("Run Model",
+                                                                     icon("running")),
+                                                         width = "60%"), br(),
+                                            p("To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates."),
+                                            ),
+                                     column(5,
                                             h3("Model States"),
                                             wellPanel(
                                               plotlyOutput("mod_phyto_plot")
                                             )
                                      ),
-                                     column(6,
+                                     column(5,
                                             h3("Primary Productivity"),
                                             wellPanel(
                                               plotlyOutput("mod_ann_plot")
@@ -672,13 +681,6 @@ border-color: #FFF;
                                    fluidRow(
                                      
                                      column(width = 3,
-                                            h3("Run Model"),
-                                            actionButton("run_mod_ann",
-                                                         label = div("Run Model",
-                                                                     icon("running")),
-                                                         width = "60%"),
-                                            p("To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates."),
-                                            br(),
                                             # wellPanel(
                                             h3("Inputs"),
                                             checkboxGroupInput("mod_sens", "Select which variables are used in the model:",
@@ -686,6 +688,23 @@ border-color: #FFF;
                                             # )
                                             ,
                                             # wellPanel(
+                                     ),
+                                     column(3,
+                                            h3("Initial conditions"),
+                                            p("Return to the 'Get Data' tab to find suitable values to input for each of the states."),
+                                            p(tags$b("Phytoplankton")),
+                                            # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
+                                            sliderInput("phy_init", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
+                                                                                div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
+                                                        min = 0.1, max = 10, step = 0.1, value = 2),
+                                            p(tags$b("Zooplankton")),
+                                            sliderInput("zoo_init", label = div(style='width:300px;', div(style='float:left;', img(src = "zoop.png", height = "50px", width = "50px")),
+                                                                                div(style='float:right;', img(src = "zoops.png", height = "50px", width = "50px", align = "right"))),
+                                                        min = 0.1, max = 5, step = 0.1, value = 0.4),
+                                            p(tags$b("Nutrients")),
+                                            sliderInput("nut_init", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
+                                                                                div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
+                                                        min = 0.11, max = 20, step = 0.1, value = 9),
                                      ),
                                      column(3,
                                             h3("Parameters"),
@@ -711,23 +730,6 @@ border-color: #FFF;
                                                         min = 0.1, max = 1.7, value = 0.8, step = 0.1)
                                      ),
                                      column(3,
-                                            h3("Initial conditions"),
-                                            p("Return to the 'Get Data' tab to find suitable values to input for each of the states."),
-                                            p(tags$b("Phytoplankton")),
-                                            sliderInput("phy_init", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
-                                                                                div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.1, max = 10, step = 0.1, value = 2),
-                                            p(tags$b("Zooplankton")),
-                                            sliderInput("zoo_init", label = div(style='width:300px;', div(style='float:left;', img(src = "zoop.png", height = "50px", width = "50px")),
-                                                                                div(style='float:right;', img(src = "zoops.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.1, max = 5, step = 0.1, value = 0.4),
-                                            p(tags$b("Nutrients")),
-                                            sliderInput("nut_init", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
-                                                                                div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.11, max = 20, step = 0.1, value = 9),
-                                     ),
-                                     column(3,
-                                            br(),
                                             wellPanel(
                                               p("After running the scenarios in Q 13, adjust the model parameters to get the best fit with the pattern seen in the observed data. Not the values into the table in Q 14."),
                                               # p("Save the plot output"),
@@ -752,10 +754,12 @@ border-color: #FFF;
                           br(), hr(),
                           fluidRow(
                             column(6, align = "right",
-                                   actionButton("prevBtn1a", "< Previous")
+                                   actionButton("prevBtn1a", "< Previous", 
+                                                style = "width: 100px")
                                    ),
                             column(6, align = "left",
-                                   actionButton("nextBtn1a", "Next >")
+                                   actionButton("nextBtn1a", "Next >", 
+                                                style = "width: 100px")
                                    )
                             ),
                           h5("Use buttons to navigate between the objective tabs", align = "center"),
@@ -790,7 +794,7 @@ border-color: #FFF;
                #          ),
                
                # 6. Forecast! ----
-               tabPanel(title = "Forecast!", value = "mtab6",
+               tabPanel(title = "Forecast!", value = "mtab5",
                         # tags$style(type="text/css", "body {padding-top: 65px;}"),
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
                             width = 1544, top = 5),
@@ -811,17 +815,18 @@ border-color: #FFF;
                                             ))
                                    ),
                                    fluidRow(
-                                     column(4,
+                                     column(6,
                                             h3("Ecological Forecasting"),
                                             p(id = "txt_j", module_text["eco_forecast2", ]),
                                             br(),
                                             p(id = "txt_j", "For this exercise we will forecast 30 days into the future using NOAA weather forecast data."),
                                             p(id = "txt_j", "Before we dive in to this, we will need to understand what we mean we mean when we talk about uncertainty.")
                                      ),
-                                     column(8, align = "center",
+                                     column(6, align = "center",
                                             br(), br(),
-                                            img(src = "03-quantify-uncertainty.png", height = "60%", 
-                                                width = "60%")
+                                            img(src = "03-quantify-uncertainty.png",
+                                                height = "70%", 
+                                                width = "70%")
                                             # HTML('<center><img src="What_is_EF.png"></center>'),
                                      )
                                    ),
@@ -903,14 +908,16 @@ border-color: #FFF;
                                      ),
                                      column(6, align = "center",
                                             # h4("Schematic of Input uncertainty")
-                                            img(src = "04-generate-forecast.png", height = "60%", 
-                                                width = "60%")
-                                     )
-                                   ),
+                                            img(src = "04-generate-forecast.png",
+                                                height = "70%", 
+                                                width = "70%")
+                                     ),
+                                     hr()
+                                   ), 
                                    fluidRow(
                                      column(3,
                                             h3("Run Forecast"),
-                                            wellPanel(
+                                            # wellPanel(
                                               actionButton('load_fc2', label = div("Load Forecast inputs", icon("download")),
                                                            width = "70%"),
                                               # br(), br(),
@@ -923,18 +930,22 @@ border-color: #FFF;
                                               ),
                                               h3(tags$b("Initial conditions")),
                                               p(id = "txt_j", "Return to the 'Get Data' tab to find suitable values to input for each of the states. Use the start date of the weather forecast loaded above. If there is no value, choose a value based on the observed range."),
-                                              sliderInput("phy_init2", "Phytoplankton", min = 0.1, max = 10, step = 0.1, value = 2),
-                                              p(tags$b("Zooplankton")),
-                                              sliderInput("zoo_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "zoop.png", height = "50px", width = "50px")),
-                                                                                   div(style='float:right;', img(src = "zoops.png", height = "50px", width = "50px", align = "right"))),
-                                                          min = 0.1, max = 5, step = 0.1, value = 0.4),
-                                              sliderInput("nut_init2", "Nutrients", min = 0.11, max = 20, step = 0.1, value = 9),
-                                              actionButton('run_fc2', label = div("Run Forecast", icon("running")),
-                                                           width = "70%")
-                                              
-                                              
-                                              # )
-                                            )
+                                            p(tags$b("Phytoplankton")),
+                                            sliderInput("phy_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
+                                                                                div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
+                                                        min = 0.1, max = 10, step = 0.1, value = 2),
+                                            p(tags$b("Zooplankton")),
+                                            sliderInput("zoo_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "zoop.png", height = "50px", width = "50px")),
+                                                                                div(style='float:right;', img(src = "zoops.png", height = "50px", width = "50px", align = "right"))),
+                                                        min = 0.1, max = 5, step = 0.1, value = 0.4),
+                                            p(tags$b("Nutrients")),
+                                            sliderInput("nut_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
+                                                                                div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
+                                                        min = 0.11, max = 20, step = 0.1, value = 9),
+                                            actionButton('run_fc2', label = div("Run Forecast", icon("running")),
+                                                         width = "60%")
+                                            # )
+                                            # )
                                      ),
                                      column(8,
                                             # h4("Plot showing Input Uncertainty"),
@@ -1129,17 +1140,19 @@ border-color: #FFF;
                           br(), hr(),
                           fluidRow(
                             column(6, align = "right",
-                                   actionButton("prevBtn3a", "< Previous")
+                                   actionButton("prevBtn3a", "< Previous", 
+                                                style = "width: 100px")
                             ),
                             column(6, align = "left",
-                                   actionButton("nextBtn3a", "Next >")
+                                   actionButton("nextBtn3a", "Next >", 
+                                                style = "width: 100px")
                             )
                           ),
                           h5("Use buttons to navigate between the objective tabs", align = "center"),
                           hr(), br()
                           )
                         ),
-               tabPanel(title = "Scale", value = "mtab7",
+               tabPanel(title = "Scale", value = "mtab6",
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
                             width = 1544, top = 5),
                         br(),
@@ -1149,11 +1162,20 @@ border-color: #FFF;
                                  p("For Activity C, we want you to make a hypothesis about how you expect your model to work at a different NEON site."),
                                  p("Answer Q 27-29")
                           )
-                        )
+                        ), 
+                        fluidRow(
+                                 #** Site map2 ----
+                                 column(10, align = "center", offset = 1,
+                                        h2("Map of NEON sites"),
+                                        wellPanel(
+                                          leafletOutput("neonmap2")
+                                          )
+                                        )
+                                 )
                  
                ),
                # 7. Generate Report ----
-               tabPanel(title = "Generate Report", value = "mtab8",
+               tabPanel(title = "Generate Report", value = "mtab7",
                         # tags$style(type="text/css", "body {padding-top: 65px;}"),
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
                             width = 1544, top = 5),
@@ -1190,11 +1212,11 @@ border-color: #FFF;
                  fluidRow(
                    column(6, align = "right",
                           actionButton("prevBtn1", "< Previous", 
-                                       style = "color: #fff; background-color: #6DB08D; border-color: #00664B; padding:15px; font-size:22px") ,
+                                       style = "color: #fff; background-color: #6DB08D; border-color: #00664B; padding:15px; font-size:22px; width:180px") ,
                    ),
                    column(6, align = "left",
                           actionButton("nextBtn1", "Next >",
-                                       style = "color: #fff; background-color: #6DB08D; border-color: #00664B; padding:15px; font-size:22px")
+                                       style = "color: #fff; background-color: #6DB08D; border-color: #00664B; padding:15px; font-size:22px; width:180px")
                    )
                  ), data.step = 3, data.intro = help_text["tab_nav2", 1]
                ),
@@ -1208,10 +1230,11 @@ border-color: #FFF;
 server <- function(input, output, session) {#
   
   # Help button ----
-  introjs(session, events = list(onbeforechange = readCallback("switchTabs")))
+  # introjs(session, events = list(onbeforechange = readCallback("switchTabs")))  ## NEED to uncomment before launching!
   observeEvent(input$help, {
     introjs(session, events = list(onbeforechange = readCallback("switchTabs")))
   })
+  hintjs(session, options = list("hintButtonLabel"="That was a hint"))
   
   
   
@@ -1278,6 +1301,17 @@ server <- function(input, output, session) {#
   # Neon map ----
   output$neonmap <- renderLeaflet({
     leaflet() %>%
+      addProviderTiles(providers$Esri.NatGeoWorldMap,
+                       options = providerTileOptions(noWrap = TRUE)
+      ) %>%
+      addMarkers(data = neon_sites,
+                 layerId = ~uid, clusterOptions = markerClusterOptions(),
+                 label = ~locationDescription, icon = ~neonIcons[type])
+    
+  })
+  output$neonmap2 <- renderLeaflet({
+    leaflet() %>%
+      setView(lat = 30, lng = -30, zoom = 2) %>%
       addProviderTiles(providers$Esri.NatGeoWorldMap,
                        options = providerTileOptions(noWrap = TRUE)
       ) %>%
@@ -1875,7 +1909,7 @@ server <- function(input, output, session) {#
   output$mod_ann_plot <- renderPlotly({
     
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data' tab!")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1!")
     )
     
     # Load Chl-a observations
@@ -1897,7 +1931,7 @@ server <- function(input, output, session) {#
     )
     p <- ggplot() +
       geom_line(data = mod_run1(), aes_string(names(mod_run1())[1], names(mod_run1())[2], color = shQuote("Model"))) +
-      ylab("Chlorophyll-a (mg L-1)") +
+      ylab("Chlorophyll-a (μg/L)") +
       xlab("") +
       {if(input$add_obs) geom_point(data = chla, aes_string(names(chla)[1], names(chla)[2], color = shQuote("Obs")))} +
       # coord_cartesian(xlim = xlims, ylim = ylims) +
@@ -1913,7 +1947,7 @@ server <- function(input, output, session) {#
   output$mod_phyto_plot <- renderPlotly({
     
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data' tab!")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1!")
     )
     
     xlims <- range(mod_run1()[, 1])
@@ -2059,10 +2093,10 @@ server <- function(input, output, session) {#
            message = paste0("The number of members must be between 1 and 30"))
     )
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data' tab!")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1!")
     )
     validate(
-      need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Get Data' tab.")
+      need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
     )
     validate(
       need(input$load_fc2 > 0, "Load Forecast inputs")
@@ -2135,8 +2169,8 @@ server <- function(input, output, session) {#
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
       geom_vline(xintercept = df2[1, 1], linetype = "dashed") +
-      ylab("Chlorophyll-a") +
-      xlab("Forecast days") +
+      ylab("Chlorophyll-a (μg/L)") +
+      xlab("Date") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
 
@@ -2154,7 +2188,7 @@ server <- function(input, output, session) {#
            message = paste0("The number of members must be between 1 and 30"))
     )
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data' tab!")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1!")
     )
     
     # Load Chl-a observations
@@ -2208,8 +2242,8 @@ server <- function(input, output, session) {#
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
       {if(input$add_newobs) geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs")))} +
       geom_vline(xintercept = (df2[1, 1] + 7), linetype = "dashed") +
-      ylab("Chlorophyll-a") +
-      xlab("Forecast days") +
+      ylab("Chlorophyll-a (μg/L)") +
+      xlab("Date") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
     return(ggplotly(p, dynamicTicks = TRUE))
@@ -2403,7 +2437,7 @@ server <- function(input, output, session) {#
       geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs"))) +
       geom_vline(xintercept = driv_fc()[1, 1], linetype = "dashed") +
       ylab("Chlorophyll-a") +
-      xlab("Forecast days") +
+      xlab("Date") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
     
@@ -2517,7 +2551,7 @@ server <- function(input, output, session) {#
            message = paste0("The number of members must be between 1 and 30"))
     )
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data' tab!")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1!")
     )
     
     # Load Chl-a observations
@@ -2587,8 +2621,8 @@ server <- function(input, output, session) {#
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
       geom_vline(xintercept = (new_fc()[1, 1]), linetype = "dashed") +
-      ylab("Chlorophyll-a") +
-      xlab("Forecast days") +
+      ylab("Chlorophyll-a (μg/L)") +
+      xlab("Date") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
     return(ggplotly(p, dynamicTicks = TRUE))
@@ -2669,12 +2703,13 @@ server <- function(input, output, session) {#
   
   observe({
     toggleState(id = "prevBtn1", condition = rv1$prev > 0)
-    toggleState(id = "nextBtn1", condition = rv1$nxt < 9)
+    toggleState(id = "nextBtn1", condition = rv1$nxt < 8)
     hide(selector = ".page")
     show(paste0("mtab", rv1$nxt))
   })
   
   observeEvent(input$nextBtn1, {
+    print(rv1$nxt)
     updateTabsetPanel(session, "maintab",
                       selected = paste0("mtab", rv1$nxt))
     shinyjs::runjs("window.scrollTo(0, 0)") # scroll to top of page
