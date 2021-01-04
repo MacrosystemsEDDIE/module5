@@ -18,6 +18,7 @@ library(LakeMetabolizer)
 library(rLakeAnalyzer)
 library(DT)
 library(rintrojs)
+library(stringr)
 
 # Options for Spinner
 options(spinner.color="#0275D8", spinner.color.background="#ffffff", spinner.size=2)
@@ -164,6 +165,14 @@ ui <- function(req) {
                         #txt_l {
                         text-align: left;
                         }
+                        #pheno img {
+                        transition:transform 0.25s ease;
+                        max-width: 100%; width: 100%; height: auto
+                        }
+                        #pheno:hover img{
+    -webkit-transform:scale(1.5);
+    transform:scale(1.5);
+}
                         #wh_link a {
                         color: #FFFFFF
                         }
@@ -265,7 +274,7 @@ ui <- function(req) {
                         ),
                         fluidRow(
                           
-                          column(8, align = "left", offset = 0, style = paste0("background: ", ques_bg),
+                          column(8, align = "left", offset = 1, style = paste0("background: ", ques_bg),
                                  h3("Before you start..."),
                                  p("Input your name and Student ID and this will be added to your final report."),
                                  textInput("name", "Name:"),
@@ -281,7 +290,6 @@ ui <- function(req) {
                                  textAreaInput2(inputId = "q5", label = quest["q5", 1], width = "90%"),
                                  br()
                                  ),
-                          hr()
                         ),
                         fluidRow(
                           column(6,
@@ -335,28 +343,31 @@ ui <- function(req) {
                                  p("Here are links to some current examples of ecological forecasts."))
                         ),
                         fluidRow(
-                          column(5, offset = 1,
+                          column(4, offset = 1,
                                  tags$ul(
                                    tags$li(id = "txt_j", a(href = EF_links$webpage[1], EF_links$Forecast[1]), br(), p(EF_links$About[1])),
                                    a(img(src = "fc_examples/npn.png", height = "50%",
                                        width = "50%"), href = EF_links$webpage[1]), br(), hr(),
                                    tags$li(id = "txt_j", a(href = EF_links$webpage[2], EF_links$Forecast[2]), br(), p(EF_links$About[2])),
                                    a(img(src = "fc_examples/flare.png", height = "50%",
-                                       width = "50%"), href = EF_links$webpage[2]),
+                                       width = "50%"), href = EF_links$webpage[2]), br(), hr(),
                                    tags$li(id = "txt_j", a(href = EF_links$webpage[3], EF_links$Forecast[3]), br(), p(EF_links$About[3])),
                                    a(img(src = "fc_examples/ecocast.png", height = "50%",
                                        width = "50%"), href = EF_links$webpage[3])
                                    )
                                  ),
-                          column(5, 
+                          column(4, offset = 2, 
                                  tags$ul(
                                    br(), br(), br(), br(),
                                    tags$li(id = "txt_j", a(href = EF_links$webpage[4], EF_links$Forecast[4]), br(), p(EF_links$About[4])),
                                    a(img(src = "fc_examples/sturgeon.png", height = "50%",
-                                       width = "50%"), href = EF_links$webpage[4]), br(), br(), hr(),
+                                       width = "50%"), href = EF_links$webpage[4]), br(), hr(),
                                    tags$li(id = "txt_j", a(href = EF_links$webpage[5], EF_links$Forecast[5]), br(), p(EF_links$About[5])),
                                    a(img(src = "fc_examples/grasslands.png", height = "50%",
-                                       width = "50%"), href = EF_links$webpage[5])
+                                       width = "50%"), href = EF_links$webpage[5]), br(), hr(),
+                                   tags$li(id = "txt_j", a(href = EF_links$webpage[6], EF_links$Forecast[6]), br(), p(EF_links$About[6])),
+                                   a(img(src = "fc_examples/portal_forecast.png", height = "50%",
+                                         width = "50%"), href = EF_links$webpage[6])
                                    )
                                  )
                           )
@@ -433,6 +444,7 @@ border-color: #FFF;
                                      #** Site photo ----
                                      column(4,
                                             h2("Phenocam"),
+                                            textOutput("prompt1"),
                                             wellPanel(
                                               withSpinner(imageOutput("pheno"), type = 1,
                                                           hide.ui = FALSE
@@ -446,7 +458,7 @@ border-color: #FFF;
                                      wellPanel(
                                        h4(tags$b("About Site")),
                                        uiOutput("site_html"),
-                                       p("Follow the link below to find the information to answer Q6."),
+                                       textOutput("prompt2"),
                                        htmlOutput("site_link")
                                        ),
                                      ),
@@ -556,7 +568,7 @@ border-color: #FFF;
                                      column(12,
                                             h3("Next step"),
                                             p("Next we will use this data and the identified related variables to help build our ecological model."),
-                                            p("Answer questions 10 and 11 in the student handout before moving to the 'Build Model' tab.")
+                                            p("Answer questions 10 and 11 in the student handout before moving to the 'Get Data & Build Model' tab.")
                                             )
                                      )
                                    ),
@@ -625,15 +637,18 @@ border-color: #FFF;
                                        )
                                      ),
                                      column(3,
-                                            useShinyjs(),  # Set up shinyjs
-                                            actionButton("ans_btn", "Check answers"),
-                                            # hidden(
-                                            #   tableOutput("ans_vars")
-                                            # ),
-                                            verbatimTextOutput("state_ans")
-                                            # shiny::tableOutput("ans_vars")
-                                            # textInput("text", "Text")
-                                     )
+                                            wellPanel(
+                                              useShinyjs(),  # Set up shinyjs
+                                              actionButton("ans_btn", "Check answers"),
+                                              # hidden(
+                                              #   tableOutput("ans_vars")
+                                              # ),
+                                              textOutput("state_ans"),
+                                              textOutput("proc_ans")
+                                              # shiny::tableOutput("ans_vars")
+                                              # textInput("text", "Text")
+                                              )
+                                            )
                                    ),
                                    fluidRow(
                                      column(12,
@@ -755,11 +770,11 @@ border-color: #FFF;
                           ),
                         br(), hr(),
                         fluidRow(
-                          column(6, align = "right",
+                          column(2, align = "right", offset = 4,
                                  actionButton("prevBtn1a", "< Previous", 
                                               style = "width: 100px")
                           ),
-                          column(6, align = "left",
+                          column(2, align = "left",
                                  actionButton("nextBtn1a", "Next >", 
                                               style = "width: 100px")
                           )
@@ -813,7 +828,7 @@ border-color: #FFF;
                                             h3("What is Uncertainty?"),
                                             p(id = "txt_j", module_text["uncert1", ]),
                                             br(),
-                                            p("We will use the model you built on the 'Build Model' tab to create an ecological forecast."),
+                                            p("We will use the model you built on the 'Get Data & Build Model' tab to create an ecological forecast."),
                                             p("One source of uncertainty is the data used to drive the model. For your forecast, you will be using actual NOAA weather forecast to drive your model. Load and examine this data below.")
                                      ),
                                      column(8, align = "center",
@@ -886,10 +901,14 @@ border-color: #FFF;
                                             # h4("Schematic of Input uncertainty")
                                             img(src = "04-generate-forecast.png",
                                                 height = "70%", 
-                                                width = "70%")
+                                                width = "70%"), br()
+                                            ),
                                      ),
-                                     hr()
-                                   ), 
+                                   fluidRow(
+                                     column(12,
+                                            hr()
+                                     )
+                                   ),
                                    fluidRow(
                                      column(3,
                                             h3("Run Forecast"),
@@ -1182,7 +1201,7 @@ border-color: #FFF;
     br(), hr(),
     introBox(
       fluidRow(
-        column(6, align = "right",
+        column(2, align = "right", offset = 4,
                actionButton("prevBtn1", "< Previous", 
                             style = "color: #fff; background-color: #6DB08D; border-color: #00664B; padding:15px; font-size:22px; width:180px") ,
         ),
@@ -1190,7 +1209,7 @@ border-color: #FFF;
                actionButton("nextBtn1", "Next >",
                             style = "color: #fff; background-color: #6DB08D; border-color: #00664B; padding:15px; font-size:22px; width:180px")
         )
-      ), data.step = 3, data.intro = help_text["tab_nav2", 1]
+      ), data.step = 3, data.intro = help_text["tab_nav2", 1], data.position = "right"
     ),
     h4("Use buttons to navigate between the activity tabs", align = "center"),
     br(), br()
@@ -1320,6 +1339,12 @@ server <- function(input, output, session) {#
     # show("main_content")
   })
   
+  observeEvent(input$view_webcam, {
+    output$prompt1 <- renderText({
+      "Hover your cursor above the image to enlarge."
+    })
+  })
+  
   # Download html ----
   observeEvent(input$table01_rows_selected, {
     p <- input$neonmap_marker_click  # typo was on this line
@@ -1337,6 +1362,12 @@ server <- function(input, output, session) {#
     
     output$site_link <- renderUI({
       tags$a(href = url, "Click here for more site info")
+    })
+  })
+  #** Create hyperlink ----
+  observeEvent(input$table01_rows_selected, {
+    output$prompt2 <- renderText({
+      "Click on the link below to find out more information about your site."
     })
   })
   
@@ -1705,7 +1736,8 @@ server <- function(input, output, session) {#
       mlt2 <- reshape2::melt(mlt1, id.vars = c("time", "fc_date"))
       p <- p +
         geom_line(data = mlt2, aes(time, value, group = variable, color = fc_date)) +
-        scale_color_manual(values = cols[1:length(input$fc_date)])
+        scale_color_manual(values = cols[1:length(input$fc_date)]) +
+        labs(color = "Forecast date")
     } 
     if(input$type == "distribution") {
       # idvars <- names(out[[1]])
@@ -1713,11 +1745,12 @@ server <- function(input, output, session) {#
       # colnames(mlt3)[ncol(mlt3)] <- "fc_date"
       
       p <- p +
-        geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, alpha = 0.8, fill = fc_date)) + 
+        geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date), alpha = 0.8) + 
         geom_line(data = df3, aes(time, p50, color = fc_date)) +
         scale_fill_manual(values = l.cols[1:length(input$fc_date)]) +
         guides(fill = guide_legend(override.aes = list(alpha = c(0.9))),
-               alpha = NULL) +
+               alpha = NULL, title = "Forecast date") +
+        labs(fill = "Forecast date", color = "") +
         scale_color_manual(values = l.cols[1:length(input$fc_date)])
     }
     
@@ -1730,7 +1763,15 @@ server <- function(input, output, session) {#
       xlab("Date") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
-    return(ggplotly(p, dynamicTicks = TRUE))
+    
+    gp <- ggplotly(p, dynamicTicks = TRUE)
+    for (i in 1:length(gp$x$data)){
+      if (!is.null(gp$x$data[[i]]$name)){
+        gp$x$data[[i]]$name =  gsub("\\(","",str_split(gp$x$data[[i]]$name,",")[[1]][1])
+      }
+    }
+    
+    return(gp)
   })
   
   
@@ -1773,10 +1814,11 @@ server <- function(input, output, session) {#
       res2 <- "Incorrect answer in process variables"
     }
     
-    output$state_ans <- renderPrint({
-      print(res)
-      print(res2)
-      # return(res)
+    output$state_ans <- renderText({
+      res
+    })
+    output$proc_ans <- renderText({
+      res2
     })
   }) 
   
@@ -2130,9 +2172,7 @@ server <- function(input, output, session) {#
       p <- p +
         geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
                     alpha = 0.8) +
-        # geom_ribbon(data = df2, aes(time, ymin = p12.5, ymax = p87.5, fill = "75th"),
-        # alpha = 0.8) +
-        geom_line(data = df2, aes(time, p50, color = "median")) +
+        geom_line(data = df2, aes(time, p50, color = "Median")) +
         scale_fill_manual(values = l.cols[2]) +
         guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
         scale_color_manual(values = c("black", cols[1]))
@@ -2143,10 +2183,17 @@ server <- function(input, output, session) {#
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Date") +
       theme_classic(base_size = 12) +
-      theme(panel.background = element_rect(fill = NA, color = 'black'))
+      theme(panel.background = element_rect(fill = NA, color = 'black')) +
+      labs(color = "", fill = "")
 
-   
-    return(ggplotly(p, dynamicTicks = TRUE))
+    gp <- ggplotly(p, dynamicTicks = TRUE)
+    for (i in 1:length(gp$x$data)){
+      if (!is.null(gp$x$data[[i]]$name)){
+        gp$x$data[[i]]$name =  gsub("\\(","",str_split(gp$x$data[[i]]$name,",")[[1]][1])
+      }
+    }
+    
+    return(gp)
     
   })
   
@@ -2204,7 +2251,7 @@ server <- function(input, output, session) {#
                     alpha = 0.8) +
         # geom_ribbon(data = df2, aes(time, ymin = p12.5, ymax = p87.5, fill = "75th"),
         # alpha = 0.8) +
-        geom_line(data = df2, aes(time, p50, color = "median")) +
+        geom_line(data = df2, aes(time, p50, color = "Median")) +
         scale_fill_manual(values = l.cols[2]) +
         guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
         scale_color_manual(values = c("black", cols[1:2]))
@@ -2216,8 +2263,17 @@ server <- function(input, output, session) {#
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Date") +
       theme_classic(base_size = 12) +
-      theme(panel.background = element_rect(fill = NA, color = 'black'))
-    return(ggplotly(p, dynamicTicks = TRUE))
+      theme(panel.background = element_rect(fill = NA, color = 'black')) +
+      labs(color = "", fill = "")
+    
+    gp <- ggplotly(p, dynamicTicks = TRUE)
+    for (i in 1:length(gp$x$data)){
+      if (!is.null(gp$x$data[[i]]$name)){
+        gp$x$data[[i]]$name =  gsub("\\(","",str_split(gp$x$data[[i]]$name,",")[[1]][1])
+      }
+    }
+    
+    return(gp)
     
   })
   
@@ -2256,12 +2312,19 @@ server <- function(input, output, session) {#
       xlab("Observations (Chl-a)") +
       ylab("Forecast values (Chl-a)") +
       theme_classic(base_size = 12) +
-      theme(panel.background = element_rect(fill = NA, color = 'black'))
-    return(ggplotly(p, dynamicTicks = TRUE))
+      theme(panel.background = element_rect(fill = NA, color = 'black')) +
+      labs(color = "", fill = "")
     
+    gp <- ggplotly(p, dynamicTicks = TRUE)
+    for (i in 1:length(gp$x$data)){
+      if (!is.null(gp$x$data[[i]]$name)){
+        gp$x$data[[i]]$name =  gsub("\\(","",str_split(gp$x$data[[i]]$name,",")[[1]][1])
+      }
+    }
     
+    return(gp)
     
-  })
+    })
   
   #* Update model ====
   fc_update <- eventReactive(input$update_fc2,{
@@ -2376,7 +2439,7 @@ server <- function(input, output, session) {#
     p <- p +
       geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = "Original"),
                   alpha = 0.8) +
-      geom_line(data = df3, aes(time, p50, color = "median")) #+
+      geom_line(data = df3, aes(time, p50, color = "Median")) #+
       # scale_fill_manual(values = l.cols[2]) +
       # guides(fill = guide_legend(override.aes = list(alpha = c(0.8))))
     
@@ -2395,13 +2458,6 @@ server <- function(input, output, session) {#
       scale_fill_manual(values = l.cols) +
       guides(fill = guide_legend(override.aes = list(alpha = c(0.8, 0.8))))
     
-    # df2 <- sub
-    # df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
-    # 
-    # p <- p +
-    #   geom_line(data = df2, aes(time, value, color = L1)) +
-    #   scale_color_manual(values = c(rep("black", 30), cols)) +
-    #   guides(color = FALSE)
 
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
@@ -2410,12 +2466,17 @@ server <- function(input, output, session) {#
       ylab("Chlorophyll-a") +
       xlab("Date") +
       theme_classic(base_size = 12) +
-      theme(panel.background = element_rect(fill = NA, color = 'black'))
+      theme(panel.background = element_rect(fill = NA, color = 'black')) +
+      labs(color = "", fill = "")
     
+    gp <- ggplotly(p, dynamicTicks = TRUE)
+    for (i in 1:length(gp$x$data)){
+      if (!is.null(gp$x$data[[i]]$name)){
+        gp$x$data[[i]]$name =  gsub("\\(","",str_split(gp$x$data[[i]]$name,",")[[1]][1])
+      }
+    }
     
-    
-    
-    return(ggplotly(p, dynamicTicks = TRUE))
+    return(gp)
   })
   
   #* New Forecast ====
@@ -2552,7 +2613,7 @@ server <- function(input, output, session) {#
     p <- p +
       geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date),
                   alpha = 0.8) +
-      geom_line(data = df3, aes(time, p50, color = "median"))
+      geom_line(data = df3, aes(time, p50, color = "Median"))
     
     sub <- new_fc()[as.numeric(new_fc()$L1) <= input$members3, ]
 
@@ -2584,7 +2645,7 @@ server <- function(input, output, session) {#
                     alpha = 0.8) +
         # geom_ribbon(data = df2, aes(time, ymin = p12.5, ymax = p87.5, fill = "75th"),
         # alpha = 0.8) +
-        geom_line(data = df2, aes(time, p50, color = "median")) +
+        geom_line(data = df2, aes(time, p50, color = "Median")) +
         scale_fill_manual(values = l.cols) +
         guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
         scale_color_manual(values = c("black", cols[1:2]))
@@ -2595,8 +2656,17 @@ server <- function(input, output, session) {#
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Date") +
       theme_classic(base_size = 12) +
-      theme(panel.background = element_rect(fill = NA, color = 'black'))
-    return(ggplotly(p, dynamicTicks = TRUE))
+      theme(panel.background = element_rect(fill = NA, color = 'black')) +
+      labs(color = "", fill = "")
+    
+    gp <- ggplotly(p, dynamicTicks = TRUE)
+    for (i in 1:length(gp$x$data)){
+      if (!is.null(gp$x$data[[i]]$name)){
+        gp$x$data[[i]]$name =  gsub("\\(","",str_split(gp$x$data[[i]]$name,",")[[1]][1])
+      }
+    }
+    
+    return(gp)
     
   })
 
