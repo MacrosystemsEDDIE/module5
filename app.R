@@ -21,7 +21,7 @@ library(rintrojs)
 library(stringr)
 
 # Options for Spinner
-options(spinner.color="#0275D8", spinner.color.background="#ffffff", spinner.size=2)
+options(spinner.color = "#0275D8", spinner.color.background = "#ffffff", spinner.size = 2)
 
 # setwd("module5/")
 
@@ -52,7 +52,7 @@ neon_sites <- neon_sites[neon_sites$type == "Aquatic", ]
 neon_sites_df <- neon_sites_df[neon_sites_df$type == "Aquatic", ]
 
 # Read in assessment questions
-quest <- read.csv("data/assess_questions.csv", row.names = 1)
+quest <- read.csv("data/handout_questions.csv", row.names = 1)
 
 # Help documentation
 help_text <- read.csv("data/help_text.csv", row.names = 1)
@@ -286,9 +286,9 @@ ui <- function(req) {
                                    ),
                                  textAreaInput2(inputId = "q2", label = quest["q2", 1], width = "90%"),
                                  textAreaInput2(inputId = "q3", label = quest["q3", 1], width = "90%"),
-                                 textAreaInput2(inputId = "q4", label = quest["q4", 1], width = "90%"),
-                                 textAreaInput2(inputId = "q5", label = quest["q5", 1], width = "90%"),
-                                 br()
+                                 # textAreaInput2(inputId = "q4", label = quest["q4", 1], width = "90%"),
+                                 # textAreaInput2(inputId = "q5", label = quest["q5", 1], width = "90%"),
+                                 br(), hr()
                                  ),
                         ),
                         fluidRow(
@@ -465,16 +465,16 @@ border-color: #FFF;
                                    fluidRow(
                                      column(5, offset = 1, align = "left", style = paste0("background: ", ques_bg),
                                                 h4("Q. 6 Fill out information about the selected NEON site:"),
-                                                textInput(inputId = "q6a", label = quest["q6a", 1] , width = "90%"),
-                                                textInput(inputId = "q6b", label = quest["q6b", 1], width = "90%"),
-                                                textInput(inputId = "q6c", label = quest["q6c", 1], width = "90%"),
+                                                textInput(inputId = "q4a", label = quest["q4a", 1] , width = "90%"),
+                                                textInput(inputId = "q4b", label = quest["q4b", 1], width = "90%"),
+                                                textInput(inputId = "q4c", label = quest["q4c", 1], width = "90%"),
                                             br()
                                             ),
                                      column(5,  align = "left", style = paste0("background: ", ques_bg),
                                             h4("Test", style = paste0("color: ", ques_bg)),
-                                            textInput(inputId = "q6d", label = quest["q6d", 1] , width = "90%"),
-                                            textInput(inputId = "q6e", label = quest["q6e", 1], width = "90%"),
-                                            textInput(inputId = "q6f", label = quest["q6f", 1], width = "90%"),
+                                            textInput(inputId = "q4d", label = quest["q4d", 1] , width = "90%"),
+                                            textInput(inputId = "q4e", label = quest["q4e", 1], width = "90%"),
+                                            textInput(inputId = "q4f", label = quest["q4f", 1], width = "90%"),
                                             br()
                                      )
                                    )
@@ -664,7 +664,7 @@ border-color: #FFF;
                                               h3("Objective 5 - Test scenarios and calibrate model"),
                                               p(module_text["obj_05", ])
                                             ),
-                                            p("We will use observed data from the selected site on the 'Get Data' tab to drive the NPZ model."),
+                                            p("We will use observed data from the selected site on the 'Get Data & Build Model' tab to drive the NPZ model."),
                                             p("Before running the model, Answer Q 12."),
                                             p("You will need to scroll past the two panels below to find the controls for running the model."),
                                             p("Run the scenarios described in Q 13 and describe how the model responds.")
@@ -839,17 +839,26 @@ border-color: #FFF;
                                    hr(),
                                    fluidRow(
                                      #** Weather Forecast ----
-                                     column(3,
-                                            h3("Weather Forecast"),
+                                     column(12, align = "center",
+                                            h3("Weather Forecast"), hr()
+                                     ),
+                                   ),
+                                   fluidRow(
+                                     column(6,
                                             p(id = "txt_j", module_text["weather_forecast1", ]),
                                             p(id = "txt_j", "Weather forecast are produced using ", tags$b("ensemble modelling"), "."),
                                             p(id = "txt_j", module_text["ens_mod1", ]),
                                             p(id = "txt_j", module_text["weather_forecast2", ])
                                      ),
-                                     column(3,
+                                     column(6,
                                             br(), br(),
                                             p(id = "txt_j", "Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS"), " forecast."),
                                             p(id = "txt_j", "Inspect the different meteorological outputs. You can adjust the number of members, which is the number of forecasts and also how it is visualized. A line plot shows each individual member while the distribution  shows the median 95th percentile."),
+                                            )
+                                     ),
+                                   fluidRow(
+                                     column(2,
+                                            br(),
                                             actionButton('load_fc', "Load Forecast", icon = icon("download")),
                                             # actionButton('plot_fc', "Plot Forecast!", icon = icon("chart-line")),
                                             wellPanel(
@@ -863,7 +872,7 @@ border-color: #FFF;
                                               )
                                             )
                                      ),
-                                     column(6,
+                                     column(10,
                                             
                                             # h3("Weather Forecast"),
                                             wellPanel(
@@ -1051,7 +1060,8 @@ border-color: #FFF;
                                             h3("Parameters"),
                                             h4(tags$b("Zooplankton parameters")),
                                             p(tags$em("Grazing")),
-                                            sliderInput("graz_rate2", label = div(style='width:300px;', div(style='float:left;', 'Eat less'), div(img(src = "zoops.png", height = "60px", width = "60px")), 
+                                            sliderInput("graz_rate2", label = div(style='width:300px;', div(style='float:left;', 'Eat less'),
+                                                                                  # div(img(src = "zoops.png", height = "60px", width = "60px")), 
                                                                                   div(style='float:right;', 'Eat more')),
                                                         min = 0.2, max = 1.6, value = 1.2, step = 0.1),
                                             p(tags$em("Mortality")),
@@ -1220,7 +1230,7 @@ border-color: #FFF;
 server <- function(input, output, session) {#
   
   # Help button ----
-  # introjs(session, events = list(onbeforechange = readCallback("switchTabs")))  ## NEED to uncomment before launching!
+  introjs(session, events = list(onbeforechange = readCallback("switchTabs")))  ## NEED to uncomment before launching!
   observeEvent(input$help, {
     introjs(session, events = list(onbeforechange = readCallback("switchTabs")))
   })
@@ -1416,6 +1426,7 @@ server <- function(input, output, session) {#
     read_var <- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
     units <- neon_vars$units[which(neon_vars$Short_name == input$view_var)][1]
     file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
+    print(file)
     validate(
       need(file.exists(file), message = "This variable is not available at this site. Please select a different variable or site.")
     )
@@ -1675,7 +1686,7 @@ server <- function(input, output, session) {#
     
     validate(
       need(input$table01_rows_selected != "",
-           message = "Please select a site on the 'Get Data' tab")
+           message = "Please select a site on the 'Get Data & Build Model' tab")
       )
     validate(
       need(input$load_fc > 0, "Please load the forecast")
@@ -2688,9 +2699,7 @@ server <- function(input, output, session) {#
                    id_number = input$id_number,
                    a1 = input$q1,
                    a2 = input$q2,
-                   a3 = input$q3,
-                   a4 = input$q4,
-                   a5 = input$q5
+                   a3 = input$q3
     )
     
     
@@ -2740,7 +2749,6 @@ server <- function(input, output, session) {#
     curr_tab1 <- input$maintab
     rv1$prev <- readr::parse_number(curr_tab1) - 1
     rv1$nxt <- readr::parse_number(curr_tab1) + 1
-    print(input$maintab)
   })
   
   observe({
@@ -2780,7 +2788,6 @@ server <- function(input, output, session) {#
   })
   
   observeEvent(input$nextBtn1a, {
-    print(rv1a$nxt)
     updateTabsetPanel(session, "tabseries1",
                       selected = paste0("obj", rv1a$nxt))
     shinyjs::runjs("window.scrollTo(0, 0)") # scroll to top of page
@@ -2826,15 +2833,15 @@ server <- function(input, output, session) {#
 
 
   # Bookmarking shiny app ----
-  # observe({
-  #   # Trigger this observer every time an input changes
-  #   print("input")
-  #   reactiveValuesToList(input)
-  #   session$doBookmark()
-  # })
-  # onBookmarked(function(url) {
-  #   updateQueryString(url)
-  # })
+  observe({
+    # Trigger this observer every time an input changes
+    # print("input")
+    reactiveValuesToList(input)
+    session$doBookmark()
+  })
+  onBookmarked(function(url) {
+    updateQueryString(url)
+  })
   
   # output$report <- downloadHandler(
   #   # For PDF output, change this to "report.pdf"
@@ -2858,5 +2865,5 @@ server <- function(input, output, session) {#
   # )
   
 }
-# enableBookmarking("url") # Needed for bookmarking currently not working
+enableBookmarking("url") # Needed for bookmarking currently not working
 shinyApp(ui, server)
