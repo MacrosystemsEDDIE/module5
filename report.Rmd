@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = FALSE)
 time <- Sys.time()
 
 # Read in assessment questions
-quest <- read.csv("data/assess_questions.csv", row.names = 1)
+quest <- read.csv("data/handout_questions.csv", row.names = 1)
 
 
 ```
