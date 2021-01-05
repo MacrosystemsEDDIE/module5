@@ -266,34 +266,39 @@ ui <- function(req) {
                           )
                         ), hr(),
                         fluidRow(
-                          column(8,
-                                 
-                                 # p("Check the box below to show the questions"),
-                                 # checkboxInput("show_q1", "Show questions", value = TRUE)
-                                 )
+                          column(4,
+                                 h3(tags$b("Student Handout")),
+                                 p("You can either fill out the embedded questions within the Shiny interface or download the student handout and answer the questions there.")
+                                 ),
+                          column(4,
+                                 p("Uncheck the box below to hide the questions"),
+                                 checkboxInput("show_q1", "Show questions", value = TRUE),
+                                 p("Download Student Handout"),
+                                 downloadButton(outputId = "stud_dl", label = "Download"),
+                                 br()
+                          )
                         ),
                         fluidRow(
-                          
+                          hr(),
                           column(8, align = "left", offset = 1, style = paste0("background: ", ques_bg),
-                                 h3("Before you start..."),
-                                 p("Input your name and Student ID and this will be added to your final report."),
-                                 textInput("name", "Name:"),
-                                 textInput("id_number", "ID number:"),
-                                 introBox(
-                                   h3(tags$b("Questions")),
-                                   textAreaInput2(inputId = "q1", label = quest["q1", 1] , width = "90%"),
-                                   data.step = 5, data.intro = help_text["questions", 1]
-                                   ),
-                                 textAreaInput2(inputId = "q2", label = quest["q2", 1], width = "90%"),
-                                 textAreaInput2(inputId = "q3", label = quest["q3", 1], width = "90%"),
-                                 # textAreaInput2(inputId = "q4", label = quest["q4", 1], width = "90%"),
-                                 # textAreaInput2(inputId = "q5", label = quest["q5", 1], width = "90%"),
-                                 br(), hr()
+                                 box(id = "box1",
+                                     h3("Before you start..."),
+                                     p("Input your name and Student ID and this will be added to your final report."),
+                                     textInput("name", "Name:"),
+                                     textInput("id_number", "ID number:"),
+                                     introBox(
+                                       h3(tags$b("Questions")),
+                                       textAreaInput2(inputId = "q1", label = quest["q1", 1] , width = "90%"),
+                                       data.step = 5, data.intro = help_text["questions", 1]
+                                     ),
+                                     textAreaInput2(inputId = "q2", label = quest["q2", 1], width = "90%"),
+                                     textAreaInput2(inputId = "q3", label = quest["q3", 1], width = "90%")
+                                     ),
                                  ),
                         ),
                         fluidRow(
+                          hr(),
                           column(6,
-                                 br(), br(), br(),
                                  h3("Presentation Recap"),
                                  p("The presentation accompanying this module covers the introduction to forecasting, the nutrient-phytoplankton-zooplankton model (NPZ) and the importance and relevance of Ecological Forecast."),
                                  p("What is a forecast?"),
@@ -309,7 +314,6 @@ ui <- function(req) {
                                  )
                           ),
                           column(6, align = "center",
-                                 br(), br(),
                                  h2("Our overarching question today", 
                                     align = "center"),
                                  img(src = "What_is_EF.png", height = "70%", 
@@ -1410,7 +1414,6 @@ server <- function(input, output, session) {#
     units <- neon_vars$units[which(neon_vars$Short_name == input$view_var)][1]
     file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
     df <- read.csv(file)
-    # df <- read.csv("data/SITE_data.csv")
     df[, 1] <- as.POSIXct(df[, 1], tz = "UTC")
     df[, -1] <- signif(df[, -1], 4)
     names(df)[ncol(df)] <- read_var
@@ -1426,11 +1429,14 @@ server <- function(input, output, session) {#
     read_var <- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
     units <- neon_vars$units[which(neon_vars$Short_name == input$view_var)][1]
     file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
-    print(file)
     validate(
       need(file.exists(file), message = "This variable is not available at this site. Please select a different variable or site.")
     )
-    neon_DT()
+    file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
+    df <- read.csv(file)
+    df[, -1] <- signif(df[, -1], 4)
+    names(df)[ncol(df)] <- read_var
+    return(df)
   })
   
   # Variable description ----
@@ -2830,6 +2836,16 @@ server <- function(input, output, session) {#
     shinyjs::runjs("window.scrollTo(0, 0)")
     
   })
+  
+  # Downloading Student Handout ----
+  output$stud_dl <-  downloadHandler(
+    filename = function() {
+      "StudentHandout.docx"
+    },
+    content = function(file) {
+      file.copy("data/StudentHandout.docx", file)
+    }
+  )
 
 
   # Bookmarking shiny app ----
