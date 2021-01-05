@@ -63,7 +63,8 @@ noaa_dic <- read.csv("data/noaa_dict.csv")
 
 # colors for plots
 cols <- RColorBrewer::brewer.pal(8, "Dark2")
-l.cols <- RColorBrewer::brewer.pal(8, "Set2")
+l.cols <- RColorBrewer::brewer.pal(8, "Set2")[-c(1, 2)]
+pair.cols <- RColorBrewer::brewer.pal(8, "Paired")
 
 # colors for theme
 obj_bg <- "#D4ECE1"
@@ -710,7 +711,7 @@ border-color: #FFF;
                                      ),
                                      column(3,
                                             h3("Initial conditions"),
-                                            p("Return to the 'Get Data' tab to find suitable values to input for each of the states."),
+                                            p("Return to the 'Get Data & Build Model' tab to find suitable values to input for each of the states."),
                                             p(tags$b("Phytoplankton")),
                                             # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
                                             sliderInput("phy_init", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
@@ -800,7 +801,7 @@ border-color: #FFF;
                           )
                         ),
                         tabsetPanel(id = "tabseries2",
-                          tabPanel(title = "Objective 6 - Quantify uncertainty", value = "obj6",
+                          tabPanel(title = "Objective 6 - Examine uncertainty", value = "obj6",
                                    #* Forecasting text ====
                                    fluidRow(
                                      column(12,
@@ -1753,29 +1754,25 @@ server <- function(input, output, session) {#
       mlt2 <- reshape2::melt(mlt1, id.vars = c("time", "fc_date"))
       p <- p +
         geom_line(data = mlt2, aes(time, value, group = variable, color = fc_date)) +
-        scale_color_manual(values = cols[1:length(input$fc_date)]) +
+        scale_color_manual(values = pair.cols[2]) +
         labs(color = "Forecast date")
     } 
     if(input$type == "distribution") {
-      # idvars <- names(out[[1]])
-      # mlt3 <- reshape::melt(out, id.vars = idvars)
-      # colnames(mlt3)[ncol(mlt3)] <- "fc_date"
       
       p <- p +
         geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date), alpha = 0.8) + 
         geom_line(data = df3, aes(time, p50, color = fc_date)) +
-        scale_fill_manual(values = l.cols[1:length(input$fc_date)]) +
+        scale_fill_manual(values = pair.cols[1]) +
         guides(fill = guide_legend(override.aes = list(alpha = c(0.9))),
                alpha = NULL, title = "Forecast date") +
         labs(fill = "Forecast date", color = "") +
-        scale_color_manual(values = l.cols[1:length(input$fc_date)])
+        scale_color_manual(values = pair.cols[2])
     }
     
     
     ##########
     
     p <- p + 
-      # ggtitle("Example Numerical Weather Forecast") +
       ylab(ylab) +
       xlab("Date") +
       theme_classic(base_size = 12) +
@@ -2054,7 +2051,7 @@ server <- function(input, output, session) {#
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
-    progress$set(message = paste0("Running the NPZ model with 30 forecasts"), 
+    progress$set(message = paste0("Running the NPZ model with ", input$members2, " forecasts"), 
                  detail = "This may take a while. This window will disappear  
                      when it is finished running.", value = 0.01)
     
@@ -2069,7 +2066,7 @@ server <- function(input, output, session) {#
     yini[3] <- input$nut_init2
     
     # progress$inc(0.33, detail = "Running the model")
-    fc_length <- length(npz_fc_data())
+    fc_length <- input$members2 # length(npz_fc_data())
 
     fc_res <- lapply(1:fc_length, function(x) {
       
@@ -2144,7 +2141,7 @@ server <- function(input, output, session) {#
       chla[, 1] <- as.Date(chla[, 1], tz = "UTC")
     }
     chla_obs <- chla[(chla[, 1] >= as.Date((driv_fc()[1, 1] - (7)))) &
-                       chla[, 1] < as.Date(driv_fc()[1, 1]), ]
+                       chla[, 1] <= as.Date(driv_fc()[1, 1]), ]
     
     sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
     if(input$type2 == "distribution") {
@@ -2178,11 +2175,13 @@ server <- function(input, output, session) {#
       df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
     }
     
+    txt <- data.frame(x = (chla_obs[nrow(chla_obs), 1] - 2), y = (max(chla_obs[, 2], na.rm = TRUE) + 2), label = "Today")
+
     p <- ggplot()
     if(input$type2 == "line"){
       p <- p +
         geom_line(data = df2, aes(time, value, color = L1)) +
-        scale_color_manual(values = c(rep("black", input$members2), cols[1])) +
+        scale_color_manual(values = c(rep(pair.cols[4], input$members2), cols[1])) +
         guides(color = FALSE)
     } 
     if(input$type2 == "distribution") {
@@ -2190,12 +2189,13 @@ server <- function(input, output, session) {#
         geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
                     alpha = 0.8) +
         geom_line(data = df2, aes(time, p50, color = "Median")) +
-        scale_fill_manual(values = l.cols[2]) +
+        scale_fill_manual(values = pair.cols[3]) +
         guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
-        scale_color_manual(values = c("black", cols[1]))
+        scale_color_manual(values = c(pair.cols[4], cols[1]))
     }
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
+      geom_text(data = txt, aes(x, y, label = label)) +
       geom_vline(xintercept = df2[1, 1], linetype = "dashed") +
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Date") +
@@ -2235,12 +2235,14 @@ server <- function(input, output, session) {#
       chla[, 1] <- as.Date(chla[, 1], tz = "UTC")
     }
     chla_obs <- chla[(chla[, 1] >= as.Date((driv_fc()[1, 1] - (7)))) &
-                       chla[, 1] < as.Date(driv_fc()[1, 1]), ]
+                       chla[, 1] <= as.Date(driv_fc()[1, 1]), ]
     new_obs <- chla[chla[, 1] > as.Date((driv_fc()[1, 1])) &
                               chla[, 1] <= (as.Date(driv_fc()[1, 1]) + 7), ]
     
+    
+    
     sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
-    if(input$type2 == "distribution") {
+    # if(input$type2 == "distribution") {
       
       df3 <- plyr::ddply(sub, "time", function(x) {
         quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
@@ -2250,39 +2252,47 @@ server <- function(input, output, session) {#
       colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
       # df3$hours <- df2$hours
       df2 <- df3
-    } else {
-      df2 <- sub
-      df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
-    }
+    # } else {
+    #   df2 <- sub
+    #   df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
+    # }
+    
+    txt <- data.frame(x = (new_obs[nrow(new_obs), 1] + 2.5), y = (max(new_obs[, 2], na.rm = TRUE) + 6), label = "One week later")
     
     p <- ggplot()
-    if(input$type2 == "line"){
-      p <- p +
-        geom_line(data = df2, aes(time, value, color = L1)) +
-        scale_color_manual(values = c(rep("black", input$members2), cols[1:2])) +
-        guides(color = FALSE)
-    } 
-    if(input$type2 == "distribution") {
+    # if(input$type2 == "line"){
+    #   p <- p +
+    #     geom_line(data = df2, aes(time, value, color = L1)) +
+    #     scale_color_manual(values = c(rep("black", input$members2), cols[1:2])) +
+    #     guides(color = FALSE)
+    # } 
+    # if(input$type2 == "distribution") {
       p <- p +
         geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
                     alpha = 0.8) +
         # geom_ribbon(data = df2, aes(time, ymin = p12.5, ymax = p87.5, fill = "75th"),
         # alpha = 0.8) +
         geom_line(data = df2, aes(time, p50, color = "Median")) +
-        scale_fill_manual(values = l.cols[2]) +
-        guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
-        scale_color_manual(values = c("black", cols[1:2]))
-    }
+        scale_fill_manual(values = pair.cols[3]) +
+        # scale_color_manual(values = pair.cols[4]) +
+        guides(fill = guide_legend(override.aes = list(alpha = c(0.8))))
+        
+    # }
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
       {if(input$add_newobs) geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs")))} +
-      geom_vline(xintercept = (df2[1, 1] + 7), linetype = "dashed") +
+      {if(input$add_newobs) scale_color_manual(values = c("Median" = pair.cols[4], "Obs" = cols[1], "New obs" = cols[2]))} +
+      {if(!input$add_newobs) scale_color_manual(values = c("Median" = pair.cols[4], "Obs" = cols[1]))} +
+      geom_vline(xintercept = (df2[1, 1]), linetype = "dashed") +
+      geom_vline(xintercept = (df2[1, 1] + 7), linetype = "dotted") +
+      geom_text(data = txt, aes(x, y, label = label)) +
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Date") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "")
     
+    # Remove brackets for plotly
     gp <- ggplotly(p, dynamicTicks = TRUE)
     for (i in 1:length(gp$x$data)){
       if (!is.null(gp$x$data[[i]]$name)){
@@ -2321,11 +2331,24 @@ server <- function(input, output, session) {#
     df <- as_plot()
     origin <- data.frame(x = 0, y = 0) # included to ensure 0,0 is in the plot
     
+    lm1 <- lm(df[, 3] ~ df[, 2])
+    r2 <- round(summary(lm1)$r.squared, 2)
+    r2_txt <- paste0("r2 = ", r2)# bquote(r^2 ~ "=" ~ .(r2))    
+    
+    txt <- data.frame(x = 2, y = (max(df[, 2], na.rm = TRUE) - 1))
+    print(r2_txt)
+    
+    txt2 <- data.frame(y = 0, x = 1, label = "1:1 line")
+    
+    
     p <- ggplot(df, aes_string(names(df)[2], names(df)[3])) +
       geom_abline(intercept = 0, slope = 1) +
       geom_point(data = origin, aes(x, y), alpha = 0) +
       geom_point() +
-      scale_color_manual(values = cols[2]) +
+      geom_text(data = txt, aes(x, y), label = r2_txt) +
+      # annotate("text", x = txt$x, y = txt$y, label = as.character(expression(paste(r^2, "=", round(summary(lm1)$r.squared, 2)))), parse = TRUE) +
+      geom_text(data = txt2, aes(x, y, label = label)) +
+      # scale_color_manual(values = cols[2]) +
       xlab("Observations (Chl-a)") +
       ylab("Forecast values (Chl-a)") +
       theme_classic(base_size = 12) +
@@ -2349,7 +2372,7 @@ server <- function(input, output, session) {#
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
-    progress$set(message = paste0("Running the NPZ model with 30 forecasts"), 
+    progress$set(message = paste0("Running the NPZ model with ", input$members2, " forecasts"), 
                  detail = "This may take a while. This window will disappear  
                      when it is finished running.", value = 0.01)
     
@@ -2378,7 +2401,7 @@ server <- function(input, output, session) {#
     yini[3] <- input$nut_init2
     
     # progress$inc(0.33, detail = "Running the model")
-    fc_length <- length(npz_fc_data())
+    fc_length <- input$members2 #length(npz_fc_data())
     
     fc_res <- lapply(1:fc_length, function(x) {
       
@@ -2426,9 +2449,9 @@ server <- function(input, output, session) {#
   #* Data Assim plot ====
   output$update_plot <- renderPlotly({
     
-    validate(
-      need(input$update_fc2 > 0, message = paste0("Click 'Update forecast'"))
-    )
+    # validate(
+    #   need(input$update_fc2 > 0, message = paste0("Click 'Update forecast'"))
+    # )
     
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -2455,25 +2478,31 @@ server <- function(input, output, session) {#
     p <- ggplot()
     p <- p +
       geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = "Original"),
-                  alpha = 0.8) +
-      geom_line(data = df3, aes(time, p50, color = "Median")) #+
+                  alpha = 0.8) #+
+      geom_line(data = df3, aes(time, p50, color = "Median - original")) #+
       # scale_fill_manual(values = l.cols[2]) +
       # guides(fill = guide_legend(override.aes = list(alpha = c(0.8))))
     
-    # Updated model
-    sub <- fc_update()
-    df4 <- plyr::ddply(sub, "time", function(x) {
-      quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
-    })
-    colnames(df4)[-1] <- gsub("%", "", colnames(df4)[-1])
-    colnames(df4)[-1] <- paste0('p', colnames(df4)[-1])
+    if(input$update_fc2 > 0) {
+      # Updated model
+      sub <- fc_update()
+      df4 <- plyr::ddply(sub, "time", function(x) {
+        quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+      })
+      colnames(df4)[-1] <- gsub("%", "", colnames(df4)[-1])
+      colnames(df4)[-1] <- paste0('p', colnames(df4)[-1])
+      
+      p <- p +
+        geom_ribbon(data = df4, aes(time, ymin = p2.5, ymax = p97.5, fill = "Updated"),
+                    alpha = 0.8) +
+        geom_line(data = df4, aes(time, p50, color = "Median - updated")) +
+        scale_fill_manual(values = c("Original" = pair.cols[3], "Updated" = pair.cols[5])) +
+        guides(fill = guide_legend(override.aes = list(alpha = c(0.8, 0.8))))
+    } else {
+      p <- p +
+        scale_fill_manual(values = c("Original" = pair.cols[3]))
+    }
     
-    p <- p +
-      geom_ribbon(data = df4, aes(time, ymin = p2.5, ymax = p97.5, fill = "Updated"),
-                  alpha = 0.8) +
-      geom_line(data = df4, aes(time, p50, color = "median_updated")) +
-      scale_fill_manual(values = l.cols) +
-      guides(fill = guide_legend(override.aes = list(alpha = c(0.8, 0.8))))
     
 
     p <- p + 
@@ -2482,9 +2511,11 @@ server <- function(input, output, session) {#
       geom_vline(xintercept = driv_fc()[1, 1], linetype = "dashed") +
       ylab("Chlorophyll-a") +
       xlab("Date") +
+      {if(input$update_fc2 > 0)         scale_color_manual(values = c("Obs" = cols[1], "New obs" = cols[2], "Median - original" = pair.cols[4], "Median - updated" = pair.cols[6]))} +
+      {if(input$update_fc2 == 0)         scale_color_manual(values = c("Obs" = cols[1], "New obs" = cols[2], "Median - original" = pair.cols[4]))} +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
-      labs(color = "", fill = "")
+      labs(color = "", fill = "") 
     
     gp <- ggplotly(p, dynamicTicks = TRUE)
     for (i in 1:length(gp$x$data)){
