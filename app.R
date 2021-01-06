@@ -272,7 +272,7 @@ ui <- function(req) {
                                  p("You can either fill out the embedded questions within the Shiny interface or download the student handout and answer the questions there.")
                                  ),
                           column(4,
-                                 p("Uncheck the box below to hide the questions"),
+                                 p("Uncheck the box below to hide the questions throughout the Shiny app."),
                                  checkboxInput("show_q1", "Show questions", value = TRUE),
                                  p("Download Student Handout"),
                                  downloadButton(outputId = "stud_dl", label = "Download"),
@@ -281,19 +281,25 @@ ui <- function(req) {
                         ),
                         fluidRow(
                           hr(),
-                          column(8, align = "left", offset = 1, style = paste0("background: ", ques_bg),
-                                 box(id = "box1",
-                                     h3("Before you start..."),
-                                     p("Input your name and Student ID and this will be added to your final report."),
-                                     textInput("name", "Name:"),
-                                     textInput("id_number", "ID number:"),
-                                     introBox(
-                                       h3(tags$b("Questions")),
-                                       textAreaInput2(inputId = "q1", label = quest["q1", 1] , width = "90%"),
-                                       data.step = 5, data.intro = help_text["questions", 1]
-                                     ),
-                                     textAreaInput2(inputId = "q2", label = quest["q2", 1], width = "90%"),
-                                     textAreaInput2(inputId = "q3", label = quest["q3", 1], width = "90%")
+                          column(10, align = "left",
+                                 box(id = "box1", width = 10, status = "primary",
+                                     solidHeader = TRUE,
+                                     fluidRow(
+                                       column(8, offset = 1,
+                                              h3("Before you start..."),
+                                              p("Input your name and Student ID and this will be added to your final report."),
+                                              textInput("name", "Name:"),
+                                              textInput("id_number", "ID number:"),
+                                              introBox(
+                                                h3(tags$b("Questions")),
+                                                textAreaInput2(inputId = "q1", label = quest["q1", 1] , width = "90%"),
+                                                data.step = 5, data.intro = help_text["questions", 1]
+                                              ),
+                                              textAreaInput2(inputId = "q2", label = quest["q2", 1], width = "90%"),
+                                              textAreaInput2(inputId = "q3", label = quest["q3", 1], width = "90%")
+                                              )
+                                       ),
+                                     
                                      ),
                                  ),
                         ),
@@ -621,7 +627,7 @@ border-color: #FFF;
                                        # tags$b("Exercise"),
                                        width = 9,
                                        bucket_list(
-                                         header = "Drag the variables into 'Interactions' or 'State' boxes",
+                                         header = "Drag the variables into 'Parameter' or 'State' boxes",
                                          group_name = "bucket_list_group",
                                          orientation = "horizontal",
                                          add_rank_list(
@@ -630,12 +636,12 @@ border-color: #FFF;
                                            input_id = "rank_list_1"
                                          ),
                                          add_rank_list(
-                                           text = "States",
+                                           text = "State",
                                            labels = NULL,
                                            input_id = "rank_list_2"
                                          ),
                                          add_rank_list(
-                                           text = "Interactions",
+                                           text = "Parameter",
                                            labels = NULL,
                                            input_id = "rank_list_3"
                                          )
@@ -671,7 +677,7 @@ border-color: #FFF;
                                             ),
                                             p("We will use observed data from the selected site on the 'Get Data & Build Model' tab to drive the NPZ model."),
                                             p("Before running the model, Answer Q 12."),
-                                            p("You will need to scroll past the two panels below to find the controls for running the model."),
+                                            # p("You will need to scroll past the two panels below to find the controls for running the model."),
                                             p("Run the scenarios described in Q 13 and describe how the model responds.")
                                             )
                                      ),
@@ -682,8 +688,8 @@ border-color: #FFF;
                                             actionButton("run_mod_ann",
                                                          label = div("Run Model",
                                                                      icon("running")),
-                                                         width = "60%"), br(),
-                                            p("To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates."),
+                                                         width = "60%"), br(), br(),
+                                            p("To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates below."),
                                             ),
                                      column(5,
                                             h3("Model States"),
@@ -724,7 +730,7 @@ border-color: #FFF;
                                             p(tags$b("Nutrients")),
                                             sliderInput("nut_init", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
                                                                                 div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.11, max = 20, step = 0.1, value = 9),
+                                                        min = 0.01, max = 20, step = 0.1, value = 9),
                                      ),
                                      column(3,
                                             h3("Parameters"),
@@ -905,7 +911,7 @@ border-color: #FFF;
                                    ),
                                    fluidRow(
                                      column(6,
-                                            h3("Input uncertainty"),
+                                            h3("Driver uncertainty"),
                                             p(id = "txt_j", module_text["driver_uncert", ]),
                                             br(),
                                             p(id = "txt_j", "A key component of what makes an ecological forecast a 'forecast', is that the model is driven by ", tags$b("forecasted"), "driving variables."),
@@ -950,7 +956,7 @@ border-color: #FFF;
                                             p(tags$b("Nutrients")),
                                             sliderInput("nut_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
                                                                                 div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.11, max = 20, step = 0.1, value = 9),
+                                                        min = 0.01, max = 20, step = 0.1, value = 9),
                                             actionButton('run_fc2', label = div("Run Forecast", icon("running")),
                                                          width = "60%")
                                             # )
@@ -1113,20 +1119,20 @@ border-color: #FFF;
                                             p(id = "txt_j", "Remember, you will need to update the initial conditions based on the latest observed data."),
                                             sliderInput("phy_init3", "Phytoplankton", min = 0.1, max = 10, step = 0.1, value = 2),
                                             sliderInput("zoo_init3", "Zooplankton", min = 0.1, max = 5, step = 0.1, value = 0.4),
-                                            sliderInput("nut_init3", "Nutrients", min = 0.11, max = 20, step = 0.1, value = 9),
+                                            sliderInput("nut_init3", "Nutrients", min = 0.01, max = 20, step = 0.1, value = 9),
                                             wellPanel(
                                               actionButton('load_fc3', label = div("Load Forecast inputs", icon("download")),
                                                            width = "70%"),
                                               # br(), br(),
                                               actionButton('run_fc3', label = div("Run Forecast", icon("running")),
-                                                           width = "60%"),
-                                              conditionalPanel("input.load_fc3",
-                                                               numericInput('members3', 'No. of members', 20,
-                                                                            min = 1, max = 30, step = 1),
-                                                               # uiOutput("eco_fc_members"),
-                                                               selectInput('type3', 'Plot type', plot_types,
-                                                                           selected = plot_types[2])
-                                              )
+                                                           width = "70%"),
+                                              # conditionalPanel("input.load_fc3",
+                                              #                  numericInput('members3', 'No. of members', 20,
+                                              #                               min = 1, max = 30, step = 1),
+                                              #                  # uiOutput("eco_fc_members"),
+                                              #                  selectInput('type3', 'Plot type', plot_types,
+                                              #                              selected = plot_types[2])
+                                              # )
                                               
                                               
                                               # )
@@ -1813,19 +1819,19 @@ server <- function(input, output, session) {#
   
   observeEvent(input$ans_btn, {
     if(length(input$rank_list_2) == 0) {
-      res <- "Drag answers into state variables!"
+      res <- "Drag answers into State box!"
     } else if(all(input$rank_list_2 %in% state_vars)) {
       res <- "State variables are correct!"
     } else {
-      res <- "Incorrect answer in state variables"
+      res <- "Incorrect answer in State box"
     }
     
     if(length(input$rank_list_3) == 0) {
-      res2 <- "Drag answers into process variables!"
+      res2 <- "Drag answers into Parameter box!"
     } else if(all(input$rank_list_3 %in% process_vars)) {
-      res2 <- "Process variables are correct!"
+      res2 <- "Parameter variables are correct!"
     } else {
-      res2 <- "Incorrect answer in process variables"
+      res2 <- "Incorrect answer in Parameter box"
     }
     
     output$state_ans <- renderText({
@@ -1936,7 +1942,10 @@ server <- function(input, output, session) {#
   output$mod_ann_plot <- renderPlotly({
     
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1!")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
+    )
+    validate(
+      need(input$run_mod_ann > 0, "Click 'Run Model'")
     )
     
     # Load Chl-a observations
@@ -1974,7 +1983,10 @@ server <- function(input, output, session) {#
   output$mod_phyto_plot <- renderPlotly({
     
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1!")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
+    )
+    validate(
+      need(input$run_mod_ann > 0, "Click 'Run Model'")
     )
     
     xlims <- range(mod_run1()[, 1])
@@ -2116,11 +2128,7 @@ server <- function(input, output, session) {#
   output$plot_ecof2 <- renderPlotly({
     
     validate(
-      need(input$members2 >= 1 & input$members2 <= 30,
-           message = paste0("The number of members must be between 1 and 30"))
-    )
-    validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1!")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
     )
     validate(
       need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
@@ -2128,6 +2136,12 @@ server <- function(input, output, session) {#
     validate(
       need(input$load_fc2 > 0, "Load Forecast inputs")
     )
+    validate(
+      need(input$members2 >= 1 & input$members2 <= 30,
+           message = paste0("The number of members must be between 1 and 30"))
+    )
+    
+   
     validate(
       need(input$run_fc2 > 0, "Click 'Run Forecast'")
     )
@@ -2188,10 +2202,10 @@ server <- function(input, output, session) {#
       p <- p +
         geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
                     alpha = 0.8) +
-        geom_line(data = df2, aes(time, p50, color = "Median")) +
+        geom_line(data = df2, aes(time, p50, color = "Median - original")) +
         scale_fill_manual(values = pair.cols[3]) +
         guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
-        scale_color_manual(values = c(pair.cols[4], cols[1]))
+        scale_color_manual(values = c("Median - original" = pair.cols[4], "Obs" = cols[1]))
     }
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
@@ -2223,7 +2237,7 @@ server <- function(input, output, session) {#
            message = paste0("The number of members must be between 1 and 30"))
     )
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1!")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
     )
     
     # Load Chl-a observations
@@ -2452,6 +2466,10 @@ server <- function(input, output, session) {#
     # validate(
     #   need(input$update_fc2 > 0, message = paste0("Click 'Update forecast'"))
     # )
+    validate(
+      need(input$table01_rows_selected != "",
+           message = "Please select a site in Objective 1.")
+    ) 
     
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -2626,12 +2644,14 @@ server <- function(input, output, session) {#
   
   output$plot_ecof4 <- renderPlotly({
     
+    print("chk1")
+    
+    # validate(
+    #   need(input$members3 >= 1 & input$members3 <= 30,
+    #        message = paste0("The number of members must be between 1 and 30"))
+    # )
     validate(
-      need(input$members3 >= 1 & input$members3 <= 30,
-           message = paste0("The number of members must be between 1 and 30"))
-    )
-    validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1!")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
     )
     
     # Load Chl-a observations
@@ -2642,8 +2662,10 @@ server <- function(input, output, session) {#
       chla <- read.csv(file)
       chla[, 1] <- as.Date(chla[, 1], tz = "UTC")
     }
-    chla_obs <- chla[(chla[, 1] >= as.Date((new_fc()[1, 1] - (14)))) &
-                       chla[, 1] < as.Date(new_fc()[1, 1]), ]
+    chla_obs <- chla[(chla[, 1] >= as.Date((driv_fc()[1, 1] - (7)))) &
+                       chla[, 1] < as.Date((driv_fc()[1, 1] + 7)), ]
+    print("chk2")
+    
     
     # Make old forecast 
     sub <- driv_fc() #[as.numeric(driv_fc()$L1) <= input$members2, ]
@@ -2655,6 +2677,7 @@ server <- function(input, output, session) {#
     colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
     df3$fc_date <- as.character(df3[1, 1])
     
+    print("chk3")
     
     
     p <- ggplot()
@@ -2663,9 +2686,13 @@ server <- function(input, output, session) {#
                   alpha = 0.8) +
       geom_line(data = df3, aes(time, p50, color = "Median"))
     
-    sub <- new_fc()[as.numeric(new_fc()$L1) <= input$members3, ]
-
-    if(input$type3 == "distribution") {
+    print("chk4")
+    
+    
+    if(input$run_fc3 > 0) {
+      sub <- new_fc()[as.numeric(new_fc()$L1) <= input$members2, ]
+      
+      # if(input$type3 == "distribution") {
       
       df3 <- plyr::ddply(sub, "time", function(x) {
         quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
@@ -2675,37 +2702,43 @@ server <- function(input, output, session) {#
       colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
       df3$fc_date <- as.character(df3[1, 1])
       df2 <- df3
-    } else {
-      df2 <- sub
-      df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
-    }
-    
-    # p <- ggplot()
-    if(input$type3 == "line"){
-      p <- p +
-        geom_line(data = df2, aes(time, value, color = L1)) +
-        scale_color_manual(values = c(rep("black", (input$members3 + 1)), cols[1:2])) +
-        guides(color = FALSE)
-    } 
-    if(input$type3 == "distribution") {
+      # } else {
+      #   df2 <- sub
+      #   df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
+      # }
+      
+      # p <- ggplot()
+      # if(input$type3 == "line"){
+      #   p <- p +
+      #     geom_line(data = df2, aes(time, value, color = L1)) +
+      #     scale_color_manual(values = c(rep("black", (input$members3 + 1)), cols[1:2])) +
+      #     guides(color = FALSE)
+      # } 
+      # if(input$type3 == "distribution") {
       p <- p +
         geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date),
                     alpha = 0.8) +
         # geom_ribbon(data = df2, aes(time, ymin = p12.5, ymax = p87.5, fill = "75th"),
         # alpha = 0.8) +
         geom_line(data = df2, aes(time, p50, color = "Median")) +
-        scale_fill_manual(values = l.cols) +
-        guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
-        scale_color_manual(values = c("black", cols[1:2]))
+        geom_vline(xintercept = (new_fc()[1, 1]), linetype = "dashed")
     }
+    
+    print("chk5")
+    
+    
+    
+    # }
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
-      geom_vline(xintercept = (new_fc()[1, 1]), linetype = "dashed") +
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Date") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
-      labs(color = "", fill = "")
+      labs(color = "", fill = "") +
+      scale_fill_manual(values = c("2020-09-25" = pair.cols[3], "2020-10-02" = pair.cols[7])) +
+      guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
+      scale_color_manual(values = c("Median" = "black", cols[1:2]))
     
     gp <- ggplotly(p, dynamicTicks = TRUE)
     for (i in 1:length(gp$x$data)){
@@ -2878,6 +2911,24 @@ server <- function(input, output, session) {#
     }
   )
 
+  # Updating sliders from first inputs ----
+  observe({
+    phy_init1 <- input$phy_init
+    updateSliderInput(session, "phy_init2", value = phy_init1)
+    zoo_init1 <- input$zoo_init
+    updateSliderInput(session, "zoo_init2", value = zoo_init1)
+    nut_init1 <- input$nut_init
+    updateSliderInput(session, "nut_init2", value = nut_init1)
+    
+    # Parameters
+    graz_rate1 <- input$graz_rate
+    updateSliderInput(session, "graz_rate2", value = graz_rate1)
+    mort_rate1 <- input$mort_rate
+    updateSliderInput(session, "mort_rate2", value = mort_rate1)
+    nut_uptake1 <- input$nut_uptake
+    updateSliderInput(session, "nut_uptake2", value = nut_uptake1)
+  })
+  
 
   # Bookmarking shiny app ----
   observe({
