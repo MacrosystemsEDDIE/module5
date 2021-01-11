@@ -20,6 +20,7 @@ library(DT)
 library(rintrojs)
 library(stringr)
 library(tidyr)
+library(RColorBrewer)
 
 # Options for Spinner
 options(spinner.color = "#0275D8", spinner.color.background = "#ffffff", spinner.size = 2)
@@ -116,6 +117,34 @@ yini <- c(
   # DETRITUS = 1, #mmolN m-3
   DIN = 9) #mmolN m-3
 
+# question 6 table with numeric input
+# code from https://stackoverflow.com/questions/46707434/how-to-have-table-in-shiny-filled-by-user
+wid_pct <- "80%"
+q6_table <- data.frame(
+  mean = c(as.character(numericInput("6a_mean", "", 0, width = wid_pct)), 
+           as.character(numericInput("6b_mean", "", 0, width = wid_pct)),
+           as.character(numericInput("6c_mean", "", 0, width = wid_pct)),
+           as.character(numericInput("6d_mean", "", 0, width = wid_pct)),
+           as.character(numericInput("6e_mean", "", 0, width = wid_pct))),
+  min = c(as.character(numericInput("6a_min", "", 0, width = wid_pct)), 
+          as.character(numericInput("6b_min", "", 0, width = wid_pct)),
+          as.character(numericInput("6c_min", "", 0, width = wid_pct)),
+          as.character(numericInput("6d_min", "", 0, width = wid_pct)),
+          as.character(numericInput("6e_min", "", 0, width = wid_pct))),
+  max = c(as.character(numericInput("6a_max", "", 0, width = wid_pct)), 
+          as.character(numericInput("6b_max", "", 0, width = wid_pct)),
+          as.character(numericInput("6c_max", "", 0, width = wid_pct)),
+          as.character(numericInput("6d_max", "", 0, width = wid_pct)),
+          as.character(numericInput("6e_max", "", 0, width = wid_pct)))
+)
+
+wid_pct2 <- "100%"
+q7_table <- data.frame(
+  relationship = c(as.character(textAreaInput(inputId = "q7a", "" , width = wid_pct2)),
+                   as.character(textAreaInput(inputId = "q7a", "" , width = wid_pct2)), 
+                   as.character(textAreaInput(inputId = "q7a", "" , width = wid_pct2)), 
+                   as.character(textAreaInput(inputId = "q7a", "" , width = wid_pct2)))
+)
 
 
 ui <- function(req) {
@@ -391,6 +420,23 @@ ui <- function(req) {
                                          width = "50%"), href = EF_links$webpage[6], target = "_blank")
                                    )
                                  )
+                          ),
+                        fluidRow(
+                          column(10, align = "left",
+                                 box(id = "box2", width = 10, status = "primary",
+                                     solidHeader = TRUE,
+                                     fluidRow(
+                                       column(8, offset = 1,
+                                              h3("Questions"),
+                                              h4(quest["q4", 1]),
+                                              textAreaInput2(inputId = "q4a", label = quest["q4a", 1], width = "90%"),
+                                              textAreaInput2(inputId = "q4b", label = quest["q4b", 1], width = "90%"),
+                                              textAreaInput2(inputId = "q4c", label = quest["q4c", 1], width = "90%"),
+                                              textAreaInput2(inputId = "q4d", label = quest["q4d", 1], width = "90%")
+                                              )
+                                       ),
+                                     ),
+                                 ),
                           )
                         ),
                
@@ -493,21 +539,30 @@ border-color: #FFF;
                                        ),
                                      ),
                                    fluidRow(
-                                     column(5, offset = 1, align = "left", style = paste0("background: ", ques_bg),
-                                                h4("Q4. Fill out information about the selected NEON site:"),
-                                                textInput(inputId = "q4a", label = quest["q4a", 1] , width = "90%"),
-                                                textInput(inputId = "q4b", label = quest["q4b", 1], width = "90%"),
-                                                textInput(inputId = "q4c", label = quest["q4c", 1], width = "90%"),
-                                            br()
-                                            ),
-                                     column(5,  align = "left", style = paste0("background: ", ques_bg),
-                                            h4("Test", style = paste0("color: ", ques_bg)),
-                                            textInput(inputId = "q4d", label = quest["q4d", 1] , width = "90%"),
-                                            textInput(inputId = "q4e", label = quest["q4e", 1], width = "90%"),
-                                            textInput(inputId = "q4f", label = quest["q4f", 1], width = "90%"),
-                                            br()
+                                     column(10, align = "left",
+                                            box(id = "box3", width = 10, status = "primary",
+                                                solidHeader = TRUE,
+                                                fluidRow(
+                                                  column(7, offset = 1,
+                                                         h3("Questions"),
+                                                         h4(quest["q5", 1])
+                                                  )
+                                                ),
+                                                fluidRow(
+                                                  column(4, offset = 1, align = "left", style = paste0("background: ", ques_bg),
+                                                         textInput(inputId = "q5a", label = quest["q5a", 1] , width = "90%"),
+                                                         textInput(inputId = "q5b", label = quest["q5b", 1], width = "90%"),
+                                                         textInput(inputId = "q5c", label = quest["q5c", 1], width = "90%")
+                                                  ),
+                                                  column(4, offset = 1, align = "left", style = paste0("background: ", ques_bg),
+                                                         textInput(inputId = "q5d", label = quest["q5d", 1] , width = "90%"),
+                                                         textInput(inputId = "q5e", label = quest["q5e", 1], width = "90%"),
+                                                         textInput(inputId = "q5f", label = quest["q5f", 1], width = "90%")
+                                                         )
+                                                  )
+                                                )
+                                            )
                                      )
-                                   )
                                    ),
                           tabPanel(title = "Objective 2 - Explore data",  value = "obj2",
                                    #* Objective 2 - Explore the Data ====
@@ -547,15 +602,31 @@ border-color: #FFF;
                                               
                                               )
                                             )
-                                     ),
+                                     ), hr(),
                                    fluidRow(
-                                     column(3,
+                                     column(4,
                                             h3("Calculate statistics"),
                                             selectInput("stat_calc", label = "Select calculation:", choices = stats),
                                             textOutput("out_stats")
                                             ),
-                                     
-                                   )
+                                     column(8,
+                                            # fluidRow(
+                                              # column(10, align = "left",
+                                                     box(id = "box4", width = 12, status = "primary",
+                                                         solidHeader = TRUE,
+                                                         fluidRow(
+                                                           column(10, offset = 1,
+                                                                  h3("Questions"),
+                                                                  h4(quest["q6", 1]),
+                                                                  DTOutput('q6_tab'),
+                                                                  br()
+                                                                  )
+                                                           )
+                                                         )
+                                                     # )
+                                              # )
+                                            )
+                                     )
                                    ),
                           tabPanel(title = "Objective 3 - Explore variable relationships", value = "obj3",
                                    #* Objective 3 - Explore variable relationships ====
@@ -603,6 +674,26 @@ border-color: #FFF;
                                      )
                                    ),
                                    fluidRow(
+                                     hr(),
+                                     column(10, align = "left",
+                                            box(id = "box5", width = 12, status = "primary",
+                                                solidHeader = TRUE,
+                                                fluidRow(
+                                                  column(10, offset = 1,
+                                                         h3("Questions"),
+                                                         h4(quest["q7", 1]),
+                                                         DTOutput('q7_tab'),
+                                                         br(),
+                                                         h4(quest["q8", 1]),
+                                                         textAreaInput2(inputId = "q8", label = quest["q8", 1], width = "90%"),
+                                                         br()
+                                                         )
+                                                  )
+                                                )
+                                            )
+                                     ),
+                                   fluidRow(
+                                     hr(),
                                      column(12,
                                             h3("Next step"),
                                             p("Next we will use this data and the identified related variables to help build our ecological model."),
@@ -632,11 +723,12 @@ border-color: #FFF;
                                      #** NEON Intro ----
                                      column(4,
                                             h3("What is a Model?"),
-                                            p(module_text["model1", ]),
-                                            p(module_text["model2", ]),
-                                            p(module_text["model3", ]),
-                                            p(module_text["mod_desc", ]),
-                                            p("Click through the images to see how we can go from a conceptual food web model to a mathematical representation of the interaction of Nutrients (N), Phytoplankton (P) and Zooplankton (Z).")
+                                            p(id = "txt_j", module_text["model1", ]),
+                                            p(id = "txt_j", module_text["model2", ]),
+                                            p(id = "txt_j", module_text["model3", ]),
+                                            p(id = "txt_j", module_text["mod_desc", ]),
+                                            p(id = "txt_j", module_text["phyto_chla", ]),
+                                            p("Click through the images to see how we can go from a conceptual food web model to a mathematical representation of the interaction of Nutrients (N), Phytoplankton (P) and Zooplankton (Z).", id = "txt_j")
                                      ),
                                      column(6, offset = 1,
                                             slickROutput("slck_model")
@@ -1309,8 +1401,14 @@ server <- function(input, output, session) {#
     
     if(input$show_q1){
       shinyjs::show(id = "box1")
+      shinyjs::show(id = "box2")
+      shinyjs::show(id = "box3")
+      shinyjs::show(id = "box4")
     }else{
       shinyjs::hide(id = "box1")
+      shinyjs::hide(id = "box2")
+      shinyjs::hide(id = "box3")
+      shinyjs::hide(id = "box4")
     }
   })
   
@@ -1544,8 +1642,7 @@ server <- function(input, output, session) {#
     )
 
     obj <- neon_DT()$sel
-    print(obj)
-    
+
 
     if(input$view_var == "Water temperature profile") {
       
@@ -1572,7 +1669,7 @@ server <- function(input, output, session) {#
       
       if(nrow(obj) != 0) {
         p <- p + 
-          geom_point(data = obj, aes_string(names(obj)[1], names(obj)[2]), color = "red")
+          geom_point(data = obj, aes_string(names(obj)[1], names(obj)[2]), color = cols[2])
           
       }
     }
@@ -1603,6 +1700,21 @@ server <- function(input, output, session) {#
     }
     return(out_stat)
   })
+  
+  # Input table for q6
+  output$q6_tab <- DT::renderDT(
+    q6_table, selection = "none", 
+    options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"), 
+    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Water temperature profile", "Nitrate sensor", "Underwater PAR", "Chlorophyll-a"), colnames=c("Mean", "Minimum", "Maximum"), 
+    callback = JS("table.rows().every(function(i, tab, row) {
+                  var $this = $(this.node());
+                  $this.attr('id', this.data()[0]);
+                  $this.addClass('shiny-input-container');
+                  });
+                  Shiny.unbindAll(table.table().node());
+                  Shiny.bindAll(table.table().node());")
+  )
+  
   
   # Comparison plot ----
   output$xy_plot <- renderPlotly({
@@ -1664,6 +1776,20 @@ server <- function(input, output, session) {#
     return(ggplotly(p, dynamicTicks = TRUE))
     
   })
+  
+  # Input table for q7 ----
+  output$q7_tab <- DT::renderDT(
+    q7_table, selection = "none", 
+    options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"), 
+    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Water temperature profile", "Nitrate sensor", "Underwater PAR"), colnames=c("Relationship"), 
+    callback = JS("table.rows().every(function(i, tab, row) {
+                  var $this = $(this.node());
+                  $this.attr('id', this.data()[0]);
+                  $this.addClass('shiny-input-container');
+                  });
+                  Shiny.unbindAll(table.table().node());
+                  Shiny.bindAll(table.table().node());")
+  )
   
   
   #* Load NOAA forecast data 
@@ -3124,6 +3250,8 @@ server <- function(input, output, session) {#
     updateSelectizeInput(session, "row_num", selected = state$values$sel_row)
     
   })
+  
+  
   
   # output$report <- downloadHandler(
   #   # For PDF output, change this to "report.pdf"
