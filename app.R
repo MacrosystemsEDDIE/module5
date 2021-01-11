@@ -146,6 +146,8 @@ q7_table <- data.frame(
                    as.character(textAreaInput(inputId = "q7a", "" , width = wid_pct2)))
 )
 
+mod_choices <- c("Negative", "No change", "Positive")
+
 
 ui <- function(req) {
   
@@ -735,56 +737,74 @@ border-color: #FFF;
                                             # img(src = "concep_math_model.png", height = 600, width = 800))
                                      )
                                    ),
-                                   br(),
-                                   br(),
                                    hr(),
+                                   fluidRow(
+                                     column(10, align = "left",
+                                            box(id = "box6", width = 12, status = "primary",
+                                                solidHeader = TRUE,
+                                                fluidRow(
+                                                  column(10, offset = 1,
+                                                         h3("Questions"),
+                                                         h4(quest["q9", 1]),
+                                                         radioButtons("q9a", quest["q9a", 1], choices = mod_choices, inline = TRUE),
+                                                         radioButtons("q9b", quest["q9b", 1], choices = mod_choices, inline = TRUE),
+                                                         radioButtons("q9c", quest["q9c", 1], choices = mod_choices, inline = TRUE),
+                                                         br()
+                                                  )
+                                                )
+                                            )
+                                     )
+                                   ),
+                                   hr(),
+                                   
                                    #** Sort state and process variables ====
                                    h2(tags$b("Exercise")),
-                                   p("When working with Ecological models, the terms 'States' and 'Actions' are used. Using the model diagram above, can you identify which are states or actions?"),
+                                   p("When working with ecological models, the terms 'state variable' and 'parameter' are used. Using the model diagram above, can you identify which are state variables or parameters?"),
+                                   p(module_text["state_var", 1]),
+                                   p(module_text["parameter", 1]),
+                                   
                                    fluidRow(
-                                     column(
-                                       # tags$b("Exercise"),
-                                       width = 9,
-                                       bucket_list(
-                                         header = "Drag the variables into 'Parameter' or 'State' boxes",
-                                         group_name = "bucket_list_group",
-                                         orientation = "horizontal",
-                                         add_rank_list(
-                                           text = "Drag from here",
-                                           labels = sample(c(state_vars, process_vars)),
-                                           input_id = "rank_list_1"
-                                         ),
-                                         add_rank_list(
-                                           text = "State",
-                                           labels = NULL,
-                                           input_id = "rank_list_2"
-                                         ),
-                                         add_rank_list(
-                                           text = "Parameter",
-                                           labels = NULL,
-                                           input_id = "rank_list_3"
-                                         )
-                                       )
-                                     ),
-                                     column(3,
-                                            wellPanel(
-                                              useShinyjs(),  # Set up shinyjs
-                                              actionButton("ans_btn", "Check answers"),
-                                              # hidden(
-                                              #   tableOutput("ans_vars")
-                                              # ),
-                                              textOutput("state_ans"),
-                                              textOutput("proc_ans")
-                                              # shiny::tableOutput("ans_vars")
-                                              # textInput("text", "Text")
-                                              )
+                                     column(12, align = "left",
+                                            box(id = "box7", width = 12, status = "primary",
+                                                solidHeader = TRUE,
+                                                fluidRow(
+                                                  column(8, offset = 1,
+                                                         h3("Questions"),
+                                                         h4(quest["q10", 1]),
+                                                    bucket_list(
+                                                      header = "",
+                                                      group_name = "bucket_list_group",
+                                                      orientation = "horizontal",
+                                                      add_rank_list(
+                                                        text = tags$b("Drag from here"),
+                                                        labels = sample(c(state_vars, process_vars)),
+                                                        input_id = "rank_list_1"
+                                                      ),
+                                                      add_rank_list(
+                                                        text = tags$b("State variable"),
+                                                        labels = NULL,
+                                                        input_id = "rank_list_2"
+                                                      ),
+                                                      add_rank_list(
+                                                        text = tags$b("Parameter"),
+                                                        labels = NULL,
+                                                        input_id = "rank_list_3"
+                                                      )
+                                                    )
+                                                  ),
+                                                  column(2,
+                                                         wellPanel(
+                                                           useShinyjs(),  # Set up shinyjs
+                                                           actionButton("ans_btn", "Check answers"),
+                                                           textOutput("state_ans"),
+                                                           textOutput("proc_ans")
+                                                           )
+                                                         )
+                                                  )
+                                                )
                                             )
+                                     )
                                    ),
-                                   fluidRow(
-                                     column(12,
-                                            p("Compare your answers in Q 11. Did you sort them correctly?"))
-                                   )
-                          ),
                           tabPanel(title = "Objective 5 - Build Model", value = "obj5",
                                    #* Objective 5 - Run ecological model ====
                                    fluidRow(
@@ -1404,11 +1424,13 @@ server <- function(input, output, session) {#
       shinyjs::show(id = "box2")
       shinyjs::show(id = "box3")
       shinyjs::show(id = "box4")
+      shinyjs::show(id = "box5")
     }else{
       shinyjs::hide(id = "box1")
       shinyjs::hide(id = "box2")
       shinyjs::hide(id = "box3")
       shinyjs::hide(id = "box4")
+      shinyjs::hide(id = "box5")
     }
   })
   

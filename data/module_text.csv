@@ -47,3 +47,5 @@ driver_uncert,"Driver uncertainty comes from uncertainty related to the variable
 param_uncert,"Parameter uncertainty refers to the uncertainty in the model parameter values, which can be due to uncertainties in the data or the calibration process used."
 init_uncert,Initial conditions uncertainty refers to uncertainty arising because the initial conditions are not precisely known or because the calculations cannot be performed with the precise initial conditions.
 comm_forecast,Answer Q 23 in the student handout.
+state_var,A state variable is one of the set of variables that are used to describe the mathematical “state” of a dynamical system.
+parameter,A parameter is a value introduced to represent properties of nature which are difficult to directly measure.

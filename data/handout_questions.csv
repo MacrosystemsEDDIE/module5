@@ -26,3 +26,8 @@ q7b,Water temperature profile
 q7c,Nitrate sensor
 q7d,Underwater PAR
 q8,"Q8. Were there any other relationships you found at your site? If so, please describe below."
+q9,Q9. Select how you envision each driving variable to affect productivity.
+q9a,Water temperature profile
+q9b,Incoming light
+q9c,Available nutrients
+q10,Q10. Classify the following as either a state variable or a parameter by dragging it into the corresponding bin.
