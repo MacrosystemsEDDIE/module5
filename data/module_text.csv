@@ -22,6 +22,7 @@ workflow2,"You will navigate through the upper tabs to complete each of the acti
 workflow3,Within each activity there are objectives which must be completed before moving onto the next one.
 workflow4,There are questions embedded throughout the Shiny app which you will need to input the answers into.
 workflow5,"When you have completed each of the objectives and answered all the questions, navigate to the ""Generate Report"" tab. This will then create a Microsoft Word document with your forecasts and answers embedded within which you can then download and finalize before submitting it to your instructor."
+workflow6,You can save your progress by bookmarking the page before you leave the page. This will allow you to return and start from where you left off.
 obj_01,"Select a NEON site from the table, then click on the icon to load the latest image from that site. Follow the link at the bottom of the 'About Site' section to find out more about the site and fill in the blanks in Q6 in your student handout."
 obj_02,Explore the data measured at the selected site. This is data that has been downloaded from the NEON Data Portal. The variables shown have been selected for this module but there are a wide range of variables collected at each NEON site
 obj_03,For our measurements of primary productivity we will be using the data from the Chlorophyll-a sensor. Using the options below explore if there are any relationships between Chlorophyll-a and the other variables. This information will be used to build the model.
