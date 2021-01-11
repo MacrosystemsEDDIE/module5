@@ -19,6 +19,7 @@ library(rLakeAnalyzer)
 library(DT)
 library(rintrojs)
 library(stringr)
+library(tidyr)
 
 # Options for Spinner
 options(spinner.color = "#0275D8", spinner.color.background = "#ffffff", spinner.size = 2)
@@ -81,11 +82,14 @@ neonIcons <- iconList(
 )
 
 # plot types for forecast plot
-plot_types <- c("line", "distribution")
+plot_types <- c("Line", "Distribution")
 
 # Sorting variables
 state_vars <- c("Phytoplankton", "Zooplankton", "Nutrients")
 process_vars <- c("Grazing", "Mortality", "Uptake")
+
+# Statistics
+stats <- list("Minimum" = "Min.", "1st Quartile" = "1st Qu.", "Median" = "Median", "Mean" = "Mean", "3rd Quartile" = "3rd Qu.", "Maximum" = "Max.", "Standard Deviation" = "sd")
 
 # Parameters for NPZ model
 parms <- c(
@@ -186,18 +190,23 @@ ui <- function(req) {
                 background:#B8E0CD
                 }
                         ")),
+                        introBox(
                         fluidRow(
+                          
+                                   
                           column(6,
                                  #* Module text ====
                                  h2("Introduction to Ecological Forecasting"),
                                  h3("Summary"),
                                  p(id = "txt_j", module_text["intro_eco_forecast", ]),
                                  p(id = "txt_j", module_text["this_module", ])
-                          ), column(5, offset = 1,
+                          ), 
+                          column(5, offset = 1,
                                     br(), br(), br(),
                                     img(src = "mod5_viz_v2.png", height = "80%", 
                                         width = "80%", align = "left")
                                     ),
+                        ), data.step = 8, data.intro = help_text["start", 1]
                         ),
                         hr(),
                         fluidRow(
@@ -230,10 +239,10 @@ ui <- function(req) {
                           column(6,
                                  # h3("Project EDDIE"),
                                  # p(module_text["EDDIE", ]),
-                                 # p("For more about Project EDDIE, you can visit the website ", a("here", href = "https://serc.carleton.edu/eddie/index.html"), "."),
+                                 # p("For more about Project EDDIE, you can visit the website ", a("here", href = "https://serc.carleton.edu/eddie/index.html", target = "_blank"), "."),
                                  h3("Macrosystems EDDIE"),
                                  p(id = "txt_j", module_text["Macro", ]),
-                                 p("For more information see the website ", a("here", href = "https://serc.carleton.edu/eddie/macrosystems/index.html"), "."),
+                                 p("For more information see the website ", a("here", href = "https://serc.carleton.edu/eddie/macrosystems/index.html", target = "_blank"), "."),
                                  ),
                           column(5, offset = 1, 
                                  # id = "second", # Add border
@@ -256,7 +265,8 @@ ui <- function(req) {
                                    tags$li(id = "txt_j", module_text["workflow2", ]),
                                    tags$li(id = "txt_j", module_text["workflow3", ]),
                                    tags$li(id = "txt_j", module_text["workflow4", ]),
-                                   tags$li(id = "txt_j", module_text["workflow5", ])
+                                   tags$li(id = "txt_j", module_text["workflow5", ]),
+                                   tags$li(id = "txt_j", module_text["workflow6", ])
                                  )
                           ),
                           column(6, align = "center", offset = 1,
@@ -333,12 +343,12 @@ ui <- function(req) {
                           column(6,
                                  h3("Data sources"),
                                  p("This module will introduce key concepts within Ecological forecasting through exploration of ",
-                                   a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data"), ", building a model and then generating a short-term ecological forecast.")
+                                   a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data", target = "_blank"), ", building a model and then generating a short-term ecological forecast.")
                                  ),
                           column(6, align = "center",
                                  a(
                                    href = "https://www.neonscience.org/",
-                                   img(src = "NSF-NEON-logo.png", title = "NEON - NSF logo")
+                                   img(src = "NSF-NEON-logo.png", title = "NEON - NSF logo"), target = "_blank"
                                    )
                                  )
                           )
@@ -351,41 +361,41 @@ ui <- function(req) {
                         fluidRow(
                           column(12,
                                  h3("Examples of Current Ecological Forecasts"),
-                                 p("Here are links to some current examples of ecological forecasts."))
+                                 p("Here are links to some current examples of ecological forecasts. Select one of the examples and answer Q4 below or in the student handout."))
                         ),
                         fluidRow(
                           column(4, offset = 1,
                                  tags$ul(
-                                   tags$li(id = "txt_j", a(href = EF_links$webpage[1], EF_links$Forecast[1]), br(), p(EF_links$About[1])),
+                                   tags$li(id = "txt_j", a(href = EF_links$webpage[1], EF_links$Forecast[1], target = "_blank"), br(), p(EF_links$About[1])),
                                    a(img(src = "fc_examples/npn.png", height = "50%",
-                                       width = "50%"), href = EF_links$webpage[1]), br(), hr(),
-                                   tags$li(id = "txt_j", a(href = EF_links$webpage[2], EF_links$Forecast[2]), br(), p(EF_links$About[2])),
+                                       width = "50%"), href = EF_links$webpage[1], target = "_blank"), br(), hr(),
+                                   tags$li(id = "txt_j", a(href = EF_links$webpage[2], EF_links$Forecast[2], target = "_blank"), br(), p(EF_links$About[2])),
                                    a(img(src = "fc_examples/flare.png", height = "50%",
-                                       width = "50%"), href = EF_links$webpage[2]), br(), hr(),
-                                   tags$li(id = "txt_j", a(href = EF_links$webpage[3], EF_links$Forecast[3]), br(), p(EF_links$About[3])),
+                                       width = "50%"), href = EF_links$webpage[2], target = "_blank"), br(), hr(),
+                                   tags$li(id = "txt_j", a(href = EF_links$webpage[3], EF_links$Forecast[3], target = "_blank"), br(), p(EF_links$About[3])),
                                    a(img(src = "fc_examples/ecocast.png", height = "50%",
-                                       width = "50%"), href = EF_links$webpage[3])
+                                       width = "50%"), href = EF_links$webpage[3], target = "_blank")
                                    )
                                  ),
                           column(4, offset = 2, 
                                  tags$ul(
                                    br(), br(), br(), br(),
-                                   tags$li(id = "txt_j", a(href = EF_links$webpage[4], EF_links$Forecast[4]), br(), p(EF_links$About[4])),
+                                   tags$li(id = "txt_j", a(href = EF_links$webpage[4], EF_links$Forecast[4], target = "_blank"), br(), p(EF_links$About[4])),
                                    a(img(src = "fc_examples/sturgeon.png", height = "50%",
-                                       width = "50%"), href = EF_links$webpage[4]), br(), hr(),
-                                   tags$li(id = "txt_j", a(href = EF_links$webpage[5], EF_links$Forecast[5]), br(), p(EF_links$About[5])),
+                                       width = "50%"), href = EF_links$webpage[4], target = "_blank"), br(), hr(),
+                                   tags$li(id = "txt_j", a(href = EF_links$webpage[5], EF_links$Forecast[5], target = "_blank"), br(), p(EF_links$About[5])),
                                    a(img(src = "fc_examples/grasslands.png", height = "50%",
-                                       width = "50%"), href = EF_links$webpage[5]), br(), hr(),
-                                   tags$li(id = "txt_j", a(href = EF_links$webpage[6], EF_links$Forecast[6]), br(), p(EF_links$About[6])),
+                                       width = "50%"), href = EF_links$webpage[5], target = "_blank"), br(), hr(),
+                                   tags$li(id = "txt_j", a(href = EF_links$webpage[6], EF_links$Forecast[6], target = "_blank"), br(), p(EF_links$About[6])),
                                    a(img(src = "fc_examples/portal_forecast.png", height = "50%",
-                                         width = "50%"), href = EF_links$webpage[6])
+                                         width = "50%"), href = EF_links$webpage[6], target = "_blank")
                                    )
                                  )
                           )
                         ),
                
                # 4. Get Data & Build Model ----
-               tabPanel(title = "Get Data & Build Model", value = "mtab4",
+               tabPanel(title = "Activity A", value = "mtab4",
                         tags$style(".nav-tabs {
   background-color: #DDE4E1;
   border-color: #FFF;
@@ -407,6 +417,7 @@ border-color: #FFF;
                         fluidRow(
                           column(12,
                                  h3("Activity A: Visualize data from a selected NEON site"),
+                                 h4("Get Data & Build Model"),
                                  p("Complete objectives 1-3 to gather the information you will need for your model. Followed by objectives 4-5 to build and calibrate the model you will use to generate the forecast.")
                                  )
                         ),
@@ -434,6 +445,14 @@ border-color: #FFF;
                                      column(4,
                                             h2("Site Description"),
                                             p("Select a site in the table to highlight on the map"),
+                                            conditionalPanel("row_num > 25",
+                                                             selectizeInput("row_num", "Select row",
+                                                                            choices = 1:nrow(neon_sites_df),
+                                                                            options = list(
+                                                                              placeholder = 'Please select a row',
+                                                                              onInitialize = I('function() { this.setValue(""); }')),
+                                                                            )
+                                                             ),
                                             DT::DTOutput("table01"),
                                             p("Click below to see the latest image from the webcam on site (this may take 10-30 seconds)."),
                                             actionButton("view_webcam", label = "View live feed")
@@ -462,7 +481,7 @@ border-color: #FFF;
                                               )
                                             )
                                      )
-                                   ),
+                                   ), br(),
                                    span(textOutput("site_name1"), style = "font-size: 22px;
                                         font-style: bold;"),
                                    fluidRow(
@@ -475,7 +494,7 @@ border-color: #FFF;
                                      ),
                                    fluidRow(
                                      column(5, offset = 1, align = "left", style = paste0("background: ", ques_bg),
-                                                h4("Q. 6 Fill out information about the selected NEON site:"),
+                                                h4("Q4. Fill out information about the selected NEON site:"),
                                                 textInput(inputId = "q4a", label = quest["q4a", 1] , width = "90%"),
                                                 textInput(inputId = "q4b", label = quest["q4b", 1], width = "90%"),
                                                 textInput(inputId = "q4c", label = quest["q4c", 1], width = "90%"),
@@ -497,7 +516,7 @@ border-color: #FFF;
                                             wellPanel(style = paste0("background: ", obj_bg),
                                               h3("Objective 2 - Inspect the Data"),
                                               p(module_text["obj_02", ]),
-                                              p("If there are some variables which you do not understand what they are, visit the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal"), "and click 'Explore Data Products' and look up the different variables and how they are collected."),
+                                              p("If there are some variables which you do not understand what they are, visit the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal", target = "_blank"), "and click 'Explore Data Products' and look up the different variables and how they are collected."),
                                               p("Answer questions X-Y in the student handout related to data exploration.")
                                             ),
                                             useShinyjs(),  # Set up shinyjs
@@ -528,7 +547,15 @@ border-color: #FFF;
                                               
                                               )
                                             )
-                                     )
+                                     ),
+                                   fluidRow(
+                                     column(3,
+                                            h3("Calculate statistics"),
+                                            selectInput("stat_calc", label = "Select calculation:", choices = stats),
+                                            textOutput("out_stats")
+                                            ),
+                                     
+                                   )
                                    ),
                           tabPanel(title = "Objective 3 - Explore variable relationships", value = "obj3",
                                    #* Objective 3 - Explore variable relationships ====
@@ -796,13 +823,14 @@ border-color: #FFF;
                
                
                # 5. Forecast! ----
-               tabPanel(title = "Forecast!", value = "mtab5",
+               tabPanel(title = "Activity B", value = "mtab5",
                         # tags$style(type="text/css", "body {padding-top: 65px;}"),
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
                             width = 1544, top = 5),
                         fluidRow(
                           column(12,
                                  h3("Activity B: Generate a forecast and work through the forecast cycle"),
+                                 h4("Forecast!"),
                                  p("Complete objectives 6-11 to complete the steps involved with the forecast.")
                           )
                         ),
@@ -862,35 +890,34 @@ border-color: #FFF;
                                             p(id = "txt_j", module_text["weather_forecast2", ])
                                      ),
                                      column(6,
-                                            br(), br(),
-                                            p(id = "txt_j", "Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS"), " forecast."),
-                                            p(id = "txt_j", "Inspect the different meteorological outputs. You can adjust the number of members, which is the number of forecasts and also how it is visualized. A line plot shows each individual member while the distribution  shows the median 95th percentile."),
+                                            # br(), br(),
+                                            p(id = "txt_j", "Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS", target = "_blank"), " forecast."),
+                                            p(id = "txt_j", "Inspect the different meteorological outputs. You can adjust the number of members, which is the number of forecasts and also how it is visualized. A line plot shows each individual member while the distribution calculates the median (represented as a solid line) and the 95th percentile (represented as a shaded polygon)."),
                                             )
                                      ),
                                    fluidRow(
                                      column(2,
                                             br(),
-                                            actionButton('load_fc', "Load Forecast", icon = icon("download")),
+                                            actionButton('load_fc', "Load Forecast", icon = icon("download")), br(),
                                             # actionButton('plot_fc', "Plot Forecast!", icon = icon("chart-line")),
                                             wellPanel(
                                               conditionalPanel("input.load_fc",
                                                                uiOutput("sel_fc_vars"),
                                                                uiOutput("sel_fc_dates"),
                                                                uiOutput("sel_fc_members"),
-                                                               selectInput('type', 'Plot type', plot_types,
-                                                                           selected = plot_types[1])
-                                                               
-                                              )
+                                                               radioButtons("type", "Type of Visualization", choices = c("Data table", plot_types)),
+                                                               )
                                             )
                                      ),
                                      column(10,
-                                            
-                                            # h3("Weather Forecast"),
                                             wellPanel(
-                                              # conditionalPanel("input.plot_fc",
-                                              plotlyOutput("fc_plot")
-                                              # )
-                                            )
+                                              conditionalPanel("input.type == 'Data table'",
+                                                               DTOutput("viz_output")
+                                                               ),
+                                              conditionalPanel("input.type == 'Line' | input.type == 'Distribution'",
+                                                               plotlyOutput("fc_plot")
+                                                               )
+                                              )
                                      )
                                    ),
                                    fluidRow(
@@ -940,8 +967,9 @@ border-color: #FFF;
                                                                numericInput('members2', 'No. of members', 16,
                                                                             min = 1, max = 30, step = 1),
                                                                # uiOutput("eco_fc_members"),
-                                                               selectInput('type2', 'Plot type', plot_types,
-                                                                           selected = plot_types[2])
+                                                               radioButtons("type2", "Type of Visualization", choices = c("Data table", plot_types)),
+                                                               # selectInput('type2', 'Plot type', plot_types,
+                                                                           # selec  ted = plot_types[2])
                                               ),
                                               h3(tags$b("Initial conditions")),
                                               p(id = "txt_j", "Return to the 'Get Data' tab to find suitable values to input for each of the states. Use the start date of the weather forecast loaded above. If there is no value, choose a value based on the observed range."),
@@ -965,8 +993,13 @@ border-color: #FFF;
                                      column(8,
                                             # h4("Plot showing Input Uncertainty"),
                                             wellPanel(
-                                              plotlyOutput("plot_ecof2")
-                                            ),
+                                              conditionalPanel("input.type2 == 'Data table'",
+                                                               DTOutput("viz_output2")
+                                                               ),
+                                              conditionalPanel("input.type2 == 'Line' | input.type2 == 'Distribution'",
+                                                               plotlyOutput("plot_ecof2")
+                                                               )
+                                              ),
                                             p("Answer Q 21-22")
                                             )
                                      )
@@ -1168,36 +1201,29 @@ border-color: #FFF;
                         h5("Use buttons to navigate between the objective tabs", align = "center"),
                         hr(), br()
                         ),
-               tabPanel(title = "Scale", value = "mtab6",
+               tabPanel(title = "Activity C", value = "mtab6",
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
                             width = 1544, top = 5),
                         br(),
                         fluidRow(
                           column(12, 
-                                 h2("Activity C"),
+                                 h2("Activity C - Scale"),
                                  p("For Activity C, we want you to make a hypothesis about how you expect your model to work at a different NEON site."),
                                  p("Answer Q 27-29")
                           )
                         ), 
                         fluidRow(
                                  #** Site map2 ----
-                                 column(10, align = "center", offset = 1,
+                                 column(8, align = "center", offset = 2,
                                         h2("Map of NEON sites"),
                                         wellPanel(
                                           leafletOutput("neonmap2")
                                           )
                                         )
-                                 )
-                 
-               ),
-               # 7. Generate Report ----
-               tabPanel(title = "Generate Report", value = "mtab7",
-                        # tags$style(type="text/css", "body {padding-top: 65px;}"),
-                        img(src = "project-eddie-banner-2020_green.png", height = 100, 
-                            width = 1544, top = 5),
-                        br(),
+                                 ),
                         #* Generate report buttons ====
                         fluidRow(
+                          hr(),
                           column(6,
                                  introBox(
                                    h3("Generate Report"),
@@ -1212,10 +1238,39 @@ border-color: #FFF;
                                                   downloadButton("download", "Download Report",
                                                                  # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
                                                   ))
-                                 ),
                           ),
-                        
+                          column(6,
+                                 h3("Save your progress"),
+                                 bookmarkButton(id = "bookmark1"))
                         )
+                 
+               ) #,
+               # 7. Generate Report ----
+               # tabPanel(title = "Generate Report", value = "mtab7",
+               #          # tags$style(type="text/css", "body {padding-top: 65px;}"),
+               #          img(src = "project-eddie-banner-2020_green.png", height = 100, 
+               #              width = 1544, top = 5),
+               #          br(),
+               #          #* Generate report buttons ====
+               #          fluidRow(
+               #            column(6,
+               #                   introBox(
+               #                     h3("Generate Report"),
+               #                     p("This will take the answers you have input into the document and generate a Microsoft Word document (.docx) document with your answers which you can download and make further edits before submitting."),
+               #                     actionButton("generate", "Generate Report", icon = icon("file"), # This is the only button that shows up when the app is loaded
+               #                                  # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
+               #                     ),
+               #                     data.step = 6, data.intro = help_text["finish", 1]
+               #                   ),
+               #                   
+               #                   conditionalPanel(condition = "output.reportbuilt", # This button appears after the report has been generated and is ready for download.
+               #                                    downloadButton("download", "Download Report",
+               #                                                   # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
+               #                                    ))
+               #                   ),
+               #            ),
+               #          
+               #          )
                
                ),
     # Tab navigation buttons ----
@@ -1241,7 +1296,7 @@ border-color: #FFF;
 server <- function(input, output, session) {#
   
   # Help button ----
-  introjs(session, events = list(onbeforechange = readCallback("switchTabs")))  ## NEED to uncomment before launching!
+  # introjs(session, events = list(onbeforechange = readCallback("switchTabs")))  ## NEED to uncomment before launching!
   observeEvent(input$help, {
     introjs(session, events = list(onbeforechange = readCallback("switchTabs")))
   })
@@ -1260,7 +1315,7 @@ server <- function(input, output, session) {#
   })
   
   output$table01 <- DT::renderDT(
-    neon_sites_df[, c(1:2)], selection = "single", options = list(stateSave = TRUE)
+    neon_sites_df[, c(1:2)], selection = "single", options = list(stateSave = TRUE), server = FALSE
   )
   
   # to keep track of previously selected row
@@ -1338,6 +1393,11 @@ server <- function(input, output, session) {#
   # Download phenocam ----
   observeEvent(input$view_webcam, {
     
+    validate(
+      need(input$table01_rows_selected != "",
+           message = "Please select a site in Objective 1.")
+    )
+    
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
@@ -1382,7 +1442,7 @@ server <- function(input, output, session) {#
     url <- paste0("https://www.neonscience.org/field-sites/field-sites-map/", sid)
     
     output$site_link <- renderUI({
-      tags$a(href = url, "Click here for more site info")
+      tags$a(href = url, "Click here for more site info", target = "_blank")
     })
   })
   #** Create hyperlink ----
@@ -1411,7 +1471,8 @@ server <- function(input, output, session) {#
   })
   
   # Read in site data ----
-  neon_DT <- eventReactive(input$view_var, { # view_var
+  # neon_DT <- eventReactive(input$view_var, { # view_var
+  neon_DT <- reactive({ # view_var
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site in Objective 1.")
@@ -1424,7 +1485,11 @@ server <- function(input, output, session) {#
     df[, 1] <- as.POSIXct(df[, 1], tz = "UTC")
     df[, -1] <- signif(df[, -1], 4)
     names(df)[ncol(df)] <- read_var
-    return(df)
+    
+    sel <- tryCatch(df[(selected()$pointNumber+1),,drop=FALSE] , error=function(e){NULL})
+    
+    
+    return(list(data = df, sel = sel))
   })
   
   # Site data datatable ----
@@ -1478,13 +1543,16 @@ server <- function(input, output, session) {#
       need(file.exists(file), message = "This variable is not available at this site. Please select a different variable or site.")
     )
 
+    obj <- neon_DT()$sel
+    print(obj)
     
+
     if(input$view_var == "Water temperature profile") {
       
       palet <- "RdYlBu"
-      p <- ggplot(neon_DT(), aes_string(names(neon_DT())[1], names(neon_DT())[2])) +
-        # geom_raster(aes_string(fill = names(neon_DT())[3])) +
-        geom_tile(aes_string(fill = names(neon_DT())[3])) +
+      p <- ggplot() +
+        # geom_raster(aes_string(fill = names(neon_DT()$data)[3])) +
+        geom_tile(data = neon_DT()$data, aes_string(names(neon_DT()$data)[1], names(neon_DT()$data)[2], fill = names(neon_DT()$data)[3]), alpha = 0.4) +
         scale_fill_distiller(palette = palet, na.value = "grey90") +
         ylab(paste0(input$view_var, " (", units, ")")) +
         xlab("Time") +
@@ -1493,17 +1561,47 @@ server <- function(input, output, session) {#
         theme_minimal(base_size = 12) +
         theme(panel.border = element_rect(fill = NA, color = "black"))
     } else {
-      p <- ggplot(neon_DT(), aes_string(names(neon_DT())[1], names(neon_DT())[2])) +
+      p <- ggplot() +
         # geom_line() +
-        geom_point() +
+        geom_point(data = neon_DT()$data, aes_string(names(neon_DT()$data)[1], names(neon_DT()$data)[2]), color = "black") +
         ylab(paste0(input$view_var, " (", units, ")")) +
         xlab("Time") +
         # theme_classic(base_size = 16) +
         theme_minimal(base_size = 12) #+
         # theme(panel.border = element_rect(fill = NA, color = "black"))
+      
+      if(nrow(obj) != 0) {
+        p <- p + 
+          geom_point(data = obj, aes_string(names(obj)[1], names(obj)[2]), color = "red")
+          
+      }
     }
-    return(ggplotly(p, dynamicTicks = TRUE))
+    return(ggplotly(p, dynamicTicks = TRUE, source = "A"))
 
+  })
+  
+  #selected
+  selected <- reactive({
+    event_data(event = "plotly_selected", source = "A")
+  })
+  
+  # Output stats ----
+  output$out_stats <- renderText({
+    
+    validate(
+      need(nrow(neon_DT()$sel) > 0, "Select points in the plot using the 'Box Select' or 'Lasso Select'")
+    )
+    
+    if(input$stat_calc == "sd") {
+      out_stat <- sd(neon_DT()$sel[, ncol(neon_DT()$sel)], na.rm = TRUE)
+      out_stat <- paste0("Std. Dev.: ", signif(out_stat, 5))
+    } else {
+      # print(head(neon_DT()$sel))
+      sum_stat <- summary(neon_DT()$sel)
+      ridx <- grep(input$stat_calc, sum_stat[, ncol(sum_stat)])
+      out_stat <- sum_stat[ridx, ncol(sum_stat)]
+    }
+    return(out_stat)
   })
   
   # Comparison plot ----
@@ -1693,7 +1791,56 @@ server <- function(input, output, session) {#
     
     
   #########
-    #* plot NOAA forecast ----
+  #* datatable of NOAA forecast ----
+  output$viz_output <- renderDT({
+    
+    validate(
+      need(input$table01_rows_selected != "",
+           message = "Please select a site on the 'Get Data & Build Model' tab")
+    )
+    validate(
+      need(input$load_fc > 0, "Please load the forecast")
+    )
+    validate(
+      need(!is.null(input$fc_date), "Please select a date")
+    )
+    validate(
+      need(input$members >= 1 & input$members <= membs, paste0("Please select a number of members between 1 and ", membs))
+      )
+    
+    l1 <- fc_data()[input$fc_date] #Subset by date
+    
+    var_idx <- which(noaa_dic$display_name == input$fc_var)
+    # Subset by members
+    l2 <- lapply(l1, function(x) {
+      x[x$L1 == noaa_dic$noaa_name[var_idx], 1:(2 + input$members)]
+      
+    })
+    
+    idvars <- colnames(l2[[1]])
+    mlt1 <- reshape::melt(l2, id.vars = idvars)
+    colnames(mlt1)[2] <- "fc_date"
+    
+    if(input$fc_var == "Air temperature") {
+      mlt1[, -c(1, 2)] <- mlt1[, -c(1, 2)] - 273.15
+    }
+      
+    
+    mlt1[, 1] <- as.character(mlt1[, 1])
+    mlt1 <- mlt1[, -2]
+    mlt1[, -1] <- round(mlt1[, -1], 1)
+    # df_wid <- pivot_wider(mlt1, 1, 2, values_from = 3)
+    
+    # mlt2 <- reshape2::melt(mlt1, id.vars = c("time", "fc_date"))
+    
+    
+    return(mlt1)
+    
+  })
+  
+  
+  
+  #* plot NOAA forecast ----
   output$fc_plot <- renderPlotly({
     
     
@@ -1742,7 +1889,7 @@ server <- function(input, output, session) {#
     # df2$days <- as.numeric(difftime(df2$time, df2$time[1], units = "day"))
     # mlt <- reshape::melt(df2, id.vars = "time")
     # }
-    if(input$type == "distribution") {
+    if(input$type == "Distribution") {
       
       df3 <- apply(mlt1[, -c(1, 2)], 1, function(x){
         quantile(x, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
@@ -1755,7 +1902,7 @@ server <- function(input, output, session) {#
     }
     
     
-    if(input$type == "line"){
+    if(input$type == "Line"){
       
       mlt2 <- reshape2::melt(mlt1, id.vars = c("time", "fc_date"))
       p <- p +
@@ -1763,7 +1910,7 @@ server <- function(input, output, session) {#
         scale_color_manual(values = pair.cols[2]) +
         labs(color = "Forecast date")
     } 
-    if(input$type == "distribution") {
+    if(input$type == "Distribution") {
       
       p <- p +
         geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date), alpha = 0.8) + 
@@ -2124,6 +2271,34 @@ server <- function(input, output, session) {#
     })
   
   
+  output$viz_output2 <- renderDT({
+    
+    validate(
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
+    )
+    validate(
+      need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
+    )
+    validate(
+      need(input$load_fc2 > 0, "Load Forecast inputs")
+    )
+    validate(
+      need(input$members2 >= 1 & input$members2 <= 30,
+           message = paste0("The number of members must be between 1 and 30"))
+    )
+    validate(
+      need(input$run_fc2 > 0, "Click 'Run Forecast'")
+    )
+    
+    df2 <- driv_fc()
+    df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
+    df2[, 3] <- round(df2[, 3], 2)
+    
+    df_wid <- pivot_wider(df2, 1, 4, values_from = 3)
+    
+    return(df_wid)
+    
+  })
   
   output$plot_ecof2 <- renderPlotly({
     
@@ -2158,7 +2333,7 @@ server <- function(input, output, session) {#
                        chla[, 1] <= as.Date(driv_fc()[1, 1]), ]
     
     sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
-    if(input$type2 == "distribution") {
+    if(input$type2 == "Distribution") {
       
       df3 <- plyr::ddply(sub, "time", function(x) {
         quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
@@ -2174,7 +2349,7 @@ server <- function(input, output, session) {#
     }
     
     sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
-    if(input$type2 == "distribution") {
+    if(input$type2 == "Distribution") {
       
       df3 <- plyr::ddply(sub, "time", function(x) {
         quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
@@ -2192,13 +2367,13 @@ server <- function(input, output, session) {#
     txt <- data.frame(x = (chla_obs[nrow(chla_obs), 1] - 2), y = (max(chla_obs[, 2], na.rm = TRUE) + 2), label = "Today")
 
     p <- ggplot()
-    if(input$type2 == "line"){
+    if(input$type2 == "Line"){
       p <- p +
         geom_line(data = df2, aes(time, value, color = L1)) +
         scale_color_manual(values = c(rep(pair.cols[4], input$members2), cols[1])) +
         guides(color = FALSE)
     } 
-    if(input$type2 == "distribution") {
+    if(input$type2 == "Distribution") {
       p <- p +
         geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
                     alpha = 0.8) +
@@ -2216,6 +2391,7 @@ server <- function(input, output, session) {#
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "")
+    
 
     gp <- ggplotly(p, dynamicTicks = TRUE)
     for (i in 1:length(gp$x$data)){
@@ -2256,7 +2432,7 @@ server <- function(input, output, session) {#
     
     
     sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
-    # if(input$type2 == "distribution") {
+    # if(input$type2 == "Distribution") {
       
       df3 <- plyr::ddply(sub, "time", function(x) {
         quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
@@ -2274,13 +2450,13 @@ server <- function(input, output, session) {#
     txt <- data.frame(x = (new_obs[nrow(new_obs), 1] + 2.5), y = (max(new_obs[, 2], na.rm = TRUE) + 6), label = "One week later")
     
     p <- ggplot()
-    # if(input$type2 == "line"){
+    # if(input$type2 == "Line"){
     #   p <- p +
     #     geom_line(data = df2, aes(time, value, color = L1)) +
     #     scale_color_manual(values = c(rep("black", input$members2), cols[1:2])) +
     #     guides(color = FALSE)
     # } 
-    # if(input$type2 == "distribution") {
+    # if(input$type2 == "Distribution") {
       p <- p +
         geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
                     alpha = 0.8) +
@@ -2644,8 +2820,7 @@ server <- function(input, output, session) {#
   
   output$plot_ecof4 <- renderPlotly({
     
-    print("chk1")
-    
+
     # validate(
     #   need(input$members3 >= 1 & input$members3 <= 30,
     #        message = paste0("The number of members must be between 1 and 30"))
@@ -2664,8 +2839,7 @@ server <- function(input, output, session) {#
     }
     chla_obs <- chla[(chla[, 1] >= as.Date((driv_fc()[1, 1] - (7)))) &
                        chla[, 1] < as.Date((driv_fc()[1, 1] + 7)), ]
-    print("chk2")
-    
+
     
     # Make old forecast 
     sub <- driv_fc() #[as.numeric(driv_fc()$L1) <= input$members2, ]
@@ -2677,8 +2851,6 @@ server <- function(input, output, session) {#
     colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
     df3$fc_date <- as.character(df3[1, 1])
     
-    print("chk3")
-    
     
     p <- ggplot()
     p <- p +
@@ -2686,13 +2858,11 @@ server <- function(input, output, session) {#
                   alpha = 0.8) +
       geom_line(data = df3, aes(time, p50, color = "Median"))
     
-    print("chk4")
-    
     
     if(input$run_fc3 > 0) {
       sub <- new_fc()[as.numeric(new_fc()$L1) <= input$members2, ]
       
-      # if(input$type3 == "distribution") {
+      # if(input$type3 == "Distribution") {
       
       df3 <- plyr::ddply(sub, "time", function(x) {
         quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
@@ -2702,19 +2872,7 @@ server <- function(input, output, session) {#
       colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
       df3$fc_date <- as.character(df3[1, 1])
       df2 <- df3
-      # } else {
-      #   df2 <- sub
-      #   df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
-      # }
-      
-      # p <- ggplot()
-      # if(input$type3 == "line"){
-      #   p <- p +
-      #     geom_line(data = df2, aes(time, value, color = L1)) +
-      #     scale_color_manual(values = c(rep("black", (input$members3 + 1)), cols[1:2])) +
-      #     guides(color = FALSE)
-      # } 
-      # if(input$type3 == "distribution") {
+
       p <- p +
         geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date),
                     alpha = 0.8) +
@@ -2723,10 +2881,6 @@ server <- function(input, output, session) {#
         geom_line(data = df2, aes(time, p50, color = "Median")) +
         geom_vline(xintercept = (new_fc()[1, 1]), linetype = "dashed")
     }
-    
-    print("chk5")
-    
-    
     
     # }
     p <- p + 
@@ -2931,14 +3085,44 @@ server <- function(input, output, session) {#
   
 
   # Bookmarking shiny app ----
+  # observe({
+  #   # Trigger this observer every time an input changes
+  #   # print("input")
+  #   reactiveValuesToList(input)
+  #   session$doBookmark()
+  # })
+  # onBookmarked(function(url) {
+  #   updateQueryString(url)
+  # })
+  
   observe({
-    # Trigger this observer every time an input changes
-    # print("input")
-    reactiveValuesToList(input)
+    dt_proxy <- dataTableProxy("table01")
+    selectRows(dt_proxy, input$row_num)
+  })
+  
+  # Need to exclude the buttons from themselves being bookmarked
+  setBookmarkExclude(c("bookmark1"))
+  
+  # Trigger bookmarking with either button
+  observeEvent(input$bookmark1, {
     session$doBookmark()
   })
-  onBookmarked(function(url) {
-    updateQueryString(url)
+  
+  # Save extra values in state$values when we bookmark
+  onBookmark(function(state) {
+    state$values$sel_row <- input$table01_rows_selected
+  })
+  
+  # Read values from state$values when we restore
+  onRestore(function(state) {
+    updateTabsetPanel(session, "maintab",
+                      selected = "mtab4")
+  })
+  
+  onRestored(function(state) {
+    
+    updateSelectizeInput(session, "row_num", selected = state$values$sel_row)
+    
   })
   
   # output$report <- downloadHandler(
@@ -2963,5 +3147,5 @@ server <- function(input, output, session) {#
   # )
   
 }
-enableBookmarking("url") # Needed for bookmarking currently not working
-shinyApp(ui, server)
+# enableBookmarking("url") # Needed for bookmarking currently not working
+shinyApp(ui, server, enableBookmarking = "url")
