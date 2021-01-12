@@ -148,6 +148,35 @@ q7_table <- data.frame(
 
 mod_choices <- c("Negative", "No change", "Positive")
 
+wid_pct3 <- "80%"
+# q13a_table <- data.frame(
+#   Value = c(as.character(div(style="margin-bottom: 0px; padding-bottom: 0px;", numericInput("13a_graz", "", 0, width = wid_pct3))), 
+#            as.character(numericInput("13a_mort", "", 0, width = wid_pct3)),
+#            as.character(numericInput("13a_nutri", "", 0, width = wid_pct3)))
+# )
+# 
+# q13b_table <- data.frame(
+#   Value = c(as.character(numericInput("13b_graz", "", 0, width = wid_pct3)), 
+#             as.character(numericInput("13b_mort", "", 0, width = wid_pct3)),
+#             as.character(numericInput("13b_nutri", "", 0, width = wid_pct3)))
+# )
+# 
+# q14_table <- data.frame(
+#   Value = c(as.character(numericInput("14_graz", "", 0, width = wid_pct3)), 
+#             as.character(numericInput("14_mort", "", 0, width = wid_pct3)),
+#             as.character(numericInput("14_nutri", "", 0, width = wid_pct3)))
+# )
+
+
+par_df <- data.frame(
+  "Phytos" = rep(NA, 5),
+  "Zoops" = rep(NA, 5),
+  "Nutrients" = rep(NA, 5),
+  "Grazing" = rep(NA, 5),
+  "Mortality" = rep(NA, 5),
+  "Uptake" = rep(NA, 5), row.names = c("Q12", "Q13a", "Q13b", "Q14", "Q15")
+)
+
 
 ui <- function(req) {
   
@@ -188,6 +217,9 @@ ui <- function(req) {
                         tags$style(HTML("
                         #first {
                         border: 4px double red;
+                        }
+                        #13a_graz {
+                        margin-bottom: 10px;
                         }
                         #bla_border {
                         border: 2px solid black;
@@ -501,7 +533,7 @@ border-color: #FFF;
                                                                               onInitialize = I('function() { this.setValue(""); }')),
                                                                             )
                                                              ),
-                                            DT::DTOutput("table01"),
+                                            DTOutput("table01"),
                                             p("Click below to see the latest image from the webcam on site (this may take 10-30 seconds)."),
                                             actionButton("view_webcam", label = "View live feed")
                                             
@@ -790,7 +822,13 @@ border-color: #FFF;
                                                         labels = NULL,
                                                         input_id = "rank_list_3"
                                                       )
-                                                    )
+                                                    ),
+                                                    br(),
+                                                    h4(quest["q11", 1]),
+                                                    radioButtons("q11a", quest["q11a", 1], choices = mod_choices, inline = TRUE),
+                                                    radioButtons("q11b", quest["q11b", 1], choices = mod_choices, inline = TRUE),
+                                                    radioButtons("q11c", quest["q11c", 1], choices = mod_choices, inline = TRUE),
+                                                    br()
                                                   ),
                                                   column(2,
                                                          wellPanel(
@@ -814,10 +852,10 @@ border-color: #FFF;
                                               h3("Objective 5 - Test scenarios and calibrate model"),
                                               p(module_text["obj_05", ])
                                             ),
-                                            p("We will use observed data from the selected site on the 'Get Data & Build Model' tab to drive the NPZ model."),
-                                            p("Before running the model, Answer Q 12."),
+                                            p("You will use observed data from the selected site on the 'Get Data & Build Model' tab to drive the NPZ model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs.")
+                                            # p("Before running the model, Answer Q 12."),
                                             # p("You will need to scroll past the two panels below to find the controls for running the model."),
-                                            p("Run the scenarios described in Q 13 and describe how the model responds.")
+                                            # p("Run the scenarios described in Q 13 and describe how the model responds.")
                                             )
                                      ),
                                    fluidRow(
@@ -845,16 +883,11 @@ border-color: #FFF;
                                    ),
                                    fluidRow(
                                      
-                                     column(width = 3,
+                                     column(3,
                                             # wellPanel(
                                             h3("Inputs"),
                                             checkboxGroupInput("mod_sens", "Select which variables are used in the model:",
-                                                               choices = list("Temperature"))
-                                            # )
-                                            ,
-                                            # wellPanel(
-                                     ),
-                                     column(3,
+                                                               choices = list("Temperature")),
                                             h3("Initial conditions"),
                                             p("Return to the 'Get Data & Build Model' tab to find suitable values to input for each of the states."),
                                             p(tags$b("Phytoplankton")),
@@ -869,7 +902,10 @@ border-color: #FFF;
                                             p(tags$b("Nutrients")),
                                             sliderInput("nut_init", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
                                                                                 div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.01, max = 20, step = 0.1, value = 9),
+                                                        min = 0.01, max = 20, step = 0.1, value = 9)
+                                            # )
+                                            ,
+                                            # wellPanel(
                                      ),
                                      column(3,
                                             h3("Parameters"),
@@ -893,28 +929,64 @@ border-color: #FFF;
                                                                                   div(style='float:left;', 'Low uptake'), 
                                                                                   div(style='float:right;', 'High uptake')),
                                                         min = 0.1, max = 1.7, value = 0.8, step = 0.1)
+                                            
                                      ),
-                                     column(3,
-                                            wellPanel(
-                                              p("After running the scenarios in Q 13, adjust the model parameters to get the best fit with the pattern seen in the observed data. Not the values into the table in Q 14."),
-                                              # p("Save the plot output"),
-                                              checkboxInput("add_obs", "Add observations"),
-                                              p("How does the model output compare to in-lake observations? Here are some things you should look out for:"),
-                                              tags$ol(
-                                                tags$li("Is the model in the same range as the observations?"),
-                                                tags$li("Does it capture the seasonal patterns?"),
-                                                tags$li("Does the model simulate events seen as spikes?")
-                                              ),
-                                              p("Can you think of any potential reasons why the model does not do so well"),
-                                              p("We will explore some of these potential reasons later on.")
+                                     column(6,
+                                            p("For Q12-15 you are required to save your model setup which includes the initial conditions and parameters. Add your parameters by clicking on the target row in the table and then the 'Save model setup' button below."),
+                                            DTOutput("save_par", width = "10%"),
+                                            br(),
+                                            actionButton("save_params", "Save model setup", icon = icon("save")),
+                                            br(), br(), 
+                                            box(id = "box8", width = 12, status = "primary",
+                                                solidHeader = TRUE,
+                                                fluidRow(
+                                                  column(12, offset = 1,
+                                                         h3("Questions")
+                                                         ),
+                                                  column(5, offset = 1,
+                                                         textAreaInput2(inputId = "q12", label = quest["q12", 1] , width = "90%"),
+                                                         br(),
+                                                         p(tags$b(quest["q13", 1])),
+                                                         textAreaInput2(inputId = "q13a", label = quest["q13a", 1] , width = "90%"),
+                                                         textAreaInput2(inputId = "q13b", label = quest["q13b", 1] , width = "90%"),
+                                                         # DTOutput('q13b_tab'),
+                                                         br()
+                                                  ), column(5,
+                                                            p(tags$b(quest["q14", 1])),
+                                                            # DTOutput('q14_tab'),
+                                                            textAreaInput2(inputId = "q14a", label = quest["q14a", 1] , width = "90%"),
+                                                            textAreaInput2(inputId = "q14b", label = quest["q14b", 1] , width = "90%"),
+                                                            br(),
+                                                            p(tags$b(quest["q15", 1])),
+                                                            checkboxInput("add_obs", "Add observations"),
+                                                            # DTOutput('q15_tab'),
+                                                            br()
+                                                            )
+                                                )
                                             ),
+                                            br(),
+                                            p("How does the model output compare to in-lake observations? Here are some things you should look out for:"),
+                                            tags$ol(
+                                              tags$li("Is the model in the same range as the observations?"),
+                                              tags$li("Does it capture the seasonal patterns?"),
+                                              tags$li("Does the model simulate events seen as spikes?")
+                                            ),
+                                            p("Can you think of any potential reasons why the model does not do so well"),
+                                            p("We will explore some of these potential reasons later on.")
+                                            
+                                            # wellPanel(
+                                              # p("After running the scenarios in Q 13, adjust the model parameters to get the best fit with the pattern seen in the observed data. Not the values into the table in Q 14."),
+                                              # # p("Save the plot output"),
+                                              
+                                              
+                                            # ),
                                      ),
                                    ),
                                    fluidRow(
                                      column(12,
                                             h4("Next step"),
                                             p("Now we have built our model we are going to use this to forecast short-term primary productivity"))
-                                   )
+                                     )
                                    )
                           
                           ),
@@ -2089,6 +2161,34 @@ server <- function(input, output, session) {#
     return(gp)
   })
   
+  # Input table for q13 ----
+  output$q13a_tab <- DT::renderDT(
+    q13a_table, selection = "none", 
+    options = list(searching = FALSE, paging = FALSE, ordering = FALSE, dom = "t",
+                   height = 500, scrollY = TRUE, autoWidth=TRUE, scrollX = TRUE), 
+    server = FALSE, escape = FALSE, rownames= c("Grazing", "Mortality", "Uptake"), colnames = c("Value"), 
+    callback = JS("table.rows().every(function(i, tab, row) {
+                  var $this = $(this.node());
+                  $this.attr('id', this.data()[0]);
+                  $this.addClass('shiny-input-container');
+                  });
+                  Shiny.unbindAll(table.table().node());
+                  Shiny.bindAll(table.table().node());")
+  )
+  
+  output$q13b_tab <- DT::renderDT(
+    q13b_table, selection = "none", 
+    options = list(searching = FALSE, paging = FALSE, ordering = FALSE, dom = "t"), 
+    server = FALSE, escape = FALSE, rownames= c("Grazing", "Mortality", "Uptake"), colnames = c("Value"), 
+    callback = JS("table.rows().every(function(i, tab, row) {
+                  var $this = $(this.node());
+                  $this.attr('id', this.data()[0]);
+                  $this.addClass('shiny-input-container');
+                  });
+                  Shiny.unbindAll(table.table().node());
+                  Shiny.bindAll(table.table().node());")
+  )
+  
   
   # Slickr model output
   output$slck_model <- renderSlickR({
@@ -2317,6 +2417,27 @@ server <- function(input, output, session) {#
     return(ggplotly(p, dynamicTicks = TRUE))
     
   })
+  
+  #** Save parameters fro each scenario
+  output$save_par <- renderDT(par_save(), selection = "single",
+                              options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t", autoWidth = TRUE,
+                                             columnDefs = list(list(width = '10%', targets = "_all"))
+                                             ),
+                              server = FALSE, escape = FALSE)
+  
+  # output$save_par <- renderTable(par_save())
+  
+  par_save <- eventReactive(input$save_params, {
+    if(input$save_params > 0) {
+      par_df[input$save_par_rows_selected, ] <<- c(input$phy_init, input$zoo_init, input$nut_init, input$graz_rate,
+                                                   input$mort_rate, input$nut_uptake)
+    }
+    if(input$save_params == 0) {
+      par_df[1, ] <<- c(input$phy_init, input$zoo_init, input$nut_init, input$graz_rate,
+                        input$mort_rate, input$nut_uptake)
+    }
+    par_df
+    }, ignoreNULL = FALSE)
   
   # Forecast Plots  ----
   #* Input Uncertainty ====
