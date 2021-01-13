@@ -4,13 +4,72 @@ output:
    word_document:
     reference_docx: report-style.docx
 params:
-  name: NA
-  id_number: NA
-  a1: NA
-  a2: NA
-  a3: NA
-  a4: NA
-  a5: "Incomplete"
+  name: "Incomplete"
+  id_number: "Incomplete"
+  a1: "Incomplete"
+  a2: "Incomplete"
+  a3: "Incomplete"
+  a4a: "Incomplete"
+  a4b: "Incomplete"
+  a4c: "Incomplete"
+  a4d: "Incomplete"
+  a5a: "Incomplete"
+  a5b: "Incomplete"
+  a5c: "Incomplete"
+  a5d: "Incomplete"
+  a5e: "Incomplete"
+  a5f: "Incomplete"
+  a6a_mean: "Incomplete"
+  a6a_min: "Incomplete"
+  a6a_max: "Incomplete"
+  a6b_mean: "Incomplete"
+  a6b_min: "Incomplete"
+  a6b_max: "Incomplete"
+  a6c_mean: "Incomplete"
+  a6c_min: "Incomplete"
+  a6c_max: "Incomplete"
+  a6d_mean: "Incomplete"
+  a6d_min: "Incomplete"
+  a6d_max: "Incomplete"
+  a6e_mean: "Incomplete"
+  a6e_min: "Incomplete"
+  a6e_max: "Incomplete"
+  a7a: "Incomplete"
+  a7b: "Incomplete"
+  a7c: "Incomplete"
+  a7d: "Incomplete"
+  a8: "Incomplete"
+  a9a: "Incomplete"
+  a9b: "Incomplete"
+  a9c: "Incomplete"
+  a10_states: "Incomplete"
+  a10_pars: "Incomplete"
+  a11a: "Incomplete"
+  a11b: "Incomplete"
+  a11c: "Incomplete"
+  a12: "Incomplete"
+  a13a: "Incomplete"
+  a13b: "Incomplete"
+  a14a: "Incomplete"
+  a14b: "Incomplete"
+  a15: "Incomplete"
+  a16: "Incomplete"
+  a17: "Incomplete"
+  a18a: "Incomplete"
+  a18b: "Incomplete"
+  a18c: "Incomplete"
+  a19: "Incomplete"
+  a20: "Incomplete"
+  a21: "Incomplete"
+  a22: "Incomplete"
+  a23: "Incomplete"
+  a24: "Incomplete"
+  a25: "Incomplete"
+  a26a: "Incomplete"
+  a26b: "Incomplete"
+  a26c: "Incomplete"
+  a27: "Incomplete"
+  save_pars: "Incomplete"
 ---
 
 ```{r setup, include=FALSE}
@@ -21,6 +80,29 @@ time <- Sys.time()
 
 # Read in assessment questions
 quest <- read.csv("data/handout_questions.csv", row.names = 1)
+
+if(file.exists(params$save_pars)) {
+  par_tab <- read.csv(params$save_pars)
+} else {
+  par_tab <- data.frame(
+  "Phytos" = rep(NA, 5),
+  "Zoops" = rep(NA, 5),
+  "Nutrients" = rep(NA, 5),
+  "Grazing" = rep(NA, 5),
+  "Mortality" = rep(NA, 5),
+  "Uptake" = rep(NA, 5), row.names = c("Q12", "Q13a", "Q13b", "Q14", "Q15")
+)
+}
+
+
+# save_pars <- data.frame(
+#   "Phytos" = rep(NA, 5),
+#   "Zoops" = rep(NA, 5),
+#   "Nutrients" = rep(NA, 5),
+#   "Grazing" = rep(NA, 5),
+#   "Mortality" = rep(NA, 5),
+#   "Uptake" = rep(NA, 5), row.names = c("Q12", "Q13a", "Q13b", "Q14", "Q15")
+# )
 
 
 ```
@@ -33,22 +115,273 @@ quest <- read.csv("data/handout_questions.csv", row.names = 1)
 #### Completed on: `r time`
 ***
 
-### Assessment Answers
-#### Activity A
-`r quest["q1", 1]`  
+# **Macrosystems EDDIE Module5: Introduction to Ecological Forecasting**
+
+
+# Learning Objectives:
+
+By the end of this module, you will be able to:
+
+- Describe an ecological forecast and the iterative forecasting cycle
+- Explore and visualize NEON data using an R Shiny interface
+- Construct an ecological model to generate forecasts of ecosystem primary productivity with uncertainty
+- Adjust model parameters and inputs to study how they affect forecasts relative to observations
+- Compare productivity forecasts among NEON sites in different regions
+
+# Why macrosystems ecology and ecological forecasting?
+
+**Macrosystems ecology** is the study of ecological dynamics at multiple interacting spatial and temporal scales (e.g., Heffernan et al. 2014). For example, _global_ climate change can interact with _local_ land-use activities to control how an ecosystem changes over the next decades. Macrosystems ecology recently emerged as a new sub-discipline of ecology to study ecosystems and ecological communities around the globe that are changing at an unprecedented rate because of human activities (IPCC 2013). The responses of ecosystems and communities are complex, non-linear, and driven by feedbacks across local, regional, and global scales (Heffernan et al. 2014). These characteristics necessitate novel approaches for making predictions about how systems may change to improve both our understanding of ecological phenomena as well as inform resource management.
+
+**Forecasting** is a tool that can be used for understanding and predicting macrosystems dynamics. To anticipate and prepare for increased variability in populations, communities, and ecosystems, there is a pressing need to know the future state of ecological systems across space and time (Dietze et al. 2018). Ecological forecasting is an emerging approach which provides an estimate of the future state of an ecological system with uncertainty, allowing society to prepare for changes in important ecosystem services. Ecological forecasts are a powerful test of the scientific method because ecologists make a hypothesis of how an ecological system works; embed their hypothesis in a model; use the model to make a forecast of future conditions; and then when observations become available, assess the accuracy of their forecast, which indicates if their hypothesis is supported or needs to be updated. Forecasts that are effectively communicated to the public and managers will be most useful for aiding decision-making. Consequently, macrosystems ecologists are increasingly using ecological forecasts to predict how ecosystems are changing over space and time (Dietze and Lynch 2019).
+\
+In this module, students will apply the iterative forecasting cycle to develop an ecological forecast for a National Ecological Observation Network (NEON) site of their choice. This module will introduce students to the basic components of an ecological forecast; how a forecasting model is constructed; how changes to model inputs affect forecast uncertainty; and how productivity forecasts vary across ecoclimatic domains.
+
+**Module overview:**
+
+1. Introduction to Ecological Forecasting: pre-readings and PowerPoint in class
+2. Activity A: Visualize data from a selected NEON site and build an ecological model
+3. Activity B: Generate a forecast and work through each stage of the iterative forecast cycle
+4. Activity C: Apply a forecast to a different NEON site and compare forecasts among sites
+
+# Today's focal question: _What is an Ecological Forecast?_
+
+To address this question, we will introduce ecological forecasts and the iterative forecasting cycle. We will build a model that forecasts aquatic ecosystem productivity in response to multiple environmental factors (e.g., weather, herbivory). We will also examine the uncertainty associated with our forecast predictions, which can originate from multiple sources. In this module, we will use our productivity model to examine how forecast uncertainty is related to driver data, model parameters, and initial conditions. We will then compare productivity forecasts for ecosystems in different ecoclimatic regions to understand how forecasts can vary both over time and space.
+
+We will be using ecological data collected by the National Ecological Observation Network (NEON) to tackle this question. NEON is a continental-scale observatory designed to collect publicly-available, long-term ecological data to monitor changing ecosystems across the U.S. Primary productivity in lakes is our focal forecast variable as it is a key indicator of ecosystem health and can change rapidly in response to environmental drivers. We will use measurements of chlorophyll-a as a proxy measurement of aquatic primary productivity.
+
+# R Shiny App:
+
+The lesson content is hosted on an R Shiny App at [https://tadhg-moore.shinyapps.io/mod5-test/](https://tadhg-moore.shinyapps.io/mod5-test/).  
+This can be accessed via any internet browser and allows you to navigate through the lesson via this app. You will fill in the questions below on this handout as you complete the lesson activities.
+
+# Optional pre-class readings and video:
+
+Webpages:
+
+- [NOAA Ecological Forecasts](https://oceanservice.noaa.gov/ecoforecasting/noaa.html#:~:text=What%20is%20ecological%20forecasting%3F,%2C%20pollution%2C%20or%20habitat%20change.)
+- [Ecological Forecasting Initiative](https://ecoforecast.org/about/)
+
+Articles:
+
+- Dietze, M. and Lynch, H. 2019. Forecasting a bright future for ecology. _Frontiers in Ecology and the Environment_, _17_(1), 3. [https://doi.org/10.1002/fee.1994](https://doi.org/10.1002/fee.1994)
+- Dietze, M.C., et al. 2018. Iterative near-term ecological forecasting: Needs, opportunities, and challenges. Proceedings of the National Academy of Sciences, 115(7), 1424–1432. [https://doi.org/10.1073/pnas.1710231115](https://doi.org/10.1073/pnas.1710231115)
+- Jackson, L.J., Trebitz, A.S., &amp; Cottingham, K.L. 2000. An introduction to the practice of ecological modeling. BioScience, 50(8), 694. [https://doi.org/10.1641/0006-3568(2000)050[0694:aittpo]2.0.co;2](https://doi.org/10.1641/0006-3568(2000)050%5B0694:aittpo%5D2.0.co;2)
+
+Videos:
+
+- NEON&#39;s [Ecological Forecast: The Science of Predicting Ecosystems](https://www.youtube.com/watch?v=Lgi_e7N-C8E&amp;t=196s&amp;pbjreload=101)
+- Fundamentals of Ecological Forecasting Series: [Why Forecast?](https://www.youtube.com/watch?v=kq0DTcotpA0&amp;list=PLLWiknuNGd50Lc3rft4kFPc_oxAhiQ-6s&amp;index=1)
+
+The questions you must answer are embedded in the Shiny interface. You can answer the questions there and generate a report at the end or you can fill out the questions within this document.
+
+# Think about it!
+
+With a partner, read through the table below, and answer the following questions:
+
+1. How have you used forecasts (ecological, political, sports, any kind!) before in your day-to-day life?  
 **Answer:** `r params$a1`  
-\
-`r quest["q2", 1]`  
+
+2. How can ecological forecasts improve both natural resource management and ecological understanding?  
 **Answer:** `r params$a2`  
+
+3. How do you think forecasts of freshwater primary productivity will differ between warmer lakes and colder lakes?  
+**Answer:** `r params$a3`   
+
+Now navigate to the Shiny interface to answer the rest of the questions.
+
+# Exploration
+
+4. Choose one of the ecological forecasts below and visit their website. Answer the questions below.
+    a.  What ecological variable(s) are being forecasted?  
+    **Answer:** `r params$a4a` &nbsp;
+    b.  What type of ecosystem are the variables part of?  
+    **Answer:** `r params$a4b` &nbsp;
+    c.  Why does this forecast exist?  
+    **Answer:** `r params$a4c` &nbsp;
+    d.  Describe the way(s) in which the forecast is visualized.
+    **Answer:** `r params$a4d` &nbsp;
+
+# Activity A: Get Data &amp; Build Model
+
+**Objective 1: Select and view site**
+
+5. Fill out information about your selected NEON site (Note: you may need to navigate to the site website to find the information):  
+    a. Name of Site: `r params$a5a`&nbsp;
+    b. Four-letter NEON site identifier (ID): `r params$a5b`&nbsp;
+    c. Latitude: `r params$a5c`&nbsp;
+    d. Longitude: `r params$a5d`&nbsp;
+    e. Lake area (km^2^): `r params$a5e`&nbsp;
+
 \
-`r quest["q3", 1]`  
-**Answer:** `r params$a3`  
+
+**Objective 2: Explore data**
+
+6. Fill out the table below with the description of site variables:
+
+Table 1. 6)	Fill out the table below with the description of site variables:  
+
+| **Variable** | **Mean** | **Minimum** | **Maximum** |
+| --- | --- | --- | --- |
+| Air temperature | `r params$a6a_mean` | `r params$a6a_min` | `r params$a6a_max` |
+| Water temperature profile | `r params$a6b_mean` | `r params$a6b_min` | `r params$a6b_max` |
+| Nitrate sensor | `r params$a6c_mean` | `r params$a6c_min` | `r params$a6c_max` |
+| Underwater PAR | `r params$a6d_mean` | `r params$a6d_min` | `r params$a6d_max` |
+| Chlorophyll-a | `r params$a6e_mean` | `r params$a6e_min` | `r params$a6e_max` |
+
 \
-`r quest["q4", 1]`  
-**Answer:** `r params$a4`  
+
+**Objective 3: Explore variable relationships**
+
+7. Describe the effect of each of the following variables on chlorophyll-a. Chlorophyll-a is used as a proxy measurement for phytoplankton concentration in aquatic environments.  
 \
-`r quest["q5", 1]`  
-**Answer:** `r params$a5`  
+
+Table 2. Description of effect of each variable on chlorophyll-a
+
+| **Variable** | **Relationship** |
+| --- | --- |
+| Air temperature | `r params$a7a` |
+| Water temperature profile | `r params$a7b` |
+| Nitrate sensor | `r params$a7c` |
+| Underwater PAR | `r params$a7d` |
 \
+8. Were there any other relationships you found at your site? If so, please describe below.  
+**Answer:** `r params$a8`  
+
+\
+**Objective 4: Understand model**
+
+9. Circle how you envision each driving variable to affect productivity:
+
+  **Water temperature:** `r params$a9a`  
+  **Incoming light:** `r params$a9b`  
+  **Available nutrients:** `r params$a9c`  
+  
+\
+10. A state variable is one of the set of variables that are used to describe the mathematical &quot;state&quot; of a dynamical system. A parameter is a value introduced to represent properties of nature which are difficult to directly measure. Classify the following as either a state variable or a parameter by circling the corresponding option.
+
+**State variables:** `r params$a10_states`  
+**Parameters:** `r params$a10_pars`  
+\
+
+11. We are using chlorophyll-a as a proxy measurement for phytoplankton concentration which is a measure of aquatic primary productivity. Circle how you envision each interaction to affect chlorophyll-a concentrations:
+
+  **Grazing of phytoplankton:** `r params$a11a`  
+  **Zooplankton mortality:** `r params$a11b`  
+  **Nutrient uptake by phytoplankton:** `r params$a11c`  
+\
+**Objective 5: Build model**
+
+```{r echo = FALSE, results = "asis"}
+library(knitr)
+kable(par_tab, caption = "Table 3. Parameters used in Q12-15")
+
+```
+\
+
+12. Using the default model, simulate the baseline model scenario. Describe the pattern of chlorophyll-a concentration throughout the year?  
+
+
+**Answer:** `r params$a12`   
+\
+
+13. Change the parameters to simulate the following scenarios, and describe the chlorophyll-a responses for:
+    a.  Medium grazing, medium mortality and high uptake  
+    **Answer:** `r params$a13a`  
+    b.  High grazing, high mortality and low uptake  
+    **Answer:** `r params$a13b`  
+    \
+
+
+14. Develop a scenario (e.g. the model is sensitive to light, mortality = 0.7, etc.) and hypothesize how you think chlorophyll-a concentrations will respond _prior_ to running the simulation.
+    a.  Write your hypothesis of how chlorophyll-a will respond to your scenario here:
+    **Answer:** `r params$a14a`  
+    b.  Run your model scenario. Was your hypothesis supported or refuted? Describe what you observed:
+    **Answer:** `r params$a14b`  
+\
+15. Add the observations to the plot. Calibrate your model by selecting sensitive variables and adjusting the parameters until they best fit the observed data. Record your settings in Table 3.
+\
+
+# Activity B: Forecast!
+
+**Objective 6: Examine uncertainty**  
+\
+16. What is forecast uncertainty? How is forecast uncertainty quantified?  
+**Answer:** `r params$a16`
+\
+
+17. Define what is meant by the term **ensemble modeling**:  
+**Answer:** `r params$a17`
+\
+
+18. Inspect the weather forecast data for the site you have chosen:
+    a.  How does increasing the number of ensemble members in the weather forecast affect the size of the uncertainty in future weather?  
+    **Answer:** `r params$a18a`  
+    b.  Which type of visualization (data table, line or distribution) do you think visualizes the forecast uncertainty best?  
+    **Answer:** `r params$a18b`  
+    c.  Using the interactivity of the weather forecast plot, compare the air temperature forecasts for the first week (Sep 25 – Oct 1) to the second week (Oct 2 – 8). How does the forecast uncertainty change between the two periods?  
+    **Answer:** `r params$a18c`  
+    \
+
+
+**Objective 7: Forecast**
+
+19. How does driver uncertainty affect the forecast, specifically, does an increase in the number of members increase or decrease the range of uncertainty in the forecasts? How does that change over time?  
+**Answer:** `r params$a19`
+\
+
+20. What are the main sources of uncertainty in your ecological forecast?  
+**Answer:** `r params$a20`
+\
+
+**Objective 8: Communicate forecast**
+
+21. Describe the forecast of primary productivity in words such that it could be understood by a fellow classmate. How would you describe this chlorophyll-a forecast to a lake manager?  
+**Answer:** `r params$a21`
+\
+
+**Objective 9: Assess forecast**
+
+22. Why do you think it is important to assess the forecast? How often should forecast assessment occur?  
+**Answer:** `r params$a22`
+\
+
+**Objective 10: Update model**
+
+23. Did your forecast improve when you updated your model parameters? Why do you think it is important to update the model?  
+**Answer:** `r params$a23`
+\
+
+**Objective 11: Next forecast**
+
+24. Describe the new forecast of primary productivity which is generated? How do you think it will compare when we observe the next round of data?  
+**Answer:** `r params$a24`
+\
+
+25. Why is the forecast cycle described as &quot;iterative&quot; (e.g. repetition of a process)?  
+**Answer:** `r params$a25`
+\
+
+# Activity C: Scale
+
+**Objective 12: Compare productivity forecasts between two different NEON sites**
+
+26. Repeat Activity A and B with a different NEON site (ideally from a different region).
+    a.  Apply the same model scenario (with the same model structure and parameters) which you developed in Q14 to this new site. How do you expect chlorophyll-a concentrations will respond _prior_ to running the simulation?  
+    **Answer:** `r params$a26a`  
+    b.  Was your hypothesis supported or refuted? Why?  
+    **Answer:** `r params$a26b`  
+    c.  Revisit your hypothesis from page 3 Q3, what did you find out about the different productivity forecasts in warmer vs colder sites?  
+    **Answer:** `r params$a26c`  
+\
+
+27. Repeat Q16-25 with the new site. Does forecast uncertainty differ at this site compared to the first selected site? Why do you think that is?  
+**Answer:** `r params$a27`  
+\
+
+
+This module was developed by Moore, T.N., C.C. Carey, and R.Q. Thomas. 23 January 2021. Macrosystems EDDIE: Introduction to Ecological Forecasting. Macrosystems EDDIE Module 5, Version 1. http://module5.macrosystemseddie.org. Module development was supported by NSF grants DEB-1926050 and DBI-1933016.
+
+This document last modified: 13 January 2021 by TNM.
+
 
 
