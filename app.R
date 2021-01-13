@@ -121,29 +121,29 @@ yini <- c(
 # code from https://stackoverflow.com/questions/46707434/how-to-have-table-in-shiny-filled-by-user
 wid_pct <- "80%"
 q6_table <- data.frame(
-  mean = c(as.character(numericInput("6a_mean", "", 0, width = wid_pct)), 
-           as.character(numericInput("6b_mean", "", 0, width = wid_pct)),
-           as.character(numericInput("6c_mean", "", 0, width = wid_pct)),
-           as.character(numericInput("6d_mean", "", 0, width = wid_pct)),
-           as.character(numericInput("6e_mean", "", 0, width = wid_pct))),
-  min = c(as.character(numericInput("6a_min", "", 0, width = wid_pct)), 
-          as.character(numericInput("6b_min", "", 0, width = wid_pct)),
-          as.character(numericInput("6c_min", "", 0, width = wid_pct)),
-          as.character(numericInput("6d_min", "", 0, width = wid_pct)),
-          as.character(numericInput("6e_min", "", 0, width = wid_pct))),
-  max = c(as.character(numericInput("6a_max", "", 0, width = wid_pct)), 
-          as.character(numericInput("6b_max", "", 0, width = wid_pct)),
-          as.character(numericInput("6c_max", "", 0, width = wid_pct)),
-          as.character(numericInput("6d_max", "", 0, width = wid_pct)),
-          as.character(numericInput("6e_max", "", 0, width = wid_pct)))
+  mean = c(as.character(numericInput("q6a_mean", "", 0, width = wid_pct)), 
+           as.character(numericInput("q6b_mean", "", 0, width = wid_pct)),
+           as.character(numericInput("q6c_mean", "", 0, width = wid_pct)),
+           as.character(numericInput("q6d_mean", "", 0, width = wid_pct)),
+           as.character(numericInput("q6e_mean", "", 0, width = wid_pct))),
+  min = c(as.character(numericInput("q6a_min", "", 0, width = wid_pct)), 
+          as.character(numericInput("q6b_min", "", 0, width = wid_pct)),
+          as.character(numericInput("q6c_min", "", 0, width = wid_pct)),
+          as.character(numericInput("q6d_min", "", 0, width = wid_pct)),
+          as.character(numericInput("q6e_min", "", 0, width = wid_pct))),
+  max = c(as.character(numericInput("q6a_max", "", 0, width = wid_pct)), 
+          as.character(numericInput("q6b_max", "", 0, width = wid_pct)),
+          as.character(numericInput("q6c_max", "", 0, width = wid_pct)),
+          as.character(numericInput("q6d_max", "", 0, width = wid_pct)),
+          as.character(numericInput("q6e_max", "", 0, width = wid_pct)))
 )
 
 wid_pct2 <- "100%"
 q7_table <- data.frame(
   relationship = c(as.character(textAreaInput(inputId = "q7a", "" , width = wid_pct2)),
-                   as.character(textAreaInput(inputId = "q7a", "" , width = wid_pct2)), 
-                   as.character(textAreaInput(inputId = "q7a", "" , width = wid_pct2)), 
-                   as.character(textAreaInput(inputId = "q7a", "" , width = wid_pct2)))
+                   as.character(textAreaInput(inputId = "q7b", "" , width = wid_pct2)), 
+                   as.character(textAreaInput(inputId = "q7c", "" , width = wid_pct2)), 
+                   as.character(textAreaInput(inputId = "q7d", "" , width = wid_pct2)))
 )
 
 mod_choices <- c("Negative", "No change", "Positive")
@@ -719,7 +719,7 @@ border-color: #FFF;
                                                          DTOutput('q7_tab'),
                                                          br(),
                                                          h4(quest["q8", 1]),
-                                                         textAreaInput2(inputId = "q8", label = quest["q8", 1], width = "90%"),
+                                                         textAreaInput2(inputId = "q8", label = "", width = "90%"),
                                                          br()
                                                          )
                                                   )
@@ -1075,13 +1075,33 @@ border-color: #FFF;
                                      ),
                                      column(6,
                                             # br(), br(),
-                                            p(id = "txt_j", "Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS", target = "_blank"), " forecast."),
-                                            p(id = "txt_j", "Inspect the different meteorological outputs. You can adjust the number of members, which is the number of forecasts and also how it is visualized. A line plot shows each individual member while the distribution calculates the median (represented as a solid line) and the 95th percentile (represented as a shaded polygon)."),
+                                           
                                             )
                                      ),
+                                   hr(),
+                                   fluidRow(
+                                     column(10, align = "left",
+                                            box(id = "box9", width = 12, status = "primary",
+                                                solidHeader = TRUE,
+                                                fluidRow(
+                                                  column(10, offset = 1,
+                                                         h3("Questions"),
+                                                         h4(quest["q16", 1]),
+                                                         textAreaInput2(inputId = "q16", label = "", width = "90%"),
+                                                         h4(quest["q17", 1]),
+                                                         textAreaInput2(inputId = "q17", label = "", width = "90%"),
+                                                         br()
+                                                  )
+                                                )
+                                            )
+                                     )
+                                   ),
+                                   hr(),
                                    fluidRow(
                                      column(2,
-                                            br(),
+                                            h3("Explore Weather Forecast"),
+                                            p(id = "txt_j", "Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS", target = "_blank"), " forecast."),
+                                            p(id = "txt_j", "Inspect the different meteorological outputs. You can adjust the number of members, which is the number of forecasts and also how it is visualized. A line plot shows each individual member while the distribution calculates the median (represented as a solid line) and the 95th percentile (represented as a shaded polygon)."),
                                             actionButton('load_fc', "Load Forecast", icon = icon("download")), br(),
                                             # actionButton('plot_fc', "Plot Forecast!", icon = icon("chart-line")),
                                             wellPanel(
@@ -1102,12 +1122,28 @@ border-color: #FFF;
                                                                plotlyOutput("fc_plot")
                                                                )
                                               )
+                                            )
+                                     ),
+                                   hr(),
+                                   fluidRow(
+                                     column(10, align = "left",
+                                            box(id = "box10", width = 12, status = "primary",
+                                                solidHeader = TRUE,
+                                                fluidRow(
+                                                  column(10, offset = 1,
+                                                         h3("Questions"),
+                                                         h4(quest["q18", 1]),
+                                                         textAreaInput2(inputId = "q18a", label = quest["q18a", 1], width = "90%"),
+                                                         textAreaInput2(inputId = "q18b", label = quest["q18b", 1], width = "90%"),
+                                                         textAreaInput2(inputId = "q18c", label = quest["q18c", 1], width = "90%"),
+                                                         br()
+                                                  )
+                                                )
+                                            )
                                      )
                                    ),
-                                   fluidRow(
-                                     column(12,
-                                            p("Answer questions 18-20 based on the weather forecast data."))
-                                   )
+                                   hr(),
+                                   
                           ),
                           tabPanel(title = "Objective 7 - Forecast", value = "obj7",
                                    #* Objective 7 - Run Forecast ====
@@ -1181,13 +1217,33 @@ border-color: #FFF;
                                                                DTOutput("viz_output2")
                                                                ),
                                               conditionalPanel("input.type2 == 'Line' | input.type2 == 'Distribution'",
-                                                               plotlyOutput("plot_ecof2")
+                                                               plotlyOutput("plot_ecof2"),
+                                                               actionButton("save_plot1", "Save plot", icon = icon("save"))
                                                                )
-                                              ),
-                                            p("Answer Q 21-22")
+                                              )
+                                            )
+                                     ),
+                                   hr(),
+                                   fluidRow(
+                                     column(10, align = "left",
+                                            box(id = "box11", width = 12, status = "primary",
+                                                solidHeader = TRUE,
+                                                fluidRow(
+                                                  column(10, offset = 1,
+                                                         h3("Questions"),
+                                                         h4(quest["q19", 1]),
+                                                         textAreaInput2(inputId = "q19", label = "", width = "90%"),
+                                                         h4(quest["q20", 1]),
+                                                         textAreaInput2(inputId = "q20", label = "", width = "90%"),
+                                                         br()
+                                                  )
+                                                )
                                             )
                                      )
                                    ),
+                                   hr(),
+                                   ),
+                          #* Objective 8 - Communicate Forecast ====
                           tabPanel(title = "Objective 8 - Communicate forecast",  value = "obj8",
                                    fluidRow(
                                      column(12,
@@ -1199,15 +1255,35 @@ border-color: #FFF;
                                    ),
                                    fluidRow(
                                      column(6,
-                                            h3("Communicate Forecast"),
-                                            p(id = "txt_j", module_text["comm_forecast", ]),
+                                            wellPanel(
+                                              imageOutput("comm_fc")
+                                            ),
+                                            # h3("Communicate Forecast"),
+                                            # p(id = "txt_j", module_text["comm_forecast", ]),
                                      ),
                                      column(6, align = "center",
                                             img(src = "05-communicate-forecast.png",
                                                 height = "70%", 
                                                 width = "70%")
                                             )
+                                     ),
+                                   hr(),
+                                   fluidRow(
+                                     column(10, align = "left",
+                                            box(id = "box12", width = 12, status = "primary",
+                                                solidHeader = TRUE,
+                                                fluidRow(
+                                                  column(10, offset = 1,
+                                                         h3("Questions"),
+                                                         h4(quest["q21", 1]),
+                                                         textAreaInput2(inputId = "q21", label = "", width = "90%"),
+                                                         br()
+                                                  )
+                                                )
+                                            )
                                      )
+                                   ),
+                                   hr(),
                                    ),
                           tabPanel(title = "Objective 9 -  Assess forecast",  value = "obj9",
                                    fluidRow(
@@ -1231,8 +1307,8 @@ border-color: #FFF;
                                    ),
                                    fluidRow(
                                      column(3,
+                                            br(), br(), br(),
                                             wellPanel(
-                                              br(), br(),
                                               h4("Assess forecast performance"),
                                               p(id = "txt_j", "Comparing forecast results to actual measurements. This gives us an indication of how accurately our model is forecasting."),
                                               p(id = "txt_j", "This is an important step as it indicates how well our model represents the system."),
@@ -1241,8 +1317,7 @@ border-color: #FFF;
                                                                actionButton('assess_fc3', label = div("Assess forecast",
                                                                                                       icon("clipboard-check"))))
                                               
-                                            ),
-                                            p("Answer Q 24")
+                                            )
                                      ),
                                      column(5,
                                             h3(tags$b("Add in new observations")),
@@ -1256,7 +1331,24 @@ border-color: #FFF;
                                               plotlyOutput("assess_plot")
                                             )
                                      ),
-                                   )
+                                   ),
+                                   hr(),
+                                   fluidRow(
+                                     column(10, align = "left",
+                                            box(id = "box13", width = 12, status = "primary",
+                                                solidHeader = TRUE,
+                                                fluidRow(
+                                                  column(10, offset = 1,
+                                                         h3("Questions"),
+                                                         h4(quest["q22", 1]),
+                                                         textAreaInput2(inputId = "q22", label = "", width = "90%"),
+                                                         br()
+                                                  )
+                                                )
+                                            )
+                                     )
+                                   ),
+                                   hr(),
                                    ),
                           tabPanel(title = "Objective 10 - Update model",  value = "obj10",
                                    #*
@@ -1316,7 +1408,24 @@ border-color: #FFF;
                                             ),
                                             p("Answer Q 25")
                                             )
+                                     ),
+                                   hr(),
+                                   fluidRow(
+                                     column(10, align = "left",
+                                            box(id = "box14", width = 12, status = "primary",
+                                                solidHeader = TRUE,
+                                                fluidRow(
+                                                  column(10, offset = 1,
+                                                         h3("Questions"),
+                                                         h4(quest["q23", 1]),
+                                                         textAreaInput2(inputId = "q23", label = "", width = "90%"),
+                                                         br()
+                                                  )
+                                                )
+                                            )
                                      )
+                                   ),
+                                   hr(),
                                    ),
                           tabPanel(title = "Objective 11 - Next forecast",  value = "obj11",
                                    fluidRow(
@@ -1353,8 +1462,7 @@ border-color: #FFF;
                                               
                                               
                                               # )
-                                            ),
-                                            p("Answer Q 26")
+                                            )
                                      ),
                                      column(8,
                                             h4("New Forecast plot"),
@@ -1363,6 +1471,25 @@ border-color: #FFF;
                                               )
                                             )
                                      ),
+                                   hr(),
+                                   fluidRow(
+                                     column(10, align = "left",
+                                            box(id = "box15", width = 12, status = "primary",
+                                                solidHeader = TRUE,
+                                                fluidRow(
+                                                  column(10, offset = 1,
+                                                         h3("Questions"),
+                                                         h4(quest["q24", 1]),
+                                                         textAreaInput2(inputId = "q24", label = "", width = "90%"),
+                                                         h4(quest["q25", 1]),
+                                                         textAreaInput2(inputId = "q25", label = "", width = "90%"),
+                                                         br()
+                                                  )
+                                                )
+                                            )
+                                     )
+                                   ),
+                                   hr(),
                                    fluidRow(
                                      column(12, 
                                             h3("The Forecast Cycle"),
@@ -1405,10 +1532,30 @@ border-color: #FFF;
                                           )
                                         )
                                  ),
+                        hr(),
+                        fluidRow(
+                          column(10, align = "left",
+                                 box(id = "box16", width = 12, status = "primary",
+                                     solidHeader = TRUE,
+                                     fluidRow(
+                                       column(10, offset = 1,
+                                              h3("Questions"),
+                                              h4(quest["q26", 1]),
+                                              textAreaInput2(inputId = "q26a", label = quest["q26a", 1] , width = "90%"),
+                                              textAreaInput2(inputId = "q26b", label = quest["q26b", 1] , width = "90%"),
+                                              textAreaInput2(inputId = "q26c", label = quest["q26c", 1] , width = "90%"),
+                                              h4(quest["q27", 1]),
+                                              textAreaInput2(inputId = "q27", label = "", width = "90%"),
+                                              br()
+                                       )
+                                     )
+                                 )
+                          )
+                        ),
+                        hr(),
                         #* Generate report buttons ====
                         fluidRow(
-                          hr(),
-                          column(6,
+                          column(4,
                                  introBox(
                                    h3("Generate Report"),
                                    p("This will take the answers you have input into the document and generate a Microsoft Word document (.docx) document with your answers which you can download and make further edits before submitting."),
@@ -1423,8 +1570,9 @@ border-color: #FFF;
                                                                  # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
                                                   ))
                           ),
-                          column(6,
+                          column(4,offset = 2,
                                  h3("Save your progress"),
+                                 p("You can save your current progress by bookmarking the web address generated from the button below."),
                                  bookmarkButton(id = "bookmark1"))
                         )
                  
@@ -1497,12 +1645,34 @@ server <- function(input, output, session) {#
       shinyjs::show(id = "box3")
       shinyjs::show(id = "box4")
       shinyjs::show(id = "box5")
+      shinyjs::show(id = "box6")
+      shinyjs::show(id = "box7")
+      shinyjs::show(id = "box8")
+      shinyjs::show(id = "box9")
+      shinyjs::show(id = "box10")
+      shinyjs::show(id = "box11")
+      shinyjs::show(id = "box12")
+      shinyjs::show(id = "box13")
+      shinyjs::show(id = "box14")
+      shinyjs::show(id = "box15")
+      shinyjs::show(id = "box16")
     }else{
       shinyjs::hide(id = "box1")
       shinyjs::hide(id = "box2")
       shinyjs::hide(id = "box3")
       shinyjs::hide(id = "box4")
       shinyjs::hide(id = "box5")
+      shinyjs::hide(id = "box6")
+      shinyjs::hide(id = "box7")
+      shinyjs::hide(id = "box8")
+      shinyjs::hide(id = "box9")
+      shinyjs::hide(id = "box10")
+      shinyjs::hide(id = "box11")
+      shinyjs::hide(id = "box12")
+      shinyjs::hide(id = "box13")
+      shinyjs::hide(id = "box14")
+      shinyjs::hide(id = "box15")
+      shinyjs::hide(id = "box16")
     }
   })
   
@@ -2673,6 +2843,127 @@ server <- function(input, output, session) {#
     
   })
   
+  #* Save plot for communication ====
+  observeEvent(input$save_plot1, {
+    
+    
+    validate(
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
+    )
+    validate(
+      need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
+    )
+    validate(
+      need(input$load_fc2 > 0, "Load Forecast inputs")
+    )
+    validate(
+      need(input$members2 >= 1 & input$members2 <= 30,
+           message = paste0("The number of members must be between 1 and 30"))
+    )
+    
+    
+    validate(
+      need(input$run_fc2 > 0, "Click 'Run Forecast'")
+    )
+    
+    # Load Chl-a observations
+    read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
+    units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
+    file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
+    if(file.exists(file)) {
+      chla <- read.csv(file)
+      chla[, 1] <- as.Date(chla[, 1], tz = "UTC")
+    }
+    chla_obs <- chla[(chla[, 1] >= as.Date((driv_fc()[1, 1] - (7)))) &
+                       chla[, 1] <= as.Date(driv_fc()[1, 1]), ]
+    
+    sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
+    # if(input$type2 == "Distribution") {
+      
+      df3 <- plyr::ddply(sub, "time", function(x) {
+        quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+      })
+      # df3 <- as.data.frame(t(df3))
+      colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
+      colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
+      # df3$hours <- df2$hours
+      df2 <- df3
+    # }
+    
+    sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
+    # if(input$type2 == "Distribution") {
+      
+      df3 <- plyr::ddply(sub, "time", function(x) {
+        quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+      })
+      # df3 <- as.data.frame(t(df3))
+      colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
+      colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
+      # df3$hours <- df2$hours
+      df2 <- df3
+    # }
+    
+    txt <- data.frame(x = (chla_obs[nrow(chla_obs), 1] - 2), y = (max(chla_obs[, 2], na.rm = TRUE) + 2), label = "Today")
+    
+    p <- ggplot()
+    
+    # if(input$type2 == "Distribution") {
+      p <- p +
+        geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
+                    alpha = 0.8) +
+        geom_line(data = df2, aes(time, p50, color = "Median - original")) +
+        scale_fill_manual(values = pair.cols[3]) +
+        guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
+        scale_color_manual(values = c("Median - original" = pair.cols[4], "Obs" = cols[1]))
+    # }
+    p <- p + 
+      geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs")),
+                 size = 3) +
+      geom_text(data = txt, aes(x, y, label = label), size = 12) +
+      geom_vline(xintercept = df2[1, 1], linetype = "dashed") +
+      ylab("Chlorophyll-a (μg/L)") +
+      xlab("Date") +
+      theme_classic(base_size = 38) +
+      theme(panel.background = element_rect(fill = NA, color = 'black')) +
+      labs(color = "", fill = "")
+    
+    
+    
+    img_file <- "www/comm_fc_plot.png"
+    
+    # Save as a png file
+    ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
+    
+    output$comm_fc <- renderImage({
+      
+      validate(
+        need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
+      )
+      validate(
+        need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
+      )
+      validate(
+        need(input$load_fc2 > 0, "Load Forecast inputs")
+      )
+      validate(
+        need(input$members2 >= 1 & input$members2 <= 30,
+             message = paste0("The number of members must be between 1 and 30"))
+      )
+      validate(
+        need(input$run_fc2 > 0, "Click 'Run Forecast'")
+      )
+      validate(
+        need(input$save_plot1 > 0, "Click 'Save plot'")
+      )
+      
+      list(src = img_file,
+           alt = "Image failed to render",
+           # height = "100%", 
+           width = "100%")
+    }, deleteFile = FALSE)
+    # show("main_content")
+  }, ignoreNULL = FALSE)
+  
   
   #* Plot for Assessing Forecast ====
   output$plot_ecof3 <- renderPlotly({
@@ -3180,6 +3471,8 @@ server <- function(input, output, session) {#
   
   observeEvent(input$generate, {
     
+    par_file <- "data/par_save.csv"
+    write.csv(par_df, par_file, quote = FALSE, row.names = TRUE)
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
@@ -3192,7 +3485,68 @@ server <- function(input, output, session) {#
                    id_number = input$id_number,
                    a1 = input$q1,
                    a2 = input$q2,
-                   a3 = input$q3
+                   a3 = input$q3,
+                   a4a = input$q4a,
+                   a4b = input$q4b,
+                   a4c = input$q4c,
+                   a4d = input$q4d,
+                   a5a = input$q5a,
+                   a5b = input$q5b,
+                   a5c = input$q5c,
+                   a5d = input$q5d,
+                   a5e = input$q5e,
+                   a5f = input$q5f,
+                   a6a_mean = input$q6a_mean,
+                   a6a_min = input$q6a_min,
+                   a6a_max = input$q6a_max,
+                   a6b_mean = input$q6b_mean,
+                   a6b_min = input$q6b_min,
+                   a6b_max = input$q6b_max,
+                   a6c_mean = input$q6c_mean,
+                   a6c_min = input$q6c_min,
+                   a6c_max = input$q6c_max,
+                   a6d_mean = input$q6d_mean,
+                   a6d_min = input$q6d_min,
+                   a6d_max = input$q6d_max,
+                   a6e_mean = input$q6e_mean,
+                   a6e_min = input$q6e_min,
+                   a6e_max = input$q6e_max,
+                   a7a = input$q7a,
+                   a7b = input$q7b,
+                   a7c = input$q7c,
+                   a7d = input$q7d,
+                   a8 = input$q8,
+                   a9a = input$q9a,
+                   a9b = input$q9b,
+                   a9c = input$q9c,
+                   a10_states = input$rank_list_2,
+                   a10_pars = input$rank_list_3,
+                   a11a = input$q11a,
+                   a11b = input$q11b,
+                   a11c = input$q11c,
+                   a12 = input$q12,
+                   a13a = input$q13a,
+                   a13b = input$q13b,
+                   a14a = input$q14a,
+                   a14b = input$q14b,
+                   a15 = input$q15,
+                   a16 = input$q16,
+                   a17 = input$q17,
+                   a18a = input$q18a,
+                   a18b = input$q18b,
+                   a18c = input$q18c,
+                   a19 = input$q19,
+                   a20 = input$q20,
+                   a21 = input$q21,
+                   a22 = input$q22,
+                   a23 = input$q23,
+                   a24 = input$q24,
+                   a25 = input$q25,
+                   a26a = input$q26a,
+                   a26b = input$q26b,
+                   a26c = input$q26c,
+                   a27 = input$q27,
+                   save_pars = par_file
     )
     
     
@@ -3252,7 +3606,6 @@ server <- function(input, output, session) {#
   })
   
   observeEvent(input$nextBtn1, {
-    print(rv1$nxt)
     updateTabsetPanel(session, "maintab",
                       selected = paste0("mtab", rv1$nxt))
     shinyjs::runjs("window.scrollTo(0, 0)") # scroll to top of page
@@ -3311,7 +3664,6 @@ server <- function(input, output, session) {#
   })
   
   observeEvent(input$nextBtn2a, {
-    print(rv2a$nxt)
     updateTabsetPanel(session, "tabseries2",
                       selected = paste0("obj", rv2a$nxt))
     shinyjs::runjs("window.scrollTo(0, 0)") # scroll to top of page
