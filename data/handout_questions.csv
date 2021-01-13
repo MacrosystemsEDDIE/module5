@@ -43,3 +43,21 @@ q14,"Q14. Develop a scenario (e.g. the model is sensitive to light, mortality = 
 q14a,a. Write your hypothesis of how chlorophyll-a will respond to your scenario here:
 q14b,b. Run your model scenario. Was your hypothesis supported or refuted? Describe what you observed:
 q15,"Q15. Add the observations to the plot. Calibrate your model by selecting sensitive variables and adjusting the parameters until they best fit the observed data. Save your parameters, these are what will be used for the forecast."
+q16,Q16. What is forecast uncertainty? How is forecast uncertainty quantified?
+q17,"Q17. Define what is meant by the term ""ensemble modeling""."
+q18,Q18. Inspect the weather forecast data for the site you have chosen:
+q18a,a. How does increasing the number of ensemble members in the weather forecast affect the size of the uncertainty in future weather?
+q18b,b. Which type of plot (line or distribution) do you think visualizes the forecast uncertainty best?
+q18c,"c. Using the interactivity of the weather forecast plot, compare the air temperature forecasts for the first week (Sep 25 - Oct 1) to the second week (Oct 2 - 8). How does the forecast uncertainty change between the two periods? "
+q19,"Q19. How does driver uncertainty affect the forecast, specifically, does an increase in the number of members increase or decrease the range of uncertainty in the forecasts? How does that change over time?"
+q20,Q20. What are the main sources of uncertainty in your ecological forecast? 
+q21,Q21. Describe the forecast of primary productivity in words such that it could be understood by a fellow classmate. How would you describe this chlorophyll-a forecast to a lake manager?
+q22,Q22. Why do you think it is important to assess the forecast? How often should forecast assessment occur?
+q23,Q23. Did your forecast improve when you updated your model parameters? Why do you think it is important to update the model?
+q24,Q24. Describe the new forecast of primary productivity which is generated? How do you think it will compare when we observe the next round of data?
+q25,Q25. Why is the forecast cycle described as “iterative” (e.g. repetition of a process)?
+q26,Q26. Repeat Activity A and B with a different NEON site (ideally from a different region).
+q26a,a. Apply the same model scenario (with the same model structure and parameters) which you developed in Q14 to this new site. How do you expect chlorophyll-a concentrations will respond prior to running the simulation?
+q26b,b. Was your hypothesis supported or refuted? Why?
+q26c,"c. Revisit your hypothesis from page 3 Q3, what did you find out about the different productivity forecasts in warmer vs colder sites? "
+q27,Q27. Repeat Q16-25 with the new site. Does forecast uncertainty differ at this site compared to the first selected site? Why do you think that is?
