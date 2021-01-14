@@ -1753,6 +1753,7 @@ server <- function(input, output, session) {#
   
   
   # Download phenocam ----
+  pheno_file <- "test.png"
   observeEvent(input$view_webcam, {
     
     validate(
@@ -1771,10 +1772,10 @@ server <- function(input, output, session) {#
     idx <- which(neon_sites_df$siteID == siteID)
     # output$site_name <- neon_sites$description[idx]
     url <- neon_sites_df$pheno_url[idx]
-    img_file <- download_phenocam(url)
+    pheno_file <<- download_phenocam(url)
     progress$set(value = 1)
     output$pheno <- renderImage({
-      list(src = img_file,
+      list(src = pheno_file,
            alt = "Image failed to render",
            height = 320, 
            width = 350)
@@ -3546,7 +3547,10 @@ server <- function(input, output, session) {#
                    a26b = input$q26b,
                    a26c = input$q26c,
                    a27 = input$q27,
-                   save_pars = par_file
+                   save_pars = par_file,
+                   comm_plot = "www/comm_fc_plot.png",
+                   pheno_file = pheno_file,
+                   site_html = "data/site.html"
     )
     
     
@@ -3705,16 +3709,6 @@ server <- function(input, output, session) {#
   })
   
 
-  # Bookmarking shiny app ----
-  # observe({
-  #   # Trigger this observer every time an input changes
-  #   # print("input")
-  #   reactiveValuesToList(input)
-  #   session$doBookmark()
-  # })
-  # onBookmarked(function(url) {
-  #   updateQueryString(url)
-  # })
   
   observe({
     dt_proxy <- dataTableProxy("table01")
@@ -3745,29 +3739,7 @@ server <- function(input, output, session) {#
     updateSelectizeInput(session, "row_num", selected = state$values$sel_row)
     
   })
-  
-  
-  
-  # output$report <- downloadHandler(
-  #   # For PDF output, change this to "report.pdf"
-  #   filename <- "report.pdf",
-  #   content <- function(file) {
-  #     # Copy the report file to a temporary directory before processing it, in
-  #     # case we don't have write permissions to the current working dir (which
-  #     # can happen when deployed).
-  #     tempReport <- file.path(tempdir(), "report.Rmd")
-  #     file.copy("report.Rmd", tempReport, overwrite = TRUE)
-  # 
-  #     
-  #     # Knit the document, passing in the `params` list, and eval it in a
-  #     # child of the global environment (this isolates the code in the document
-  #     # from the code in this app).
-  #     rmarkdown::render(tempReport, output_file = file,
-  #                       params = params,
-  #                       envir = new.env(parent = globalenv())
-  #     )
-  #   }
-  # )
+
   
 }
 # enableBookmarking("url") # Needed for bookmarking currently not working
