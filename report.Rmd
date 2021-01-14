@@ -69,10 +69,15 @@ params:
   a26b: "Incomplete"
   a26c: "Incomplete"
   a27: "Incomplete"
-  save_pars: "data/par_save.csv"
+  save_pars: "Incomplete"
+  pheno_file: "Incomplete"
+  site_html: "Incomplete"
+  mod_2019_png: "www/mod_run_2019.png"
+  noaa_plot: "www/noaa_fc.png"
   comm_plot: "www/comm_fc_plot.png"
-  pheno_file: "test.png"
-  site_html: "data/site.html"
+  assess_plot: "www/assess_fc.png"
+  update_plot: "www/fc_update.png"
+  next_fc_plot: "www/new_fc.png"
 ---
 
 ```{r setup, include=FALSE}
@@ -227,13 +232,13 @@ if(file.exists(params$site_html)) {
 
 
 ![](`r params$pheno_file`)  
-*Figure 1. Phenocam image downloaded for the site.*
+*Figure 1. Phenocam image downloaded for `r params$a5a`.*
 
 ## Objective 2: Explore data
 
 6. Fill out the table below with the description of site variables:
 
-Table 1. 6)	Fill out the table below with the description of site variables:  
+*Table 1. Description of site variables:*  
 
 | **Variable** | **Mean** | **Minimum** | **Maximum** |
 | --- | --- | --- | --- |
@@ -250,7 +255,7 @@ Table 1. 6)	Fill out the table below with the description of site variables:
 7. Describe the effect of each of the following variables on chlorophyll-a. Chlorophyll-a is used as a proxy measurement for phytoplankton concentration in aquatic environments.  
 \
 
-Table 2. Description of effect of each variable on chlorophyll-a
+*Table 2. Description of effect of each variable on chlorophyll-a*  
 
 | **Variable** | **Relationship** |
 | --- | --- |
@@ -266,7 +271,7 @@ Table 2. Description of effect of each variable on chlorophyll-a
 
 ## Objective 4: Understand model  
 
-9. Circle how you envision each driving variable to affect productivity:
+9. Circle how you envision each driving variable to affect productivity:  
 
   **Water temperature:** `r params$a9a`  
   **Incoming light:** `r params$a9b`  
@@ -287,7 +292,7 @@ Table 2. Description of effect of each variable on chlorophyll-a
 \
 
 ## Objective 5: Build model  
-\
+
 ```{r echo = FALSE, results = "asis"}
 library(knitr)
 kable(par_tab, caption = "Table 3. Parameters used in Q12-15", row.names = TRUE)
@@ -318,6 +323,9 @@ kable(par_tab, caption = "Table 3. Parameters used in Q12-15", row.names = TRUE)
 15. Add the observations to the plot. Calibrate your model by selecting sensitive variables and adjusting the parameters until they best fit the observed data. Record your settings in Table 3.
 \
 
+![](`r params$mod_2019_png`)  
+*Figure 2. Modeled primary productivity for `r params$a5a` compared to chlorophyll-a concentrations, a proxy measurement for aquatic primary productivity.*
+
 # Activity B: Forecast!
 
 ## Objective 6: Examine uncertainty  
@@ -329,6 +337,9 @@ kable(par_tab, caption = "Table 3. Parameters used in Q12-15", row.names = TRUE)
 17. Define what is meant by the term **ensemble modeling**:  
 **Answer:** `r params$a17`
 \
+
+![](`r params$noaa_plot`)  
+*Figure 3. Weather forecast plot at `r params$a5a` generated from National Oceanic and Atmospheric Administration (NOAA)  [Global Ensemble Forecast System](https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs)  (GEFS).*  
 
 18. Inspect the weather forecast data for the site you have chosen:
     a.  How does increasing the number of ensemble members in the weather forecast affect the size of the uncertainty in future weather?  
@@ -352,9 +363,11 @@ kable(par_tab, caption = "Table 3. Parameters used in Q12-15", row.names = TRUE)
 
 ## Objective 8: Communicate forecast
 \
-![](`r params$comm_plot`)
 21. Describe the forecast of primary productivity in words such that it could be understood by a fellow classmate. How would you describe this chlorophyll-a forecast to a lake manager?  
-**Answer:** `r params$a21`
+**Answer:** `r params$a21`  
+
+![](`r params$comm_plot`)  
+*Figure 4. Ecological forecast for primary productivity at `r params$a5a` for the next 30 days.*  
 \
 
 ## Objective 9: Assess forecast
@@ -363,17 +376,26 @@ kable(par_tab, caption = "Table 3. Parameters used in Q12-15", row.names = TRUE)
 **Answer:** `r params$a22`
 \
 
+![](`r params$assess_plot`)  
+*Figure 5. Assessment of the forecast one week later and comparing the forecast to new observations at `r params$a5a`.*  
+
 ## Objective 10: Update model
 
 23. Did your forecast improve when you updated your model parameters? Why do you think it is important to update the model?  
 **Answer:** `r params$a23`
 \
 
+![](`r params$update_plot`)  
+*Figure 6. Updated forecast by updating the model parameters at `r params$a5a`.*  
+
 ## Objective 11: Next forecast
 
 24. Describe the new forecast of primary productivity which is generated? How do you think it will compare when we observe the next round of data?  
 **Answer:** `r params$a24`
 \
+
+![](`r params$next_fc_plot`)  
+*Figure 7. The next ecological forecast using the updated model parameters at `r params$a5a`.*
 
 25. Why is the forecast cycle described as &quot;iterative&quot; (e.g. repetition of a process)?  
 **Answer:** `r params$a25`
