@@ -23,9 +23,9 @@ workflow3,Within each activity there are objectives which must be completed befo
 workflow4,There are questions embedded throughout the Shiny app which you will need to input the answers into.
 workflow5,"When you have completed each of the objectives and answered all the questions, navigate to the ""Generate Report"" tab. This will then create a Microsoft Word document with your forecasts and answers embedded within which you can then download and finalize before submitting it to your instructor."
 workflow6,You can save your progress by bookmarking the page before you leave the page. This will allow you to return and start from where you left off.
-obj_01,"Select a NEON site from the table, then click on the icon to load the latest image from that site. Follow the link at the bottom of the 'About Site' section to find out more about the site."
+obj_01,"Select a NEON site from the table, then click on the ""View live feed"" button to load the latest image from that site. Follow the link at the bottom of the 'About Site' section to find out more about the site."
 obj_02,Explore the data measured at the selected site. This is data that has been downloaded from the NEON Data Portal. The variables shown have been selected for this module but there are a wide range of variables collected at each NEON site
-obj_03,For our measurements of primary productivity we will be using the data from the Chlorophyll-a sensor. Using the options below explore if there are any relationships between Chlorophyll-a and the other variables. This information will be used to build the model.
+obj_03,For our measurements of primary productivity we will be using the data from the Chlorophyll-a sensor. Chlorphyll-a concentrations are an indicator of phytoplankton abundance and biomass. Using the options below explore if there are any relationships between Chlorophyll-a and the other variables. This information will be used to build the model.
 obj_04,"Using your understanding of primary production within aquatic ecosystems, you will build a simple ecological model to represent the processes observed."
 obj_05,Test different scenarios with your model to understand how it will respond under different scenarios. Use observed data to calibrate the model (i.e. make your model match the observed data).
 obj_06,Gain an understanding of what uncertainty is in the context of an ecological forecast and explore weather forecast data. Demonstrate how uncertainty can be quantified.
@@ -49,3 +49,4 @@ init_uncert,Initial conditions uncertainty refers to uncertainty arising because
 comm_forecast,Answer Q 23 in the student handout.
 state_var,A state variable is one of the set of variables that are used to describe the mathematical “state” of a dynamical system.
 parameter,A parameter is a value introduced to represent properties of nature which are difficult to directly measure.
+fc_cycle_end,"We have stepped through each of the steps in the forecast cycle. As you can see, forecasting is a repetitive process, also described as iterative. We constantly will need to generate forecasts of the future as time moves forward. When we combine our forecasts with data, we can use this data to update our model which will then improve our model the more forecasts we make. This is one of the key advantages of ecological forecasting."
