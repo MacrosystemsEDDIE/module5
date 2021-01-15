@@ -13,6 +13,7 @@ params:
   a4b: ""
   a4c: ""
   a4d: ""
+  a4e: ""
   a5a: ""
   a5b: ""
   a5c: ""
@@ -88,6 +89,7 @@ time <- Sys.time()
 
 # Read in assessment questions
 quest <- read.csv("data/handout_questions.csv", row.names = 1)
+# quest["q1", ] <- substr(quest["q1", ], 2, nchar(quest["q1", ]))
 
 if(file.exists(params$save_pars)) {
   par_tab <- read.csv(params$save_pars, row.names = 1)
@@ -188,39 +190,43 @@ The questions you must answer are embedded in the Shiny interface. You can answe
 
 With a partner, read through the table below, and answer the following questions:
 
-1. How have you used forecasts (ecological, political, sports, any kind!) before in your day-to-day life?  
+1. `r substr(quest["q1", ], 4, nchar(quest["q1", ]))`  
 **Answer:** `r params$a1`  
 
-2. How can ecological forecasts improve both natural resource management and ecological understanding?  
+2. `r substr(quest["q2", ], 4, nchar(quest["q2", ]))`   
 **Answer:** `r params$a2`  
 
-3. How do you think forecasts of freshwater primary productivity will differ between warmer lakes and colder lakes?  
+3. `r substr(quest["q3", ], 4, nchar(quest["q3", ]))`   
 **Answer:** `r params$a3`   
+
+\newpage
 
 Now navigate to the Shiny interface to answer the rest of the questions.
 
 # Exploration
 
-4. Choose one of the ecological forecasts below and visit their website. Answer the questions below.
-    a.  What ecological variable(s) are being forecasted?  
+4. `r substr(quest["q4", ], 4, nchar(quest["q4", ]))` 
+    a.  `r substr(quest["q4a", ], 3, nchar(quest["q4a", ]))`  
     **Answer:** `r params$a4a` &nbsp;
-    b.  What type of ecosystem are the variables part of?  
+    b.  `r substr(quest["q4b", ], 3, nchar(quest["q4b", ]))`  
     **Answer:** `r params$a4b` &nbsp;
-    c.  Why does this forecast exist?  
+    c.  `r substr(quest["q4c", ], 3, nchar(quest["q4c", ]))`  
     **Answer:** `r params$a4c` &nbsp;
-    d.  Describe the way(s) in which the forecast is visualized.  
+    d.  `r substr(quest["q4d", ], 3, nchar(quest["q4d", ]))`  
     **Answer:** `r params$a4d` &nbsp;
+    e.  `r substr(quest["q4e", ], 3, nchar(quest["q4e", ]))`  
+    **Answer:** `r params$a4e` &nbsp;
 
 # Activity A: Get Data &amp; Build Model
 
 ## Objective 1: Select and view site
 
-5. Fill out information about your selected NEON site (Note: you may need to navigate to the site website to find the information):  
-    a. Name of Site: `r params$a5a`&nbsp;
-    b. Four-letter NEON site identifier (ID): `r params$a5b`&nbsp;
-    c. Latitude: `r params$a5c`&nbsp;
-    d. Longitude: `r params$a5d`&nbsp;
-    e. Lake area (km^2^): `r params$a5e`&nbsp;
+5. `r substr(quest["q5", ], 4, nchar(quest["q5", ]))`  
+    a. `r substr(quest["q5a", ], 3, nchar(quest["q5a", ]))` `r params$a5a`&nbsp;
+    b. `r substr(quest["q5b", ], 3, nchar(quest["q5b", ]))` `r params$a5b`&nbsp;
+    c. `r substr(quest["q5c", ], 3, nchar(quest["q5c", ]))` `r params$a5c`&nbsp;
+    d. `r substr(quest["q5d", ], 3, nchar(quest["q5d", ]))` `r params$a5d`&nbsp;
+    e. `r substr(quest["q5e", ], 3, nchar(quest["q5e", ]))` `r params$a5e`&nbsp;
 
 \
 
@@ -242,7 +248,7 @@ if (!pheno_chk) {cat("-->")}
 
 ## Objective 2: Explore data
 
-6. Fill out the table below with the description of site variables:
+6. `r substr(quest["q6", ], 4, nchar(quest["q6", ]))`
 
 *Table 1. Description of site variables:*  
 
@@ -258,7 +264,7 @@ if (!pheno_chk) {cat("-->")}
 
 ## Objective 3: Explore variable relationships
 
-7. Describe the effect of each of the following variables on chlorophyll-a. Chlorophyll-a is used as a proxy measurement for phytoplankton concentration in aquatic environments.  
+7. `r substr(quest["q7", ], 4, nchar(quest["q7", ]))`  
 \
 
 *Table 2. Description of effect of each variable on chlorophyll-a*  
@@ -270,14 +276,14 @@ if (!pheno_chk) {cat("-->")}
 | Nitrate sensor | `r params$a7c` |
 | Underwater PAR | `r params$a7d` |
 \
-8. Were there any other relationships you found at your site? If so, please describe below.  
+8. `r substr(quest["q8", ], 4, nchar(quest["q8", ]))`  
 **Answer:** `r params$a8`  
 
 \
 
 ## Objective 4: Understand model  
 
-9. Circle how you envision each driving variable to affect productivity:  
+9. `r substr(quest["q9", ], 4, nchar(quest["q9", ]))`  
 
   **Water temperature:** `r params$a9a`  
   **Incoming light:** `r params$a9b`  
@@ -290,7 +296,7 @@ if (!pheno_chk) {cat("-->")}
 **Parameters:** `r params$a10_pars`  
 \
 
-11. We are using chlorophyll-a as a proxy measurement for phytoplankton concentration which is a measure of aquatic primary productivity. Circle how you envision each interaction to affect chlorophyll-a concentrations:
+11. `r substr(quest["q11", ], 6, nchar(quest["q11", ]))`
 
   **Grazing of phytoplankton:** `r params$a11a`  
   **Zooplankton mortality:** `r params$a11b`  
@@ -306,27 +312,27 @@ kable(par_tab, caption = "Table 3. Parameters used in Q12-15", row.names = TRUE)
 ```
 \
 
-12. Using the default model, simulate the baseline model scenario. Describe the pattern of chlorophyll-a concentration throughout the year?  
+12. `r substr(quest["q12", ], 6, nchar(quest["q12", ]))`  
 
 
 **Answer:** `r params$a12`   
 \
 
-13. Change the parameters to simulate the following scenarios, and describe the chlorophyll-a responses for:
-    a.  Medium grazing, medium mortality and high uptake  
+13. `r substr(quest["q13", ], 6, nchar(quest["q13", ]))`
+    a.  `r substr(quest["q13a", ], 3, nchar(quest["q13a", ]))`  
     **Answer:** `r params$a13a`  
-    b.  High grazing, high mortality and low uptake  
+    b.  `r substr(quest["q13b", ], 3, nchar(quest["q13b", ]))`  
     **Answer:** `r params$a13b`  
     \
 
 
-14. Develop a scenario (e.g. the model is sensitive to light, mortality = 0.7, etc.) and hypothesize how you think chlorophyll-a concentrations will respond _prior_ to running the simulation.
-    a.  Write your hypothesis of how chlorophyll-a will respond to your scenario here:
+14. `r substr(quest["q14", ], 6, nchar(quest["q14", ]))`
+    a.  `r substr(quest["q14a", ], 3, nchar(quest["q14a", ]))`
     **Answer:** `r params$a14a`  
-    b.  Run your model scenario. Was your hypothesis supported or refuted? Describe what you observed:
+    b.  `r substr(quest["q14b", ], 3, nchar(quest["q14b", ]))`
     **Answer:** `r params$a14b`  
 \
-15. Add the observations to the plot. Calibrate your model by selecting sensitive variables and adjusting the parameters until they best fit the observed data. Record your settings in Table 3.
+15. `r substr(quest["q15", ], 6, nchar(quest["q15", ]))`
 \
 
 ```{r results='asis', echo=FALSE}
@@ -343,11 +349,11 @@ if (!mod_ann_chk) {cat("-->")}
 
 ## Objective 6: Examine uncertainty  
 \
-16. What is forecast uncertainty? How is forecast uncertainty quantified?  
+16. `r substr(quest["q16", ], 6, nchar(quest["q16", ]))`  
 **Answer:** `r params$a16`
 \
 
-17. Define what is meant by the term **ensemble modeling**:  
+17. `r substr(quest["q17", ], 6, nchar(quest["q17", ]))`  
 **Answer:** `r params$a17`
 \
 
@@ -360,29 +366,29 @@ if (!noaa_plot_chk) {cat("<!---")}
 if (!noaa_plot_chk) {cat("-->")}
 ```
 
-18. Inspect the weather forecast data for the site you have chosen:
-    a.  How does increasing the number of ensemble members in the weather forecast affect the size of the uncertainty in future weather?  
+18. `r substr(quest["q18", ], 6, nchar(quest["q18", ]))`
+    a.  `r substr(quest["q18a", ], 3, nchar(quest["q18a", ]))`  
     **Answer:** `r params$a18a`  
-    b.  Which type of visualization (data table, line or distribution) do you think visualizes the forecast uncertainty best?  
+    b.  `r substr(quest["q18b", ], 3, nchar(quest["q18b", ]))`  
     **Answer:** `r params$a18b`  
-    c.  Using the interactivity of the weather forecast plot, compare the air temperature forecasts for the first week (Sep 25 – Oct 1) to the second week (Oct 2 – 8). How does the forecast uncertainty change between the two periods?  
+    c.  `r substr(quest["q18c", ], 3, nchar(quest["q18c", ]))`  
     **Answer:** `r params$a18c`  
     \
 
 
 ## Objective 7: Forecast
 \
-19. How does driver uncertainty affect the forecast, specifically, does an increase in the number of members increase or decrease the range of uncertainty in the forecasts? How does that change over time?  
+19. `r substr(quest["q19", ], 6, nchar(quest["q19", ]))`  
 **Answer:** `r params$a19`
 \
 
-20. What are the main sources of uncertainty in your ecological forecast?  
+20. `r substr(quest["q20", ], 6, nchar(quest["q20", ]))`  
 **Answer:** `r params$a20`
 \
 
 ## Objective 8: Communicate forecast
 \
-21. Describe the forecast of primary productivity in words such that it could be understood by a fellow classmate. How would you describe this chlorophyll-a forecast to a lake manager?  
+21. `r substr(quest["q21", ], 6, nchar(quest["q21", ]))`  
 **Answer:** `r params$a21`  
 
 ```{r results='asis', echo=FALSE}
@@ -397,7 +403,7 @@ if (!comm_plot_chk) {cat("-->")}
 
 ## Objective 9: Assess forecast
 \
-22. Why do you think it is important to assess the forecast? How often should forecast assessment occur?  
+22. `r substr(quest["q22", ], 6, nchar(quest["q22", ]))`  
 **Answer:** `r params$a22`
 \
 
@@ -412,7 +418,7 @@ if (!assess_plot_chk) {cat("-->")}
 
 ## Objective 10: Update model
 
-23. Did your forecast improve when you updated your model parameters? Why do you think it is important to update the model?  
+23. `r substr(quest["q23", ], 6, nchar(quest["q23", ]))`  
 **Answer:** `r params$a23`
 \
 
@@ -427,7 +433,7 @@ if (!update_plot_chk) {cat("-->")}
 
 ## Objective 11: Next forecast
 
-24. Describe the new forecast of primary productivity which is generated? How do you think it will compare when we observe the next round of data?  
+24. `r substr(quest["q24", ], 6, nchar(quest["q24", ]))`  
 **Answer:** `r params$a24`
 \
 
@@ -441,7 +447,7 @@ if (!next_fc_plot_chk) {cat("<!---")}
 if (!next_fc_plot_chk) {cat("-->")}
 ```
 
-25. Why is the forecast cycle described as &quot;iterative&quot; (e.g. repetition of a process)?  
+25. `r substr(quest["q25", ], 6, nchar(quest["q25", ]))`  
 **Answer:** `r params$a25`
 \
 
@@ -449,7 +455,7 @@ if (!next_fc_plot_chk) {cat("-->")}
 
 ## Objective 12: Compare productivity forecasts between two different NEON sites
 
-26. Repeat Activity A and B with a different NEON site (ideally from a different region).
+26. `r substr(quest["q26", ], 6, nchar(quest["q26", ]))`
     a.  Apply the same model scenario (with the same model structure and parameters) which you developed in Q14 to this new site. How do you expect chlorophyll-a concentrations will respond _prior_ to running the simulation?  
     **Answer:** `r params$a26a`  
     b.  Was your hypothesis supported or refuted? Why?  
@@ -458,7 +464,7 @@ if (!next_fc_plot_chk) {cat("-->")}
     **Answer:** `r params$a26c`  
 \
 
-27. Repeat Q16-25 with the new site. Does forecast uncertainty differ at this site compared to the first selected site? Why do you think that is?  
+27. `r substr(quest["q27", ], 6, nchar(quest["q27", ]))`  
 **Answer:** `r params$a27`  
 \
 
