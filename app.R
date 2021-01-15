@@ -341,16 +341,48 @@ ui <- function(req) {
                           )
                         ), hr(),
                         fluidRow(
-                          column(4,
-                                 h3(tags$b("Student Handout")),
+                          column(4, offset = 1,
+                                 h3("Student Handout"),
                                  p("You can either fill out the embedded questions within the Shiny interface or download the student handout and answer the questions there.")
                                  ),
-                          column(4,
+                          column(4, offset = 1, 
+                                 br(), # br(), br(),
                                  p("Uncheck the box below to hide the questions throughout the Shiny app."),
                                  checkboxInput("show_q1", "Show questions", value = TRUE),
                                  p("Download Student Handout"),
                                  downloadButton(outputId = "stud_dl", label = "Download"),
                                  br()
+                          )
+                        ),
+                        #* Generate report buttons ====
+                        fluidRow(
+                          column(4, offset = 1,
+                                 introBox(
+                                   h3("Generate Report"),
+                                   p("This will take the answers you have input into this app and generate a Microsoft Word document (.docx) document with your answers which you can download and make further edits before submitting."),
+                                   actionButton("generate", "Generate Report (.docx)", icon = icon("file"), # This is the only button that shows up when the app is loaded
+                                                # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
+                                   ),
+                                   data.step = 6, data.intro = help_text["finish", 1]
+                                 ),
+                                 
+                                 conditionalPanel(condition = "output.reportbuilt", # This button appears after the report has been generated and is ready for download.
+                                                  downloadButton("download", "Download Report",
+                                                                 # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
+                                                  )), br(),
+                                 p("Questions still to be completed:"),
+                                 # verbatimTextOutput("check_list"),
+                                 wellPanel(
+                                   htmlOutput("check_list")
+                                 )
+                                 
+                          ),
+                          column(4,offset = 1,
+                                 h3("Save your progress"),
+                                 p("If you think that you might not finish all the activities you can save your process as you go. Click the 'Bookmark...' button below and save the web address either as bookmark or in a text file."),
+                                 p("Then to reload the app input the web address into your internet browser."),
+                                 p("If you are running this locally through RStudio on your own computer, you will need to have the app running before reloading your bookmarked web address. You can save this at any time throughout your progress"),
+                                 bookmarkButton(id = "bookmark1")
                           )
                         ),
                         fluidRow(
@@ -467,8 +499,9 @@ ui <- function(req) {
                                               textAreaInput2(inputId = "q4a", label = quest["q4a", 1], width = "90%"),
                                               textAreaInput2(inputId = "q4b", label = quest["q4b", 1], width = "90%"),
                                               textAreaInput2(inputId = "q4c", label = quest["q4c", 1], width = "90%"),
-                                              textAreaInput2(inputId = "q4d", label = quest["q4d", 1], width = "90%")
-                                              )
+                                              textAreaInput2(inputId = "q4d", label = quest["q4d", 1], width = "90%"),
+                                              textAreaInput2(inputId = "q4e", label = quest["q4e", 1], width = "90%")
+                                       )
                                        ),
                                      ),
                                  ),
@@ -536,7 +569,7 @@ border-color: #FFF;
                                                              ),
                                             DTOutput("table01"),
                                             p("Click below to see the latest image from the webcam on site (this may take 10-30 seconds)."),
-                                            actionButton("view_webcam", label = "View live feed")
+                                            actionButton("view_webcam", label = "View live feed", icon = icon("eye"))
                                             
                                             
                                             # p("Blah blah blah"),
@@ -606,8 +639,7 @@ border-color: #FFF;
                                             wellPanel(style = paste0("background: ", obj_bg),
                                               h3("Objective 2 - Inspect the Data"),
                                               p(module_text["obj_02", ]),
-                                              p("If there are some variables which you do not understand what they are, visit the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal", target = "_blank"), "and click 'Explore Data Products' and look up the different variables and how they are collected."),
-                                              p("Answer questions X-Y in the student handout related to data exploration.")
+                                              p("If there are some variables which you do not understand what they are, visit the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal", target = "_blank"), "and click 'Explore Data Products' and look up the different variables and how they are collected.")
                                             ),
                                             useShinyjs(),  # Set up shinyjs
                                             selectizeInput("view_var", "Select variable",
@@ -731,8 +763,7 @@ border-color: #FFF;
                                      hr(),
                                      column(12,
                                             h3("Next step"),
-                                            p("Next we will use this data and the identified related variables to help build our ecological model."),
-                                            p("Answer questions 10 and 11 in the student handout before moving to the 'Get Data & Build Model' tab.")
+                                            p("Next we will use this data and the identified related variables to help build our ecological model.")
                                             )
                                      )
                                    ),
@@ -1004,7 +1035,7 @@ border-color: #FFF;
                                               style = "width: 100px")
                           )
                         ),
-                        h5("Use buttons to navigate between the objective tabs", align = "center"),
+                        h5("Use buttons to navigate between the Objective tabs", align = "center"),
                         hr(), br()
                         ),
                
@@ -1487,10 +1518,15 @@ border-color: #FFF;
                                    ),
                                    hr(),
                                    fluidRow(
-                                     column(12, 
+                                     column(4, offset = 1, 
                                             h3("The Forecast Cycle"),
-                                            p("We have stepped through each of the steps within the forecast cycle"),
+                                            p(module_text["fc_cycle_end", ]),
                                             ),
+                                     column(5, offset = 1,
+                                            br(), br(), br(),
+                                            img(src = "mod5_viz_v2.png", height = "80%", 
+                                                width = "80%", align = "left")
+                                     )
                                      )
                                    )
                           ),
@@ -1514,7 +1550,7 @@ border-color: #FFF;
                         br(),
                         fluidRow(
                           column(12, 
-                                 h2("Activity C - Scale"),
+                                 h2("Activity C - Scale your model to a new site and generate ecological forecasts"),
                                  p("For Activity C, we want you to make a hypothesis about how you expect your model to work at a different NEON site."),
                                  p("Answer Q 27-29")
                           )
@@ -1549,29 +1585,6 @@ border-color: #FFF;
                           )
                         ),
                         hr(),
-                        #* Generate report buttons ====
-                        fluidRow(
-                          column(4,
-                                 introBox(
-                                   h3("Generate Report"),
-                                   p("This will take the answers you have input into the document and generate a Microsoft Word document (.docx) document with your answers which you can download and make further edits before submitting."),
-                                   actionButton("generate", "Generate Report", icon = icon("file"), # This is the only button that shows up when the app is loaded
-                                                # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
-                                   ),
-                                   data.step = 6, data.intro = help_text["finish", 1]
-                                 ),
-                                 
-                                 conditionalPanel(condition = "output.reportbuilt", # This button appears after the report has been generated and is ready for download.
-                                                  downloadButton("download", "Download Report",
-                                                                 # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
-                                                  ))
-                          ),
-                          column(4,offset = 2,
-                                 h3("Save your progress"),
-                                 p("You can save your current progress by bookmarking the web address generated from the button below."),
-                                 bookmarkButton(id = "bookmark1")
-                                 )
-                          )
                         )
                ),
     # Tab navigation buttons ----
@@ -1588,7 +1601,7 @@ border-color: #FFF;
         )
       ), data.step = 3, data.intro = help_text["tab_nav2", 1], data.position = "right"
     ),
-    h4("Use buttons to navigate between the activity tabs", align = "center"),
+    h4("Use buttons to navigate between the Activity tabs", align = "center"),
     br(), br()
     )
   }
@@ -1803,7 +1816,6 @@ server <- function(input, output, session) {#
   })
   
   # Read in site data ----
-  # neon_DT <- eventReactive(input$view_var, { # view_var
   neon_DT <- reactive({ # view_var
     validate(
       need(input$table01_rows_selected != "",
@@ -1813,12 +1825,15 @@ server <- function(input, output, session) {#
     read_var <- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
     units <- neon_vars$units[which(neon_vars$Short_name == input$view_var)][1]
     file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
+    validate(
+      need(file.exists(file), message = "This variable is not available at this site. Please select a different variable or site.")
+    )
     df <- read.csv(file)
     df[, 1] <- as.POSIXct(df[, 1], tz = "UTC")
     df[, -1] <- signif(df[, -1], 4)
     names(df)[ncol(df)] <- read_var
     
-    sel <- tryCatch(df[(selected()$pointNumber+1),,drop=FALSE] , error=function(e){NULL})
+    sel <- tryCatch(df[(selected$sel$pointNumber+1),,drop=FALSE] , error=function(e){NULL})
     
     
     return(list(data = df, sel = sel))
@@ -1911,11 +1926,24 @@ server <- function(input, output, session) {#
 
   })
   
+  selected <- reactiveValues(sel = NULL)
+  
   #selected
-  selected <- reactive({
-    event_data(event = "plotly_selected", source = "A")
+  observe({
+    selected$sel <- event_data(event = "plotly_selected", source = "A")
   })
   
+  # Reset selected point when changing variables - https://stackoverflow.com/questions/42996303/removing-plotly-click-event-data
+  observeEvent(input$view_var, {
+    if(input$view_var > 1) {
+      if(!is.null(selected$sel)) {
+        selected$sel <- NULL
+      }
+      
+    }
+  })
+  
+
   # Output stats ----
   output$out_stats <- renderText({
     
@@ -3851,6 +3879,7 @@ server <- function(input, output, session) {#
                    a4b = input$q4b,
                    a4c = input$q4c,
                    a4d = input$q4d,
+                   a4e = input$q4e,
                    a5a = input$q5a,
                    a5b = input$q5b,
                    a5c = input$q5c,
@@ -4094,10 +4123,10 @@ server <- function(input, output, session) {#
   })
   
   # Read values from state$values when we restore
-  onRestore(function(state) {
-    updateTabsetPanel(session, "maintab",
-                      selected = "mtab4")
-  })
+  # onRestore(function(state) {
+  #   updateTabsetPanel(session, "maintab",
+  #                     selected = "mtab4")
+  # })
   
   onRestored(function(state) {
     
@@ -4105,6 +4134,57 @@ server <- function(input, output, session) {#
     
   })
 
+  # Checklist for user inputs
+  output$check_list <- renderUI({
+    chk_list()
+  })
+  
+  chk_list <- reactive({
+    out_chk <- c(
+      if(input$name == "") {"Name"},
+      if(input$id_number == "") "ID number",
+      if(input$q1 == "") "Q. 1",
+      if(input$q2 == "") "Q. 2",
+      if(input$q3 == "") "Q. 3",
+      if(input$q4a == "" | input$q4b == "" | input$q4c == "" |input$q4d == "" |input$q4e == "") "Q. 4",
+      if(input$q5a == "" | input$q5b == "" | input$q5c == "" | input$q5d == "" | input$q5e == "" | input$q5f == "") "Q. 5",
+      if(is.null(input$q6a_mean) | is.null(input$q6a_max) | is.null(input$q6b_mean) | is.null(input$q6b_max) | is.null(input$q6c_mean) | is.null(input$q6c_max) | is.null(input$q6d_mean) | is.null(input$q6d_max) | is.null(input$q6e_mean) | is.null(input$q6e_max)) "Q. 6",
+      if(is.null(input$q7a) | is.null(input$q7b) | is.null(input$q7c) | is.null(input$q7d)) "Q. 7",
+      if(input$q8 == "") "Q. 8",
+      if(input$q9a == "Negative" & input$q9b == "Negative" & input$q9c == "Negative") "Q. 9",
+      if(length(input$rank_list_2) == 0 | length(input$rank_list_3) == 0) "Q. 10",
+      if(input$q11a == "Negative" & input$q11b == "Negative" & input$q11c == "Negative") "Q. 11",
+      if(input$q13a == "" | input$q13b == "") "Q. 13",
+      if(input$q14a == "" | input$q14b == "") "Q. 14",
+      if(input$save_params == 0) "Q. 15 Save table of parameters",
+      if(input$save_mod_run == 0) "Q. 15 Save plot of model run",
+      if(input$q16 == "") "Q. 16",
+      if(input$q17 == "") "Q. 17",
+      if(input$save_noaa_plot == 0) "Q. 17 Save plot of NOAA weather forecast",
+      if(input$q18a == "" | input$q18b == "" | input$q18c == "") "Q. 18",
+      if(input$q19 == "") "Q. 19",
+      if(input$q20 == "") "Q. 20",
+      if(input$save_comm_plot == 0) "Q. 19 Save plot of ecological forecast",
+      if(input$q21 == "") "Q. 21",
+      if(input$q22 == "") "Q. 22",
+      if(input$save_assess_plot == 0) "Q. 22 Save plot of assessment of the ecological forecast",
+      if(input$q23 == "") "Q. 23",
+      if(input$save_update_fc_plot == 0) "Q. 23 Save plot of updated ecological forecast",
+      if(input$q24 == "") "Q. 24",
+      if(input$save_new_fc_plot == 0) "Q. 23 Save plot of new ecological forecast",
+      if(input$q25 == "") "Q. 25",
+      if(input$q26a == "" | input$q26b == "" | input$q26c == "") "Q. 26",
+      if(input$q27 == "") "Q. 27"
+    )
+    HTML(
+      paste(
+        out_chk,
+        collapse = "<br/>"
+      )
+    )
+    
+
+  })
   
 }
 # enableBookmarking("url") # Needed for bookmarking currently not working
