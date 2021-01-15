@@ -4,80 +4,80 @@ output:
    word_document:
     reference_docx: report-style.docx
 params:
-  name: "Incomplete"
-  id_number: "Incomplete"
-  a1: "Incomplete"
-  a2: "Incomplete"
-  a3: "Incomplete"
-  a4a: "Incomplete"
-  a4b: "Incomplete"
-  a4c: "Incomplete"
-  a4d: "Incomplete"
-  a5a: "Incomplete"
-  a5b: "Incomplete"
-  a5c: "Incomplete"
-  a5d: "Incomplete"
-  a5e: "Incomplete"
-  a5f: "Incomplete"
-  a6a_mean: "Incomplete"
-  a6a_min: "Incomplete"
-  a6a_max: "Incomplete"
-  a6b_mean: "Incomplete"
-  a6b_min: "Incomplete"
-  a6b_max: "Incomplete"
-  a6c_mean: "Incomplete"
-  a6c_min: "Incomplete"
-  a6c_max: "Incomplete"
-  a6d_mean: "Incomplete"
-  a6d_min: "Incomplete"
-  a6d_max: "Incomplete"
-  a6e_mean: "Incomplete"
-  a6e_min: "Incomplete"
-  a6e_max: "Incomplete"
-  a7a: "Incomplete"
-  a7b: "Incomplete"
-  a7c: "Incomplete"
-  a7d: "Incomplete"
-  a8: "Incomplete"
-  a9a: "Incomplete"
-  a9b: "Incomplete"
-  a9c: "Incomplete"
-  a10_states: "Incomplete"
-  a10_pars: "Incomplete"
-  a11a: "Incomplete"
-  a11b: "Incomplete"
-  a11c: "Incomplete"
-  a12: "Incomplete"
-  a13a: "Incomplete"
-  a13b: "Incomplete"
-  a14a: "Incomplete"
-  a14b: "Incomplete"
-  a15: "Incomplete"
-  a16: "Incomplete"
-  a17: "Incomplete"
-  a18a: "Incomplete"
-  a18b: "Incomplete"
-  a18c: "Incomplete"
-  a19: "Incomplete"
-  a20: "Incomplete"
-  a21: "Incomplete"
-  a22: "Incomplete"
-  a23: "Incomplete"
-  a24: "Incomplete"
-  a25: "Incomplete"
-  a26a: "Incomplete"
-  a26b: "Incomplete"
-  a26c: "Incomplete"
-  a27: "Incomplete"
-  save_pars: "Incomplete"
-  pheno_file: "Incomplete"
-  site_html: "Incomplete"
-  mod_2019_png: "www/mod_run_2019.png"
-  noaa_plot: "www/noaa_fc.png"
-  comm_plot: "www/comm_fc_plot.png"
-  assess_plot: "www/assess_fc.png"
-  update_plot: "www/fc_update.png"
-  next_fc_plot: "www/new_fc.png"
+  name: ""
+  id_number: ""
+  a1: ""
+  a2: ""
+  a3: ""
+  a4a: ""
+  a4b: ""
+  a4c: ""
+  a4d: ""
+  a5a: ""
+  a5b: ""
+  a5c: ""
+  a5d: ""
+  a5e: ""
+  a5f: ""
+  a6a_mean: ""
+  a6a_min: ""
+  a6a_max: ""
+  a6b_mean: ""
+  a6b_min: ""
+  a6b_max: ""
+  a6c_mean: ""
+  a6c_min: ""
+  a6c_max: ""
+  a6d_mean: ""
+  a6d_min: ""
+  a6d_max: ""
+  a6e_mean: ""
+  a6e_min: ""
+  a6e_max: ""
+  a7a: ""
+  a7b: ""
+  a7c: ""
+  a7d: ""
+  a8: ""
+  a9a: ""
+  a9b: ""
+  a9c: ""
+  a10_states: ""
+  a10_pars: ""
+  a11a: ""
+  a11b: ""
+  a11c: ""
+  a12: ""
+  a13a: ""
+  a13b: ""
+  a14a: ""
+  a14b: ""
+  a15: ""
+  a16: ""
+  a17: ""
+  a18a: ""
+  a18b: ""
+  a18c: ""
+  a19: ""
+  a20: ""
+  a21: ""
+  a22: ""
+  a23: ""
+  a24: ""
+  a25: ""
+  a26a: ""
+  a26b: ""
+  a26c: ""
+  a27: ""
+  save_pars: ""
+  pheno_file: ""
+  site_html: ""
+  mod_2019_png: ""
+  noaa_plot: ""
+  comm_plot: ""
+  assess_plot: ""
+  update_plot: ""
+  next_fc_plot: ""
 ---
 
 ```{r setup, include=FALSE}
@@ -93,24 +93,24 @@ if(file.exists(params$save_pars)) {
   par_tab <- read.csv(params$save_pars, row.names = 1)
 } else {
   par_tab <- data.frame(
-  "Phytos" = rep(NA, 5),
-  "Zoops" = rep(NA, 5),
-  "Nutrients" = rep(NA, 5),
-  "Grazing" = rep(NA, 5),
-  "Mortality" = rep(NA, 5),
-  "Uptake" = rep(NA, 5), row.names = c("Q12", "Q13a", "Q13b", "Q14", "Q15")
+  "Phytos" = rep("", 5),
+  "Zoops" = rep("", 5),
+  "Nutrients" = rep("", 5),
+  "Grazing" = rep("", 5),
+  "Mortality" = rep("", 5),
+  "Uptake" = rep("", 5), row.names = c("Q12", "Q13a", "Q13b", "Q14", "Q15")
   )
 }
 
-
-# save_pars <- data.frame(
-#   "Phytos" = rep(NA, 5),
-#   "Zoops" = rep(NA, 5),
-#   "Nutrients" = rep(NA, 5),
-#   "Grazing" = rep(NA, 5),
-#   "Mortality" = rep(NA, 5),
-#   "Uptake" = rep(NA, 5), row.names = c("Q12", "Q13a", "Q13b", "Q14", "Q15")
-# )
+# Check for existence of files
+pheno_chk <- file.exists(params$pheno_file)
+site_html_chk <- file.exists(params$site_html)
+mod_ann_chk <- file.exists(params$mod_2019_png)
+noaa_plot_chk <- file.exists(params$noaa_plot)
+comm_plot_chk <- file.exists(params$comm_plot)
+assess_plot_chk <- file.exists(params$assess_plot)
+update_plot_chk <- file.exists(params$update_plot)
+next_fc_plot_chk <- file.exists(params$next_fc_plot)
 
 
 ```
@@ -208,7 +208,7 @@ Now navigate to the Shiny interface to answer the rest of the questions.
     **Answer:** `r params$a4b` &nbsp;
     c.  Why does this forecast exist?  
     **Answer:** `r params$a4c` &nbsp;
-    d.  Describe the way(s) in which the forecast is visualized.
+    d.  Describe the way(s) in which the forecast is visualized.  
     **Answer:** `r params$a4d` &nbsp;
 
 # Activity A: Get Data &amp; Build Model
@@ -231,8 +231,14 @@ if(file.exists(params$site_html)) {
 ```
 
 
+```{r results='asis', echo=FALSE}
+if (!pheno_chk) {cat("<!---")}
+```
 ![](`r params$pheno_file`)  
 *Figure 1. Phenocam image downloaded for `r params$a5a`.*
+```{r results='asis', echo=FALSE}
+if (!pheno_chk) {cat("-->")}
+```
 
 ## Objective 2: Explore data
 
@@ -323,8 +329,15 @@ kable(par_tab, caption = "Table 3. Parameters used in Q12-15", row.names = TRUE)
 15. Add the observations to the plot. Calibrate your model by selecting sensitive variables and adjusting the parameters until they best fit the observed data. Record your settings in Table 3.
 \
 
+```{r results='asis', echo=FALSE}
+if (!mod_ann_chk) {cat("<!---")}
+```
 ![](`r params$mod_2019_png`)  
 *Figure 2. Modeled primary productivity for `r params$a5a` compared to chlorophyll-a concentrations, a proxy measurement for aquatic primary productivity.*
+```{r results='asis', echo=FALSE}
+if (!mod_ann_chk) {cat("-->")}
+```
+\
 
 # Activity B: Forecast!
 
@@ -338,8 +351,14 @@ kable(par_tab, caption = "Table 3. Parameters used in Q12-15", row.names = TRUE)
 **Answer:** `r params$a17`
 \
 
+```{r results='asis', echo=FALSE}
+if (!noaa_plot_chk) {cat("<!---")}
+```
 ![](`r params$noaa_plot`)  
-*Figure 3. Weather forecast plot at `r params$a5a` generated from National Oceanic and Atmospheric Administration (NOAA)  [Global Ensemble Forecast System](https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs)  (GEFS).*  
+*Figure 3. Weather forecast plot at `r params$a5a` generated from National Oceanic and Atmospheric Administration (NOAA)  [Global Ensemble Forecast System](https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs)  (GEFS).* 
+```{r results='asis', echo=FALSE}
+if (!noaa_plot_chk) {cat("-->")}
+```
 
 18. Inspect the weather forecast data for the site you have chosen:
     a.  How does increasing the number of ensemble members in the weather forecast affect the size of the uncertainty in future weather?  
@@ -366,8 +385,14 @@ kable(par_tab, caption = "Table 3. Parameters used in Q12-15", row.names = TRUE)
 21. Describe the forecast of primary productivity in words such that it could be understood by a fellow classmate. How would you describe this chlorophyll-a forecast to a lake manager?  
 **Answer:** `r params$a21`  
 
+```{r results='asis', echo=FALSE}
+if (!comm_plot_chk) {cat("<!---")}
+```
 ![](`r params$comm_plot`)  
 *Figure 4. Ecological forecast for primary productivity at `r params$a5a` for the next 30 days.*  
+```{r results='asis', echo=FALSE}
+if (!comm_plot_chk) {cat("-->")}
+```
 \
 
 ## Objective 9: Assess forecast
@@ -376,8 +401,14 @@ kable(par_tab, caption = "Table 3. Parameters used in Q12-15", row.names = TRUE)
 **Answer:** `r params$a22`
 \
 
+```{r results='asis', echo=FALSE}
+if (!assess_plot_chk) {cat("<!---")}
+```
 ![](`r params$assess_plot`)  
-*Figure 5. Assessment of the forecast one week later and comparing the forecast to new observations at `r params$a5a`.*  
+*Figure 5. Assessment of the forecast one week later and comparing the forecast to new observations at `r params$a5a`.*   
+```{r results='asis', echo=FALSE}
+if (!assess_plot_chk) {cat("-->")}
+```
 
 ## Objective 10: Update model
 
@@ -385,8 +416,14 @@ kable(par_tab, caption = "Table 3. Parameters used in Q12-15", row.names = TRUE)
 **Answer:** `r params$a23`
 \
 
+```{r results='asis', echo=FALSE}
+if (!update_plot_chk) {cat("<!---")}
+```
 ![](`r params$update_plot`)  
 *Figure 6. Updated forecast by updating the model parameters at `r params$a5a`.*  
+```{r results='asis', echo=FALSE}
+if (!update_plot_chk) {cat("-->")}
+```
 
 ## Objective 11: Next forecast
 
@@ -394,8 +431,15 @@ kable(par_tab, caption = "Table 3. Parameters used in Q12-15", row.names = TRUE)
 **Answer:** `r params$a24`
 \
 
+
+```{r results='asis', echo=FALSE}
+if (!next_fc_plot_chk) {cat("<!---")}
+```
 ![](`r params$next_fc_plot`)  
-*Figure 7. The next ecological forecast using the updated model parameters at `r params$a5a`.*
+*Figure 7. The next ecological forecast using the updated model parameters at `r params$a5a`.*  
+```{r results='asis', echo=FALSE}
+if (!next_fc_plot_chk) {cat("-->")}
+```
 
 25. Why is the forecast cycle described as &quot;iterative&quot; (e.g. repetition of a process)?  
 **Answer:** `r params$a25`
