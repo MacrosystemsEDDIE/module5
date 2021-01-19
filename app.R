@@ -238,6 +238,9 @@ ui <- function(req) {
                         transition:transform 0.25s ease;
                         max-width: 100%; width: 100%; height: auto
                         }
+                        #dl_btn {
+                        width:290px
+                        }
                         #pheno:hover img{
     -webkit-transform:scale(1.5);
     transform:scale(1.5);
@@ -306,7 +309,7 @@ ui <- function(req) {
                                  # p("For more about Project EDDIE, you can visit the website ", a("here", href = "https://serc.carleton.edu/eddie/index.html", target = "_blank"), "."),
                                  h3("Macrosystems EDDIE"),
                                  p(id = "txt_j", module_text["Macro", ]),
-                                 p("For more information see the website ", a("here", href = "https://serc.carleton.edu/eddie/macrosystems/index.html", target = "_blank"), "."),
+                                 p(HTML(paste0("For more information see the website ",a(href = "https://serc.carleton.edu/eddie/macrosystems/index.html", "here", target = "_blank"), ".")))
                                  ),
                           column(5, offset = 1, 
                                  # id = "second", # Add border
@@ -328,9 +331,9 @@ ui <- function(req) {
                                    tags$li(id = "txt_j", module_text["workflow1", ]),
                                    tags$li(id = "txt_j", module_text["workflow2", ]),
                                    tags$li(id = "txt_j", module_text["workflow3", ]),
-                                   tags$li(id = "txt_j", module_text["workflow4", ]),
-                                   tags$li(id = "txt_j", module_text["workflow5", ]),
-                                   tags$li(id = "txt_j", module_text["workflow6", ])
+                                   tags$li(id = "txt_j", module_text["workflow4", ])
+                                   # tags$li(id = "txt_j", module_text["workflow5", ]),
+                                   # tags$li(id = "txt_j", module_text["workflow6", ])
                                  )
                           ),
                           column(6, align = "center", offset = 1,
@@ -362,14 +365,14 @@ ui <- function(req) {
                                  introBox(
                                    h3("Generate Report"),
                                    p("This will take the answers you have input into this app and generate a Microsoft Word document (.docx) document with your answers which you can download and make further edits before submitting. Return here when you have completed the module."),
-                                   actionButton("generate", "Generate Report (.docx)", icon = icon("file"), # This is the only button that shows up when the app is loaded
+                                   actionButton("generate", "Generate Report (.docx)", icon = icon("file"), width = "190px" # id = "dl_btn", # This is the only button that shows up when the app is loaded
                                                 # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
-                                   ), br(),
+                                   ), br(), br(),
                                    data.step = 6, data.intro = help_text["finish", 1]
                                  ),
                                  
                                  conditionalPanel(condition = "output.reportbuilt", # This button appears after the report has been generated and is ready for download.
-                                                  downloadButton("download", "Download Report",
+                                                  downloadButton("download", "Download Report", width = "60px", style = "width:190px;"
                                                                  # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
                                                   )), br(),
                                  p("Questions still to be completed:"),
@@ -415,7 +418,7 @@ ui <- function(req) {
                           hr(),
                           column(6,
                                  h3("Presentation Recap"),
-                                 p("The presentation accompanying this module covers the introduction to forecasting, the nutrient-phytoplankton-zooplankton model (NPZ) and the importance and relevance of Ecological Forecast."),
+                                 p("The presentation accompanying this module covers the introduction to forecasting, the nutrient-phytoplankton-zooplankton model (NPZ) and the importance and relevance of ecological forecasts."),
                                  p("What is a forecast?"),
                                  tags$ul(
                                    tags$li(module_text["what_forecast", ])
@@ -440,8 +443,7 @@ ui <- function(req) {
                         fluidRow(
                           column(6,
                                  h3("Data sources"),
-                                 p("This module will introduce key concepts within Ecological forecasting through exploration of ",
-                                   a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data", target = "_blank"), ", building a model and then generating a short-term ecological forecast.")
+                                 p(HTML(paste0('This module will introduce key concepts within Ecological forecasting through exploration of ', a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data", target = "_blank"), ", building a model and then generating a short-term ecological forecast.")))
                                  ),
                           column(6, align = "center",
                                  a(
@@ -459,7 +461,7 @@ ui <- function(req) {
                         fluidRow(
                           column(12,
                                  h3("Examples of Current Ecological Forecasts"),
-                                 p("Here are links to some current examples of ecological forecasts. Select one of the examples and answer Q4 below or in the student handout."))
+                                 p("Here are links to some current examples of ecological forecasts. Select one of the examples and answer Q4 below."))
                         ),
                         fluidRow(
                           column(4, offset = 1,
@@ -501,8 +503,7 @@ ui <- function(req) {
                                               textAreaInput2(inputId = "q4a", label = quest["q4a", 1], width = "90%"),
                                               textAreaInput2(inputId = "q4b", label = quest["q4b", 1], width = "90%"),
                                               textAreaInput2(inputId = "q4c", label = quest["q4c", 1], width = "90%"),
-                                              textAreaInput2(inputId = "q4d", label = quest["q4d", 1], width = "90%"),
-                                              textAreaInput2(inputId = "q4e", label = quest["q4e", 1], width = "90%")
+                                              textAreaInput2(inputId = "q4d", label = quest["q4d", 1], width = "90%")
                                        )
                                        ),
                                      ),
@@ -571,7 +572,7 @@ border-color: #FFF;
                                                              )
                                      ,
                                             DTOutput("table01"),
-                                            p("Click below to see the latest image from the webcam on site (this may take 10-30 seconds)."),
+                                            p(tags$b("Click 'View live feed' to see the latest image from the webcam on site (this may take 10-30 seconds).")),
                                             actionButton("view_webcam", label = "View live feed", icon = icon("eye"))
                                             
                                             
@@ -642,7 +643,7 @@ border-color: #FFF;
                                             wellPanel(style = paste0("background: ", obj_bg),
                                               h3("Objective 2 - Inspect the Data"),
                                               p(module_text["obj_02", ]),
-                                              p("If there are some variables which you do not understand what they are, visit the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal", target = "_blank"), "and click 'Explore Data Products' and look up the different variables and how they are collected.")
+                                              p("If there are some variables which you are not familiar with, visit the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal", target = "_blank"), "and click 'Explore Data Products' to learn more about how the data are collected.")
                                             ),
                                             useShinyjs(),  # Set up shinyjs
                                             selectizeInput("view_var", "Select variable",
@@ -766,7 +767,7 @@ border-color: #FFF;
                                      hr(),
                                      column(12,
                                             h3("Next step"),
-                                            p("Next we will use this data and the identified related variables to help build our ecological model.")
+                                            p("Next we will use these data and the identified related variables to help build our ecological model.")
                                             )
                                      )
                                    ),
@@ -797,7 +798,7 @@ border-color: #FFF;
                                             p(id = "txt_j", module_text["model3", ]),
                                             p(id = "txt_j", module_text["mod_desc", ]),
                                             p(id = "txt_j", module_text["phyto_chla", ]),
-                                            p("Click through the images to see how we can go from a conceptual food web model to a mathematical representation of the interaction of Nutrients (N), Phytoplankton (P) and Zooplankton (Z).", id = "txt_j")
+                                            p("Click through the images to see how we can go from a conceptual food web model to a mathematical representation of the interaction of Nutrients (N), Phytoplankton (P), and Zooplankton (Z).", id = "txt_j")
                                      ),
                                      column(6, offset = 1,
                                             slickROutput("slck_model")
@@ -926,7 +927,7 @@ border-color: #FFF;
                                             checkboxGroupInput("mod_sens", "Select which variables are used in the model:",
                                                                choices = list("Temperature")),
                                             h3("Initial conditions"),
-                                            p("Return to the 'Get Data & Build Model' tab to find suitable values to input for each of the states."),
+                                            p("Return to the 'Activity A' tab to find suitable values to input for each of the states."),
                                             p(tags$b("Phytoplankton")),
                                             # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
                                             sliderInput("phy_init", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
@@ -1002,14 +1003,7 @@ border-color: #FFF;
                                                 )
                                             ),
                                             br(),
-                                            p("How does the model output compare to in-lake observations? Here are some things you should look out for:"),
-                                            tags$ol(
-                                              tags$li("Is the model in the same range as the observations?"),
-                                              tags$li("Does it capture the seasonal patterns?"),
-                                              tags$li("Does the model simulate events seen as spikes?")
-                                            ),
-                                            p("Can you think of any potential reasons why the model does not do so well"),
-                                            p("We will explore some of these potential reasons later on.")
+                                            
                                             
                                             # wellPanel(
                                               # p("After running the scenarios in Q 13, adjust the model parameters to get the best fit with the pattern seen in the observed data. Not the values into the table in Q 14."),
@@ -1020,7 +1014,18 @@ border-color: #FFF;
                                      ),
                                    ),
                                    fluidRow(
-                                     column(12,
+                                     column(5, offset = 1,
+                                            h4("Notes"),
+                                            p("How does the model output compare to in-lake observations? Here are some things you should look out for:"),
+                                            tags$ol(
+                                              tags$li("Is the model in the same range as the observations?"),
+                                              tags$li("Does it capture the seasonal patterns?"),
+                                              tags$li("Does the model simulate events seen as spikes?")
+                                            ),
+                                            p("Can you think of any potential reasons why the model does not do so well"),
+                                            p("We will explore some of these potential reasons later on.")
+                                     ),
+                                     column(5, offset = 1,
                                             h4("Next step"),
                                             p("Now we have built our model we are going to use this to forecast short-term primary productivity"))
                                      )
@@ -1070,8 +1075,8 @@ border-color: #FFF;
                                             h3("Ecological Forecasting"),
                                             p(id = "txt_j", module_text["eco_forecast2", ]),
                                             br(),
-                                            p(id = "txt_j", "For this exercise we will forecast 30 days into the future using NOAA weather forecast data."),
-                                            p(id = "txt_j", "Before we dive in to this, we will need to understand what we mean we mean when we talk about uncertainty.")
+                                            p(id = "txt_j", "For this module, we will use our models developed in Activity A to forecast productivity 30 days into the future using NOAA weather forecasts."),
+                                            p(id = "txt_j", "Before we dive into this, we first need to understand what we mean when we talk about uncertainty!")
                                      ),
                                      column(6, align = "center",
                                             br(), br(),
@@ -1088,8 +1093,8 @@ border-color: #FFF;
                                             h3("What is Uncertainty?"),
                                             p(id = "txt_j", module_text["uncert1", ]),
                                             br(),
-                                            p("We will use the model you built on the 'Get Data & Build Model' tab to create an ecological forecast."),
-                                            p("One source of uncertainty is the data used to drive the model. For your forecast, you will be using actual NOAA weather forecast to drive your model. Load and examine this data below.")
+                                            p("We will use the model you built in Activity A to create an ecological forecast."),
+                                            p("One source of uncertainty is the data used to drive the model. For your forecast, you will be using actual NOAA weather forecast to drive your model. Load and examine these data below.")
                                      ),
                                      column(8, align = "center",
                                             img(src = "What_is_uncert.png", height = "60%", 
@@ -1125,8 +1130,6 @@ border-color: #FFF;
                                                          h3("Questions"),
                                                          h4(quest["q16", 1]),
                                                          textAreaInput2(inputId = "q16", label = "", width = "90%"),
-                                                         h4(quest["q17", 1]),
-                                                         textAreaInput2(inputId = "q17", label = "", width = "90%"),
                                                          br()
                                                   )
                                                 )
@@ -1170,10 +1173,10 @@ border-color: #FFF;
                                                 fluidRow(
                                                   column(10, offset = 1,
                                                          h3("Questions"),
-                                                         h4(quest["q18", 1]),
-                                                         textAreaInput2(inputId = "q18a", label = quest["q18a", 1], width = "90%"),
-                                                         textAreaInput2(inputId = "q18b", label = quest["q18b", 1], width = "90%"),
-                                                         textAreaInput2(inputId = "q18c", label = quest["q18c", 1], width = "90%"),
+                                                         h4(quest["q17", 1]),
+                                                         textAreaInput2(inputId = "q17a", label = quest["q17a", 1], width = "90%"),
+                                                         textAreaInput2(inputId = "q17b", label = quest["q17b", 1], width = "90%"),
+                                                         textAreaInput2(inputId = "q17c", label = quest["q17c", 1], width = "90%"),
                                                          br()
                                                   )
                                                 )
@@ -1199,7 +1202,7 @@ border-color: #FFF;
                                             h3("Driver uncertainty"),
                                             p(id = "txt_j", module_text["driver_uncert", ]),
                                             br(),
-                                            p(id = "txt_j", "A key component of what makes an ecological forecast a 'forecast', is that the model is driven by ", tags$b("forecasted"), "driving variables."),
+                                            p(id = "txt_j", "A key component of what makes an ecological forecast a 'forecast' is that the model is driven by ", tags$b("forecasted"), " driving variables."),
                                             # p("We will now use the weather forecast data loaded above to drive the calibrated model we built on the 'Build Model' tab to forecast chlorophyll-a concentrations into the future.")
                                      ),
                                      column(6, align = "center",
@@ -1269,10 +1272,10 @@ border-color: #FFF;
                                                 fluidRow(
                                                   column(10, offset = 1,
                                                          h3("Questions"),
+                                                         h4(quest["q18", 1]),
+                                                         textAreaInput2(inputId = "q18", label = "", width = "90%"),
                                                          h4(quest["q19", 1]),
                                                          textAreaInput2(inputId = "q19", label = "", width = "90%"),
-                                                         h4(quest["q20", 1]),
-                                                         textAreaInput2(inputId = "q20", label = "", width = "90%"),
                                                          br()
                                                   )
                                                 )
@@ -1313,8 +1316,8 @@ border-color: #FFF;
                                                 fluidRow(
                                                   column(10, offset = 1,
                                                          h3("Questions"),
-                                                         h4(quest["q21", 1]),
-                                                         textAreaInput2(inputId = "q21", label = "", width = "90%"),
+                                                         h4(quest["q20", 1]),
+                                                         textAreaInput2(inputId = "q20", label = "", width = "90%"),
                                                          br()
                                                   )
                                                 )
@@ -1335,7 +1338,7 @@ border-color: #FFF;
                                    fluidRow(
                                      column(6,
                                             h3("One week later..."),
-                                            p(id = "txt_j", "A week has passed since the forecast and you have collected a week of data. Now you are curious as to how well your forecast did. Now we can run an actual comparison to see how the forecast predictions compare to actual observed data"),
+                                            p(id = "txt_j", "A week has passed since the forecast, and you have collected a new week of data. Now you are curious to see how well your forecast performed. We can run an actual comparison to see how the forecast predictions compare to actual observed data."),
                                      ),
                                      column(6, align = "center",
                                             img(src = "06-assess-forecast.png",
@@ -1348,8 +1351,8 @@ border-color: #FFF;
                                             br(), br(), br(),
                                             wellPanel(
                                               h4("Assess forecast performance"),
-                                              p(id = "txt_j", "Comparing forecast results to actual measurements. This gives us an indication of how accurately our model is forecasting."),
-                                              p(id = "txt_j", "This is an important step as it indicates how well our model represents the system."),
+                                              p(id = "txt_j", "Comparing forecast results to actual measurements gives us an indication of how accurately our model is forecasting."),
+                                              p(id = "txt_j", "This is an important step as it indicates how well our model represents the system we are forecasting, as well as gives us an opportunity to improve the model for future forecasts."),
                                               checkboxInput("add_newobs", label = "Add new observations", FALSE),
                                               conditionalPanel("input.add_newobs",
                                                                actionButton('assess_fc3', label = div("Assess forecast",
@@ -1379,8 +1382,8 @@ border-color: #FFF;
                                                 fluidRow(
                                                   column(10, offset = 1,
                                                          h3("Questions"),
-                                                         h4(quest["q22", 1]),
-                                                         textAreaInput2(inputId = "q22", label = "", width = "90%"),
+                                                         h4(quest["q21", 1]),
+                                                         textAreaInput2(inputId = "q21", label = "", width = "90%"),
                                                          br()
                                                   )
                                                 )
@@ -1403,10 +1406,10 @@ border-color: #FFF;
                                    fluidRow(
                                      column(6,
                                             h3("Update Model"),
-                                            p(id = "txt_j", "How did your forecast do compared to the observations?"),
+                                            p(id = "txt_j", "How did your forecast perform compared to observations?"),
                                             p(id = "txt_j", "What does this tell you about the model?"),
-                                            p(id = "txt_j", "One of the best thing about ecological forecasting is that it allows us to test our hypothesis (e.g our model) and see if it is representing what is seen within the environment. If there is a bad fit between our model and observed data, this indicates our model is not capturing the processes."),
-                                            p(id = "txt_j", "One of the reasons for this poor fit could be that the parameters that best represent then annual pattern might not work best on shorter time sceles. If you have a poor model fit, adjust the parameters to see if you can improve the forecast."),
+                                            p(id = "txt_j", "One of the best things about ecological forecasting is that it allows us to test our hypotheses about how the world works (as described by our model). If there is a poor fit between our forecast and observed data, our model may not be accurately capturing environmental processes."),
+                                            p(id = "txt_j", "One of the mechanisms causing a poor fit could be the parameter values. To update the model, adjust the parameters to see if you can improve the forecast."),
                                      ),
                                      column(6, align = "center",
                                             img(src = "07-update-model.png",
@@ -1456,8 +1459,8 @@ border-color: #FFF;
                                                 fluidRow(
                                                   column(10, offset = 1,
                                                          h3("Questions"),
-                                                         h4(quest["q23", 1]),
-                                                         textAreaInput2(inputId = "q23", label = "", width = "90%"),
+                                                         h4(quest["q22", 1]),
+                                                         textAreaInput2(inputId = "q22", label = "", width = "90%"),
                                                          br()
                                                   )
                                                 )
@@ -1511,10 +1514,10 @@ border-color: #FFF;
                                                 fluidRow(
                                                   column(10, offset = 1,
                                                          h3("Questions"),
+                                                         h4(quest["q23", 1]),
+                                                         textAreaInput2(inputId = "q23", label = "", width = "90%"),
                                                          h4(quest["q24", 1]),
                                                          textAreaInput2(inputId = "q24", label = "", width = "90%"),
-                                                         h4(quest["q25", 1]),
-                                                         textAreaInput2(inputId = "q25", label = "", width = "90%"),
                                                          br()
                                                   )
                                                 )
@@ -1556,7 +1559,7 @@ border-color: #FFF;
                         fluidRow(
                           column(12, 
                                  h2("Activity C - Scale your model to a new site and generate ecological forecasts"),
-                                 p("For Activity C, we want you to make a hypothesis about how you expect your model to work at a different NEON site.")
+                                 p("For Activity C, we want you to make a hypothesis about how you expect your model to work forecasting dynamics at a different NEON site.")
                           )
                         ), 
                         fluidRow(
@@ -1576,12 +1579,12 @@ border-color: #FFF;
                                      fluidRow(
                                        column(10, offset = 1,
                                               h3("Questions"),
+                                              h4(quest["q25", 1]),
+                                              textAreaInput2(inputId = "q25a", label = quest["q25a", 1] , width = "90%"),
+                                              textAreaInput2(inputId = "q25b", label = quest["q25b", 1] , width = "90%"),
+                                              textAreaInput2(inputId = "q25c", label = quest["q25c", 1] , width = "90%"),
                                               h4(quest["q26", 1]),
-                                              textAreaInput2(inputId = "q26a", label = quest["q26a", 1] , width = "90%"),
-                                              textAreaInput2(inputId = "q26b", label = quest["q26b", 1] , width = "90%"),
-                                              textAreaInput2(inputId = "q26c", label = quest["q26c", 1] , width = "90%"),
-                                              h4(quest["q27", 1]),
-                                              textAreaInput2(inputId = "q27", label = "", width = "90%"),
+                                              textAreaInput2(inputId = "q26", label = "", width = "90%"),
                                               br()
                                        )
                                      )
@@ -2194,7 +2197,7 @@ server <- function(input, output, session) {#
     
     validate(
       need(input$table01_rows_selected != "",
-           message = "Please select a site on the 'Get Data & Build Model' tab")
+           message = "Please select a site on the 'Activity A' tab")
     )
     validate(
       need(input$load_fc > 0, "Please load the forecast")
@@ -2244,7 +2247,7 @@ server <- function(input, output, session) {#
     
     validate(
       need(input$table01_rows_selected != "",
-           message = "Please select a site on the 'Get Data & Build Model' tab")
+           message = "Please select a site on the 'Activity A' tab")
       )
     validate(
       need(input$load_fc > 0, "Please load the forecast")
@@ -2344,7 +2347,7 @@ server <- function(input, output, session) {#
     
     validate(
       need(input$table01_rows_selected != "",
-           message = "Please select a site on the 'Get Data & Build Model' tab")
+           message = "Please select a site on the 'Activity A' tab")
     )
     validate(
       need(input$load_fc > 0, "Please load the forecast")
@@ -2616,7 +2619,7 @@ server <- function(input, output, session) {#
   output$mod_ann_plot <- renderPlotly({
     
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
       need(input$run_mod_ann > 0, "Click 'Run Model'")
@@ -2657,7 +2660,7 @@ server <- function(input, output, session) {#
   output$mod_phyto_plot <- renderPlotly({
     
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
       need(input$run_mod_ann > 0, "Click 'Run Model'")
@@ -2701,7 +2704,7 @@ server <- function(input, output, session) {#
   observeEvent(input$save_mod_run, {
     
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
       need(input$run_mod_ann > 0, "Click 'Run Model'")
@@ -2875,7 +2878,7 @@ server <- function(input, output, session) {#
   output$viz_output2 <- renderDT({
     
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
       need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
@@ -2904,7 +2907,7 @@ server <- function(input, output, session) {#
   output$plot_ecof2 <- renderPlotly({
     
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
       need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
@@ -3010,7 +3013,7 @@ server <- function(input, output, session) {#
     
     
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
       need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
@@ -3104,7 +3107,7 @@ server <- function(input, output, session) {#
     output$comm_fc <- renderImage({
       
       validate(
-        need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
+        need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
       )
       validate(
         need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
@@ -3141,7 +3144,7 @@ server <- function(input, output, session) {#
            message = paste0("The number of members must be between 1 and 30"))
     )
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     
     # Load Chl-a observations
@@ -3282,7 +3285,7 @@ server <- function(input, output, session) {#
            message = paste0("The number of members must be between 1 and 30"))
     )
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     
     # Progress bar
@@ -3736,7 +3739,7 @@ server <- function(input, output, session) {#
   output$plot_ecof4 <- renderPlotly({
 
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     
     # Load Chl-a observations
@@ -3819,7 +3822,7 @@ server <- function(input, output, session) {#
   observeEvent(input$save_new_fc_plot, { 
     
     validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     
     # Progress bar
@@ -3928,7 +3931,6 @@ server <- function(input, output, session) {#
                    a4b = input$q4b,
                    a4c = input$q4c,
                    a4d = input$q4d,
-                   a4e = input$q4e,
                    a5a = input$q5a,
                    a5b = input$q5b,
                    a5c = input$q5c,
@@ -3970,21 +3972,20 @@ server <- function(input, output, session) {#
                    a14b = input$q14b,
                    a15 = input$q15,
                    a16 = input$q16,
-                   a17 = input$q17,
-                   a18a = input$q18a,
-                   a18b = input$q18b,
-                   a18c = input$q18c,
+                   a17a = input$q17a,
+                   a17b = input$q17b,
+                   a17c = input$q17c,
+                   a18 = input$q18,
                    a19 = input$q19,
                    a20 = input$q20,
                    a21 = input$q21,
                    a22 = input$q22,
                    a23 = input$q23,
                    a24 = input$q24,
-                   a25 = input$q25,
-                   a26a = input$q26a,
-                   a26b = input$q26b,
-                   a26c = input$q26c,
-                   a27 = input$q27,
+                   a25a = input$q25a,
+                   a25b = input$q25b,
+                   a25c = input$q25c,
+                   a26 = input$q26,
                    save_pars = par_file,
                    pheno_file = pheno_file,
                    site_html = "data/site.html",
@@ -4209,7 +4210,7 @@ server <- function(input, output, session) {#
       if(input$q1 == "") "Q. 1",
       if(input$q2 == "") "Q. 2",
       if(input$q3 == "") "Q. 3",
-      if(input$q4a == "" | input$q4b == "" | input$q4c == "" |input$q4d == "" |input$q4e == "") "Q. 4",
+      if(input$q4a == "" | input$q4b == "" | input$q4c == "" |input$q4d == "") "Q. 4",
       if(input$q5a == "" | input$q5b == "" | input$q5c == "" | input$q5d == "" | input$q5e == "" | input$q5f == "") "Q. 5",
       if(is.null(input$q6a_mean) | is.null(input$q6a_max) | is.null(input$q6b_mean) | is.null(input$q6b_max) | is.null(input$q6c_mean) | is.null(input$q6c_max) | is.null(input$q6d_mean) | is.null(input$q6d_max) | is.null(input$q6e_mean) | is.null(input$q6e_max)) "Q. 6",
       if(is.null(input$q7a) | is.null(input$q7b) | is.null(input$q7c) | is.null(input$q7d)) "Q. 7",
@@ -4222,22 +4223,21 @@ server <- function(input, output, session) {#
       if(input$save_params == 0) "Q. 15 Save table of parameters",
       if(input$save_mod_run == 0) "Q. 15 Save plot of model run",
       if(input$q16 == "") "Q. 16",
-      if(input$q17 == "") "Q. 17",
-      if(input$save_noaa_plot == 0) "Q. 17 Save plot of NOAA weather forecast",
-      if(input$q18a == "" | input$q18b == "" | input$q18c == "") "Q. 18",
+      if(input$save_noaa_plot == 0) "Q. 16 Save plot of NOAA weather forecast",
+      if(input$q17a == "" | input$q17b == "" | input$q17c == "") "Q. 17",
+      if(input$q18 == "") "Q. 18",
       if(input$q19 == "") "Q. 19",
-      if(input$q20 == "") "Q. 20",
       if(input$save_comm_plot == 0) "Q. 19 Save plot of ecological forecast",
+      if(input$q20 == "") "Q. 20",
       if(input$q21 == "") "Q. 21",
-      if(input$q22 == "") "Q. 22",
       if(input$save_assess_plot == 0) "Q. 22 Save plot of assessment of the ecological forecast",
+      if(input$q22 == "") "Q. 22",
+      if(input$save_update_fc_plot == 0) "Q. 22 Save plot of updated ecological forecast",
       if(input$q23 == "") "Q. 23",
-      if(input$save_update_fc_plot == 0) "Q. 23 Save plot of updated ecological forecast",
-      if(input$q24 == "") "Q. 24",
       if(input$save_new_fc_plot == 0) "Q. 23 Save plot of new ecological forecast",
-      if(input$q25 == "") "Q. 25",
-      if(input$q26a == "" | input$q26b == "" | input$q26c == "") "Q. 26",
-      if(input$q27 == "") "Q. 27"
+      if(input$q24 == "") "Q. 24",
+      if(input$q25a == "" | input$q25b == "" | input$q25c == "") "Q. 25",
+      if(input$q26 == "") "Q. 26"
     )
     
     if(length(out_chk) == 0) {

@@ -13,7 +13,6 @@ params:
   a4b: ""
   a4c: ""
   a4d: ""
-  a4e: ""
   a5a: ""
   a5b: ""
   a5c: ""
@@ -55,21 +54,20 @@ params:
   a14b: ""
   a15: ""
   a16: ""
-  a17: ""
-  a18a: ""
-  a18b: ""
-  a18c: ""
+  a17a: ""
+  a17b: ""
+  a17c: ""
+  a18: ""
   a19: ""
   a20: ""
   a21: ""
   a22: ""
   a23: ""
   a24: ""
-  a25: ""
-  a26a: ""
-  a26b: ""
-  a26c: ""
-  a27: ""
+  a25a: ""
+  a25b: ""
+  a25c: ""
+  a26: ""
   save_pars: ""
   pheno_file: ""
   site_html: ""
@@ -214,8 +212,6 @@ Now navigate to the Shiny interface to answer the rest of the questions.
     **Answer:** `r params$a4c` &nbsp;
     d.  `r substr(quest["q4d", ], 3, nchar(quest["q4d", ]))`  
     **Answer:** `r params$a4d` &nbsp;
-    e.  `r substr(quest["q4e", ], 3, nchar(quest["q4e", ]))`  
-    **Answer:** `r params$a4e` &nbsp;
 
 # Activity A: Get Data &amp; Build Model
 
@@ -349,13 +345,10 @@ if (!mod_ann_chk) {cat("-->")}
 
 ## Objective 6: Examine uncertainty  
 \
-16. `r substr(quest["q16", ], 6, nchar(quest["q16", ]))`  
+16. `r substr(quest["q16", ], 6, nchar(quest["q16", ]))`
 **Answer:** `r params$a16`
 \
 
-17. `r substr(quest["q17", ], 6, nchar(quest["q17", ]))`  
-**Answer:** `r params$a17`
-\
 
 ```{r results='asis', echo=FALSE}
 if (!noaa_plot_chk) {cat("<!---")}
@@ -366,30 +359,30 @@ if (!noaa_plot_chk) {cat("<!---")}
 if (!noaa_plot_chk) {cat("-->")}
 ```
 
-18. `r substr(quest["q18", ], 6, nchar(quest["q18", ]))`
-    a.  `r substr(quest["q18a", ], 3, nchar(quest["q18a", ]))`  
-    **Answer:** `r params$a18a`  
-    b.  `r substr(quest["q18b", ], 3, nchar(quest["q18b", ]))`  
-    **Answer:** `r params$a18b`  
-    c.  `r substr(quest["q18c", ], 3, nchar(quest["q18c", ]))`  
-    **Answer:** `r params$a18c`  
+17. `r substr(quest["q17", ], 6, nchar(quest["q17", ]))`
+    a.  `r substr(quest["q17a", ], 3, nchar(quest["q17a", ]))`  
+    **Answer:** `r params$a17a`  
+    b.  `r substr(quest["q17b", ], 3, nchar(quest["q17b", ]))`  
+    **Answer:** `r params$a17b`  
+    c.  `r substr(quest["q17c", ], 3, nchar(quest["q17c", ]))`  
+    **Answer:** `r params$a17c`  
     \
 
 
 ## Objective 7: Forecast
+
+18. `r substr(quest["q18", ], 6, nchar(quest["q18", ]))`  
+**Answer:** `r params$a18`
 \
+
 19. `r substr(quest["q19", ], 6, nchar(quest["q19", ]))`  
 **Answer:** `r params$a19`
 \
 
-20. `r substr(quest["q20", ], 6, nchar(quest["q20", ]))`  
-**Answer:** `r params$a20`
-\
-
 ## Objective 8: Communicate forecast
 \
-21. `r substr(quest["q21", ], 6, nchar(quest["q21", ]))`  
-**Answer:** `r params$a21`  
+20. `r substr(quest["q20", ], 6, nchar(quest["q20", ]))`
+**Answer:** `r params$a20`  
 
 ```{r results='asis', echo=FALSE}
 if (!comm_plot_chk) {cat("<!---")}
@@ -403,8 +396,8 @@ if (!comm_plot_chk) {cat("-->")}
 
 ## Objective 9: Assess forecast
 \
-22. `r substr(quest["q22", ], 6, nchar(quest["q22", ]))`  
-**Answer:** `r params$a22`
+21. `r substr(quest["q21", ], 6, nchar(quest["q21", ]))`
+**Answer:** `r params$a21`
 \
 
 ```{r results='asis', echo=FALSE}
@@ -418,8 +411,8 @@ if (!assess_plot_chk) {cat("-->")}
 
 ## Objective 10: Update model
 
-23. `r substr(quest["q23", ], 6, nchar(quest["q23", ]))`  
-**Answer:** `r params$a23`
+22. `r substr(quest["q22", ], 6, nchar(quest["q22", ]))`
+**Answer:** `r params$a22`
 \
 
 ```{r results='asis', echo=FALSE}
@@ -433,8 +426,8 @@ if (!update_plot_chk) {cat("-->")}
 
 ## Objective 11: Next forecast
 
-24. `r substr(quest["q24", ], 6, nchar(quest["q24", ]))`  
-**Answer:** `r params$a24`
+23. `r substr(quest["q23", ], 6, nchar(quest["q23", ]))`  
+**Answer:** `r params$a23`
 \
 
 
@@ -447,25 +440,25 @@ if (!next_fc_plot_chk) {cat("<!---")}
 if (!next_fc_plot_chk) {cat("-->")}
 ```
 
-25. `r substr(quest["q25", ], 6, nchar(quest["q25", ]))`  
-**Answer:** `r params$a25`
+24. `r substr(quest["q24", ], 6, nchar(quest["q24", ]))`  
+**Answer:** `r params$a24`
 \
 
 # Activity C: Scale
 
 ## Objective 12: Compare productivity forecasts between two different NEON sites
 
-26. `r substr(quest["q26", ], 6, nchar(quest["q26", ]))`
+25. `r substr(quest["q25", ], 6, nchar(quest["q25", ]))`
     a.  Apply the same model scenario (with the same model structure and parameters) which you developed in Q14 to this new site. How do you expect chlorophyll-a concentrations will respond _prior_ to running the simulation?  
-    **Answer:** `r params$a26a`  
+    **Answer:** `r params$a25a`  
     b.  Was your hypothesis supported or refuted? Why?  
-    **Answer:** `r params$a26b`  
+    **Answer:** `r params$a25b`  
     c.  Revisit your hypothesis from page 3 Q3, what did you find out about the different productivity forecasts in warmer vs colder sites?  
-    **Answer:** `r params$a26c`  
+    **Answer:** `r params$a25c`  
 \
 
-27. `r substr(quest["q27", ], 6, nchar(quest["q27", ]))`  
-**Answer:** `r params$a27`  
+26. `r substr(quest["q26", ], 6, nchar(quest["q26", ]))`  
+**Answer:** `r params$a26`  
 \
 
 
