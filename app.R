@@ -350,7 +350,9 @@ ui <- function(req) {
                                  p("Uncheck the box below to hide the questions throughout the Shiny app."),
                                  checkboxInput("show_q1", "Show questions", value = TRUE),
                                  p("Download Student Handout"),
-                                 downloadButton(outputId = "stud_dl", label = "Download"),
+                                 conditionalPanel("output.handoutbuilt",
+                                   downloadButton(outputId = "stud_dl", label = "Download"),
+                                 ),
                                  br()
                           )
                         ),
@@ -4122,12 +4124,25 @@ server <- function(input, output, session) {#
   })
   
   # Downloading Student Handout ----
+  
+  # Hide download button until report is generated
+  handout <- reactiveValues(filepath = NULL) #This creates a short-term storage location for a filepath
+  output$handoutbuilt <- reactive({
+    return(file.exists("report.docx"))
+  })
+  outputOptions(output, 'handoutbuilt', suspendWhenHidden= FALSE)
+  
+  handout_file <- "Student_handout.docx"
+  # tmp_file2 <- tempfile()
+  rmarkdown::render("report.Rmd",
+                    output_format = "all")
+  
   output$stud_dl <-  downloadHandler(
     filename = function() {
-      "StudentHandout.docx"
+      handout_file
     },
     content = function(file) {
-      file.copy("data/StudentHandout.docx", file)
+      file.copy("report.docx", file)
     }
   )
 
