@@ -359,10 +359,10 @@ ui <- function(req) {
                           column(4, offset = 1,
                                  introBox(
                                    h3("Generate Report"),
-                                   p("This will take the answers you have input into this app and generate a Microsoft Word document (.docx) document with your answers which you can download and make further edits before submitting."),
+                                   p("This will take the answers you have input into this app and generate a Microsoft Word document (.docx) document with your answers which you can download and make further edits before submitting. Return here when you have completed the module."),
                                    actionButton("generate", "Generate Report (.docx)", icon = icon("file"), # This is the only button that shows up when the app is loaded
                                                 # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
-                                   ),
+                                   ), br(),
                                    data.step = 6, data.intro = help_text["finish", 1]
                                  ),
                                  
@@ -559,14 +559,15 @@ border-color: #FFF;
                                      column(4,
                                             h2("Site Description"),
                                             p("Select a site in the table to highlight on the map"),
-                                            conditionalPanel("row_num > 25",
+                                            conditionalPanel("input.row_num > 25",
                                                              selectizeInput("row_num", "Select row",
-                                                                            choices = 1:nrow(neon_sites_df),
+                                                                            choices = 1:nrow(neon_sites_df), 
                                                                             options = list(
                                                                               placeholder = 'Please select a row',
                                                                               onInitialize = I('function() { this.setValue(""); }')),
                                                                             )
-                                                             ),
+                                                             )
+                                     ,
                                             DTOutput("table01"),
                                             p("Click below to see the latest image from the webcam on site (this may take 10-30 seconds)."),
                                             actionButton("view_webcam", label = "View live feed", icon = icon("eye"))
@@ -912,7 +913,7 @@ border-color: #FFF;
                                               plotlyOutput("mod_ann_plot")
                                             ),
                                             br(),
-                                            actionButton("save_mod_run", "Save plot", icon = icon("save"))
+                                            actionButton("save_mod_run", "Save plot", icon = icon("save")), br()
                                      )
                                    ),
                                    fluidRow(
@@ -1484,9 +1485,11 @@ border-color: #FFF;
                                             sliderInput("nut_init3", "Nutrients", min = 0.01, max = 20, step = 0.1, value = 9),
                                             wellPanel(
                                               actionButton('load_fc3', label = div("Load Forecast inputs", icon("download")),
-                                                           width = "70%"),
-                                              actionButton('run_fc3', label = div("Run Forecast", icon("running")),
-                                                           width = "70%"),
+                                                           width = "70%"), br(),
+                                              conditionalPanel("input.load_fc3",
+                                                               actionButton('run_fc3', label = div("Run Forecast", icon("running")),
+                                                                            width = "70%")
+                                                               ),
                                               
                                             )
                                      ),
@@ -1551,8 +1554,7 @@ border-color: #FFF;
                         fluidRow(
                           column(12, 
                                  h2("Activity C - Scale your model to a new site and generate ecological forecasts"),
-                                 p("For Activity C, we want you to make a hypothesis about how you expect your model to work at a different NEON site."),
-                                 p("Answer Q 27-29")
+                                 p("For Activity C, we want you to make a hypothesis about how you expect your model to work at a different NEON site.")
                           )
                         ), 
                         fluidRow(
@@ -1583,6 +1585,12 @@ border-color: #FFF;
                                      )
                                  )
                           )
+                        ),
+                        fluidRow(
+                          column(12,
+                                 h2("Completed Module!"),
+                                 p("This is the end of the module. If you have been inputting your answers into the app you will need to return to the 'Introduction' tab and generate the final report")
+                                 )
                         ),
                         hr(),
                         )
@@ -1948,7 +1956,7 @@ server <- function(input, output, session) {#
   output$out_stats <- renderText({
     
     validate(
-      need(nrow(neon_DT()$sel) > 0, "Select points in the plot using the 'Box Select' or 'Lasso Select'")
+      need(nrow(neon_DT()$sel) > 0, "Select points in the plot using the 'Box Select' or 'Lasso Select' option in the top right corner of the plot.")
     )
     
     if(input$stat_calc == "sd") {
@@ -2347,6 +2355,13 @@ server <- function(input, output, session) {#
       
     )
     
+    # Progress bar
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Saving plot as image file for the report.", 
+                 detail = "This may take a while. This window will disappear  
+                     when it is downloaded.", value = 0.5)
+    
     p <- ggplot()
     
     
@@ -2424,8 +2439,7 @@ server <- function(input, output, session) {#
     
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
-    
-    
+    progress$set(value = 1)
     # show("main_content")
   }, ignoreNULL = FALSE
   )
@@ -2691,6 +2705,13 @@ server <- function(input, output, session) {#
       need(input$run_mod_ann > 0, "Click 'Run Model'")
     )
     
+    # Progress bar
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Saving plot as image file for the report.", 
+                 detail = "This may take a while. This window will disappear  
+                     when it is downloaded.", value = 0.5)
+    
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
     units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -2722,7 +2743,7 @@ server <- function(input, output, session) {#
     
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
-    
+    progress$set(value = 1)
     # show("main_content")
   }, ignoreNULL = FALSE
   )
@@ -2999,11 +3020,16 @@ server <- function(input, output, session) {#
       need(input$members2 >= 1 & input$members2 <= 30,
            message = paste0("The number of members must be between 1 and 30"))
     )
-    
-    
     validate(
       need(input$run_fc2 > 0, "Click 'Run Forecast'")
     )
+    
+    # Progress bar
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Saving plot as image file for the report.", 
+                 detail = "This may take a while. This window will disappear  
+                     when it is downloaded.", value = 0.5)
     
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -3072,7 +3098,7 @@ server <- function(input, output, session) {#
     
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
-    
+    progress$set(value = 1)
     output$comm_fc <- renderImage({
       
       validate(
@@ -3257,6 +3283,13 @@ server <- function(input, output, session) {#
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
     )
     
+    # Progress bar
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Saving plot as image file for the report.", 
+                 detail = "This may take a while. This window will disappear  
+                     when it is downloaded.", value = 0.5)
+    
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
     units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -3340,7 +3373,7 @@ server <- function(input, output, session) {#
     
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
-    
+    progress$set(value = 1)
     # show("main_content")
   }, ignoreNULL = FALSE
   )
@@ -3512,12 +3545,19 @@ server <- function(input, output, session) {#
   
   
   #* Save plot for updated forecast ====
-  observeEvent(input$save_update_fc_plot, { #save_new_fc_plot
+  observeEvent(input$save_update_fc_plot, { 
     
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site in Objective 1.")
     ) 
+    
+    # Progress bar
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Saving plot as image file for the report.", 
+                 detail = "This may take a while. This window will disappear  
+                     when it is downloaded.", value = 0.5)
     
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -3587,7 +3627,7 @@ server <- function(input, output, session) {#
     
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
-    
+    progress$set(value = 1)
     # show("main_content")
   }, ignoreNULL = FALSE
   )
@@ -3780,6 +3820,13 @@ server <- function(input, output, session) {#
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Get Data & Build Model' tab - Objective 1")
     )
     
+    # Progress bar
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Saving plot as image file for the report.", 
+                 detail = "This may take a while. This window will disappear  
+                     when it is downloaded.", value = 0.5)
+    
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
     units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -3849,7 +3896,7 @@ server <- function(input, output, session) {#
     
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
-    
+    progress$set(value = 1)
     # show("main_content")
   }, ignoreNULL = FALSE
   )
@@ -3955,7 +4002,7 @@ server <- function(input, output, session) {#
            output_file = tmp_file,
            params = params, 
            envir = new.env(parent = globalenv()))
-    
+    progress$set(value = 1)
     report$filepath <- tmp_file #Assigning in the temp file where the .pdf is located to the reactive file created above
     
   })
@@ -3998,7 +4045,7 @@ server <- function(input, output, session) {#
   
   observe({
     toggleState(id = "prevBtn1", condition = rv1$prev > 0)
-    toggleState(id = "nextBtn1", condition = rv1$nxt < 8)
+    toggleState(id = "nextBtn1", condition = rv1$nxt < 7)
     hide(selector = ".page")
     show(paste0("mtab", rv1$nxt))
   })
@@ -4123,13 +4170,14 @@ server <- function(input, output, session) {#
   })
   
   # Read values from state$values when we restore
-  # onRestore(function(state) {
-  #   updateTabsetPanel(session, "maintab",
-  #                     selected = "mtab4")
-  # })
+  onRestore(function(state) {
+    updateTabsetPanel(session, "maintab",
+                      selected = "mtab4")
+    updateTabsetPanel(session, "tabseries1",
+                      selected = "obj1")
+  })
   
   onRestored(function(state) {
-    
     updateSelectizeInput(session, "row_num", selected = state$values$sel_row)
     
   })
@@ -4176,6 +4224,11 @@ server <- function(input, output, session) {#
       if(input$q26a == "" | input$q26b == "" | input$q26c == "") "Q. 26",
       if(input$q27 == "") "Q. 27"
     )
+    
+    if(length(out_chk) == 0) {
+      out_chk <- "Finished! All answers have been input into the app."
+    }
+    
     HTML(
       paste(
         out_chk,
@@ -4189,3 +4242,4 @@ server <- function(input, output, session) {#
 }
 # enableBookmarking("url") # Needed for bookmarking currently not working
 shinyApp(ui, server, enableBookmarking = "url")
+# deployApp(account = "macrosystemseddie")
