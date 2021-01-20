@@ -2227,9 +2227,9 @@ server <- function(input, output, session) {#
     validate(
       need(input$load_fc > 0, "Please load the forecast")
     )
-    validate(
-      need(!is.null(input$fc_date), "Please select a date")
-    )
+    # validate(
+    #   need(!is.null(input$fc_date), "Please select a date")
+    # )
     validate(
       need(input$members >= 1 & input$members <= membs, paste0("Please select a number of members between 1 and ", membs))
       )
@@ -2277,9 +2277,9 @@ server <- function(input, output, session) {#
     validate(
       need(input$load_fc > 0, "Please load the forecast")
     )
-    validate(
-      need(!is.null(input$fc_date), "Please select a date")
-    )
+    # validate(
+    #   need(!is.null(input$fc_date), "Please select a date")
+    # )
     validate(
       need(input$members >= 1 & input$members <= membs, paste0("Please select a number of members between 1 and ", membs))
       
@@ -2377,9 +2377,9 @@ server <- function(input, output, session) {#
     validate(
       need(input$load_fc > 0, "Please load the forecast")
     )
-    validate(
-      need(!is.null(input$fc_date), "Please select a date")
-    )
+    # validate(
+    #   need(!is.null(input$fc_date), "Please select a date")
+    # )
     validate(
       need(input$members >= 1 & input$members <= membs, paste0("Please select a number of members between 1 and ", membs))
       
@@ -3761,6 +3761,16 @@ server <- function(input, output, session) {#
     return(mlt)
   })
   
+  # Update initial conditions
+  observeEvent(input$run_fc2, {
+    phy_init2 <- input$phy_init2
+    updateSliderInput(session, "phy_init3", value = phy_init2)
+    zoo_init2 <- input$zoo_init2
+    updateSliderInput(session, "zoo_init3", value = zoo_init2)
+    nut_init2 <- input$nut_init2
+    updateSliderInput(session, "nut_init3", value = nut_init2)
+  })
+  
   output$plot_ecof4 <- renderPlotly({
 
     validate(
@@ -4180,7 +4190,7 @@ server <- function(input, output, session) {#
   )
 
   # Updating sliders from first inputs ----
-  observe({
+  observeEvent(input$run_mod_ann, {
     phy_init1 <- input$phy_init
     updateSliderInput(session, "phy_init2", value = phy_init1)
     zoo_init1 <- input$zoo_init
@@ -4195,9 +4205,9 @@ server <- function(input, output, session) {#
     updateSliderInput(session, "mort_rate2", value = mort_rate1)
     nut_uptake1 <- input$nut_uptake
     updateSliderInput(session, "nut_uptake2", value = nut_uptake1)
+    
   })
   
-
   
   observe({
     dt_proxy <- dataTableProxy("table01")
