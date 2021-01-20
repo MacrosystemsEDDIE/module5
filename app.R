@@ -303,15 +303,12 @@ ui <- function(req) {
                           ),
                         hr(),
                         fluidRow(
-                          column(6,
-                                 # h3("Project EDDIE"),
-                                 # p(module_text["EDDIE", ]),
-                                 # p("For more about Project EDDIE, you can visit the website ", a("here", href = "https://serc.carleton.edu/eddie/index.html", target = "_blank"), "."),
+                          column(5,
                                  h3("Macrosystems EDDIE"),
                                  p(id = "txt_j", module_text["Macro", ]),
                                  p(HTML(paste0("For more information see the website ",a(href = "https://serc.carleton.edu/eddie/macrosystems/index.html", "here", target = "_blank"), ".")))
                                  ),
-                          column(5, offset = 1, 
+                          column(5, offset = 2, 
                                  # id = "second", # Add border
                                  br(), br(), 
                                  img(src = "MacroEDDIE Logo.png", height = "70%", 
@@ -416,7 +413,7 @@ ui <- function(req) {
                         ),
                         fluidRow(
                           hr(),
-                          column(6,
+                          column(4,
                                  h3("Presentation Recap"),
                                  p("The presentation accompanying this module covers the introduction to forecasting, the nutrient-phytoplankton-zooplankton model (NPZ) and the importance and relevance of ecological forecasts."),
                                  p("What is a forecast?"),
@@ -429,15 +426,15 @@ ui <- function(req) {
                                  ),
                                  p("How do we generate a forecast?"),tags$ul(
                                    tags$li(module_text["how_forecast", ])
-                                 )
+                                 ),
+                                 p("Click through the slides to recap some of the main points from the lecture.")
                           ),
-                          column(6, align = "center",
-                                 h2("Our overarching question today", 
+                          column(8, offset = 0, align = "center",
+                                 h3("Key Slides", 
                                     align = "center"),
-                                 img(src = "What_is_EF.png", height = "70%", 
-                                     width = "70%", align = "center")
-                                 # HTML('<center><img src="slide_01.png" width="70%"></center>')
-                                 
+                                 wellPanel(
+                                   slickROutput("slides", width = "600px", height = "450px")
+                                   )
                                  )
                         ), hr(),
                         fluidRow(
@@ -511,7 +508,7 @@ ui <- function(req) {
                           )
                         ),
                
-               # 4. Get Data & Build Model ----
+               # 4. Activity A ----
                tabPanel(title = "Activity A", value = "mtab4",
                         tags$style(".nav-tabs {
   background-color: #DDE4E1;
@@ -888,7 +885,7 @@ border-color: #FFF;
                                               h3("Objective 5 - Test scenarios and calibrate model"),
                                               p(module_text["obj_05", ])
                                             ),
-                                            p("You will use observed data from the selected site on the 'Get Data & Build Model' tab to drive the NPZ model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs.")
+                                            p("You will use observed data from the selected site on the 'Activity A' tab to drive the NPZ model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs.")
                                             # p("Before running the model, Answer Q 12."),
                                             # p("You will need to scroll past the two panels below to find the controls for running the model."),
                                             # p("Run the scenarios described in Q 13 and describe how the model responds.")
@@ -1022,7 +1019,7 @@ border-color: #FFF;
                                               tags$li("Does it capture the seasonal patterns?"),
                                               tags$li("Does the model simulate events seen as spikes?")
                                             ),
-                                            p("Can you think of any potential reasons why the model does not do so well"),
+                                            p("Can you think of any potential reasons why the model does not do so well?"),
                                             p("We will explore some of these potential reasons later on.")
                                      ),
                                      column(5, offset = 1,
@@ -1093,8 +1090,8 @@ border-color: #FFF;
                                             h3("What is Uncertainty?"),
                                             p(id = "txt_j", module_text["uncert1", ]),
                                             br(),
-                                            p("We will use the model you built in Activity A to create an ecological forecast."),
-                                            p("One source of uncertainty is the data used to drive the model. For your forecast, you will be using actual NOAA weather forecast to drive your model. Load and examine these data below.")
+                                            p(id = "txt_j", "We will use the model you built in Activity A to create an ecological forecast."),
+                                            p(id = "txt_j", "One source of uncertainty is the data used to drive the model. For your forecast, you will be using actual NOAA weather forecast to drive your model. Load and examine these data below.")
                                      ),
                                      column(8, align = "center",
                                             img(src = "What_is_uncert.png", height = "60%", 
@@ -1109,9 +1106,9 @@ border-color: #FFF;
                                      ),
                                    ),
                                    fluidRow(
-                                     column(6,
+                                     column(5,
                                             p(id = "txt_j", module_text["weather_forecast1", ]),
-                                            p(id = "txt_j", "Weather forecast are produced using ", tags$b("ensemble modelling"), "."),
+                                            p(id = "txt_j", HTML(paste0("Weather forecasts are produced using ",tags$b("ensemble modelling"), "."))),
                                             p(id = "txt_j", module_text["ens_mod1", ]),
                                             p(id = "txt_j", module_text["weather_forecast2", ])
                                      ),
@@ -1202,7 +1199,7 @@ border-color: #FFF;
                                             h3("Driver uncertainty"),
                                             p(id = "txt_j", module_text["driver_uncert", ]),
                                             br(),
-                                            p(id = "txt_j", "A key component of what makes an ecological forecast a 'forecast' is that the model is driven by ", tags$b("forecasted"), " driving variables."),
+                                            p(id = "txt_j", "A key component of what makes an ecological forecast a 'forecast' is that the model is driven by ", tags$b("forecasted"), "driving variables."),
                                             # p("We will now use the weather forecast data loaded above to drive the calibrated model we built on the 'Build Model' tab to forecast chlorophyll-a concentrations into the future.")
                                      ),
                                      column(6, align = "center",
@@ -1336,7 +1333,7 @@ border-color: #FFF;
                                      )
                                    ),
                                    fluidRow(
-                                     column(6,
+                                     column(5,
                                             h3("One week later..."),
                                             p(id = "txt_j", "A week has passed since the forecast, and you have collected a new week of data. Now you are curious to see how well your forecast performed. We can run an actual comparison to see how the forecast predictions compare to actual observed data."),
                                      ),
@@ -2484,6 +2481,12 @@ server <- function(input, output, session) {#
     slickR(imgs)
   })
   
+  # Slickr model output
+  output$slides <- renderSlickR({
+    imgs <- list.files("www/shiny_slides", full.names = TRUE)
+    slickR(imgs)
+  })
+  
   #* Variables answer table ----
   output$ans_vars <- renderTable({
     data.frame("State variables" = state_vars,
@@ -3104,36 +3107,30 @@ server <- function(input, output, session) {#
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
-    output$comm_fc <- renderImage({
-      
-      validate(
-        need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
-      )
-      validate(
-        need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
-      )
-      validate(
-        need(input$load_fc2 > 0, "Load Forecast inputs")
-      )
-      validate(
-        need(input$members2 >= 1 & input$members2 <= 30,
-             message = paste0("The number of members must be between 1 and 30"))
-      )
-      validate(
-        need(input$run_fc2 > 0, "Click 'Run Forecast'")
-      )
-      validate(
-        need(input$save_comm_plot > 0, "Click 'Save plot'")
-      )
-      
-      list(src = img_file,
-           alt = "Image failed to render",
-           # height = "100%", 
-           width = "100%")
-    }, deleteFile = FALSE)
 
     # show("main_content")
   }, ignoreNULL = FALSE)
+  
+  output$comm_fc <- renderImage({
+    
+    validate(
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
+    )
+    validate(
+      need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
+    )
+    validate(
+      need(input$run_fc2 > 0, "Need to generate forecast in Objective 7")
+    )
+    validate(
+      need(input$save_comm_plot > 0, "Save the plot generated in Objective 7")
+    )
+    
+    list(src = "www/comm_fc_plot.png",
+         alt = "Image failed to render",
+         # height = "100%", 
+         width = "100%")
+  }, deleteFile = FALSE)
   
   
   #* Plot for Assessing Forecast ====
