@@ -148,10 +148,10 @@ In this module, students will apply the iterative forecasting cycle to develop a
 
 ## Module overview:
 
-1. Introduction to Ecological Forecasting: pre-readings and PowerPoint in class
-2. Activity A: Visualize data from a selected NEON site and build an ecological model
-3. Activity B: Generate a forecast and work through each stage of the iterative forecast cycle
-4. Activity C: Apply a forecast to a different NEON site and compare forecasts among sites
+- Introduction to Ecological Forecasting: pre-readings and PowerPoint in class
+- Activity A: Visualize data from a selected NEON site and build an ecological model
+- Activity B: Generate a forecast and work through each stage of the iterative forecast cycle
+- Activity C: Apply a forecast to a different NEON site and compare forecasts among sites
 
 ## Today's focal question: _What is an Ecological Forecast?_
 
@@ -197,7 +197,7 @@ With a partner, read through the table below, and answer the following questions
 3. `r substr(quest["q3", ], 4, nchar(quest["q3", ]))`   
 **Answer:** `r params$a3`   
 
-\newpage
+\
 
 Now navigate to the Shiny interface to answer the rest of the questions.
 
