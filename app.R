@@ -54,6 +54,10 @@ neon_sites$type[which(neon_sites$siteID %in% (neon_sites_df$siteID[neon_sites_df
 neon_sites <- neon_sites[neon_sites$type == "Aquatic", ]
 neon_sites_df <- neon_sites_df[neon_sites_df$type == "Aquatic", ]
 
+# Subset out lakes which don't work
+neon_sites <- neon_sites[1:5, ]
+neon_sites_df <- neon_sites_df[1:5, ]
+
 # Read in assessment questions
 quest <- read.csv("data/handout_questions.csv", row.names = 1)
 
@@ -2813,7 +2817,7 @@ server <- function(input, output, session) {#
       fpath <- file.path("data", "NOAAGEFS_1hr", siteID)
       fold <- list.files(fpath)
       fc_date <- as.character(as.Date(fold[1]))
-      fc_idx <- which(names(fc_data()) == fc_date)
+      fc_idx <- which(names(fc_data()) == "2020-09-25") # fc_date
       
       npz_inp_list <- lapply(1:30, function(x) {
         df <- fc_data()[[fc_idx]]
@@ -3669,7 +3673,7 @@ server <- function(input, output, session) {#
       fpath <- file.path("data", "NOAAGEFS_1hr", siteID)
       fold <- list.files(fpath)
       fc_date <- as.character(as.Date(fold[1]) + 7)
-      fc_idx <- which(names(fc_data()) == fc_date)
+      fc_idx <- which(names(fc_data()) == "2020-10-02") #fc_date
       npz_inp_list <- lapply(1:30, function(x) {
         df <- fc_data()[[fc_idx]]
         sub <- df[(df[, 2] %in% c("air_temperature",
@@ -3876,7 +3880,7 @@ server <- function(input, output, session) {#
       chla[, 1] <- as.Date(chla[, 1], tz = "UTC")
     }
     chla_obs <- chla[(chla[, 1] >= as.Date((driv_fc()[1, 1] - (7)))) &
-                       chla[, 1] < as.Date((driv_fc()[1, 1] + 7)), ]
+                       chla[, 1] <= as.Date((driv_fc()[1, 1] + 7)), ]
     
     
     # Make old forecast 
