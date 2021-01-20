@@ -55,8 +55,8 @@ neon_sites <- neon_sites[neon_sites$type == "Aquatic", ]
 neon_sites_df <- neon_sites_df[neon_sites_df$type == "Aquatic", ]
 
 # Subset out lakes which don't work
-neon_sites <- neon_sites[1:5, ]
-neon_sites_df <- neon_sites_df[1:5, ]
+neon_sites <- neon_sites[1:6, ]
+neon_sites_df <- neon_sites_df[1:6, ]
 
 # Read in assessment questions
 quest <- read.csv("data/handout_questions.csv", row.names = 1)
@@ -956,7 +956,7 @@ border-color: #FFF;
                                             p(tags$b("Nutrients")),
                                             sliderInput("nut_init", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
                                                                                 div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.01, max = 20, step = 0.1, value = 9)
+                                                        min = 0.01, max = 20, step = 0.1, value = 3)
                                             # )
                                             ,
                                             # wellPanel(
@@ -2582,6 +2582,15 @@ server <- function(input, output, session) {#
     par[, 1] <- as.POSIXct(par[, 1], tz = "UTC")
     yr <- lubridate::year(par[, 1])
     par <- par[yr == 2019, ] # Subset data to 2019
+    if(sum(is.na(par[, 2])) > 0) {
+      idx <- which(!is.na(par[, 2]))
+      sta <- idx[1]
+      stp <- idx[length(idx)]
+      par[sta:stp, 2] <- zoo::na.approx(par[sta:stp, 2])
+      par[1:sta, 2] <- par[sta, 2]
+      par[stp:nrow(par), 2] <- par[stp, 2]
+    }
+    par[(par[, 2] < 0), 2] <- 0
     
     wtemp <- read.csv(wtemp_file)
     stemp <- wtemp[wtemp[, 2] == min(wtemp[, 2]), c(1, 3)]
