@@ -161,7 +161,7 @@ We will be using ecological data collected by the National Ecological Observatio
 
 ## R Shiny App:
 
-The lesson content is hosted on an R Shiny App at [https://tadhg-moore.shinyapps.io/mod5-test/](https://tadhg-moore.shinyapps.io/mod5-test/).  
+The lesson content is hosted on an R Shiny App at [https://macrosystemseddie.shinyapps.io/module5/](https://macrosystemseddie.shinyapps.io/module5/).  
 This can be accessed via any internet browser and allows you to navigate through the lesson via this app. You will fill in the questions below on this handout as you complete the lesson activities.
 
 ## Optional pre-class readings and video:
@@ -325,7 +325,7 @@ kable(par_tab, caption = "Table 3. Parameters used in Q12-15", row.names = TRUE)
 14. `r substr(quest["q14", ], 6, nchar(quest["q14", ]))`
     a.  `r substr(quest["q14a", ], 3, nchar(quest["q14a", ]))`
     **Answer:** `r params$a14a`  
-    b.  `r substr(quest["q14b", ], 3, nchar(quest["q14b", ]))`
+    b.  `r substr(quest["q14b", ], 3, nchar(quest["q14b", ]))`  
     **Answer:** `r params$a14b`  
 \
 15. `r substr(quest["q15", ], 6, nchar(quest["q15", ]))`
@@ -345,7 +345,7 @@ if (!mod_ann_chk) {cat("-->")}
 
 ## Objective 6: Examine uncertainty  
 \
-16. `r substr(quest["q16", ], 6, nchar(quest["q16", ]))`
+16. `r substr(quest["q16", ], 6, nchar(quest["q16", ]))`  
 **Answer:** `r params$a16`
 \
 
@@ -381,7 +381,7 @@ if (!noaa_plot_chk) {cat("-->")}
 
 ## Objective 8: Communicate forecast
 \
-20. `r substr(quest["q20", ], 6, nchar(quest["q20", ]))`
+20. `r substr(quest["q20", ], 6, nchar(quest["q20", ]))`  
 **Answer:** `r params$a20`  
 
 ```{r results='asis', echo=FALSE}
@@ -396,7 +396,7 @@ if (!comm_plot_chk) {cat("-->")}
 
 ## Objective 9: Assess forecast
 \
-21. `r substr(quest["q21", ], 6, nchar(quest["q21", ]))`
+21. `r substr(quest["q21", ], 6, nchar(quest["q21", ]))`  
 **Answer:** `r params$a21`
 \
 
@@ -411,7 +411,7 @@ if (!assess_plot_chk) {cat("-->")}
 
 ## Objective 10: Update model
 
-22. `r substr(quest["q22", ], 6, nchar(quest["q22", ]))`
+22. `r substr(quest["q22", ], 6, nchar(quest["q22", ]))`  
 **Answer:** `r params$a22`
 \
 
