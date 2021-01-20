@@ -62,6 +62,7 @@ help_text <- read.csv("data/help_text.csv", row.names = 1)
 
 # Reference for downloading variables
 neon_vars <- read.csv("data/neon_variables.csv")
+alt_neon_vars <- gsub("Water temperature profile", "Surface temperature", neon_vars$Short_name)
 noaa_dic <- read.csv("data/noaa_dict.csv")
 
 # colors for plots
@@ -718,17 +719,17 @@ border-color: #FFF;
                                      column(4,
                                             h3("Investigate variable relationships"),
                                             selectizeInput("x_var", "Select X variable",
-                                                           choices = unique(neon_vars$Short_name),
+                                                           choices = unique(alt_neon_vars),
                                                            options = list(
                                                              placeholder = 'Please select a variable',
                                                              onInitialize = I('function() { this.setValue(""); }'))),
                                             
                                             selectizeInput("y_var", "Select Y variable",
-                                                           choices = unique(neon_vars$Short_name), 
+                                                           choices = unique(alt_neon_vars), 
                                                            options = list(
                                                              placeholder = 'Please select a variable',
-                                                             onInitialize = I('function() { this.setValue("Chlorophyll-a"); }'))),
-                                            p(tags$b("Note:"), "For 'Water temperature profile', it plots the surface temperature.")
+                                                             onInitialize = I('function() { this.setValue("Chlorophyll-a"); }')))
+                                            # p(tags$b("Note:"), "For 'Water temperature profile', it plots the surface temperature.")
                                             
                                      ),
                                      #** Plot of data ----
@@ -797,10 +798,13 @@ border-color: #FFF;
                                             p(id = "txt_j", module_text["phyto_chla", ]),
                                             p("Click through the images to see how we can go from a conceptual food web model to a mathematical representation of the interaction of Nutrients (N), Phytoplankton (P), and Zooplankton (Z).", id = "txt_j")
                                      ),
-                                     column(6, offset = 1,
-                                            slickROutput("slck_model")
-                                            # img(src = "concep_math_model.png", height = 600, width = 800))
-                                     )
+                                     column(8, 
+                                            br(), br(), br(),
+                                            br(), 
+                                            wellPanel(
+                                              slickROutput("slck_model", width = "600px", height = "450px")
+                                              )
+                                            )
                                    ),
                                    hr(),
                                    fluidRow(
@@ -885,12 +889,23 @@ border-color: #FFF;
                                               h3("Objective 5 - Test scenarios and calibrate model"),
                                               p(module_text["obj_05", ])
                                             ),
-                                            p("You will use observed data from the selected site on the 'Activity A' tab to drive the NPZ model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs.")
                                             # p("Before running the model, Answer Q 12."),
                                             # p("You will need to scroll past the two panels below to find the controls for running the model."),
                                             # p("Run the scenarios described in Q 13 and describe how the model responds.")
                                             )
                                      ),
+                                   fluidRow(
+                                     column(12, align = "center",
+                                            img(src = "02-build-model.png", height = "30%", 
+                                                width = "30%")
+                                     )
+                                   ), br(), hr(),
+                                   fluidRow(
+                                     column(6,
+                                            h3("Build Model"),
+                                            p("You will use observed data from the selected site on the 'Activity A' tab to drive the NPZ model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs.")
+                                     )
+                                   ),
                                    fluidRow(
                                      column(2,
                                             br(), br(), br(), br(), br(),
@@ -1591,7 +1606,8 @@ border-color: #FFF;
                         fluidRow(
                           column(12,
                                  h2("Completed Module!"),
-                                 p("This is the end of the module. If you have been inputting your answers into the app you will need to return to the 'Introduction' tab and generate the final report")
+                                 p("This is the end of the module. If you have been inputting your answers into the app you will need to return to the 'Introduction' tab and generate the final report"),
+                                 actionButton("return_intro", "Return to Introduction", icon = icon("home"))
                                  )
                         ),
                         hr(),
@@ -2005,31 +2021,43 @@ server <- function(input, output, session) {#
            message = "Please select a Y variable.")
     )
     
-    x_var <- neon_vars$id[which(neon_vars$Short_name == input$x_var)][1]
-    x_units <- neon_vars$units[which(neon_vars$Short_name == input$x_var)][1]
+    if(input$x_var == "Surface temperature") {
+      ref <- "Water temperature profile"
+    } else {
+      ref <- input$x_var
+    }
+    
+    x_var <- neon_vars$id[which(neon_vars$Short_name == ref)][1]
+    x_units <- neon_vars$units[which(neon_vars$Short_name == ref)][1]
     x_file <- file.path("data", paste0(siteID, "_", x_var, "_", x_units, ".csv"))
     validate(
-      need(file.exists(x_file), message = paste0(input$x_var, " is not available at this site. Please select a different X variable."))
+      need(file.exists(x_file), message = paste0(ref, " is not available at this site. Please select a different X variable."))
     )
     xvar <- read.csv(x_file)
     xvar[, 1] <- as.POSIXct(xvar[, 1], tz = "UTC")
     xvar$Date <- as.Date(xvar[, 1])
-    if(input$x_var == "Water temperature profile") {
+    if(ref == "Water temperature profile") {
       xvar <- xvar[xvar[, 2] == min(xvar[, 2], na.rm = TRUE), c(1, 3)] # subset to surface temperature
     }
     xvar <- plyr::ddply(xvar, c("Date"), function(x) mean(x[, 2], na.rm = TRUE)) # Daily average - also puts everything on same timestamp
     
     # y-variable
-    y_var <- neon_vars$id[which(neon_vars$Short_name == input$y_var)][1]
-    y_units <- neon_vars$units[which(neon_vars$Short_name == input$y_var)][1]
+    
+    if(input$y_var == "Surface temperature") {
+      ref2 <- "Water temperature profile"
+    } else {
+      ref2 <- input$y_var
+    }
+    y_var <- neon_vars$id[which(neon_vars$Short_name == ref2)][1]
+    y_units <- neon_vars$units[which(neon_vars$Short_name == ref2)][1]
     y_file <- file.path("data", paste0(siteID, "_", y_var, "_", y_units, ".csv"))
     validate(
-      need(file.exists(y_file), message = paste0(input$y_var, " is not available at this site. Please select a different Y variable."))
+      need(file.exists(y_file), message = paste0(ref2, " is not available at this site. Please select a different Y variable."))
     )
     yvar <- read.csv(y_file)
     yvar[, 1] <- as.POSIXct(yvar[, 1], tz = "UTC")
     yvar$Date <- as.Date(yvar[, 1])
-    if(input$y_var == "Water temperature profile") {
+    if(ref2 == "Water temperature profile") {
       yvar <- yvar[yvar[, 2] == min(yvar[, 2], na.rm = TRUE), c(1, 3)] # subset to surface temperature
     }
     yvar <- plyr::ddply(yvar, c("Date"), function(y) mean(y[, 2], na.rm = TRUE)) # Daily average - also puts everything on same timestamp
@@ -2042,8 +2070,8 @@ server <- function(input, output, session) {#
     colnames(df)[-1] <- c("X", "Y")
     p <- ggplot(df, aes_string(names(df)[2], names(df)[3])) +
       geom_point() +
-      xlab(input$x_var) +
-      ylab(input$y_var) +
+      xlab(ref) +
+      ylab(ref2) +
       theme_minimal(base_size = 16)
     return(ggplotly(p, dynamicTicks = TRUE))
     
@@ -3172,7 +3200,7 @@ server <- function(input, output, session) {#
       df2 <- df3
 
     
-    txt <- data.frame(x = (new_obs[nrow(new_obs), 1] + 2.5), y = (max(new_obs[, 2], na.rm = TRUE) + 6), label = "One week later")
+    txt <- data.frame(x = (new_obs[nrow(new_obs), 1] + 5.5), y = (max(new_obs[, 2], na.rm = TRUE) + 6), label = "One week later")
     
     p <- ggplot()
     
@@ -3748,7 +3776,7 @@ server <- function(input, output, session) {#
       chla[, 1] <- as.Date(chla[, 1], tz = "UTC")
     }
     chla_obs <- chla[(chla[, 1] >= as.Date((driv_fc()[1, 1] - (7)))) &
-                       chla[, 1] < as.Date((driv_fc()[1, 1] + 7)), ]
+                       chla[, 1] <= as.Date((driv_fc()[1, 1] + 7)), ]
 
     
     # Make old forecast 
@@ -4121,6 +4149,13 @@ server <- function(input, output, session) {#
     
   })
   
+  # Return to Introduction tab
+  observeEvent(input$return_intro, {
+    updateTabsetPanel(session, "maintab",
+                      selected = "mtab2")
+    shinyjs::runjs("window.scrollTo(0, 600)") # scroll to top of page
+  })
+  
   # Downloading Student Handout ----
   
   # Hide download button until report is generated
@@ -4252,6 +4287,9 @@ server <- function(input, output, session) {#
   })
   
 }
-# enableBookmarking("url") # Needed for bookmarking currently not working
 shinyApp(ui, server, enableBookmarking = "url")
-# deployApp(account = "macrosystemseddie")
+# rsconnect::deployApp(account = "macrosystemseddie")
+# rsconnect::deployApp(account = "tadhg-moore")
+
+# end
+
