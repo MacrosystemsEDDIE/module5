@@ -3973,7 +3973,7 @@ server <- function(input, output, session) {#
   observeEvent(input$generate, {
     
     par_file <- "data/par_save.csv"
-    write.csv(par_df, par_file, quote = FALSE, row.names = TRUE)
+    write.csv(par_save$value, par_file, quote = FALSE, row.names = TRUE)
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
@@ -4417,7 +4417,6 @@ server <- function(input, output, session) {#
   observeEvent(input$upload_answers, {
 
     up_answers <<- readRDS(input$upload_answers$datapath)
-    print(up_answers)
     updateTextAreaInput(session, "name", value = up_answers$name)
     updateTextAreaInput(session, "id_number", value = up_answers$id_number)
     updateTextAreaInput(session, "q1", value = up_answers$a1)
@@ -4470,7 +4469,8 @@ server <- function(input, output, session) {#
   })
   
   observe({
-    req(input$maintab == "mtab4" & exists("up_answers") & input$tabseries1 == "obj1" & !is.null(up_answers$site_row))
+    req(input$maintab == "mtab4" & exists("up_answers") & input$tabseries1 == "obj1")
+    req(!is.null(up_answers$site_row))
     tryCatch(updateSelectizeInput(session, "row_num", selected = up_answers$site_row), error = function(e) {NA})
   })
   
