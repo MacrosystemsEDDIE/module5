@@ -60,6 +60,8 @@ neon_sites_df <- neon_sites_df[1:6, ]
 
 # Read in assessment questions
 quest <- read.csv("data/handout_questions.csv", row.names = 1)
+answers <- quest
+answers[, 1] <- NA
 
 # Help documentation
 help_text <- read.csv("data/help_text.csv", row.names = 1)
@@ -386,10 +388,14 @@ ui <- function(req) {
                           ),
                           column(4,offset = 1,
                                  h3("Save your progress"),
-                                 p("If you think that you might not finish all the activities you can save your process as you go. Click the 'Bookmark...' button below and save the web address either as bookmark or in a text file."),
-                                 p("Then to reload the app input the web address into your internet browser."),
-                                 p("If you are running this locally through RStudio on your own computer, you will need to have the app running before reloading your bookmarked web address. You can save this at any time throughout your progress"),
-                                 bookmarkButton(id = "bookmark1")
+                                 p(id = "txt_j", "If you run out of time to finish all the activities you can save your progress and return to it at a later date. Click the 'Download' button below and a file 'module5_answers_Name.rds' will download. Store this file in a safe place locally on your computer."),
+                                 # bookmarkButton(id = "bookmark1"),
+                                 downloadButton("download_answers"),
+                                 br(),
+                                 p(id = "txt_j", "Then to reload the app input you can upload the downloaded '.rds' file below and it will populate your answers into the Shiny app."),
+                                 fileInput("upload_answers", "Upload data", accept = ".rds"),
+                                 p(id = "txt_j", HTML(paste0(tags$b("Note:"), " You will need to navigate to tabs Objective 1, 2 and 3 in Activity A after uploading your file for the inputs to load."))),
+                                 p("Currently the plots do not save to the file so you if you had generated any plots you will to reload the data and reproduce the plots. Also, the answers for Q. 10 will need to be re-submitted.")
                           )
                         ),
                         fluidRow(
@@ -405,7 +411,7 @@ ui <- function(req) {
                                               textInput("id_number", "ID number:"),
                                               introBox(
                                                 h3(tags$b("Questions")),
-                                                textAreaInput2(inputId = "q1", label = quest["q1", 1] , width = "90%"),
+                                                textAreaInput2(inputId = "q1", label = quest["q1", 1]),
                                                 data.step = 5, data.intro = help_text["questions", 1]
                                               ),
                                               textAreaInput2(inputId = "q2", label = quest["q2", 1], width = "90%"),
@@ -919,6 +925,8 @@ border-color: #FFF;
                                                                      icon("running")),
                                                          width = "60%"), br(), br(),
                                             p("To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates below."),
+                                            p("Inital conditions can also be adjusted to measured values but you can also adjust the initial values to see how the model responds."),
+                                            p("The NPZ model simulates phytoplankton biomass which we convert to chorophyll-a which allows comparison between the simulations and field observations.")
                                             ),
                                      column(5,
                                             h3("Model States"),
@@ -940,10 +948,10 @@ border-color: #FFF;
                                      column(3,
                                             # wellPanel(
                                             h3("Inputs"),
-                                            checkboxGroupInput("mod_sens", "Select which variables are used in the model:",
+                                            checkboxGroupInput("mod_sens", "Switch on or off the temperature sensitivity:",
                                                                choices = list("Temperature")),
                                             h3("Initial conditions"),
-                                            p("Return to the 'Activity A' tab to find suitable values to input for each of the states."),
+                                            p("Return to the 'Activity A' tab to find suitable values to input for each of the states. There is no data available for Zooplankton so alter the initial conditions and try and find a suitable value."),
                                             p(tags$b("Phytoplankton")),
                                             # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
                                             sliderInput("phy_init", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
@@ -1997,7 +2005,7 @@ server <- function(input, output, session) {#
   output$q6_tab <- DT::renderDT(
     q6_table, selection = "none", 
     options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"), 
-    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Water temperature profile", "Nitrate sensor", "Underwater PAR", "Chlorophyll-a"), colnames=c("Mean", "Minimum", "Maximum"), 
+    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface temperature", "Nitrate sensor", "Underwater PAR", "Chlorophyll-a"), colnames=c("Mean", "Minimum", "Maximum"), 
     callback = JS("table.rows().every(function(i, tab, row) {
                   var $this = $(this.node());
                   $this.attr('id', this.data()[0]);
@@ -2074,8 +2082,8 @@ server <- function(input, output, session) {#
     colnames(df)[-1] <- c("X", "Y")
     p <- ggplot(df, aes_string(names(df)[2], names(df)[3])) +
       geom_point() +
-      xlab(ref) +
-      ylab(ref2) +
+      xlab(input$x_var) +
+      ylab(input$y_var) +
       theme_minimal(base_size = 16)
     return(ggplotly(p, dynamicTicks = TRUE))
     
@@ -2085,7 +2093,7 @@ server <- function(input, output, session) {#
   output$q7_tab <- DT::renderDT(
     q7_table, selection = "none", 
     options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"), 
-    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Water temperature profile", "Nitrate sensor", "Underwater PAR"), colnames=c("Relationship"), 
+    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface temperature", "Nitrate sensor", "Underwater PAR"), colnames=c("Relationship"), 
     callback = JS("table.rows().every(function(i, tab, row) {
                   var $this = $(this.node());
                   $this.attr('id', this.data()[0]);
@@ -2660,6 +2668,7 @@ server <- function(input, output, session) {#
   })
   
   #* Model annual output plot ----
+  p_mod_run <- reactiveValues(plot = NULL)
   output$mod_ann_plot <- renderPlotly({
     
     validate(
@@ -2696,6 +2705,10 @@ server <- function(input, output, session) {#
       theme_minimal(base_size = 16) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
       
+    p_mod_run$plot <- p +
+      theme_classic(base_size = 34) +
+      theme(panel.background = element_rect(fill = NA, color = 'black'))
+    
     return(ggplotly(p, dynamicTicks = TRUE))
     
   })
@@ -2732,7 +2745,7 @@ server <- function(input, output, session) {#
     
     p <- ggplot() +
       geom_line(data = mlt, aes_string(names(mlt)[1], names(mlt)[3], color = names(mlt)[2])) +
-      ylab("N (mg L-1)") +
+      ylab("N (μg/L)") +
       xlab("") +
       {if(input$add_obs) geom_point(data = din, aes_string(names(din)[1], names(din)[2], color = shQuote("Obs")))} +
       facet_wrap(~variable, ncol = 1) +
@@ -2794,28 +2807,27 @@ server <- function(input, output, session) {#
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
     # show("main_content")
-  }, ignoreNULL = FALSE
+  }, ignoreInit = TRUE
   )
   
   #** Save parameters fro each scenario
-  output$save_par <- renderDT(par_save(), selection = "single",
+  output$save_par <- renderDT(par_save$value, selection = "single",
                               options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t", autoWidth = TRUE,
                                              columnDefs = list(list(width = '10%', targets = "_all"))
                                              ),
                               server = FALSE, escape = FALSE)
   
   # output$save_par <- renderTable(par_save())
-  
-  par_save <- eventReactive(input$save_params, {
+  par_save <- reactiveValues(value = par_df)
+  observeEvent(input$save_params, {
     if(input$save_params > 0) {
-      par_df[input$save_par_rows_selected, ] <<- c(input$phy_init, input$zoo_init, input$nut_init, input$graz_rate,
+      par_save$value[input$save_par_rows_selected, ] <<- c(input$phy_init, input$zoo_init, input$nut_init, input$graz_rate,
                                                    input$mort_rate, input$nut_uptake)
     }
     if(input$save_params == 0) {
-      par_df[1, ] <<- c(input$phy_init, input$zoo_init, input$nut_init, input$graz_rate,
+      par_save$value[1, ] <<- c(input$phy_init, input$zoo_init, input$nut_init, input$graz_rate,
                         input$mort_rate, input$nut_uptake)
     }
-    par_df
     }, ignoreNULL = FALSE)
   
   # Forecast Plots  ----
@@ -4276,7 +4288,7 @@ server <- function(input, output, session) {#
       if(input$q13a == "" | input$q13b == "") "Q. 13",
       if(input$q14a == "" | input$q14b == "") "Q. 14",
       if(input$save_params == 0) "Q. 15 Save table of parameters",
-      if(input$save_mod_run == 0) "Q. 15 Save plot of model run",
+      if(!file.exists("www/mod_run_2019.png")) "Q. 15 Save plot of model run",
       if(input$q16 == "") "Q. 16",
       if(input$save_noaa_plot == 0) "Q. 16 Save plot of NOAA weather forecast",
       if(input$q17a == "" | input$q17b == "" | input$q17c == "") "Q. 17",
@@ -4307,6 +4319,186 @@ server <- function(input, output, session) {#
     )
     
 
+  })
+  
+  # Save answers in .rds file
+  ans_list <- reactiveValues()
+  observe({
+    ans_list <<- list(
+      name = input$name,
+      id_number = input$id_number,
+      a1 = input$q1,
+      a2 = input$q2,
+      a3 = input$q3,
+      a4a = input$q4a,
+      a4b = input$q4b,
+      a4c = input$q4c,
+      a4d = input$q4d,
+      a5a = input$q5a,
+      a5b = input$q5b,
+      a5c = input$q5c,
+      a5d = input$q5d,
+      a5e = input$q5e,
+      a5f = input$q5f,
+      a6a_mean = input$q6a_mean,
+      a6a_min = input$q6a_min,
+      a6a_max = input$q6a_max,
+      a6b_mean = input$q6b_mean,
+      a6b_min = input$q6b_min,
+      a6b_max = input$q6b_max,
+      a6c_mean = input$q6c_mean,
+      a6c_min = input$q6c_min,
+      a6c_max = input$q6c_max,
+      a6d_mean = input$q6d_mean,
+      a6d_min = input$q6d_min,
+      a6d_max = input$q6d_max,
+      a6e_mean = input$q6e_mean,
+      a6e_min = input$q6e_min,
+      a6e_max = input$q6e_max,
+      a7a = input$q7a,
+      a7b = input$q7b,
+      a7c = input$q7c,
+      a7d = input$q7d,
+      a8 = input$q8,
+      a9a = input$q9a,
+      a9b = input$q9b,
+      a9c = input$q9c,
+      a10_states = input$rank_list_2,
+      a10_pars = input$rank_list_3,
+      a11a = input$q11a,
+      a11b = input$q11b,
+      a11c = input$q11c,
+      a12 = input$q12,
+      a13a = input$q13a,
+      a13b = input$q13b,
+      a14a = input$q14a,
+      a14b = input$q14b,
+      a15 = input$q15,
+      a16 = input$q16,
+      a17a = input$q17a,
+      a17b = input$q17b,
+      a17c = input$q17c,
+      a18 = input$q18,
+      a19 = input$q19,
+      a20 = input$q20,
+      a21 = input$q21,
+      a22 = input$q22,
+      a23 = input$q23,
+      a24 = input$q24,
+      a25a = input$q25a,
+      a25b = input$q25b,
+      a25c = input$q25c,
+      a26 = input$q26,
+      param_df = par_save$value,
+      site_row = input$table01_rows_selected #,
+      # mod_ann_plot = p_mod_run$plot
+    )
+    # ans_list <- data.frame(matrix(unlist(ans_list), nrow=length(ans_list), byrow = TRUE))
+    # print(par_save())
+  })
+  
+  output$download_answers <- downloadHandler(
+
+    # This function returns a string which tells the client
+    # browser what name to use when saving the file.
+    filename = function() {
+      paste0("module5_answers_", input$name, ".rds") %>%
+        gsub(" ", "_", .)
+    },
+
+    # This function should write data to a file given to it by
+    # the argument 'file'.
+    content = function(file) {
+      # write.csv(ans_list, file)
+      saveRDS(ans_list, file = file)
+    }
+  )
+  
+  observeEvent(input$upload_answers, {
+
+    up_answers <<- readRDS(input$upload_answers$datapath)
+    print(up_answers)
+    updateTextAreaInput(session, "name", value = up_answers$name)
+    updateTextAreaInput(session, "id_number", value = up_answers$id_number)
+    updateTextAreaInput(session, "q1", value = up_answers$a1)
+    updateTextAreaInput(session, "q2", value = up_answers$a2)
+    updateTextAreaInput(session, "q3", value = up_answers$a3)
+    updateTextAreaInput(session, "q4a", value = up_answers$a4a)
+    updateTextAreaInput(session, "q4b", value = up_answers$a4b)
+    updateTextAreaInput(session, "q4c", value = up_answers$a4c)
+    updateTextAreaInput(session, "q4d", value = up_answers$a4d)
+    updateTextAreaInput(session, "q5a", value = up_answers$a5a)
+    updateTextAreaInput(session, "q5b", value = up_answers$a5b)
+    updateTextAreaInput(session, "q5c", value = up_answers$a5c)
+    updateTextAreaInput(session, "q5d", value = up_answers$a5d)
+    updateTextAreaInput(session, "q5e", value = up_answers$a5e)
+    updateTextAreaInput(session, "q5f", value = up_answers$a5f)
+    updateTextAreaInput(session, "q8", value = up_answers$a8)
+    updateRadioButtons(session, "q9a", selected = up_answers$a9a)
+    updateRadioButtons(session, "q9b", selected = up_answers$a9b)
+    updateRadioButtons(session, "q9c", selected = up_answers$a9c)
+    updateRadioButtons(session, "q11a", selected = up_answers$a11a)
+    updateRadioButtons(session, "q11b", selected = up_answers$a11b)
+    updateRadioButtons(session, "q11c", selected = up_answers$a11c)
+    updateTextAreaInput(session, "q12", value = up_answers$a12)
+    updateTextAreaInput(session, "q13a", value = up_answers$a13a)
+    updateTextAreaInput(session, "q13b", value = up_answers$a13b)
+    updateTextAreaInput(session, "q14a", value = up_answers$a14a)
+    updateTextAreaInput(session, "q14b", value = up_answers$a14b)
+    updateTextAreaInput(session, "q15", value = up_answers$a15)
+    updateTextAreaInput(session, "q16", value = up_answers$a16)
+    updateTextAreaInput(session, "q17a", value = up_answers$a17a)
+    updateTextAreaInput(session, "q17b", value = up_answers$a17b)
+    updateTextAreaInput(session, "q17c", value = up_answers$a17c)
+    updateTextAreaInput(session, "q18", value = up_answers$a18)
+    updateTextAreaInput(session, "q19", value = up_answers$a19)
+    updateTextAreaInput(session, "q20", value = up_answers$a20)
+    updateTextAreaInput(session, "q21", value = up_answers$a21)
+    updateTextAreaInput(session, "q22", value = up_answers$a22)
+    updateTextAreaInput(session, "q23", value = up_answers$a23)
+    updateTextAreaInput(session, "q24", value = up_answers$a24)
+    updateTextAreaInput(session, "q25a", value = up_answers$a25a)
+    updateTextAreaInput(session, "q25b", value = up_answers$a25b)
+    updateTextAreaInput(session, "q25c", value = up_answers$a25c)
+    updateTextAreaInput(session, "q26", value = up_answers$a26)
+    
+    par_save$value <- up_answers$param_df
+    
+    # Save as a png file
+    ggsave("www/mod_run_2019.png", up_answers$mod_ann_plot,  dpi = 300, width = 580, height = 320, units = "mm")
+    
+  })
+  
+  observe({
+    req(input$maintab == "mtab4" & exists("up_answers") & input$tabseries1 == "obj1" & !is.null(up_answers$site_row))
+    tryCatch(updateSelectizeInput(session, "row_num", selected = up_answers$site_row), error = function(e) {NA})
+  })
+  
+  observe({
+    req(input$maintab == "mtab4" & exists("up_answers") & input$tabseries1 == "obj2")
+    updateNumericInput(session, "q6a_mean", value = up_answers$a6a_mean)
+    updateNumericInput(session, "q6a_max", value = up_answers$a6a_max)
+    updateNumericInput(session, "q6a_min", value = up_answers$a6a_min)
+    updateNumericInput(session, "q6b_mean", value = up_answers$a6b_mean)
+    updateNumericInput(session, "q6b_max", value = up_answers$a6b_max)
+    updateNumericInput(session, "q6b_min", value = up_answers$a6b_min)
+    updateNumericInput(session, "q6c_mean", value = up_answers$a6c_mean)
+    updateNumericInput(session, "q6c_max", value = up_answers$a6c_max)
+    updateNumericInput(session, "q6c_min", value = up_answers$a6c_min)
+    updateNumericInput(session, "q6d_mean", value = up_answers$a6d_mean)
+    updateNumericInput(session, "q6d_max", value = up_answers$a6d_max)
+    updateNumericInput(session, "q6d_min", value = up_answers$a6d_min)
+    updateNumericInput(session, "q6e_mean", value = up_answers$a6e_mean)
+    updateNumericInput(session, "q6e_max", value = up_answers$a6e_max)
+    updateNumericInput(session, "q6e_min", value = up_answers$a6e_min)
+  })
+  
+  observe({
+    req(input$maintab == "mtab4" & exists("up_answers") & input$tabseries1 == "obj3")
+    updateTextAreaInput(session, "q7a", value = up_answers$a7a)
+    updateTextAreaInput(session, "q7b", value = up_answers$a7b)
+    updateTextAreaInput(session, "q7c", value = up_answers$a7c)
+    updateTextAreaInput(session, "q7d", value = up_answers$a7d)
   })
   
 }
