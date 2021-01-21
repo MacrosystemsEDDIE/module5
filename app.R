@@ -29,17 +29,19 @@ options(spinner.color = "#0275D8", spinner.color.background = "#ffffff", spinner
 # setwd("module5/")
 
 # Start up
-neon_sites <- readRDS("data/neon_sites.rds")
-neon_sites$uid <- paste0("M", seq_len(nrow(neon_sites)))
+
 source("download_phenocam.R")
 source("get_html.R")
 source("create_npz_inputs.R")
 source("NPZ_model.R")
 source("NPZ_model_no_temp.R")
 source("textAreaInput2.R")
-# source("load_fcast.R") # Forecast used in Parameter & IC Uncertainty
-# source("")
 
+# Load in sp format with coordinates
+neon_sites <- readRDS("data/neon_sites.rds")
+neon_sites$uid <- paste0("M", seq_len(nrow(neon_sites)))
+
+#Load in the dataframe
 neon_sites_df <- read.csv("data/neon_sites.csv")
 neon_sites_df$long <- round(neon_sites_df$long, 3)
 neon_sites_df$lat <- round(neon_sites_df$lat, 3)
@@ -54,7 +56,7 @@ neon_sites$type[which(neon_sites$siteID %in% (neon_sites_df$siteID[neon_sites_df
 neon_sites <- neon_sites[neon_sites$type == "Aquatic", ]
 neon_sites_df <- neon_sites_df[neon_sites_df$type == "Aquatic", ]
 
-# Subset out lakes which don't work
+# Subset out lakes which don't work - Toolik
 neon_sites <- neon_sites[1:6, ]
 neon_sites_df <- neon_sites_df[1:6, ]
 
@@ -582,11 +584,6 @@ border-color: #FFF;
                                             DTOutput("table01"),
                                             p(tags$b("Click 'View live feed' to see the latest image from the webcam on site (this may take 10-30 seconds).")),
                                             actionButton("view_webcam", label = "View live feed", icon = icon("eye"))
-                                            
-                                            
-                                            # p("Blah blah blah"),
-                                            # selectInput('site', 'Site', c('Toolik', 'Muggs')),
-                                            # radioButtons("ecotype", "Ecological Type", c("Aquatic", "Terrestrial"))
                                      ),
                                      #** Site map ----
                                      column(4,
@@ -4205,8 +4202,8 @@ server <- function(input, output, session) {#
   
   handout_file <- "Student_handout.docx"
   # tmp_file2 <- tempfile()
-  rmarkdown::render("report.Rmd",
-                    output_format = "all")
+  # rmarkdown::render("report.Rmd",
+  #                   output_format = "all")
   
   output$stud_dl <-  downloadHandler(
     filename = function() {
