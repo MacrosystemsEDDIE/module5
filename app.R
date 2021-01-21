@@ -356,9 +356,9 @@ ui <- function(req) {
                                  br(), # br(), br(),
                                  p("Uncheck the box below to hide the questions throughout the Shiny app."),
                                  checkboxInput("show_q1", "Show questions", value = TRUE),
-                                 p("Download Student Handout"),
+                                 # p("Download Student Handout"),
                                  conditionalPanel("output.handoutbuilt",
-                                   downloadButton(outputId = "stud_dl", label = "Download"),
+                                   downloadButton(outputId = "stud_dl", label = "Download Student Handout"),
                                  ),
                                  br()
                           )
@@ -390,12 +390,12 @@ ui <- function(req) {
                                  h3("Save your progress"),
                                  p(id = "txt_j", "If you run out of time to finish all the activities you can save your progress and return to it at a later date. Click the 'Download' button below and a file 'module5_answers_Name.rds' will download. Store this file in a safe place locally on your computer."),
                                  # bookmarkButton(id = "bookmark1"),
-                                 downloadButton("download_answers"),
+                                 downloadButton("download_answers", label = "Download user input"),
                                  br(),
                                  p(id = "txt_j", "Then to reload the app input you can upload the downloaded '.rds' file below and it will populate your answers into the Shiny app."),
                                  fileInput("upload_answers", "Upload data", accept = ".rds"),
                                  p(id = "txt_j", HTML(paste0(tags$b("Note:"), " You will need to navigate to tabs Objective 1, 2 and 3 in Activity A after uploading your file for the inputs to load."))),
-                                 p("Currently the plots do not save to the file so you if you had generated any plots you will to reload the data and reproduce the plots. Also, the answers for Q. 10 will need to be re-submitted.")
+                                 p(id = "txt_j", "Currently the plots do not save to the file.  If you generated plots during your last session, you will need to reload the data and reproduce the plots before generating your report.  Additionally, the answers for Q.10 will need to be re-submitted.")
                           )
                         ),
                         fluidRow(
@@ -999,12 +999,26 @@ border-color: #FFF;
                                             br(),
                                             actionButton("save_params", "Save model setup", icon = icon("save")),
                                             br(), br(), 
+                                            
+                                            br(),
+                                            
+                                            
+                                            # wellPanel(
+                                              # p("After running the scenarios in Q 13, adjust the model parameters to get the best fit with the pattern seen in the observed data. Not the values into the table in Q 14."),
+                                              # # p("Save the plot output"),
+                                              
+                                              
+                                            # ),
+                                     ),
+                                   ),
+                                   fluidRow(
+                                     column(10, offset = 1,
                                             box(id = "box8", width = 12, status = "primary",
                                                 solidHeader = TRUE,
                                                 fluidRow(
                                                   column(12, offset = 1,
                                                          h3("Questions")
-                                                         ),
+                                                  ),
                                                   column(5, offset = 1,
                                                          textAreaInput2(inputId = "q12", label = quest["q12", 1] , width = "90%"),
                                                          br(),
@@ -1024,18 +1038,9 @@ border-color: #FFF;
                                                             # DTOutput('q15_tab'),
                                                             br()
                                                             )
+                                                  )
                                                 )
-                                            ),
-                                            br(),
-                                            
-                                            
-                                            # wellPanel(
-                                              # p("After running the scenarios in Q 13, adjust the model parameters to get the best fit with the pattern seen in the observed data. Not the values into the table in Q 14."),
-                                              # # p("Save the plot output"),
-                                              
-                                              
-                                            # ),
-                                     ),
+                                            )
                                    ),
                                    fluidRow(
                                      column(5, offset = 1,
@@ -1993,7 +1998,6 @@ server <- function(input, output, session) {#
       out_stat <- sd(neon_DT()$sel[, ncol(neon_DT()$sel)], na.rm = TRUE)
       out_stat <- paste0("Std. Dev.: ", signif(out_stat, 5))
     } else {
-      # print(head(neon_DT()$sel))
       sum_stat <- summary(neon_DT()$sel)
       ridx <- grep(input$stat_calc, sum_stat[, ncol(sum_stat)])
       out_stat <- sum_stat[ridx, ncol(sum_stat)]
@@ -2653,7 +2657,6 @@ server <- function(input, output, session) {#
     }
     res <- as.data.frame(res)
     res$time <- npz_inp$Date
-    print(colnames(res))
     res <- res[, c("time", "Chla", "Zooplankton", "Nutrients")]
     # res[ ,-1] <- ((res[ ,-1] / 1000) * 14) * 100
     
@@ -2725,7 +2728,8 @@ server <- function(input, output, session) {#
     
     xlims <- range(mod_run1()[, 1])
     mlt <- reshape2::melt(mod_run1()[, -c(2)], id.vars = 1)
-
+    ylims <- c(0, max(mlt[, 3]))
+    
     validate(
       need(input$run_mod_ann > 0, "Please run the model")
     )
@@ -2748,8 +2752,9 @@ server <- function(input, output, session) {#
       ylab("N (μg/L)") +
       xlab("") +
       {if(input$add_obs) geom_point(data = din, aes_string(names(din)[1], names(din)[2], color = shQuote("Obs")))} +
+      geom_hline(yintercept = 0, color = "gray") +
       facet_wrap(~variable, ncol = 1) +
-      coord_cartesian(xlim = xlims) +
+      coord_cartesian(xlim = xlims, ylim = ylims) +
       theme_minimal(base_size = 16) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))+
       scale_color_manual(values = cols[3:8])
@@ -3176,7 +3181,7 @@ server <- function(input, output, session) {#
       need(input$run_fc2 > 0, "Need to generate forecast in Objective 7")
     )
     validate(
-      need(input$save_comm_plot > 0, "Save the plot generated in Objective 7")
+      need(input$save_comm_plot > 0, "If plot is missing please return to Objective 7 and click 'Save Plot'")
     )
     
     list(src = "www/comm_fc_plot.png",
@@ -3294,8 +3299,7 @@ server <- function(input, output, session) {#
     r2_txt <- paste0("r2 = ", r2)# bquote(r^2 ~ "=" ~ .(r2))    
     
     txt <- data.frame(x = 2, y = (max(df[, 2], na.rm = TRUE) - 1))
-    print(r2_txt)
-    
+
     txt2 <- data.frame(y = 0, x = 1, label = "1:1 line")
     
     
@@ -3406,8 +3410,7 @@ server <- function(input, output, session) {#
     r2_txt <- paste0("r2 = ", r2)# bquote(r^2 ~ "=" ~ .(r2))    
     
     txt <- data.frame(x = 2, y = (max(df[, 2], na.rm = TRUE) - 1))
-    print(r2_txt)
-    
+
     txt2 <- data.frame(y = 0, x = 1, label = "1:1 line")
     
     
