@@ -24,9 +24,9 @@ There are two options:
 		g. You will then have a project with all the files from this repository.  
 		
 ### Step 2: Install required R packages
-1. The list of required of packages is detailed in the "install_packages.R" script in this repository. YOpen and run this script to install the necessary packages.  
-Watch out for errors in package installation. Most can be avoided using the most up-to-date version of R (4.0.3 as of 2021-01-22).  
-Updating of current R packages on your system is recommended.
+1. The list of required of packages is detailed in the "install_packages.R" script in this repository. Open and run this script to install the necessary packages.  
+  Watch out for errors in package installation. Most can be avoided using the most up-to-date version of R (4.0.3 as of 2021-01-22).  
+  Updating of current R packages on your system is recommended.
 
 ### Step 3: Launch Shiny App
 1. Open the script "app.R" in your console.  
