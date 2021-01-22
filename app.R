@@ -1,35 +1,16 @@
-library(shiny)
-library(shinycssloaders)
-library(shinyjs)
-library(shinydashboard)
-library(leaflet)
-library(htmltools)
-library(sf)
-library(ggplot2)
-library(plotly)
-library(ncdf4)
-library(reshape)
-library(sortable)
+# Load required libraries
+library(shiny); library(shinycssloaders); library(shinyjs); library(shinydashboard)
+library(leaflet); library(htmltools); library(sf); library(ggplot2); library(plotly)
+library(ncdf4); library(reshape); library(sortable); library(RColorBrewer)
 # remotes::install_github('yonicd/slickR') # removed from CRAN - now only on GitHub
-library(slickR)
-library(tinytex)
-library(rvest)
-library(LakeMetabolizer)
-library(rLakeAnalyzer)
-library(DT)
-library(rintrojs)
-library(stringr)
-library(tidyr)
-library(RColorBrewer)
+library(slickR); library(tinytex); library(rvest); library(LakeMetabolizer); 
+library(rLakeAnalyzer); library(DT); library(rintrojs); library(stringr); library(tidyr)
 library(ggpubr)
 
 # Options for Spinner
 options(spinner.color = "#0275D8", spinner.color.background = "#ffffff", spinner.size = 2)
 
-# setwd("module5/")
-
-# Start up
-
+# Functions required
 source("download_phenocam.R")
 source("get_html.R")
 source("create_npz_inputs.R")
