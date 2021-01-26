@@ -1,11 +1,9 @@
 # Load required libraries
-library(shiny); library(shinycssloaders); library(shinyjs); library(shinydashboard)
-library(leaflet); library(htmltools); library(sf); library(ggplot2); library(plotly)
-library(ncdf4); library(reshape); library(sortable); library(RColorBrewer)
 # remotes::install_github('yonicd/slickR') # removed from CRAN - now only on GitHub
-library(slickR); library(tinytex); library(rvest); library(LakeMetabolizer); 
-library(rLakeAnalyzer); library(DT); library(rintrojs); library(stringr); library(tidyr)
-library(ggpubr)
+library(pacman)
+p_load(shiny, shinycssloaders, shinyjs, shinydashboard, leaflet, htmltools, sf, ggplot2,
+       plotly, ncdf4, reshape, sortable, RColorBrewer, slickR, tinytex, rvest,
+       LakeMetabolizer, rLakeAnalyzer, DT, rintrojs, stringr, tidyr, ggpubr)
 
 # Options for Spinner
 options(spinner.color = "#0275D8", spinner.color.background = "#ffffff", spinner.size = 2)
@@ -375,7 +373,8 @@ ui <- function(req) {
                                  # bookmarkButton(id = "bookmark1"),
                                  downloadButton("download_answers", label = "Download user input"),
                                  br(),
-                                 p(id = "txt_j", "Then to reload the app input you can upload the downloaded '.rds' file below and it will populate your answers into the Shiny app."),
+                                 h3("Resume your progress"),
+                                 p(id = "txt_j", "To reload the app input you can upload the downloaded '.rds' file below and it will populate your answers into the Shiny app."),
                                  fileInput("upload_answers", "Upload data", accept = ".rds"),
                                  p(id = "txt_j", HTML(paste0(tags$b("Note:"), " You will need to navigate to tabs Objective 1, 2 and 3 in Activity A after uploading your file for the inputs to load."))),
                                  p(id = "txt_j", "Currently the plots do not save to the file.  If you generated plots during your last session, you will need to reload the data and reproduce the plots before generating your report.  Additionally, the answers for Q.10 will need to be re-submitted.")
@@ -803,9 +802,9 @@ border-color: #FFF;
                                                   column(10, offset = 1,
                                                          h3("Questions"),
                                                          h4(quest["q9", 1]),
-                                                         radioButtons("q9a", quest["q9a", 1], choices = mod_choices, inline = TRUE),
-                                                         radioButtons("q9b", quest["q9b", 1], choices = mod_choices, inline = TRUE),
-                                                         radioButtons("q9c", quest["q9c", 1], choices = mod_choices, inline = TRUE),
+                                                         radioButtons("q9a", quest["q9a", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
+                                                         radioButtons("q9b", quest["q9b", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
+                                                         radioButtons("q9c", quest["q9c", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
                                                          br()
                                                   )
                                                 )
@@ -850,9 +849,9 @@ border-color: #FFF;
                                                     ),
                                                     br(),
                                                     h4(quest["q11", 1]),
-                                                    radioButtons("q11a", quest["q11a", 1], choices = mod_choices, inline = TRUE),
-                                                    radioButtons("q11b", quest["q11b", 1], choices = mod_choices, inline = TRUE),
-                                                    radioButtons("q11c", quest["q11c", 1], choices = mod_choices, inline = TRUE),
+                                                    radioButtons("q11a", quest["q11a", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
+                                                    radioButtons("q11b", quest["q11b", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
+                                                    radioButtons("q11c", quest["q11c", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
                                                     br()
                                                   ),
                                                   column(2,
@@ -1949,9 +1948,19 @@ server <- function(input, output, session) {#
   
   selected <- reactiveValues(sel = NULL)
   
+  
+  
   #selected
   observe({
+    # suppress warnings  
+    storeWarn<- getOption("warn")
+    options(warn = -1) 
     selected$sel <- event_data(event = "plotly_selected", source = "A")
+    
+    #restore warnings, delayed so plot is completed
+    shinyjs::delay(expr =({ 
+      options(warn = storeWarn) 
+    }) ,ms = 100) 
   })
   
   # Reset selected point when changing variables - https://stackoverflow.com/questions/42996303/removing-plotly-click-event-data
