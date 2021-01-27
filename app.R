@@ -1,9 +1,18 @@
 # Load required libraries
+suppressPackageStartupMessages(library(shiny, quietly = TRUE)); library(shinycssloaders)
+suppressPackageStartupMessages(library(shinyjs, quietly = TRUE, warn.conflicts = FALSE))
+library(shinydashboard, quietly = TRUE, warn.conflicts = FALSE)
+library(leaflet); library(htmltools)
+suppressPackageStartupMessages(library(sf, quietly = TRUE, warn.conflicts = FALSE))
+suppressPackageStartupMessages(library(ggplot2, quietly = TRUE)); library(plotly, quietly = TRUE, warn.conflicts = FALSE)
+library(ncdf4); library(reshape, quietly = TRUE, warn.conflicts = FALSE)
+library(sortable)
 # remotes::install_github('yonicd/slickR') # removed from CRAN - now only on GitHub
-library(pacman)
-p_load(shiny, shinycssloaders, shinyjs, shinydashboard, leaflet, htmltools, sf, ggplot2,
-       plotly, ncdf4, reshape, sortable, RColorBrewer, slickR, tinytex, rvest,
-       LakeMetabolizer, rLakeAnalyzer, DT, rintrojs, stringr, tidyr, ggpubr)
+library(slickR); library(tinytex); library(rvest, quietly = TRUE, warn.conflicts = FALSE)
+library(rLakeAnalyzer); library(LakeMetabolizer); 
+library(DT, quietly = TRUE, warn.conflicts = FALSE); library(rintrojs)
+library(stringr); library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
+library(RColorBrewer); library(ggpubr)
 
 # Options for Spinner
 options(spinner.color = "#0275D8", spinner.color.background = "#ffffff", spinner.size = 2)
@@ -49,7 +58,7 @@ help_text <- read.csv("data/help_text.csv", row.names = 1)
 
 # Reference for downloading variables
 neon_vars <- read.csv("data/neon_variables.csv")
-alt_neon_vars <- gsub("Water temperature profile", "Surface temperature", neon_vars$Short_name)
+# alt_neon_vars <- gsub("Water temperature profile", "Surface water temperature", neon_vars$Short_name)
 noaa_dic <- read.csv("data/noaa_dict.csv")
 
 # colors for plots
@@ -245,6 +254,14 @@ ui <- function(req) {
                 background:#B8E0CD
                 }
                         ")),
+                        # fluidRow(
+                        #   column(6,
+                        #          tableOutput('loc_env')
+                        #          ),
+                        #   column(6,
+                        #          tableOutput('glob_env')
+                        #   )
+                        # ),
                         introBox(
                         fluidRow(
                           
@@ -425,6 +442,7 @@ ui <- function(req) {
                           column(8, offset = 0, align = "center",
                                  h3("Key Slides", 
                                     align = "center"),
+                                 h5("Click the arrows to navigate through the slides", align = "center"),
                                  wellPanel(
                                    slickROutput("slides", width = "600px", height = "450px")
                                    )
@@ -706,13 +724,13 @@ border-color: #FFF;
                                      column(4,
                                             h3("Investigate variable relationships"),
                                             selectizeInput("x_var", "Select X variable",
-                                                           choices = unique(alt_neon_vars),
+                                                           choices = unique(neon_vars$Short_name),
                                                            options = list(
                                                              placeholder = 'Please select a variable',
                                                              onInitialize = I('function() { this.setValue(""); }'))),
                                             
                                             selectizeInput("y_var", "Select Y variable",
-                                                           choices = unique(alt_neon_vars), 
+                                                           choices = unique(neon_vars$Short_name), 
                                                            options = list(
                                                              placeholder = 'Please select a variable',
                                                              onInitialize = I('function() { this.setValue("Chlorophyll-a"); }')))
@@ -778,6 +796,7 @@ border-color: #FFF;
                                      #** NEON Intro ----
                                      column(4,
                                             h3("What is a Model?"),
+                                            h4("Read through this section and scroll through the slides"),
                                             p(id = "txt_j", module_text["model1", ]),
                                             p(id = "txt_j", module_text["model2", ]),
                                             p(id = "txt_j", module_text["model3", ]),
@@ -787,7 +806,7 @@ border-color: #FFF;
                                      ),
                                      column(8, 
                                             br(), br(), br(),
-                                            br(), 
+                                            h5("Click on the arrows to navigate through the slides", align = "center"), 
                                             wellPanel(
                                               slickROutput("slck_model", width = "600px", height = "450px")
                                               )
@@ -1853,6 +1872,10 @@ server <- function(input, output, session) {#
     df[, -1] <- signif(df[, -1], 4)
     names(df)[ncol(df)] <- read_var
     
+    if(input$view_var == "Surface water temperature") {
+      df <- df[df[, 2] == min(df[, 2], na.rm = TRUE), c(1, 3)] # subset to surface temperature
+    }
+    
     sel <- tryCatch(df[(selected$sel$pointNumber+1),,drop=FALSE] , error=function(e){NULL})
     
     
@@ -1866,14 +1889,9 @@ server <- function(input, output, session) {#
            message = "Please select a site in Objective 1.")
     ) 
     read_var <- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
-    units <- neon_vars$units[which(neon_vars$Short_name == input$view_var)][1]
-    file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
-    validate(
-      need(file.exists(file), message = "This variable is not available at this site. Please select a different variable or site.")
-    )
-    file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
-    df <- read.csv(file)
+    df <- neon_DT()$data
     df[, -1] <- signif(df[, -1], 4)
+    df[, 1] <- format(df[, 1], format = "%Y-%m-%d")
     names(df)[ncol(df)] <- read_var
     return(df)
   })
@@ -1912,21 +1930,24 @@ server <- function(input, output, session) {#
 
     obj <- neon_DT()$sel
 
+    # if(input$view_var == "Surface temperature") {
+    #   neon_DT()$data <- neon_DT()$data[neon_DT()$data[, 2] == min(neon_DT()$data[, 2], na.rm = TRUE), c(1, 3)] # subset to surface temperature
+    # }
 
-    if(input$view_var == "Water temperature profile") {
-      
-      palet <- "RdYlBu"
-      p <- ggplot() +
-        # geom_raster(aes_string(fill = names(neon_DT()$data)[3])) +
-        geom_tile(data = neon_DT()$data, aes_string(names(neon_DT()$data)[1], names(neon_DT()$data)[2], fill = names(neon_DT()$data)[3]), alpha = 0.4) +
-        scale_fill_distiller(palette = palet, na.value = "grey90") +
-        ylab(paste0(input$view_var, " (", units, ")")) +
-        xlab("Time") +
-        scale_y_reverse() +
-        # theme_classic(base_size = 16) +
-        theme_minimal(base_size = 12) +
-        theme(panel.border = element_rect(fill = NA, color = "black"))
-    } else {
+    # if(input$view_var == "Surface temperature") {
+    #   
+    #   palet <- "RdYlBu"
+    #   p <- ggplot() +
+    #     # geom_raster(aes_string(fill = names(neon_DT()$data)[3])) +
+    #     geom_tile(data = neon_DT()$data, aes_string(names(neon_DT()$data)[1], names(neon_DT()$data)[2], fill = names(neon_DT()$data)[3]), alpha = 0.4) +
+    #     scale_fill_distiller(palette = palet, na.value = "grey90") +
+    #     ylab(paste0(input$view_var, " (", units, ")")) +
+    #     xlab("Time") +
+    #     scale_y_reverse() +
+    #     # theme_classic(base_size = 16) +
+    #     theme_minimal(base_size = 12) +
+    #     theme(panel.border = element_rect(fill = NA, color = "black"))
+    # } else {
       p <- ggplot() +
         # geom_line() +
         geom_point(data = neon_DT()$data, aes_string(names(neon_DT()$data)[1], names(neon_DT()$data)[2]), color = "black") +
@@ -1941,7 +1962,7 @@ server <- function(input, output, session) {#
           geom_point(data = obj, aes_string(names(obj)[1], names(obj)[2]), color = cols[2])
           
       }
-    }
+    # }
     return(ggplotly(p, dynamicTicks = TRUE, source = "A"))
 
   })
@@ -1996,7 +2017,7 @@ server <- function(input, output, session) {#
   output$q6_tab <- DT::renderDT(
     q6_table, selection = "none", 
     options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"), 
-    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface temperature", "Nitrate sensor", "Underwater PAR", "Chlorophyll-a"), colnames=c("Mean", "Minimum", "Maximum"), 
+    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface water temperature", "Nitrate sensor", "Underwater PAR", "Chlorophyll-a"), colnames=c("Mean", "Minimum", "Maximum"), 
     callback = JS("table.rows().every(function(i, tab, row) {
                   var $this = $(this.node());
                   $this.attr('id', this.data()[0]);
@@ -2024,11 +2045,11 @@ server <- function(input, output, session) {#
            message = "Please select a Y variable.")
     )
     
-    if(input$x_var == "Surface temperature") {
-      ref <- "Water temperature profile"
-    } else {
+    # if(input$x_var == "Surface water temperature") {
+    #   ref <- "Water temperature profile"
+    # } else {
       ref <- input$x_var
-    }
+    # }
     
     x_var <- neon_vars$id[which(neon_vars$Short_name == ref)][1]
     x_units <- neon_vars$units[which(neon_vars$Short_name == ref)][1]
@@ -2039,18 +2060,18 @@ server <- function(input, output, session) {#
     xvar <- read.csv(x_file)
     xvar[, 1] <- as.POSIXct(xvar[, 1], tz = "UTC")
     xvar$Date <- as.Date(xvar[, 1])
-    if(ref == "Water temperature profile") {
-      xvar <- xvar[xvar[, 2] == min(xvar[, 2], na.rm = TRUE), c(1, 3)] # subset to surface temperature
+    if(ref == "Surface water temperature") {
+      xvar <- xvar[xvar[, 2] == min(xvar[, 2], na.rm = TRUE), c(1, 3)] # subset to Surface water temperature
     }
     xvar <- plyr::ddply(xvar, c("Date"), function(x) mean(x[, 2], na.rm = TRUE)) # Daily average - also puts everything on same timestamp
     
     # y-variable
     
-    if(input$y_var == "Surface temperature") {
-      ref2 <- "Water temperature profile"
-    } else {
+    # if(input$y_var == "Surface water temperature") {
+    #   ref2 <- "Water temperature profile"
+    # } else {
       ref2 <- input$y_var
-    }
+    # }
     y_var <- neon_vars$id[which(neon_vars$Short_name == ref2)][1]
     y_units <- neon_vars$units[which(neon_vars$Short_name == ref2)][1]
     y_file <- file.path("data", paste0(siteID, "_", y_var, "_", y_units, ".csv"))
@@ -2060,8 +2081,8 @@ server <- function(input, output, session) {#
     yvar <- read.csv(y_file)
     yvar[, 1] <- as.POSIXct(yvar[, 1], tz = "UTC")
     yvar$Date <- as.Date(yvar[, 1])
-    if(ref2 == "Water temperature profile") {
-      yvar <- yvar[yvar[, 2] == min(yvar[, 2], na.rm = TRUE), c(1, 3)] # subset to surface temperature
+    if(ref2 == "Surface water temperature") {
+      yvar <- yvar[yvar[, 2] == min(yvar[, 2], na.rm = TRUE), c(1, 3)] # subset to Surface water temperature
     }
     yvar <- plyr::ddply(yvar, c("Date"), function(y) mean(y[, 2], na.rm = TRUE)) # Daily average - also puts everything on same timestamp
     
@@ -2073,8 +2094,8 @@ server <- function(input, output, session) {#
     colnames(df)[-1] <- c("X", "Y")
     p <- ggplot(df, aes_string(names(df)[2], names(df)[3])) +
       geom_point() +
-      xlab(input$x_var) +
-      ylab(input$y_var) +
+      xlab(paste0(input$x_var, " (", x_units, ")")) +
+      ylab(paste0(input$y_var, " (", y_units, ")")) +
       theme_minimal(base_size = 16)
     return(ggplotly(p, dynamicTicks = TRUE))
     
@@ -2084,7 +2105,7 @@ server <- function(input, output, session) {#
   output$q7_tab <- DT::renderDT(
     q7_table, selection = "none", 
     options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"), 
-    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface temperature", "Nitrate sensor", "Underwater PAR"), colnames=c("Relationship"), 
+    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface water temperature", "Nitrate sensor", "Underwater PAR"), colnames=c("Relationship"), 
     callback = JS("table.rows().every(function(i, tab, row) {
                   var $this = $(this.node());
                   $this.attr('id', this.data()[0]);
@@ -4272,9 +4293,9 @@ server <- function(input, output, session) {#
       if(is.null(input$q6a_mean) | is.null(input$q6a_max) | is.null(input$q6b_mean) | is.null(input$q6b_max) | is.null(input$q6c_mean) | is.null(input$q6c_max) | is.null(input$q6d_mean) | is.null(input$q6d_max) | is.null(input$q6e_mean) | is.null(input$q6e_max)) "Q. 6",
       if(is.null(input$q7a) | is.null(input$q7b) | is.null(input$q7c) | is.null(input$q7d)) "Q. 7",
       if(input$q8 == "") "Q. 8",
-      if(input$q9a == "Negative" & input$q9b == "Negative" & input$q9c == "Negative") "Q. 9",
+      if(is.null(input$q9a) & is.null(input$q9b) & is.null(input$q9c)) "Q. 9",
       if(length(input$rank_list_2) == 0 | length(input$rank_list_3) == 0) "Q. 10",
-      if(input$q11a == "Negative" & input$q11b == "Negative" & input$q11c == "Negative") "Q. 11",
+      if(is.null(input$q11a) & is.null(input$q11b) & is.null(input$q11c)) "Q. 11",
       if(input$q13a == "" | input$q13b == "") "Q. 13",
       if(input$q14a == "" | input$q14b == "") "Q. 14",
       if(input$save_params == 0) "Q. 15 Save table of parameters",
@@ -4490,6 +4511,25 @@ server <- function(input, output, session) {#
     updateTextAreaInput(session, "q7c", value = up_answers$a7c)
     updateTextAreaInput(session, "q7d", value = up_answers$a7d)
   })
+  
+  # Memory tables
+  # env <- environment()  # can use globalenv(), parent.frame(), etc
+  # output$loc_env <- renderTable({
+  #   data.frame(
+  #     object = ls(environment()),
+  #     size = unlist(lapply(ls(environment()), function(x) {
+  #       object.size(get(x, envir = environment(), inherits = FALSE))
+  #     }))
+  #   )
+  # })
+  # output$glob_env <- renderTable({
+  #   data.frame(
+  #     object = ls(globalenv()),
+  #     size = unlist(lapply(ls(globalenv()), function(x) {
+  #       object.size(get(x, envir = globalenv(), inherits = FALSE))
+  #     }))
+  #   )
+  # })
   
 }
 shinyApp(ui, server, enableBookmarking = "url")
