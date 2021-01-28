@@ -277,7 +277,7 @@ ui <- function(req) {
                                     br(), br(), br(),
                                     img(src = "mod5_viz_v2.png", height = "80%", 
                                         width = "80%", align = "left")
-                                    ),
+                                    )
                         ), data.step = 8, data.intro = help_text["start", 1]
                         ),
                         hr(),
@@ -290,8 +290,7 @@ ui <- function(req) {
                                    tags$li(id = "txt_j", module_text["act_A", ]),
                                    tags$li(id = "txt_j", module_text["act_B", ]),
                                    tags$li(id = "txt_j", module_text["act_C", ])
-                                 ),
-                                 # br(),
+                                 )
                                  
                                  ),
                           column(6, offset = 2,
@@ -346,23 +345,31 @@ ui <- function(req) {
                           )
                         ), hr(),
                         fluidRow(
-                          column(4, offset = 1,
-                                 h3("Student Handout"),
-                                 p("You can either fill out the embedded questions within the Shiny interface or download the student handout and answer the questions there.")
-                                 ),
-                          column(4, offset = 1, 
-                                 br(), # br(), br(),
-                                 p("Uncheck the box below to hide the questions throughout the Shiny app."),
+                          column(7, offset = 1,
+                                 h3("Student Activities"),
+                                 p("Within Exploration, Activities A, B and C there are questions for students to complete as part of this module. These can be completed by writing your answers into the text boxes. If you do not complete the module in one continuous sitting you can download a file with your responses saved which you can then upload when you return. When you finish the module, you can generate a report which will embed your answers and saved plots into a Word (.docx) file which you can download and make further edits to before submitting to your instructor."),
+                                 p(tags$b("WARNING:"), " The Shiny app will disconnect from the server if it is left idle for 15 minutes. If this happens you will lose all your inputs into the app. It is recommended to download the user input at the end of the class, but you can also download throughout the class."),
+                                 p("Alternatively, you can download the questions as a Word (.docx) file  and record your answers there. If you opt for this option, you can hide the green question boxes by unchecking the box below."),
                                  checkboxInput("show_q1", "Show questions", value = TRUE),
-                                 # p("Download Student Handout"),
                                  conditionalPanel("output.handoutbuilt",
-                                   downloadButton(outputId = "stud_dl", label = "Download Student Handout"),
-                                 ),
-                                 br()
-                          )
-                        ),
+                                                  downloadButton(outputId = "stud_dl", label = "Download Student Handout"),
+                                                  )
+                                 ), 
+                        ), hr(),
                         #* Generate report buttons ====
                         fluidRow(
+                          column(4,offset = 1,
+                                 h3("Save your progress"),
+                                 p(id = "txt_j", "If you run out of time to finish all the activities you can save your progress and return to it at a later date. Click the 'Download' button below and a file 'module5_answers_ID_number.rds' will download. Store this file in a safe place locally on your computer."),
+                                 # bookmarkButton(id = "bookmark1"),
+                                 downloadButton("download_answers", label = "Download user input"),
+                                 br(),
+                                 h3("Resume your progress"),
+                                 p(id = "txt_j", "To reload the app input you can upload the downloaded '.rds' file below and it will populate your answers into the Shiny app."),
+                                 fileInput("upload_answers", "Upload data", accept = ".rds"),
+                                 p(id = "txt_j", HTML(paste0(tags$b("Note:"), " You will need to navigate to tabs Objective 1, 2 and 3 in Activity A after uploading your file for the inputs to load."))),
+                                 p(id = "txt_j", "Currently the plots do not save to the file.  If you generated plots during your last session, you will need to reload the data and reproduce the plots before generating your report.  Additionally, the answers for Q.10 will need to be re-submitted.")
+                          ),
                           column(4, offset = 1,
                                  introBox(
                                    h3("Generate Report"),
@@ -383,18 +390,6 @@ ui <- function(req) {
                                    htmlOutput("check_list")
                                  )
                                  
-                          ),
-                          column(4,offset = 1,
-                                 h3("Save your progress"),
-                                 p(id = "txt_j", "If you run out of time to finish all the activities you can save your progress and return to it at a later date. Click the 'Download' button below and a file 'module5_answers_Name.rds' will download. Store this file in a safe place locally on your computer."),
-                                 # bookmarkButton(id = "bookmark1"),
-                                 downloadButton("download_answers", label = "Download user input"),
-                                 br(),
-                                 h3("Resume your progress"),
-                                 p(id = "txt_j", "To reload the app input you can upload the downloaded '.rds' file below and it will populate your answers into the Shiny app."),
-                                 fileInput("upload_answers", "Upload data", accept = ".rds"),
-                                 p(id = "txt_j", HTML(paste0(tags$b("Note:"), " You will need to navigate to tabs Objective 1, 2 and 3 in Activity A after uploading your file for the inputs to load."))),
-                                 p(id = "txt_j", "Currently the plots do not save to the file.  If you generated plots during your last session, you will need to reload the data and reproduce the plots before generating your report.  Additionally, the answers for Q.10 will need to be re-submitted.")
                           )
                         ),
                         fluidRow(
@@ -419,7 +414,7 @@ ui <- function(req) {
                                        ),
                                      
                                      ),
-                                 ),
+                                 )
                         ),
                         fluidRow(
                           hr(),
@@ -620,7 +615,8 @@ border-color: #FFF;
                                                 fluidRow(
                                                   column(7, offset = 1,
                                                          h3("Questions"),
-                                                         h4(quest["q5", 1])
+                                                         h4(quest["q5", 1]),
+                                                         p("If the information for your lake is not on the NEON website then you can input NA (Not Available) into the text box.")
                                                   )
                                                 ),
                                                 fluidRow(
@@ -647,16 +643,26 @@ border-color: #FFF;
                                               h3("Objective 2 - Inspect the Data"),
                                               p(module_text["obj_02", ]),
                                               p("If there are some variables which you are not familiar with, visit the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal", target = "_blank"), "and click 'Explore Data Products' to learn more about how the data are collected.")
-                                            ),
+                                              )
+                                            )
+                                   ),
+                                   fluidRow(
+                                     column(8, offset = 2,
+                                            h3("Variable descriptions"),
+                                            DT::DTOutput("var_desc")
+                                            )
+                                   ),
+                                   fluidRow(
+                                     column(12,
                                             useShinyjs(),  # Set up shinyjs
                                             selectizeInput("view_var", "Select variable",
                                                            choices = unique(neon_vars$Short_name),
                                                            options = list(
                                                              placeholder = 'Please select a variable',
                                                              onInitialize = I('function() { this.setValue(""); }')),
+                                                           )
                                             )
-                                     )
-                                   ),
+                                     ), hr(),
                                    fluidRow(
                                      #** Data Table ----
                                      column(4,
@@ -666,8 +672,8 @@ border-color: #FFF;
                                      #** Plot of data ----
                                      column(8,
                                             h3("Data Plot"),
+                                            plotlyOutput("var_plot"),
                                             wellPanel(
-                                              plotlyOutput("var_plot"),
                                               br(),
                                               # conditionalPanel("input.table01_rows_selected > 1",
                                                                h4("Variable Description"),
@@ -723,20 +729,19 @@ border-color: #FFF;
                                      #** Data Table ----
                                      column(4,
                                             h3("Investigate variable relationships"),
+                                            p("For Q. 7 you will keep 'Chlorophyll-a' as the y-variable and explore its relationship with the other variables at this site."), 
+                                            selectizeInput("y_var", "Select Y variable",
+                                                           choices = unique(neon_vars$Short_name), 
+                                                           options = list(
+                                                             placeholder = 'Please select a variable',
+                                                             onInitialize = I('function() { this.setValue("Chlorophyll-a"); }'))),
                                             selectizeInput("x_var", "Select X variable",
                                                            choices = unique(neon_vars$Short_name),
                                                            options = list(
                                                              placeholder = 'Please select a variable',
                                                              onInitialize = I('function() { this.setValue(""); }'))),
-                                            
-                                            selectizeInput("y_var", "Select Y variable",
-                                                           choices = unique(neon_vars$Short_name), 
-                                                           options = list(
-                                                             placeholder = 'Please select a variable',
-                                                             onInitialize = I('function() { this.setValue("Chlorophyll-a"); }')))
-                                            # p(tags$b("Note:"), "For 'Water temperature profile', it plots the surface temperature.")
-                                            
-                                     ),
+                                            p("While for Q. 8, you can select any two variables and investigate if there is any relationship. e.g. air temperature and surface water temperature")
+                                            ),
                                      #** Plot of data ----
                                      column(6,
                                             h3("Comparison Plot"),
@@ -947,7 +952,7 @@ border-color: #FFF;
                                             checkboxGroupInput("mod_sens", "Switch on or off the temperature sensitivity:",
                                                                choices = list("Temperature")),
                                             h3("Initial conditions"),
-                                            p("Return to the 'Activity A' tab to find suitable values to input for each of the states. There is no data available for Zooplankton so alter the initial conditions and try and find a suitable value."),
+                                            p("Adjust these to values that are within reasonable ranges as seen in the 'Objective 2 - Explore data' tab. Phytoplankton corresponds to chlorophyll-a concentrations and nutrients corresponds to Dissolved Inorganic Nitrogen."),
                                             p(tags$b("Phytoplankton")),
                                             # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
                                             sliderInput("phy_init", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
@@ -1882,6 +1887,12 @@ server <- function(input, output, session) {#
     return(list(data = df, sel = sel))
   })
   
+  
+  output$var_desc <- renderDT({
+    var_desc <- neon_vars[!duplicated(neon_vars$Short_name), c("Short_name", "description")]
+    colnames(var_desc) <- c("Name", "Description")
+    datatable(var_desc, rownames = FALSE, options = list(pageLength = 5))
+  })
   # Site data datatable ----
   output$neon_datatable <- DT::renderDT({
     validate(
@@ -1930,39 +1941,17 @@ server <- function(input, output, session) {#
 
     obj <- neon_DT()$sel
 
-    # if(input$view_var == "Surface temperature") {
-    #   neon_DT()$data <- neon_DT()$data[neon_DT()$data[, 2] == min(neon_DT()$data[, 2], na.rm = TRUE), c(1, 3)] # subset to surface temperature
-    # }
-
-    # if(input$view_var == "Surface temperature") {
-    #   
-    #   palet <- "RdYlBu"
-    #   p <- ggplot() +
-    #     # geom_raster(aes_string(fill = names(neon_DT()$data)[3])) +
-    #     geom_tile(data = neon_DT()$data, aes_string(names(neon_DT()$data)[1], names(neon_DT()$data)[2], fill = names(neon_DT()$data)[3]), alpha = 0.4) +
-    #     scale_fill_distiller(palette = palet, na.value = "grey90") +
-    #     ylab(paste0(input$view_var, " (", units, ")")) +
-    #     xlab("Time") +
-    #     scale_y_reverse() +
-    #     # theme_classic(base_size = 16) +
-    #     theme_minimal(base_size = 12) +
-    #     theme(panel.border = element_rect(fill = NA, color = "black"))
-    # } else {
       p <- ggplot() +
-        # geom_line() +
         geom_point(data = neon_DT()$data, aes_string(names(neon_DT()$data)[1], names(neon_DT()$data)[2]), color = "black") +
         ylab(paste0(input$view_var, " (", units, ")")) +
         xlab("Time") +
-        # theme_classic(base_size = 16) +
-        theme_minimal(base_size = 12) #+
-        # theme(panel.border = element_rect(fill = NA, color = "black"))
+        theme_minimal(base_size = 12) 
       
       if(nrow(obj) != 0) {
         p <- p + 
           geom_point(data = obj, aes_string(names(obj)[1], names(obj)[2]), color = cols[2])
           
       }
-    # }
     return(ggplotly(p, dynamicTicks = TRUE, source = "A"))
 
   })
@@ -2096,7 +2085,7 @@ server <- function(input, output, session) {#
       geom_point() +
       xlab(paste0(input$x_var, " (", x_units, ")")) +
       ylab(paste0(input$y_var, " (", y_units, ")")) +
-      theme_minimal(base_size = 16)
+      theme_minimal(base_size = 12)
     return(ggplotly(p, dynamicTicks = TRUE))
     
   })
@@ -2713,7 +2702,7 @@ server <- function(input, output, session) {#
       {if(input$add_obs) geom_point(data = chla, aes_string(names(chla)[1], names(chla)[2], color = shQuote("Obs")))} +
       # coord_cartesian(xlim = xlims, ylim = ylims) +
       scale_color_manual(values = cols[1:2]) +
-      theme_minimal(base_size = 16) +
+      theme_minimal(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
       
     p_mod_run$plot <- p +
@@ -2763,7 +2752,7 @@ server <- function(input, output, session) {#
       geom_hline(yintercept = 0, color = "gray") +
       facet_wrap(~variable, ncol = 1) +
       coord_cartesian(xlim = xlims, ylim = ylims) +
-      theme_minimal(base_size = 16) +
+      theme_minimal(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))+
       scale_color_manual(values = cols[3:8])
     return(ggplotly(p, dynamicTicks = TRUE))
@@ -4096,7 +4085,7 @@ server <- function(input, output, session) {#
     # This function returns a string which tells the client
     # browser what name to use when saving the file.
     filename = function() {
-      paste0("report_", input$name, ".docx") %>%
+      paste0("report_", input$id_number, ".docx") %>%
         gsub(" ", "_", .)
     },
     
@@ -4413,7 +4402,7 @@ server <- function(input, output, session) {#
     # This function returns a string which tells the client
     # browser what name to use when saving the file.
     filename = function() {
-      paste0("module5_answers_", input$name, ".rds") %>%
+      paste0("module5_answers_", input$id_number, ".rds") %>%
         gsub(" ", "_", .)
     },
 
@@ -4537,4 +4526,3 @@ shinyApp(ui, server, enableBookmarking = "url")
 # rsconnect::deployApp(account = "tadhg-moore")
 
 # end
-
