@@ -1001,19 +1001,11 @@ border-color: #FFF;
                                             actionButton("save_params", "Save model setup", icon = icon("save")),
                                             br(), br(), 
                                             
-                                            br(),
-                                            
-                                            
-                                            # wellPanel(
-                                              # p("After running the scenarios in Q 13, adjust the model parameters to get the best fit with the pattern seen in the observed data. Not the values into the table in Q 14."),
-                                              # # p("Save the plot output"),
-                                              
-                                              
-                                            # ),
+                                            br()
                                      ),
                                    ),
                                    fluidRow(
-                                     column(10, offset = 1,
+                                     column(12,
                                             box(id = "box8", width = 12, status = "primary",
                                                 solidHeader = TRUE,
                                                 fluidRow(
@@ -1026,18 +1018,16 @@ border-color: #FFF;
                                                          p(tags$b(quest["q13", 1])),
                                                          textAreaInput2(inputId = "q13a", label = quest["q13a", 1] , width = "90%"),
                                                          textAreaInput2(inputId = "q13b", label = quest["q13b", 1] , width = "90%"),
-                                                         # DTOutput('q13b_tab'),
                                                          br()
                                                   ), column(5,
                                                             p(tags$b(quest["q14", 1])),
-                                                            # DTOutput('q14_tab'),
                                                             textAreaInput2(inputId = "q14a", label = quest["q14a", 1] , width = "90%"),
                                                             textAreaInput2(inputId = "q14b", label = quest["q14b", 1] , width = "90%"),
                                                             br(),
                                                             p(tags$b(quest["q15", 1])),
                                                             checkboxInput("add_obs", "Add observations"),
-                                                            # DTOutput('q15_tab'),
-                                                            br()
+                                                            p(tags$b("Note:"), "The model you are using is a very simplified model. Do not spend greater than 5-10 minutes trying to calibrate the model. The main aim is to get it simulating concentrations in the same ranges as observations and not identically matching the observations."),
+                                                            imageOutput("mod_run_img")
                                                             )
                                                   )
                                                 )
@@ -2811,6 +2801,22 @@ server <- function(input, output, session) {#
     # show("main_content")
   }, ignoreInit = TRUE
   )
+  
+  # Render image for q15
+  output$mod_run_img <- renderImage({
+    
+    validate(
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
+    )
+    validate(
+      need(input$save_mod_run > 0, "If plot is missing please click 'Save Plot' under the productivity plot above.")
+    )
+    
+    list(src = "www/mod_run_2019.png",
+         alt = "Image failed to render",
+         # height = "100%", 
+         width = "100%")
+  }, deleteFile = FALSE)
   
   #** Save parameters fro each scenario
   output$save_par <- renderDT(par_save$value, selection = "single",
