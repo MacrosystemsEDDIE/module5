@@ -34,6 +34,16 @@ There are two options:
 3. This will launch the Shiny App in your default web browser. The Shiny App is run from RStudio so you will need to keep RStudio running in the background.  
 ![](www/launch_app.png)<!-- -->	
 
+## Quickstart option
+Here is an alternative way to quickly launch the Shiny app in less than a minute, but can be prone to package installation errors if your packages have not been updated recently.
+```
+# Step 1. Install required R packages
+source("https://raw.githubusercontent.com/MacrosystemsEDDIE/module5/main/install_packages.R")
+
+# Step 2. Launch Shiny app
+shiny::runGitHub("module5", "MacrosystemsEDDIE", ref = "main")
+```
+
 ## Questions & Feedback
 If you have any questions, comments or feedback related to these materials you can send an email to [macrosystemseddie@gmail.com]().
  
