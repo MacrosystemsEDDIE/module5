@@ -31,7 +31,7 @@ There are two options:
 ### Step 3: Launch Shiny App
 1. Open the script "app.R" in your console.  
 2. Click the "Run App" button in the Script (indicated below).  
-3. This will launch the Shiny App in your default web browser. The Shiny App is run from RStudio so you will need to keep RStudio running in the background.  
+3. This will launch the Shiny App in your default web browser or in a new RStudio window. The Shiny App is run from RStudio so you will need to keep RStudio running in the background.  
 ![](www/launch_app.png)<!-- -->	
 
 ## Quickstart option
