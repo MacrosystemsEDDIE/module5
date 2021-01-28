@@ -37,12 +37,12 @@ q11b,Zooplankton mortality
 q11c,Nutrient uptake by phytoplankton
 q12,"Q12. Using the default model (e.g. the default initial conditions and parameter values), simulate the baseline model scenario. Describe the pattern of chlorophyll-a concentration throughout the year?"
 q13,"Q13. Change the parameters to simulate the following scenarios, and describe the chlorophyll-a responses for:"
-q13a,"a. Medium grazing, medium mortality and high uptake (Save parameters)"
-q13b,"b. High grazing, high mortality and low uptake  (Save parameters)"
+q13a,"a. Medium grazing, medium mortality and high uptake (Save parameters and click 'Run Model')"
+q13b,"b. High grazing, high mortality and low uptake  (Save parameters and then click 'Run Model')"
 q14,"Q14. Develop a scenario (e.g. phytoplankton mortality is high, with  mortality = 0.9, etc.) and hypothesize how you think chlorophyll-a concentrations will respond prior to running the simulation. (Save parameters)"
 q14a,a. Write your hypothesis of how chlorophyll-a will respond to your scenario here:
 q14b,b. Run your model scenario. Was your hypothesis supported or refuted? Describe what you observed:
-q15,"Q15. Add the observations to the plot. Calibrate your model by selecting sensitive variables and adjusting the parameters until they best fit the observed data. Save your parameters, these are what will be used for the forecast."
+q15,"Q15. Add the observations to the plot. Calibrate your model by selecting sensitive variables and adjusting the parameters until they best fit the observed data. Save the plot and the parameters, these are what will be used for the forecast."
 q16,Q16. What is forecast uncertainty? How is forecast uncertainty quantified?
 q17,Q17. Inspect the weather forecast data for the site you have chosen:
 q17a,a. How does increasing the number of ensemble members in the weather forecast affect the size of the uncertainty in future weather?
