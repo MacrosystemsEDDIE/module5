@@ -115,6 +115,10 @@ yini <- c(
   # DETRITUS = 1, #mmolN m-3
   DIN = 9) #mmolN m-3
 
+# Load parameters and initial conditions
+site_parms <- read.csv("data/params_site_NP_model.csv", fileEncoding = "UTF-8-BOM")
+site_yini <- read.csv("data/yini_sites_NP_model.csv", fileEncoding = "UTF-8-BOM")
+
 # question 6 table with numeric input
 # code from https://stackoverflow.com/questions/46707434/how-to-have-table-in-shiny-filled-by-user
 wid_pct <- "80%"
@@ -168,9 +172,9 @@ wid_pct3 <- "80%"
 
 par_df <- data.frame(
   "Phytos" = rep(NA, 5),
-  "Zoops" = rep(NA, 5),
+  # "Zoops" = rep(NA, 5),
   "Nutrients" = rep(NA, 5),
-  "Grazing" = rep(NA, 5),
+  # "Grazing" = rep(NA, 5),
   "Mortality" = rep(NA, 5),
   "Uptake" = rep(NA, 5), row.names = c("Q12", "Q13a", "Q13b", "Q14", "Q15")
 )
@@ -384,7 +388,7 @@ ui <- function(req) {
                                                   downloadButton("download", "Download Report", width = "60px", style = "width:190px;"
                                                                  # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
                                                   )), br(),
-                                 p("Questions still to be completed:"),
+                                 h5(tags$b("Questions still to be completed:")),
                                  # verbatimTextOutput("check_list"),
                                  wellPanel(
                                    htmlOutput("check_list")
@@ -957,41 +961,25 @@ border-color: #FFF;
                                             # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
                                             sliderInput("phy_init", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
                                                                                 div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.1, max = 10, step = 0.1, value = 2),
-                                            p(tags$b("Zooplankton")),
-                                            sliderInput("zoo_init", label = div(style='width:300px;', div(style='float:left;', img(src = "zoop.png", height = "50px", width = "50px")),
-                                                                                div(style='float:right;', img(src = "zoops.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.1, max = 5, step = 0.1, value = 0.4),
+                                                        min = 0.01, max = 10, step = 0.01, value = 2),
                                             p(tags$b("Nutrients")),
                                             sliderInput("nut_init", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
                                                                                 div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.01, max = 20, step = 0.1, value = 3)
-                                            # )
-                                            ,
-                                            # wellPanel(
+                                                        min = 0.01, max = 10, step = 0.01, value = 3),
                                      ),
                                      column(3,
                                             h3("Parameters"),
-                                            h4(tags$b("Zooplankton parameters")),
-                                            p(tags$em("Grazing")),
-                                            sliderInput("graz_rate", label = div(style='width:300px;', 
-                                                                                 div(style='float:left;', 'Eat less'), 
-                                                                                 div(style='float:right;', 'Eat more')),
-                                                        min = 0.2, max = 1.6, value = 1.2, step = 0.1),
+                                            h4(tags$b("Phytoplankton parameters")),
                                             p(tags$em("Mortality")),
                                             sliderInput("mort_rate", label = div(style='width:300px;', 
                                                                                  div(style='float:left;', 'Lower death'), 
                                                                                  div(style='float:right;', 'Higher death')),
-                                                        min = 0.1, max = 1, value = 0.3, step = 0.1)
-                                            # )
-                                            ,
-                                            # wellPanel(
-                                            h4(tags$b("Phytoplankton parameters")),
+                                                        min = 0.01, max = 1, value = 0.3, step = 0.01),
                                             p(tags$em("Uptake")),
                                             sliderInput("nut_uptake", label = div(style='width:300px;', 
                                                                                   div(style='float:left;', 'Low uptake'), 
                                                                                   div(style='float:right;', 'High uptake')),
-                                                        min = 0.1, max = 1.7, value = 0.8, step = 0.1)
+                                                        min = 0.01, max = 3, value = 0.8, step = 0.01)
                                             
                                      ),
                                      column(6,
@@ -1248,24 +1236,21 @@ border-color: #FFF;
                                                                numericInput('members2', 'No. of members', 16,
                                                                             min = 1, max = 30, step = 1),
                                                                # uiOutput("eco_fc_members"),
-                                                               radioButtons("type2", "Type of Visualization", choices = c("Data table", plot_types)),
+                                                               radioButtons("type2", "Type of Visualization", choices = c("Data table", plot_types), selected = "Line"),
                                                                # selectInput('type2', 'Plot type', plot_types,
                                                                            # selec  ted = plot_types[2])
                                               ),
                                               h3(tags$b("Initial conditions")),
                                               p(id = "txt_j", "Return to the 'Get Data' tab to find suitable values to input for each of the states. Use the start date of the weather forecast loaded above. If there is no value, choose a value based on the observed range."),
                                             p(tags$b("Phytoplankton")),
+                                            # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
                                             sliderInput("phy_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
                                                                                 div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.1, max = 10, step = 0.1, value = 2),
-                                            p(tags$b("Zooplankton")),
-                                            sliderInput("zoo_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "zoop.png", height = "50px", width = "50px")),
-                                                                                div(style='float:right;', img(src = "zoops.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.1, max = 5, step = 0.1, value = 0.4),
+                                                        min = 0.01, max = 10, step = 0.01, value = 2),
                                             p(tags$b("Nutrients")),
                                             sliderInput("nut_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
                                                                                 div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.01, max = 20, step = 0.1, value = 9),
+                                                        min = 0.01, max = 10, step = 0.01, value = 3),
                                             actionButton('run_fc2', label = div("Run Forecast", icon("running")),
                                                          width = "60%")
                                             # )
@@ -1440,26 +1425,17 @@ border-color: #FFF;
                                    fluidRow(
                                      column(4,
                                             h3("Parameters"),
-                                            h4(tags$b("Zooplankton parameters")),
-                                            p(tags$em("Grazing")),
-                                            sliderInput("graz_rate2", label = div(style='width:300px;', div(style='float:left;', 'Eat less'),
-                                                                                  # div(img(src = "zoops.png", height = "60px", width = "60px")), 
-                                                                                  div(style='float:right;', 'Eat more')),
-                                                        min = 0.2, max = 1.6, value = 1.2, step = 0.1),
+                                            h4(tags$b("Phytoplankton parameters")),
                                             p(tags$em("Mortality")),
                                             sliderInput("mort_rate2", label = div(style='width:300px;', 
-                                                                                  div(style='float:left;', 'Lower death'), 
-                                                                                  div(style='float:right;', 'Higher death')),
-                                                        min = 0.1, max = 1, value = 0.3, step = 0.1)
-                                            # )
-                                            ,
-                                            # wellPanel(
-                                            h4(tags$b("Phytoplankton parameters")),
+                                                                                 div(style='float:left;', 'Lower death'), 
+                                                                                 div(style='float:right;', 'Higher death')),
+                                                        min = 0.01, max = 1, value = 0.3, step = 0.01),
                                             p(tags$em("Uptake")),
                                             sliderInput("nut_uptake2", label = div(style='width:300px;', 
-                                                                                   div(style='float:left;', 'Low uptake'), 
-                                                                                   div(style='float:right;', 'High uptake')),
-                                                        min = 0.1, max = 1.7, value = 0.8, step = 0.1),
+                                                                                  div(style='float:left;', 'Low uptake'), 
+                                                                                  div(style='float:right;', 'High uptake')),
+                                                        min = 0.01, max = 3, value = 0.8, step = 0.01),
                                             actionButton('update_fc2', label = div("Update forecast",
                                                                                    icon("redo-alt")))
                                      ),
@@ -1505,9 +1481,15 @@ border-color: #FFF;
                                             p(id = "txt_j", "With an updated model, we can now generate the next forecast driven by a new weather forecast"),
                                             h3(tags$b("Initial conditions")),
                                             p(id = "txt_j", "Remember, you will need to update the initial conditions based on the latest observed data."),
-                                            sliderInput("phy_init3", "Phytoplankton", min = 0.1, max = 10, step = 0.1, value = 2),
-                                            sliderInput("zoo_init3", "Zooplankton", min = 0.1, max = 5, step = 0.1, value = 0.4),
-                                            sliderInput("nut_init3", "Nutrients", min = 0.01, max = 20, step = 0.1, value = 9),
+                                            p(tags$b("Phytoplankton")),
+                                            # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
+                                            sliderInput("phy_init3", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
+                                                                                div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
+                                                        min = 0.01, max = 10, step = 0.01, value = 2),
+                                            p(tags$b("Nutrients")),
+                                            sliderInput("nut_init3", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
+                                                                                div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
+                                                        min = 0.01, max = 10, step = 0.01, value = 3),
                                             wellPanel(
                                               actionButton('load_fc3', label = div("Load Forecast inputs", icon("download")),
                                                            width = "70%"), br(),
@@ -1740,6 +1722,19 @@ server <- function(input, output, session) {#
     vars <- fid$var # Extract variable names for selection
     fc_vars <<- names(vars)
     membs <<- length(fils)
+    
+    # Update parameters & initial conditions
+    upd_parms <- as.vector(unlist(site_parms[site_parms$site == siteID, -1]))
+    upd_yin <- site_yini[site_yini$site == siteID, -1]
+    parms <<- upd_parms
+    print(parms)
+    
+    if(siteID == "SUGG") {
+      updateSliderInput(session, "phy_init", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.1)
+      updateSliderInput(session, "phy_init2", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.1)
+      updateSliderInput(session, "phy_init3", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.1)
+    }
+    
   })
 
   # Neon map ----
@@ -2611,11 +2606,10 @@ server <- function(input, output, session) {#
     
     # Updated parameters
     parms[1] <- as.numeric(input$nut_uptake)
-    parms[4] <- as.numeric(input$graz_rate)
+    # parms[4] <- as.numeric(input$graz_rate)
     parms[7] <- as.numeric(input$mort_rate)
     
     inputs <- create_npz_inputs(time = npz_inp[, 1], PAR = npz_inp[, 2], temp = npz_inp[, 3])
-    
     
     # Alter Initial conditions
     yini[1] <- input$phy_init
@@ -2678,6 +2672,14 @@ server <- function(input, output, session) {#
       chla[, 1] <- as.POSIXct(chla[, 1], tz = "UTC")
       chla <- chla[(chla[, 1] >= mod_run1()[1, 1] &
                       chla[, 1] <= mod_run1()[nrow(mod_run1()), 1]), ]
+    }
+    
+    # Remove extreme values
+    if(siteID == "PRLA") {
+      chla <- chla[(chla[, 1] > as.POSIXct("2019-07-06")), ]
+    }
+    if(siteID == "PRPO") {
+      chla <- chla[(chla[, 2] < 40), ]
     }
     
     xlims <- range(mod_run1()[, 1])
@@ -2830,11 +2832,15 @@ server <- function(input, output, session) {#
   par_save <- reactiveValues(value = par_df)
   observeEvent(input$save_params, {
     if(input$save_params > 0) {
-      par_save$value[input$save_par_rows_selected, ] <<- c(input$phy_init, input$zoo_init, input$nut_init, input$graz_rate,
+      par_save$value[input$save_par_rows_selected, ] <<- c(input$phy_init, 
+                                                           # input$zoo_init, 
+                                                           input$nut_init, #input$graz_rate,
                                                    input$mort_rate, input$nut_uptake)
     }
     if(input$save_params == 0) {
-      par_save$value[1, ] <<- c(input$phy_init, input$zoo_init, input$nut_init, input$graz_rate,
+      par_save$value[1, ] <<- c(input$phy_init, 
+                                # input$zoo_init, 
+                                input$nut_init, #input$graz_rate,
                         input$mort_rate, input$nut_uptake)
     }
     }, ignoreNULL = FALSE)
@@ -2885,13 +2891,13 @@ server <- function(input, output, session) {#
     
     # Parameters from 'Build Model'
     parms[1] <- as.numeric(input$nut_uptake)
-    parms[4] <- as.numeric(input$graz_rate)
+    # parms[4] <- as.numeric(input$graz_rate)
     parms[7] <- as.numeric(input$mort_rate)
     
     # Alter Initial conditions
     yini[1] <- input$phy_init2
-    yini[2] <- input$zoo_init2
-    yini[3] <- input$nut_init2
+    # yini[2] <- input$zoo_init2
+    yini[2] <- input$nut_init2
     
     # progress$inc(0.33, detail = "Running the model")
     fc_length <- input$members2 # length(npz_fc_data())
@@ -2902,29 +2908,32 @@ server <- function(input, output, session) {#
 
       times <- 1:nrow(npz_inputs)
       
-      res <- matrix(NA, nrow = length(times), ncol = 5)
-      colnames(res) <- c("time", "Chla", "Phytoplankton", "Zooplankton", "Nutrients")
+      res <- matrix(NA, nrow = length(times), ncol = 4)
+      colnames(res) <- c("time", "Chla", "Phytoplankton", "Nutrients")
       res[, 1] <- times
       res[1, -1] <- c(yini[1], yini)
       
+      # yini <- c(2,9)
       # Looped model version
       for(i in 2:length(times)) {
         
         if(!("Temperature" %in% input$mod_sens)) {
-          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i],
-                                        func = NPZ_model_noT, parms = parms,
-                                        method = "ode45", inputs = npz_inputs))
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
+                                        parms = parms, method = "ode45", inputs = npz_inputs))
         } else {
-          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NPZ_model,
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         }
         
-        res[i, -1] <- out[2, c(5, 2, 3, 4)]
-        yini <- out[2, c(2:4)]
+        res[i, -1] <- out[2, c(4, 2, 3)]
+        yini <- out[2, c(2:3)]
         
       }
       res <- as.data.frame(res)
       res$time <- fc_out_dates
+      
+      
+      
 
       # out$time <- npz_inp$Date
       out <- res[, c("time", "Chla")] #, "PHYTO", "ZOO")]
@@ -2986,9 +2995,9 @@ server <- function(input, output, session) {#
     )
     
    
-    validate(
-      need(input$run_fc2 > 0, "Click 'Run Forecast'")
-    )
+    # validate(
+    #   need(input$run_fc2 > 0, "Click 'Run Forecast'")
+    # )
     
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -2998,63 +3007,75 @@ server <- function(input, output, session) {#
       chla <- read.csv(file)
       chla[, 1] <- as.Date(chla[, 1], tz = "UTC")
     }
-    chla_obs <- chla[(chla[, 1] >= as.Date((driv_fc()[1, 1] - (7)))) &
-                       chla[, 1] <= as.Date(driv_fc()[1, 1]), ]
     
-    sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
-    if(input$type2 == "Distribution") {
-      
-      df3 <- plyr::ddply(sub, "time", function(x) {
-        quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
-      })
-      # df3 <- as.data.frame(t(df3))
-      colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
-      colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
-      # df3$hours <- df2$hours
-      df2 <- df3
-    } else {
-      df2 <- sub
-      df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
-    }
+    vlin <- as.Date(fc_data()[[1]][1, 1])
+    chla_obs <- chla[(chla[, 1] >= ((vlin - (7)))) &
+                       chla[, 1] <= vlin, ]
     
-    sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
-    if(input$type2 == "Distribution") {
-      
-      df3 <- plyr::ddply(sub, "time", function(x) {
-        quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
-      })
-      # df3 <- as.data.frame(t(df3))
-      colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
-      colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
-      # df3$hours <- df2$hours
-      df2 <- df3
-    } else {
-      df2 <- sub
-      df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
-    }
-    
-    txt <- data.frame(x = (chla_obs[nrow(chla_obs), 1] - 2), y = (max(chla_obs[, 2], na.rm = TRUE) + 2), label = "Today")
-
     p <- ggplot()
-    if(input$type2 == "Line"){
-      p <- p +
-        geom_line(data = df2, aes(time, value, color = L1)) +
-        scale_color_manual(values = c(rep(pair.cols[4], input$members2), cols[1])) +
-        guides(color = FALSE)
-    } 
-    if(input$type2 == "Distribution") {
-      p <- p +
-        geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
-                    alpha = 0.8) +
-        geom_line(data = df2, aes(time, p50, color = "Median - original")) +
-        scale_fill_manual(values = pair.cols[3]) +
-        guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
-        scale_color_manual(values = c("Median - original" = pair.cols[4], "Obs" = cols[1]))
+    
+    if(input$run_fc2 > 0) {
+      sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
+      if(input$type2 == "Distribution") {
+        
+        df3 <- plyr::ddply(sub, "time", function(x) {
+          quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+        })
+        # df3 <- as.data.frame(t(df3))
+        colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
+        colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
+        # df3$hours <- df2$hours
+        df2 <- df3
+      } else {
+        df2 <- sub
+        df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
+      }
+      
+      sub <- driv_fc()[as.numeric(driv_fc()$L1) <= input$members2, ]
+      if(input$type2 == "Distribution") {
+        
+        df3 <- plyr::ddply(sub, "time", function(x) {
+          quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+        })
+        # df3 <- as.data.frame(t(df3))
+        colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
+        colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
+        # df3$hours <- df2$hours
+        df2 <- df3
+      } else {
+        df2 <- sub
+        df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
+      }
+      
+      if(input$type2 == "Line"){
+        p <- p +
+          geom_line(data = df2, aes(time, value, color = L1)) +
+          scale_color_manual(values = c(rep(pair.cols[4], input$members2), cols[1])) +
+          guides(color = FALSE)
+      } 
+      if(input$type2 == "Distribution") {
+        p <- p +
+          geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
+                      alpha = 0.8) +
+          geom_line(data = df2, aes(time, p50, color = "Median - original")) +
+          scale_fill_manual(values = pair.cols[3]) +
+          guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
+          scale_color_manual(values = c("Median - original" = pair.cols[4], "Obs" = cols[1]))
+      }
+      
+      
     }
+    
+    
+    
+    txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 4), (chla_obs[nrow(chla_obs), 1] + 4)),
+                      y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("Past", "Future"))
+
+
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
       geom_text(data = txt, aes(x, y, label = label)) +
-      geom_vline(xintercept = df2[1, 1], linetype = "dashed") +
+      geom_vline(xintercept = vlin, linetype = "dashed") +
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Date") +
       theme_classic(base_size = 12) +
@@ -3138,8 +3159,8 @@ server <- function(input, output, session) {#
       df2 <- df3
     # }
     
-    txt <- data.frame(x = (chla_obs[nrow(chla_obs), 1] - 2), y = (max(chla_obs[, 2], na.rm = TRUE) + 2), label = "Today")
-    
+      txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 4), (chla_obs[nrow(chla_obs), 1] + 4)),
+                        y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("Past", "Future"))    
     p <- ggplot()
     
     # if(input$type2 == "Distribution") {
@@ -3466,13 +3487,13 @@ server <- function(input, output, session) {#
     
     # Parameters from 'Build Model'
     parms[1] <- as.numeric(input$nut_uptake2)
-    parms[4] <- as.numeric(input$graz_rate2)
+    # parms[4] <- as.numeric(input$graz_rate2)
     parms[7] <- as.numeric(input$mort_rate2)
     
     # Alter Initial conditions
     yini[1] <- input$phy_init2
-    yini[2] <- input$zoo_init2
-    yini[3] <- input$nut_init2
+    # yini[2] <- input$zoo_init2
+    yini[2] <- input$nut_init2
     
     # progress$inc(0.33, detail = "Running the model")
     fc_length <- input$members2 #length(npz_fc_data())
@@ -3483,25 +3504,25 @@ server <- function(input, output, session) {#
       
       times <- 1:nrow(npz_inputs)
       
-      res <- matrix(NA, nrow = length(times), ncol = 5)
-      colnames(res) <- c("time", "Chla", "Phytoplankton", "Zooplankton", "Nutrients")
+      res <- matrix(NA, nrow = length(times), ncol = 4)
+      colnames(res) <- c("time", "Chla", "Phytoplankton", "Nutrients")
       res[, 1] <- times
       res[1, -1] <- c(yini[1], yini)
       
+      # yini <- c(2,9)
       # Looped model version
       for(i in 2:length(times)) {
         
         if(!("Temperature" %in% input$mod_sens)) {
-          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i],
-                                        func = NPZ_model_noT, parms = parms,
-                                        method = "ode45", inputs = npz_inputs))
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
+                                        parms = parms, method = "ode45", inputs = npz_inputs))
         } else {
-          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NPZ_model,
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         }
         
-        res[i, -1] <- out[2, c(5, 2, 3, 4)]
-        yini <- out[2, c(2:4)]
+        res[i, -1] <- out[2, c(4, 2, 3)]
+        yini <- out[2, c(2:3)]
         
       }
       res <- as.data.frame(res)
@@ -3739,13 +3760,13 @@ server <- function(input, output, session) {#
     
     # Parameters from 'Build Model'
     parms[1] <- as.numeric(input$nut_uptake2)
-    parms[4] <- as.numeric(input$graz_rate2)
+    # parms[4] <- as.numeric(input$graz_rate2)
     parms[7] <- as.numeric(input$mort_rate2)
     
     # Alter Initial conditions
     yini[1] <- input$phy_init3
-    yini[2] <- input$zoo_init3
-    yini[3] <- input$nut_init3
+    # yini[2] <- input$zoo_init3
+    yini[2] <- input$nut_init3
     
     # progress$inc(0.33, detail = "Running the model")
     fc_length <- length(npz_fc_data2())
@@ -3756,25 +3777,25 @@ server <- function(input, output, session) {#
       
       times <- 1:nrow(npz_inputs)
       
-      res <- matrix(NA, nrow = length(times), ncol = 5)
-      colnames(res) <- c("time", "Chla", "Phytoplankton", "Zooplankton", "Nutrients")
+      res <- matrix(NA, nrow = length(times), ncol = 4)
+      colnames(res) <- c("time", "Chla", "Phytoplankton", "Nutrients")
       res[, 1] <- times
       res[1, -1] <- c(yini[1], yini)
       
+      # yini <- c(2,9)
       # Looped model version
       for(i in 2:length(times)) {
         
         if(!("Temperature" %in% input$mod_sens)) {
-          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i],
-                                        func = NPZ_model_noT, parms = parms,
-                                        method = "ode45", inputs = npz_inputs))
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
+                                        parms = parms, method = "ode45", inputs = npz_inputs))
         } else {
-          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NPZ_model,
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         }
         
-        res[i, -1] <- out[2, c(5, 2, 3, 4)]
-        yini <- out[2, c(2:4)]
+        res[i, -1] <- out[2, c(4, 2, 3)]
+        yini <- out[2, c(2:3)]
         
       }
       res <- as.data.frame(res)
@@ -3797,8 +3818,8 @@ server <- function(input, output, session) {#
   observeEvent(input$run_fc2, {
     phy_init2 <- input$phy_init2
     updateSliderInput(session, "phy_init3", value = phy_init2)
-    zoo_init2 <- input$zoo_init2
-    updateSliderInput(session, "zoo_init3", value = zoo_init2)
+    # zoo_init2 <- input$zoo_init2
+    # updateSliderInput(session, "zoo_init3", value = zoo_init2)
     nut_init2 <- input$nut_init2
     updateSliderInput(session, "nut_init3", value = nut_init2)
   })
@@ -3858,18 +3879,22 @@ server <- function(input, output, session) {#
                     alpha = 0.8) +
         # geom_ribbon(data = df2, aes(time, ymin = p12.5, ymax = p87.5, fill = "75th"),
         # alpha = 0.8) +
-        geom_line(data = df2, aes(time, p50, color = "Median")) +
-        geom_vline(xintercept = (new_fc()[1, 1]), linetype = "dashed")
+        geom_line(data = df2, aes(time, p50, color = "Median"))
     }
+    
+    txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 8), (chla_obs[nrow(chla_obs), 1] + 8)),
+                      y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("Past", "Future"))
     
     # }
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Date") +
+      geom_vline(xintercept = chla_obs[nrow(chla_obs), 1], linetype = "dashed") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "") +
+      geom_text(data = txt, aes(x, y, label = label)) +
       scale_fill_manual(values = c("2020-09-25" = pair.cols[3], "2020-10-02" = pair.cols[7])) +
       guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
       scale_color_manual(values = c("Median" = "black", cols[1:2]))
@@ -3952,11 +3977,15 @@ server <- function(input, output, session) {#
         geom_vline(xintercept = (new_fc()[1, 1]), linetype = "dashed")
     }
     
+    
+    txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 8), (chla_obs[nrow(chla_obs), 1] + 8)),
+                      y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("Past", "Future"))
     # }
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs")), size = 4) +
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Date") +
+      geom_text(data = txt, aes(x, y, label = label), size = 12) +
       theme_classic(base_size = 34) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "") +
@@ -4225,14 +4254,14 @@ server <- function(input, output, session) {#
   observeEvent(input$run_mod_ann, {
     phy_init1 <- input$phy_init
     updateSliderInput(session, "phy_init2", value = phy_init1)
-    zoo_init1 <- input$zoo_init
-    updateSliderInput(session, "zoo_init2", value = zoo_init1)
+    # zoo_init1 <- input$zoo_init
+    # updateSliderInput(session, "zoo_init2", value = zoo_init1)
     nut_init1 <- input$nut_init
     updateSliderInput(session, "nut_init2", value = nut_init1)
     
     # Parameters
-    graz_rate1 <- input$graz_rate
-    updateSliderInput(session, "graz_rate2", value = graz_rate1)
+    # graz_rate1 <- input$graz_rate
+    # updateSliderInput(session, "graz_rate2", value = graz_rate1)
     mort_rate1 <- input$mort_rate
     updateSliderInput(session, "mort_rate2", value = mort_rate1)
     nut_uptake1 <- input$nut_uptake
