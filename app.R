@@ -21,8 +21,8 @@ options(spinner.color = "#0275D8", spinner.color.background = "#ffffff", spinner
 source("download_phenocam.R")
 source("get_html.R")
 source("create_npz_inputs.R")
-source("NPZ_model.R")
-source("NPZ_model_no_temp.R")
+source("NP_model.R")
+source("NP_model_no_temp.R")
 source("textAreaInput2.R")
 
 # Load in sp format with coordinates
@@ -111,7 +111,7 @@ parms <- c(
 # Initial conditions for NPZ
 yini <- c(
   PHYTO = 2, #mmolN m-3
-  ZOO = 0.4, #mmolN m-3
+  # ZOO = 0.4, #mmolN m-3
   # DETRITUS = 1, #mmolN m-3
   DIN = 9) #mmolN m-3
 
@@ -2619,32 +2619,33 @@ server <- function(input, output, session) {#
     
     # Alter Initial conditions
     yini[1] <- input$phy_init
-    yini[2] <- input$zoo_init
-    yini[3] <- input$nut_init
+    # yini[2] <- input$zoo_init
+    yini[2] <- input$nut_init
 
-    res <- matrix(NA, nrow = length(times), ncol = 5)
-    colnames(res) <- c("time", "Chla", "Phytoplankton", "Zooplankton", "Nutrients")
+    res <- matrix(NA, nrow = length(times), ncol = 4)
+    colnames(res) <- c("time", "Chla", "Phytoplankton", "Nutrients")
     res[, 1] <- times
     res[1, -1] <- c(yini[1], yini)
     
+    # yini <- c(2,9)
     # Looped model version
     for(i in 2:length(times)) {
       
       if(!("Temperature" %in% input$mod_sens)) {
-        out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NPZ_model_noT,
+        out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
                                       parms = parms, method = "ode45", inputs = inputs))
       } else {
-        out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NPZ_model,
+        out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                       parms = parms, method = "ode45", inputs = inputs))
       }
       
-      res[i, -1] <- out[2, c(5, 2, 3, 4)]
-      yini <- out[2, c(2:4)]
+      res[i, -1] <- out[2, c(4, 2, 3)]
+      yini <- out[2, c(2:3)]
       
     }
     res <- as.data.frame(res)
     res$time <- npz_inp$Date
-    res <- res[, c("time", "Chla", "Zooplankton", "Nutrients")]
+    res <- res[, c("time", "Chla", "Nutrients")]
     # res[ ,-1] <- ((res[ ,-1] / 1000) * 14) * 100
     
     return(res)
