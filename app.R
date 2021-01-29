@@ -22,6 +22,8 @@ source("download_phenocam.R")
 source("get_html.R")
 source("create_npz_inputs.R")
 source("NP_model.R")
+source("NP_model_no_temp_no_light.R")
+source("NP_model_no_light.R")
 source("NP_model_no_temp.R")
 source("textAreaInput2.R")
 
@@ -953,8 +955,9 @@ border-color: #FFF;
                                      column(3,
                                             # wellPanel(
                                             h3("Inputs"),
-                                            checkboxGroupInput("mod_sens", "Switch on or off the temperature sensitivity:",
-                                                               choices = list("Temperature")),
+                                            p("Select which variables the model will use as inputs. This means the model will use the variable measured on site as a driving variable in the model."),
+                                            checkboxGroupInput("mod_sens", "Select model inputs:",
+                                                               choices = list("Temperature", "Light (PAR)")),
                                             h3("Initial conditions"),
                                             p("Adjust these to values that are within reasonable ranges as seen in the 'Objective 2 - Explore data' tab. Phytoplankton corresponds to chlorophyll-a concentrations and nutrients corresponds to Dissolved Inorganic Nitrogen."),
                                             p(tags$b("Phytoplankton")),
@@ -974,12 +977,12 @@ border-color: #FFF;
                                             sliderInput("mort_rate", label = div(style='width:300px;', 
                                                                                  div(style='float:left;', 'Lower death'), 
                                                                                  div(style='float:right;', 'Higher death')),
-                                                        min = 0.01, max = 1, value = 0.3, step = 0.01),
+                                                        min = 0.01, max = 0.6, value = 0.3, step = 0.005),
                                             p(tags$em("Uptake")),
                                             sliderInput("nut_uptake", label = div(style='width:300px;', 
                                                                                   div(style='float:left;', 'Low uptake'), 
                                                                                   div(style='float:right;', 'High uptake')),
-                                                        min = 0.01, max = 3, value = 0.8, step = 0.01)
+                                                        min = 0.01, max = 4, value = 0.8, step = 0.01)
                                             
                                      ),
                                      column(6,
@@ -1430,12 +1433,12 @@ border-color: #FFF;
                                             sliderInput("mort_rate2", label = div(style='width:300px;', 
                                                                                  div(style='float:left;', 'Lower death'), 
                                                                                  div(style='float:right;', 'Higher death')),
-                                                        min = 0.01, max = 1, value = 0.3, step = 0.01),
+                                                        min = 0.01, max = 0.6, value = 0.3, step = 0.005),
                                             p(tags$em("Uptake")),
                                             sliderInput("nut_uptake2", label = div(style='width:300px;', 
                                                                                   div(style='float:left;', 'Low uptake'), 
                                                                                   div(style='float:right;', 'High uptake')),
-                                                        min = 0.01, max = 3, value = 0.8, step = 0.01),
+                                                        min = 0.01, max = 4, value = 0.8, step = 0.01),
                                             actionButton('update_fc2', label = div("Update forecast",
                                                                                    icon("redo-alt")))
                                      ),
@@ -2351,7 +2354,7 @@ server <- function(input, output, session) {#
     
     p <- p + 
       ylab(ylab) +
-      xlab("Date") +
+      xlab("Time") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
     
@@ -2458,7 +2461,7 @@ server <- function(input, output, session) {#
     
     p <- p + 
       ylab(ylab) +
-      xlab("Date") +
+      xlab("Time") +
       theme_classic(base_size = 34) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
     
@@ -2609,7 +2612,7 @@ server <- function(input, output, session) {#
     # parms[4] <- as.numeric(input$graz_rate)
     parms[7] <- as.numeric(input$mort_rate)
     
-    inputs <- create_npz_inputs(time = npz_inp[, 1], PAR = npz_inp[, 2], temp = npz_inp[, 3])
+    npz_inputs <- create_npz_inputs(time = npz_inp[, 1], PAR = npz_inp[, 2], temp = npz_inp[, 3])
     
     # Alter Initial conditions
     yini[1] <- input$phy_init
@@ -2625,12 +2628,18 @@ server <- function(input, output, session) {#
     # Looped model version
     for(i in 2:length(times)) {
       
-      if(!("Temperature" %in% input$mod_sens)) {
-        out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
-                                      parms = parms, method = "ode45", inputs = inputs))
-      } else {
+      if(all(c("Temperature", "Light (PAR)") %in% input$mod_sens)) {
         out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
-                                      parms = parms, method = "ode45", inputs = inputs))
+                                      parms = parms, method = "ode45", inputs = npz_inputs))
+      } else if((c("Light (PAR)") %in% input$mod_sens)) {
+        out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
+                                      parms = parms, method = "ode45", inputs = npz_inputs))
+      } else if((c("Temperature") %in% input$mod_sens)) {
+        out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noPAR,
+                                      parms = parms, method = "ode45", inputs = npz_inputs))
+      } else {
+        out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noTPAR,
+                                      parms = parms, method = "ode45", inputs = npz_inputs))
       }
       
       res[i, -1] <- out[2, c(4, 2, 3)]
@@ -2691,7 +2700,7 @@ server <- function(input, output, session) {#
     p <- ggplot() +
       geom_line(data = mod_run1(), aes_string(names(mod_run1())[1], names(mod_run1())[2], color = shQuote("Model"))) +
       ylab("Chlorophyll-a (μg/L)") +
-      xlab("") +
+      xlab("Time") +
       {if(input$add_obs) geom_point(data = chla, aes_string(names(chla)[1], names(chla)[2], color = shQuote("Obs")))} +
       # coord_cartesian(xlim = xlims, ylim = ylims) +
       scale_color_manual(values = cols[1:2]) +
@@ -2740,7 +2749,7 @@ server <- function(input, output, session) {#
     p <- ggplot() +
       geom_line(data = mlt, aes_string(names(mlt)[1], names(mlt)[3], color = names(mlt)[2])) +
       ylab("N (μg/L)") +
-      xlab("") +
+      xlab("Time") +
       {if(input$add_obs) geom_point(data = din, aes_string(names(din)[1], names(din)[2], color = shQuote("Obs")))} +
       geom_hline(yintercept = 0, color = "gray") +
       facet_wrap(~variable, ncol = 1) +
@@ -2789,7 +2798,7 @@ server <- function(input, output, session) {#
     p <- ggplot() +
       geom_line(data = mod_run1(), aes_string(names(mod_run1())[1], names(mod_run1())[2], color = shQuote("Model"))) +
       ylab("Chlorophyll-a (μg/L)") +
-      xlab("") +
+      xlab("Time") +
       {if(input$add_obs) geom_point(data = chla, aes_string(names(chla)[1], names(chla)[2], color = shQuote("Obs")), size = 4)} +
       # coord_cartesian(xlim = xlims, ylim = ylims) +
       scale_color_manual(values = cols[1:2]) +
@@ -2917,11 +2926,17 @@ server <- function(input, output, session) {#
       # Looped model version
       for(i in 2:length(times)) {
         
-        if(!("Temperature" %in% input$mod_sens)) {
+        if(all(c("Temperature", "Light (PAR)") %in% input$mod_sens)) {
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
+                                        parms = parms, method = "ode45", inputs = npz_inputs))
+        } else if((c("Light (PAR)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
+        } else if((c("Temperature") %in% input$mod_sens)) {
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noPAR,
+                                        parms = parms, method = "ode45", inputs = npz_inputs))
         } else {
-          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noTPAR,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         }
         
@@ -3077,7 +3092,7 @@ server <- function(input, output, session) {#
       geom_text(data = txt, aes(x, y, label = label)) +
       geom_vline(xintercept = vlin, linetype = "dashed") +
       ylab("Chlorophyll-a (μg/L)") +
-      xlab("Date") +
+      xlab("Time") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "")
@@ -3178,7 +3193,7 @@ server <- function(input, output, session) {#
       geom_text(data = txt, aes(x, y, label = label), size = 12) +
       geom_vline(xintercept = df2[1, 1], linetype = "dashed") +
       ylab("Chlorophyll-a (μg/L)") +
-      xlab("Date") +
+      xlab("Time") +
       theme_classic(base_size = 38) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "")
@@ -3275,7 +3290,7 @@ server <- function(input, output, session) {#
       geom_vline(xintercept = (df2[1, 1] + 7), linetype = "dotted") +
       geom_text(data = txt, aes(x, y, label = label)) +
       ylab("Chlorophyll-a (μg/L)") +
-      xlab("Date") +
+      xlab("Time") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "")
@@ -3422,7 +3437,7 @@ server <- function(input, output, session) {#
       geom_vline(xintercept = (df2[1, 1] + 7), linetype = "dotted") +
       geom_text(data = txt, aes(x, y, label = label), size = 8) +
       ylab("Chlorophyll-a (μg/L)") +
-      xlab("Date") +
+      xlab("Time") +
       theme_classic(base_size = 34) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "")
@@ -3513,11 +3528,17 @@ server <- function(input, output, session) {#
       # Looped model version
       for(i in 2:length(times)) {
         
-        if(!("Temperature" %in% input$mod_sens)) {
+        if(all(c("Temperature", "Light (PAR)") %in% input$mod_sens)) {
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
+                                        parms = parms, method = "ode45", inputs = npz_inputs))
+        } else if((c("Light (PAR)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
+        } else if((c("Temperature") %in% input$mod_sens)) {
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noPAR,
+                                        parms = parms, method = "ode45", inputs = npz_inputs))
         } else {
-          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noTPAR,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         }
         
@@ -3609,7 +3630,7 @@ server <- function(input, output, session) {#
       geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs"))) +
       geom_vline(xintercept = driv_fc()[1, 1], linetype = "dashed") +
       ylab("Chlorophyll-a") +
-      xlab("Date") +
+      xlab("Time") +
       {if(input$update_fc2 > 0)         scale_color_manual(values = c("Obs" = cols[1], "New obs" = cols[2], "Median - original" = pair.cols[4], "Median - updated" = pair.cols[6]))} +
       {if(input$update_fc2 == 0)         scale_color_manual(values = c("Obs" = cols[1], "New obs" = cols[2], "Median - original" = pair.cols[4]))} +
       theme_classic(base_size = 12) +
@@ -3699,7 +3720,7 @@ server <- function(input, output, session) {#
       geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs")), size = 4) +
       geom_vline(xintercept = driv_fc()[1, 1], linetype = "dashed") +
       ylab("Chlorophyll-a") +
-      xlab("Date") +
+      xlab("Time") +
       {if(input$update_fc2 > 0)         scale_color_manual(values = c("Obs" = cols[1], "New obs" = cols[2], "Median - original" = pair.cols[4], "Median - updated" = pair.cols[6]))} +
       {if(input$update_fc2 == 0)         scale_color_manual(values = c("Obs" = cols[1], "New obs" = cols[2], "Median - original" = pair.cols[4]))} +
       theme_classic(base_size = 34) +
@@ -3736,7 +3757,7 @@ server <- function(input, output, session) {#
           colMeans(x[, 1:3], na.rm = TRUE)
         })
         # df3 <- df3[2:16, ]
-        fc_out_dates <<- df3$date
+        fc_out_dates2 <<- df3$date
         df3$wtemp <- 5 + 0.75 * df3$air_temperature
         
         create_npz_inputs(time = df3$date, swr = df3$surface_downwelling_shortwave_flux_in_air,
@@ -3786,11 +3807,17 @@ server <- function(input, output, session) {#
       # Looped model version
       for(i in 2:length(times)) {
         
-        if(!("Temperature" %in% input$mod_sens)) {
+        if(all(c("Temperature", "Light (PAR)") %in% input$mod_sens)) {
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
+                                        parms = parms, method = "ode45", inputs = npz_inputs))
+        } else if((c("Light (PAR)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
+        } else if((c("Temperature") %in% input$mod_sens)) {
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noPAR,
+                                        parms = parms, method = "ode45", inputs = npz_inputs))
         } else {
-          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
+          out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noTPAR,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         }
         
@@ -3799,7 +3826,7 @@ server <- function(input, output, session) {#
         
       }
       res <- as.data.frame(res)
-      res$time <- fc_out_dates
+      res$time <- fc_out_dates2
       
       # out$time <- npz_inp$Date
       out <- res[, c("time", "Chla")] #, "PHYTO", "ZOO")]
@@ -3889,7 +3916,7 @@ server <- function(input, output, session) {#
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
       ylab("Chlorophyll-a (μg/L)") +
-      xlab("Date") +
+      xlab("Time") +
       geom_vline(xintercept = chla_obs[nrow(chla_obs), 1], linetype = "dashed") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
@@ -3984,7 +4011,7 @@ server <- function(input, output, session) {#
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs")), size = 4) +
       ylab("Chlorophyll-a (μg/L)") +
-      xlab("Date") +
+      xlab("Time") +
       geom_text(data = txt, aes(x, y, label = label), size = 12) +
       theme_classic(base_size = 34) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
