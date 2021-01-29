@@ -1,4 +1,4 @@
-NP_model_noT <- function(time, states, parms, inputs){
+NP_model_noTPAR <- function(time, states, parms, inputs){
   
   
   PHYTO <- states[1]
@@ -31,7 +31,7 @@ NP_model_noT <- function(time, states, parms, inputs){
   #f1 = N_Uptake 
   #N_Uptake <- maxUptake*min((PAR/(PAR+kspar)),(DIN/(DIN+ksdin)))*PHYTO 
   # Temp_effect = Q10^((TEMP-20)/10)  
-  N_Uptake <- maxUptake*PHYTO*(PAR/(PAR+kspar))*(DIN/(DIN+ksdin)) # *Temp_effect
+  N_Uptake <- maxUptake*PHYTO*(DIN/(DIN+ksdin)) # *Temp_effect
   #f2 = Grazing
   # Grazing <- maxGrazing*((PHYTO/(PHYTO+ksphyto))) # *Temp_effect
   #f3 = FaecesProduction 

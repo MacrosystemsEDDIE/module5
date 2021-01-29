@@ -1,4 +1,4 @@
-NP_model_noT <- function(time, states, parms, inputs){
+NP_model_noPAR <- function(time, states, parms, inputs){
   
   
   PHYTO <- states[1]
@@ -16,7 +16,7 @@ NP_model_noT <- function(time, states, parms, inputs){
   excretionRate <- parms[8]
   mineralizationRate <- parms[9]
   Chl_Nratio  <- parms[10]
-  # Q10 <- parms[11]
+  Q10 <- parms[11]
   
   #OLD light forcing function
   #PAR <- 0.5*(540+440*sin(2*pi*time/365-1.4)) #50% of light is PAR
@@ -24,14 +24,14 @@ NP_model_noT <- function(time, states, parms, inputs){
   #NEW CODE
   #USE THE PAR INPUT AND TIME-STEP INDEX TO GET THE CURRENT PAR VALUE
   PAR <- inputs[time, 2]  
-  # TEMP <- inputs[time, 3] + parms[12]   
+  TEMP <- inputs[time, 3] + parms[12]
   # NLOAD <- inputs[time, 4] * parms[13]
   
   #FLUX EQUATIONS HERE
   #f1 = N_Uptake 
   #N_Uptake <- maxUptake*min((PAR/(PAR+kspar)),(DIN/(DIN+ksdin)))*PHYTO 
-  # Temp_effect = Q10^((TEMP-20)/10)  
-  N_Uptake <- maxUptake*PHYTO*(PAR/(PAR+kspar))*(DIN/(DIN+ksdin)) # *Temp_effect
+  Temp_effect = Q10^((TEMP-20)/10)
+  N_Uptake <- maxUptake*PHYTO*(DIN/(DIN+ksdin))*Temp_effect
   #f2 = Grazing
   # Grazing <- maxGrazing*((PHYTO/(PHYTO+ksphyto))) # *Temp_effect
   #f3 = FaecesProduction 

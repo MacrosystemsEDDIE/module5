@@ -51,7 +51,7 @@ NP_model <- function(time, states, parms, inputs){
   dPHYTO <- N_Uptake - Mortality
   # dZOO <- Grazing - FaecesProduction - Excretion -  Mortality
   # dDETRITUS <- FaecesProduction + Mortality - Mineralization
-  dDIN <- Mineralization - N_Uptake #+ NLOAD + Excretion
+  dDIN <- Mortality - N_Uptake #+ NLOAD + Excretion
   
   return(list(c(dPHYTO,
                 # dZOO,
