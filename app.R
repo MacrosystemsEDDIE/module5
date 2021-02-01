@@ -63,6 +63,11 @@ neon_vars <- read.csv("data/neon_variables.csv")
 # alt_neon_vars <- gsub("Water temperature profile", "Surface water temperature", neon_vars$Short_name)
 noaa_dic <- read.csv("data/noaa_dict.csv")
 
+# Slides for slickR
+model_slides <- list.files("www/model_slides", full.names = TRUE)
+recap_slides <- list.files("www/shiny_slides", full.names = TRUE)
+
+
 # colors for plots
 cols <- RColorBrewer::brewer.pal(8, "Dark2")
 l.cols <- RColorBrewer::brewer.pal(8, "Set2")[-c(1, 2)]
@@ -92,7 +97,7 @@ process_vars <- c("Mortality", "Uptake")
 # Statistics
 stats <- list("Minimum" = "Min.", "1st Quartile" = "1st Qu.", "Median" = "Median", "Mean" = "Mean", "3rd Quartile" = "3rd Qu.", "Maximum" = "Max.", "Standard Deviation" = "sd")
 
-# Parameters for NPZ model
+# Parameters for NP model
 parms <- c(
   maxUptake = 1.0, #day-1
   kspar=120, #uEinst m-2 s-1
@@ -110,7 +115,7 @@ parms <- c(
   
 )  
 
-# Initial conditions for NPZ
+# Initial conditions for NP
 yini <- c(
   PHYTO = 2, #mmolN m-3
   # ZOO = 0.4, #mmolN m-3
@@ -353,7 +358,7 @@ ui <- function(req) {
                         fluidRow(
                           column(7, offset = 1,
                                  h3("Student Activities"),
-                                 p("Within Exploration, Activities A, B and C there are questions for students to complete as part of this module. These can be completed by writing your answers into the text boxes. If you do not complete the module in one continuous sitting you can download a file with your responses saved which you can then upload when you return. When you finish the module, you can generate a report which will embed your answers and saved plots into a Word (.docx) file which you can download and make further edits to before submitting to your instructor."),
+                                 p("Within Introduction, Exploration and Activities A, B and C tabs there are questions for students to complete as part of this module. These can be completed by writing your answers into the text boxes within the green boxes. If you do not complete the module in one continuous sitting you can download a file with your responses saved which you can then upload when you return. When you finish the module, you can generate a report which will embed your answers and saved plots into a Word (.docx) file which you can download and make further edits to before submitting to your instructor."),
                                  p(tags$b("WARNING:"), " The Shiny app will disconnect from the server if it is left idle for 15 minutes. If this happens you will lose all your inputs into the app. It is recommended to download the user input at the end of the class, but you can also download throughout the class."),
                                  p("Alternatively, you can download the questions as a Word (.docx) file  and record your answers there. If you opt for this option, you can hide the green question boxes by unchecking the box below."),
                                  checkboxInput("show_q1", "Show questions", value = TRUE),
@@ -426,7 +431,7 @@ ui <- function(req) {
                           hr(),
                           column(4,
                                  h3("Presentation Recap"),
-                                 p("The presentation accompanying this module covers the introduction to forecasting, the nutrient-phytoplankton-zooplankton model (NPZ) and the importance and relevance of ecological forecasts."),
+                                 p("The presentation accompanying this module covers the introduction to forecasting, the nutrient-phytoplankton model (NP) and the importance and relevance of ecological forecasts."),
                                  p("What is a forecast?"),
                                  tags$ul(
                                    tags$li(module_text["what_forecast", ])
@@ -598,9 +603,11 @@ border-color: #FFF;
                                             h2("Phenocam"),
                                             textOutput("prompt1"),
                                             wellPanel(
-                                              withSpinner(imageOutput("pheno"), type = 1,
-                                                          hide.ui = FALSE
-                                              )
+                                              imageOutput("pheno"),
+                                              p(id = "txt_j", module_text["phenocam", ])
+                                              # withSpinner(imageOutput("pheno"), type = 1,
+                                              #             hide.ui = FALSE
+                                              # )
                                             )
                                      )
                                    ), br(),
@@ -647,7 +654,7 @@ border-color: #FFF;
                                      column(12,
                                             wellPanel(style = paste0("background: ", obj_bg),
                                               h3("Objective 2 - Inspect the Data"),
-                                              p(module_text["obj_02", ]),
+                                              p(id = "txt_j", module_text["obj_02", ]),
                                               p("If there are some variables which you are not familiar with, visit the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal", target = "_blank"), "and click 'Explore Data Products' to learn more about how the data are collected.")
                                               )
                                             )
@@ -813,7 +820,7 @@ border-color: #FFF;
                                             p(id = "txt_j", module_text["model3", ]),
                                             p(id = "txt_j", module_text["mod_desc", ]),
                                             p(id = "txt_j", module_text["phyto_chla", ]),
-                                            p("Click through the images to see how we can go from a conceptual food web model to a mathematical representation of the interaction of Nutrients (N), Phytoplankton (P), and Zooplankton (Z).", id = "txt_j")
+                                            p("Click through the images to see how we can go from a conceptual food web model to a mathematical representation of the interaction of Nutrients (N) and Phytoplankton (P).", id = "txt_j")
                                      ),
                                      column(8, 
                                             br(), br(), br(),
@@ -919,7 +926,7 @@ border-color: #FFF;
                                    fluidRow(
                                      column(5,
                                             h3("Build Model"),
-                                            p("You will use observed data from the selected site on the 'Activity A' tab to drive the NPZ model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs.")
+                                            p("You will use observed data from the selected site on the 'Activity A' tab to drive the NP model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs.")
                                      ),
                                      column(5, offset = 2,
                                             h4("Notes"),
@@ -942,7 +949,7 @@ border-color: #FFF;
                                                          width = "60%"), br(), br(),
                                             p("To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates below."),
                                             p("Inital conditions can also be adjusted to measured values but you can also adjust the initial values to see how the model responds."),
-                                            p("The NPZ model simulates phytoplankton biomass which we convert to chorophyll-a which allows comparison between the simulations and field observations.")
+                                            p("The NP model simulates phytoplankton biomass which we convert to chlorophyll-a to allow comparison between the simulations and field observations.")
                                             ),
                                      column(5,
                                             h3("Model States"),
@@ -1028,7 +1035,7 @@ border-color: #FFF;
                                                             textAreaInput2(inputId = "q14b", label = quest["q14b", 1] , width = "90%"),
                                                             br(),
                                                             p(tags$b(quest["q15", 1])),
-                                                            checkboxInput("add_obs", "Add observations"),
+                                                            checkboxInput("add_obs", tags$b("Add observations")),
                                                             p(tags$b("Note:"), "The model you are using is a very simplified model. Do not spend greater than 5-10 minutes trying to calibrate the model. The main aim is to get it simulating concentrations in the same ranges as observations and not identically matching the observations."),
                                                             imageOutput("mod_run_img")
                                                             )
@@ -1039,7 +1046,7 @@ border-color: #FFF;
                                    fluidRow(
                                      column(5, offset = 1,
                                             h3("Next step"),
-                                            p("Now we have built our model we are going to use this to forecast short-term primary productivity"))
+                                            p("Now we have built our model, we are going to use this to forecast short-term primary productivity!"))
                                      )
                                    )
                           
@@ -1152,7 +1159,7 @@ border-color: #FFF;
                                    fluidRow(
                                      column(2,
                                             h3("Explore Weather Forecast"),
-                                            p(id = "txt_j", "Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS", target = "_blank"), " forecast."),
+                                            p(id = "txt_j", "Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS", target = "_blank"), " forecast for the NEON site you chose in Activity A."),
                                             p(id = "txt_j", "Inspect the different meteorological outputs. You can adjust the number of members, which is the number of forecasts and also how it is visualized. A line plot shows each individual member while the distribution calculates the median (represented as a solid line) and the 95th percentile (represented as a shaded polygon)."),
                                             actionButton('load_fc', "Load Forecast", icon = icon("download")), br(),
                                             # actionButton('plot_fc', "Plot Forecast!", icon = icon("chart-line")),
@@ -1731,8 +1738,7 @@ server <- function(input, output, session) {#
     upd_parms <- as.vector(unlist(site_parms[site_parms$site == siteID, -1]))
     upd_yin <- site_yini[site_yini$site == siteID, -1]
     parms <<- upd_parms
-    print(parms)
-    
+
     if(siteID == "SUGG") {
       updateSliderInput(session, "phy_init", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.1)
       updateSliderInput(session, "phy_init2", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.1)
@@ -1754,7 +1760,6 @@ server <- function(input, output, session) {#
   })
   output$neonmap2 <- renderLeaflet({
     leaflet() %>%
-      setView(lat = 30, lng = -30, zoom = 2) %>%
       addProviderTiles(providers$Esri.NatGeoWorldMap,
                        options = providerTileOptions(noWrap = TRUE)
       ) %>%
@@ -1768,13 +1773,8 @@ server <- function(input, output, session) {#
   
   
   # Download phenocam ----
-  pheno_file <- "test.png"
+  pheno_file <- reactiveValues(img = NULL)
   observeEvent(input$view_webcam, {
-    
-    validate(
-      need(input$table01_rows_selected != "",
-           message = "Please select a site in Objective 1.")
-    )
     
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
@@ -1787,16 +1787,25 @@ server <- function(input, output, session) {#
     idx <- which(neon_sites_df$siteID == siteID)
     # output$site_name <- neon_sites$description[idx]
     url <- neon_sites_df$pheno_url[idx]
-    pheno_file <<- download_phenocam(url)
+    pheno_file$img <<- download_phenocam(url)
     progress$set(value = 1)
-    output$pheno <- renderImage({
-      list(src = pheno_file,
-           alt = "Image failed to render",
-           height = 320, 
-           width = 350)
-    }, deleteFile = FALSE)
     # show("main_content")
   })
+  
+  output$pheno <- renderImage({
+    
+    validate(
+      need(input$table01_rows_selected != "",
+           message = "Please select a site in the table.")
+    )
+    validate(
+      need(!is.null(pheno_file$img), "Click 'View live feed' to download the image.")
+    )
+    list(src = pheno_file$img,
+         alt = "Image failed to render",
+         height = 320, 
+         width = 350)
+  }, deleteFile = FALSE)
   
   observeEvent(input$view_webcam, {
     output$prompt1 <- renderText({
@@ -2282,10 +2291,18 @@ server <- function(input, output, session) {#
     # validate(
     #   need(!is.null(input$fc_date), "Please select a date")
     # )
-    validate(
-      need(input$members >= 1 & input$members <= membs, paste0("Please select a number of members between 1 and ", membs))
-      
-    )
+    if(input$type == "Distribution") {
+      validate(
+        need(input$members > 1 & input$members <= 30, paste0("Please select a number of members between 2 and 30."))
+        
+      )
+    } else {
+      validate(
+        need(input$members >= 1 & input$members <= 30, paste0("Please select a number of members between 1 and 30."))
+        
+      )
+    }
+    
     
     p <- ggplot()
     
@@ -2507,14 +2524,12 @@ server <- function(input, output, session) {#
   
   # Slickr model output
   output$slck_model <- renderSlickR({
-    imgs <- list.files("www", pattern = "model0", full.names = TRUE)
-    slickR(imgs)
+    slickR(model_slides)
   })
   
   # Slickr model output
   output$slides <- renderSlickR({
-    imgs <- list.files("www/shiny_slides", full.names = TRUE)
-    slickR(imgs)
+    slickR(recap_slides)
   })
   
   #* Variables answer table ----
@@ -2568,7 +2583,7 @@ server <- function(input, output, session) {#
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
-    progress$set(message = paste0("Running the NPZ model"), 
+    progress$set(message = paste0("Running NP model"), 
                  detail = "This may take a while. This window will disappear  
                      when it is finished running.", value = 1)
     
@@ -2895,7 +2910,7 @@ server <- function(input, output, session) {#
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
-    progress$set(message = paste0("Running the NPZ model with ", input$members2, " forecasts"), 
+    progress$set(message = paste0("Running NP model with ", input$members2, " forecasts"), 
                  detail = "This may take a while. This window will disappear  
                      when it is finished running.", value = 0.01)
     
@@ -3336,7 +3351,7 @@ server <- function(input, output, session) {#
     
     lm1 <- lm(df[, 3] ~ df[, 2])
     r2 <- round(summary(lm1)$r.squared, 2)
-    r2_txt <- paste0("r2 = ", r2)# bquote(r^2 ~ "=" ~ .(r2))    
+    r2_txt <- paste0("R2 = ", r2)# bquote(r^2 ~ "=" ~ .(r2))    
     
     txt <- data.frame(x = 2, y = (max(df[, 2], na.rm = TRUE) - 1))
 
@@ -3447,7 +3462,7 @@ server <- function(input, output, session) {#
     
     lm1 <- lm(df[, 3] ~ df[, 2])
     r2 <- round(summary(lm1)$r.squared, 2)
-    r2_txt <- paste0("r2 = ", r2)# bquote(r^2 ~ "=" ~ .(r2))    
+    r2_txt <- paste0("R2 = ", r2)# bquote(r^2 ~ "=" ~ .(r2))    
     
     txt <- data.frame(x = 2, y = (max(df[, 2], na.rm = TRUE) - 1))
 
@@ -3482,7 +3497,7 @@ server <- function(input, output, session) {#
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
-    progress$set(message = paste0("Running the NPZ model with ", input$members2, " forecasts"), 
+    progress$set(message = paste0("Running NP model with ", input$members2, " forecasts"), 
                  detail = "This may take a while. This window will disappear  
                      when it is finished running.", value = 0.01)
     
@@ -3775,7 +3790,7 @@ server <- function(input, output, session) {#
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
-    progress$set(message = paste0("Running the NPZ model with 30 forecasts"), 
+    progress$set(message = paste0("Running NP model with 30 forecasts"), 
                  detail = "This may take a while. This window will disappear  
                      when it is finished running.", value = 0.01)
     
@@ -3838,6 +3853,8 @@ server <- function(input, output, session) {#
     
     return(mlt)
   })
+  
+  
   
   # Update initial conditions
   observeEvent(input$run_fc2, {
