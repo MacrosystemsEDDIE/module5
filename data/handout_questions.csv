@@ -12,16 +12,16 @@ q5a,a. Name of selected site:
 q5b,b. Four letter site identifier:
 q5c,c. Latitude:
 q5d,d. Longitude:
-q5e,e. Lake Area (km2):
+q5e,e. Lake area (km2):
 q5f,f. Elevation (m):
 q6,Q6. Fill out the table below with the description of site variables:
-q6a,air temperature
+q6a,Air temperature
 q6b,Water temperature profile
 q6c,Nitrate sensor
 q6d,Underwater PAR
-q6e,chlorophyll-a
-q7,Q7. Describe the effect of each of the following variables on chlorophyll-a. Chlorophyll-a is used as a proxy measurement for phytoplankton concentration in aquatic environments.
-q7a,air temperature
+q6e,Chlorophyll-a
+q7,Q7. Describe the effect of each of the following variables on chlorophyll-a. Chlorophyll-a is used as a proxy measurement for phytoplankton concentration and primary productivity in aquatic environments.
+q7a,Air temperature
 q7b,Water temperature
 q7c,Nitrate sensor
 q7d,Underwater PAR
@@ -29,13 +29,12 @@ q8,"Q8. Were there any other relationships you found at your site? If so, please
 q9,"Q9. What is the relationship between each of these driving variables and productivity? For example, if the driving variable increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)."
 q9a,Water temperature profile
 q9b,Incoming light
-q9c,available nutrients
+q9c,Available nutrients
 q10,Q10. Classify the following as either a state variable or a parameter by dragging it into the corresponding bin.
 q11,Q11. We are using chlorophyll-a as a proxy of aquatic primary productivity. Select how you envision each parameter to affect chlorophyll-a concentrations:
-q11a,Grazing of phytoplankton
-q11b,Zooplankton mortality
-q11c,Nutrient uptake by phytoplankton
-q12,"Q12. Using the default model (e.g. the default initial conditions and parameter values), simulate the baseline model scenario. Describe the pattern of chlorophyll-a concentration throughout the year?"
+q11a,Nutrient uptake by phytoplankton
+q11b,Phytoplankton mortality
+q12,"Q12. Using the default model (e.g. the default initial conditions and parameter values), simulate the baseline model scenario. Describe the pattern of chlorophyll-a concentration throughout the year:"
 q13,"Q13. Change the parameters to simulate the following scenarios, and describe the chlorophyll-a responses for:"
 q13a,"a. Medium grazing, medium mortality and high uptake (Save parameters and click 'Run Model')"
 q13b,"b. High grazing, high mortality and low uptake  (Save parameters and then click 'Run Model')"
@@ -50,8 +49,8 @@ q17b,b. Which type of plot (line or distribution) do you think visualizes the fo
 q17c,"c. Using the interactivity of the weather forecast plot, compare the air temperature forecasts for the first week (Sep 25 - Oct 1) to the second week (Oct 2 - 8). How does the forecast uncertainty change between the two periods? "
 q18,"Q18. How does driver uncertainty affect the forecast, specifically, does an increase in the number of members increase or decrease the range of uncertainty in the forecasts? How does that change over time?"
 q19,Q19. What are the main sources of uncertainty in your ecological forecast?
-q20,Q20. Describe the forecast of primary productivity in words such that it could be understood by a fellow classmate. How would you describe this chlorophyll-a forecast to a lake manager at your NEON site?
-q21,Q21. Why do you think it is important to assess the forecast? How often should forecast assessment occur?
+q20,Q20. How would you describe your forecast of primary productivity at your NEON site so it could be understood by a fellow classmate?
+q21,Q21. How well did your forecast do compared to observations? (include r2 value) Why do you think it is important to assess the forecast?
 q22,Q22. Did your forecast improve when you updated your model parameters? Why do you think it is important to update the model?
 q23,Q23. Describe the new forecast of primary productivity. How do you think it will compare to observations after we observe the next round of data?
 q24,Q24. Why is the forecast cycle described as iterative (e.g. repetition of a process)?
