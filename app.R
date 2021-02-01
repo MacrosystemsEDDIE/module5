@@ -86,8 +86,8 @@ neonIcons <- iconList(
 plot_types <- c("Line", "Distribution")
 
 # Sorting variables
-state_vars <- c("Phytoplankton", "Zooplankton", "Nutrients")
-process_vars <- c("Grazing", "Mortality", "Uptake")
+state_vars <- c("Phytoplankton", "Nutrients")
+process_vars <- c("Mortality", "Uptake")
 
 # Statistics
 stats <- list("Minimum" = "Min.", "1st Quartile" = "1st Qu.", "Median" = "Median", "Mean" = "Mean", "3rd Quartile" = "3rd Qu.", "Maximum" = "Max.", "Standard Deviation" = "sd")
@@ -881,7 +881,6 @@ border-color: #FFF;
                                                     h4(quest["q11", 1]),
                                                     radioButtons("q11a", quest["q11a", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
                                                     radioButtons("q11b", quest["q11b", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
-                                                    radioButtons("q11c", quest["q11c", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
                                                     br()
                                                   ),
                                                   column(2,
@@ -918,10 +917,20 @@ border-color: #FFF;
                                      )
                                    ), br(), hr(),
                                    fluidRow(
-                                     column(6,
+                                     column(5,
                                             h3("Build Model"),
                                             p("You will use observed data from the selected site on the 'Activity A' tab to drive the NPZ model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs.")
-                                     )
+                                     ),
+                                     column(5, offset = 2,
+                                            h4("Notes"),
+                                            p("How does the model output compare to in-lake observations? Here are some things you should look out for:"),
+                                            tags$ol(
+                                              tags$li("Is the model in the same range as the observations?"),
+                                              tags$li("Does it capture the seasonal patterns?"),
+                                              tags$li("Does the model simulate events seen as spikes?")
+                                            ),
+                                            p("Can you think of any potential reasons why the model does not do so well?")
+                                     ),
                                    ),
                                    fluidRow(
                                      column(2,
@@ -946,10 +955,9 @@ border-color: #FFF;
                                             wellPanel(
                                               plotlyOutput("mod_ann_plot")
                                             ),
-                                            br(),
                                             actionButton("save_mod_run", "Save plot", icon = icon("save")), br()
-                                     )
-                                   ),
+                                     ),
+                                   ), hr(),
                                    fluidRow(
                                      
                                      column(3,
@@ -957,7 +965,9 @@ border-color: #FFF;
                                             h3("Inputs"),
                                             p("Select which variables the model will use as inputs. This means the model will use the variable measured on site as a driving variable in the model."),
                                             checkboxGroupInput("mod_sens", "Select model inputs:",
-                                                               choices = list("Temperature", "Light (PAR)")),
+                                                               choices = list("Surface water temperature", "Underwater light (uPAR)")),
+                                     ),
+                                     column(3,
                                             h3("Initial conditions"),
                                             p("Adjust these to values that are within reasonable ranges as seen in the 'Objective 2 - Explore data' tab. Phytoplankton corresponds to chlorophyll-a concentrations and nutrients corresponds to Dissolved Inorganic Nitrogen."),
                                             p(tags$b("Phytoplankton")),
@@ -968,8 +978,8 @@ border-color: #FFF;
                                             p(tags$b("Nutrients")),
                                             sliderInput("nut_init", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
                                                                                 div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.01, max = 10, step = 0.01, value = 3),
-                                     ),
+                                                        min = 0.01, max = 10, step = 0.01, value = 3)
+                                            ),
                                      column(3,
                                             h3("Parameters"),
                                             h4(tags$b("Phytoplankton parameters")),
@@ -985,10 +995,12 @@ border-color: #FFF;
                                                         min = 0.01, max = 4, value = 0.8, step = 0.01)
                                             
                                      ),
-                                     column(6,
-                                            p("For Q12-15 you are required to save your model setup which includes the initial conditions and parameters. Add your parameters by clicking on the target row in the table and then the 'Save model setup' button below."),
+                                     column(3,
+                                            h3("Parameter Table"),
+                                            p("For Q12-15 you are required to save your model setup which includes the initial conditions and parameters."),
                                             DTOutput("save_par", width = "10%"),
-                                            br(),
+                                           br(),
+                                           p("Add your parameters by clicking on the target row in the table and then the 'Save model setup' button below."),
                                             actionButton("save_params", "Save model setup", icon = icon("save")),
                                             br(), br(), 
                                             
@@ -1026,18 +1038,7 @@ border-color: #FFF;
                                    ),
                                    fluidRow(
                                      column(5, offset = 1,
-                                            h4("Notes"),
-                                            p("How does the model output compare to in-lake observations? Here are some things you should look out for:"),
-                                            tags$ol(
-                                              tags$li("Is the model in the same range as the observations?"),
-                                              tags$li("Does it capture the seasonal patterns?"),
-                                              tags$li("Does the model simulate events seen as spikes?")
-                                            ),
-                                            p("Can you think of any potential reasons why the model does not do so well?"),
-                                            p("We will explore some of these potential reasons later on.")
-                                     ),
-                                     column(5, offset = 1,
-                                            h4("Next step"),
+                                            h3("Next step"),
                                             p("Now we have built our model we are going to use this to forecast short-term primary productivity"))
                                      )
                                    )
@@ -1480,9 +1481,9 @@ border-color: #FFF;
                                    #* Objective 11 - New Forecast ====
                                    fluidRow(
                                      column(4,
-                                            h3("Next Forecast"),
+                                            h2("Next Forecast"),
                                             p(id = "txt_j", "With an updated model, we can now generate the next forecast driven by a new weather forecast"),
-                                            h3(tags$b("Initial conditions")),
+                                            h3("Initial conditions"),
                                             p(id = "txt_j", "Remember, you will need to update the initial conditions based on the latest observed data."),
                                             p(tags$b("Phytoplankton")),
                                             # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
@@ -1504,7 +1505,7 @@ border-color: #FFF;
                                             )
                                      ),
                                      column(8,
-                                            h4("New Forecast plot"),
+                                            h3("New Forecast plot"),
                                             wellPanel(
                                               plotlyOutput("plot_ecof4"),
                                               actionButton("save_new_fc_plot", "Save plot", icon = icon("save"))
@@ -1532,7 +1533,7 @@ border-color: #FFF;
                                    hr(),
                                    fluidRow(
                                      column(4, offset = 1, 
-                                            h3("The Forecast Cycle"),
+                                            h2("The Forecast Cycle"),
                                             p(module_text["fc_cycle_end", ]),
                                             ),
                                      column(5, offset = 1,
@@ -2628,13 +2629,13 @@ server <- function(input, output, session) {#
     # Looped model version
     for(i in 2:length(times)) {
       
-      if(all(c("Temperature", "Light (PAR)") %in% input$mod_sens)) {
+      if(all(c("Surface water temperature", "Underwater light (uPAR)") %in% input$mod_sens)) {
         out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                       parms = parms, method = "ode45", inputs = npz_inputs))
-      } else if((c("Light (PAR)") %in% input$mod_sens)) {
+      } else if((c("Underwater light (uPAR)") %in% input$mod_sens)) {
         out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
                                       parms = parms, method = "ode45", inputs = npz_inputs))
-      } else if((c("Temperature") %in% input$mod_sens)) {
+      } else if((c("Surface water temperature") %in% input$mod_sens)) {
         out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noPAR,
                                       parms = parms, method = "ode45", inputs = npz_inputs))
       } else {
@@ -2821,7 +2822,7 @@ server <- function(input, output, session) {#
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
-      need(input$save_mod_run > 0, "If plot is missing please click 'Save Plot' under the productivity plot above.")
+      need(input$save_mod_run > 0, "If plot is missing please click 'Save Plot' under the Primary Productivity plot above.")
     )
     
     list(src = "www/mod_run_2019.png",
@@ -2926,13 +2927,13 @@ server <- function(input, output, session) {#
       # Looped model version
       for(i in 2:length(times)) {
         
-        if(all(c("Temperature", "Light (PAR)") %in% input$mod_sens)) {
+        if(all(c("Surface water temperature", "Underwater light (uPAR)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
-        } else if((c("Light (PAR)") %in% input$mod_sens)) {
+        } else if((c("Underwater light (uPAR)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
-        } else if((c("Temperature") %in% input$mod_sens)) {
+        } else if((c("Surface water temperature") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noPAR,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         } else {
@@ -2952,7 +2953,6 @@ server <- function(input, output, session) {#
 
       # out$time <- npz_inp$Date
       out <- res[, c("time", "Chla")] #, "PHYTO", "ZOO")]
-      # colnames(out)[-1] <- c("Chla") #, "Phytoplankton", "Zooplankton")
       progress$set(value = x/fc_length)
       return(out)
       
@@ -3528,13 +3528,13 @@ server <- function(input, output, session) {#
       # Looped model version
       for(i in 2:length(times)) {
         
-        if(all(c("Temperature", "Light (PAR)") %in% input$mod_sens)) {
+        if(all(c("Surface water temperature", "Underwater light (uPAR)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
-        } else if((c("Light (PAR)") %in% input$mod_sens)) {
+        } else if((c("Underwater light (uPAR)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
-        } else if((c("Temperature") %in% input$mod_sens)) {
+        } else if((c("Surface water temperature") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noPAR,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         } else {
@@ -3803,17 +3803,16 @@ server <- function(input, output, session) {#
       res[, 1] <- times
       res[1, -1] <- c(yini[1], yini)
       
-      # yini <- c(2,9)
       # Looped model version
       for(i in 2:length(times)) {
         
-        if(all(c("Temperature", "Light (PAR)") %in% input$mod_sens)) {
+        if(all(c("Surface water temperature", "Underwater light (uPAR)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
-        } else if((c("Light (PAR)") %in% input$mod_sens)) {
+        } else if((c("Underwater light (uPAR)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
-        } else if((c("Temperature") %in% input$mod_sens)) {
+        } else if((c("Surface water temperature") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noPAR,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         } else {
@@ -3830,7 +3829,6 @@ server <- function(input, output, session) {#
       
       # out$time <- npz_inp$Date
       out <- res[, c("time", "Chla")] #, "PHYTO", "ZOO")]
-      # colnames(out)[-1] <- c("Chla") #, "Phytoplankton", "Zooplankton")
       progress$set(value = x/fc_length)
       return(out)
       
@@ -3845,8 +3843,6 @@ server <- function(input, output, session) {#
   observeEvent(input$run_fc2, {
     phy_init2 <- input$phy_init2
     updateSliderInput(session, "phy_init3", value = phy_init2)
-    # zoo_init2 <- input$zoo_init2
-    # updateSliderInput(session, "zoo_init3", value = zoo_init2)
     nut_init2 <- input$nut_init2
     updateSliderInput(session, "nut_init3", value = nut_init2)
   })
@@ -4087,7 +4083,6 @@ server <- function(input, output, session) {#
                    a10_pars = input$rank_list_3,
                    a11a = input$q11a,
                    a11b = input$q11b,
-                   a11c = input$q11c,
                    a12 = input$q12,
                    a13a = input$q13a,
                    a13b = input$q13b,
@@ -4335,39 +4330,40 @@ server <- function(input, output, session) {#
   
   chk_list <- reactive({
     out_chk <- c(
-      if(input$name == "") {"Name"},
-      if(input$id_number == "") "ID number",
-      if(input$q1 == "") "Q. 1",
-      if(input$q2 == "") "Q. 2",
-      if(input$q3 == "") "Q. 3",
-      if(input$q4a == "" | input$q4b == "" | input$q4c == "" |input$q4d == "") "Q. 4",
-      if(input$q5a == "" | input$q5b == "" | input$q5c == "" | input$q5d == "" | input$q5e == "" | input$q5f == "") "Q. 5",
-      if(is.null(input$q6a_mean) | is.null(input$q6a_max) | is.null(input$q6b_mean) | is.null(input$q6b_max) | is.null(input$q6c_mean) | is.null(input$q6c_max) | is.null(input$q6d_mean) | is.null(input$q6d_max) | is.null(input$q6e_mean) | is.null(input$q6e_max)) "Q. 6",
-      if(is.null(input$q7a) | is.null(input$q7b) | is.null(input$q7c) | is.null(input$q7d)) "Q. 7",
-      if(input$q8 == "") "Q. 8",
-      if(is.null(input$q9a) & is.null(input$q9b) & is.null(input$q9c)) "Q. 9",
-      if(length(input$rank_list_2) == 0 | length(input$rank_list_3) == 0) "Q. 10",
-      if(is.null(input$q11a) & is.null(input$q11b) & is.null(input$q11c)) "Q. 11",
-      if(input$q13a == "" | input$q13b == "") "Q. 13",
-      if(input$q14a == "" | input$q14b == "") "Q. 14",
-      if(input$save_params == 0) "Q. 15 Save table of parameters",
-      if(!file.exists("www/mod_run_2019.png")) "Q. 15 Save plot of model run",
-      if(input$q16 == "") "Q. 16",
-      if(input$save_noaa_plot == 0) "Q. 16 Save plot of NOAA weather forecast",
-      if(input$q17a == "" | input$q17b == "" | input$q17c == "") "Q. 17",
-      if(input$q18 == "") "Q. 18",
-      if(input$q19 == "") "Q. 19",
-      if(input$save_comm_plot == 0) "Q. 19 Save plot of ecological forecast",
-      if(input$q20 == "") "Q. 20",
-      if(input$q21 == "") "Q. 21",
-      if(input$save_assess_plot == 0) "Q. 22 Save plot of assessment of the ecological forecast",
+      if(input$name == "") {"Introduction: Name"},
+      if(input$id_number == "") "Introduction: ID number",
+      if(input$q1 == "") "Introduction: Q. 1",
+      if(input$q2 == "") "Introduction: Q. 2",
+      if(input$q3 == "") "Introduction: Q. 3",
+      if(input$q4a == "" | input$q4b == "" | input$q4c == "" |input$q4d == "") "Exploration: Q. 4",
+      if(input$q5a == "" | input$q5b == "" | input$q5c == "" | input$q5d == "" | input$q5e == "" | input$q5f == "") "Activity A: Objective 1 - Q. 5",
+      if(is.null(input$q6a_mean) | is.null(input$q6a_max) | is.null(input$q6b_mean) | is.null(input$q6b_max) | is.null(input$q6c_mean) | is.null(input$q6c_max) | is.null(input$q6d_mean) | is.null(input$q6d_max) | is.null(input$q6e_mean) | is.null(input$q6e_max)) "Activity A: Objective 2 - Q. 6",
+      if(is.null(input$q7a) | is.null(input$q7b) | is.null(input$q7c) | is.null(input$q7d)) "Activity A: Objective 3 - Q. 7",
+      if(input$q8 == "") "Activity A: Objective 3 - Q. 8",
+      if(is.null(input$q9a) & is.null(input$q9b) & is.null(input$q9c)) "Activity A: Objective 4 - Q. 9",
+      if(length(input$rank_list_2) == 0 | length(input$rank_list_3) == 0) "Activity A: Objective 4 - Q. 10",
+      if(is.null(input$q11a) & is.null(input$q11b)) "Activity A: Objective 4 - Q. 11",
+      if(input$q12 == "") "Activity A: Objective 5 - Q. 12",
+      if(input$q13a == "" | input$q13b == "") "Activity A: Objective 5 - Q. 13",
+      if(input$q14a == "" | input$q14b == "") "Activity A: Objective 5 - Q. 14",
+      if(input$save_params == 0) "Activity A: Objective 5 - Q. 15 Save table of parameters",
+      if(!file.exists("www/mod_run_2019.png")) "Activity A: Objective 5 - Q. 15 Save plot of model run",
+      if(input$q16 == "") "Activity B: Objective 6 - Q. 16",
+      if(input$save_noaa_plot == 0) "Activity B: Objective 6 - Q. 16 Save plot of NOAA weather forecast",
+      if(input$q17a == "" | input$q17b == "" | input$q17c == "") "Activity B: Objective 6 - Q. 17",
+      if(input$q18 == "") "Activity B: Objective 7 - Q. 18",
+      if(input$q19 == "") "Activity B: Objective 7 - Q. 19",
+      if(input$save_comm_plot == 0) "Activity B: Objective 7 - Q. 19 Save plot of ecological forecast",
+      if(input$q20 == "") "Activity B: Objective 8 - Q. 20",
+      if(input$q21 == "") "Activity B: Objective 9 - Q. 21",
+      if(input$save_assess_plot == 0) "Activity B: Objective 10 - Q. 21 Save plot of assessment of the ecological forecast",
       if(input$q22 == "") "Q. 22",
-      if(input$save_update_fc_plot == 0) "Q. 22 Save plot of updated ecological forecast",
-      if(input$q23 == "") "Q. 23",
-      if(input$save_new_fc_plot == 0) "Q. 23 Save plot of new ecological forecast",
-      if(input$q24 == "") "Q. 24",
-      if(input$q25a == "" | input$q25b == "" | input$q25c == "") "Q. 25",
-      if(input$q26 == "") "Q. 26"
+      if(input$save_update_fc_plot == 0) "Activity B: Objective 10 - Q. 22 Save plot of updated ecological forecast",
+      if(input$q23 == "") "Activity B: Objective 11 - Q. 23",
+      if(input$save_new_fc_plot == 0) "Activity B: Objective 11 - Q. 23 Save plot of new ecological forecast",
+      if(input$q24 == "") "Activity B: Objective 11 - Q. 24",
+      if(input$q25a == "" | input$q25b == "" | input$q25c == "") "Activity C: Q. 25",
+      if(input$q26 == "") "Activity C: Q. 26"
     )
     
     if(length(out_chk) == 0) {
@@ -4430,7 +4426,6 @@ server <- function(input, output, session) {#
       a10_pars = input$rank_list_3,
       a11a = input$q11a,
       a11b = input$q11b,
-      a11c = input$q11c,
       a12 = input$q12,
       a13a = input$q13a,
       a13b = input$q13b,
@@ -4453,7 +4448,8 @@ server <- function(input, output, session) {#
       a25c = input$q25c,
       a26 = input$q26,
       param_df = par_save$value,
-      site_row = input$table01_rows_selected #,
+      site_row = input$table01_rows_selected ,
+      mod_input = input$mod_sens
       # mod_ann_plot = p_mod_run$plot
     )
     # ans_list <- data.frame(matrix(unlist(ans_list), nrow=length(ans_list), byrow = TRUE))
@@ -4501,7 +4497,6 @@ server <- function(input, output, session) {#
     updateRadioButtons(session, "q9c", selected = up_answers$a9c)
     updateRadioButtons(session, "q11a", selected = up_answers$a11a)
     updateRadioButtons(session, "q11b", selected = up_answers$a11b)
-    updateRadioButtons(session, "q11c", selected = up_answers$a11c)
     updateTextAreaInput(session, "q12", value = up_answers$a12)
     updateTextAreaInput(session, "q13a", value = up_answers$a13a)
     updateTextAreaInput(session, "q13b", value = up_answers$a13b)
@@ -4523,6 +4518,15 @@ server <- function(input, output, session) {#
     updateTextAreaInput(session, "q25b", value = up_answers$a25b)
     updateTextAreaInput(session, "q25c", value = up_answers$a25c)
     updateTextAreaInput(session, "q26", value = up_answers$a26)
+    
+    # Check box
+    idx <- nrow(up_answers$param_df)
+    updateCheckboxGroupInput(session, "mod_sens", selected = up_answers$mod_input)
+    updateSliderInput(session, "phy_init", value = up_answers$param_df$Phytos[idx])
+    updateSliderInput(session, "nut_init", value = up_answers$param_df$Nutrients[idx])
+    updateSliderInput(session, "mort_rate", value = up_answers$param_df$Mortality[idx])
+    updateSliderInput(session, "nut_uptake", value = up_answers$param_df$Uptake[idx])
+    
     
     par_save$value <- up_answers$param_df
     
