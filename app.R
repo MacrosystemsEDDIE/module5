@@ -948,7 +948,7 @@ border-color: #FFF;
                                                                      icon("running")),
                                                          width = "60%"), br(), br(),
                                             p("To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates below."),
-                                            p("Inital conditions can also be adjusted to measured values but you can also adjust the initial values to see how the model responds."),
+                                            p("Inital conditions can also be adjusted to measured values from ", actionLink("obj_2", "Objective 2")," but you can also adjust the initial values to see how the model responds."),
                                             p("The NP model simulates phytoplankton biomass which we convert to chlorophyll-a to allow comparison between the simulations and field observations.")
                                             ),
                                      column(5,
@@ -1046,7 +1046,7 @@ border-color: #FFF;
                                    fluidRow(
                                      column(5, offset = 1,
                                             h3("Next step"),
-                                            p("Now we have built our model, we are going to use this to forecast short-term primary productivity!"))
+                                            p("Now we have built and calibrated our model using observations from 2019. We are going to use this to forecast short-term primary productivity!"))
                                      )
                                    )
                           
@@ -1094,7 +1094,7 @@ border-color: #FFF;
                                             h3("Ecological Forecasting"),
                                             p(id = "txt_j", module_text["eco_forecast2", ]),
                                             br(),
-                                            p(id = "txt_j", "For this module, we will use our models developed in Activity A to forecast productivity 30 days into the future using NOAA weather forecasts."),
+                                            p(id = "txt_j", "For this module, we will use our models developed and calibrated in ", actionLink("act_A_obj_5", label = "Activity A - Objective 5"), "to forecast productivity 30 days into the future using NOAA weather forecasts on 2020-09-25 and 2020-10-02."),
                                             p(id = "txt_j", "Before we dive into this, we first need to understand what we mean when we talk about uncertainty!")
                                      ),
                                      column(6, align = "center",
@@ -1220,12 +1220,11 @@ border-color: #FFF;
                                      column(6,
                                             h3("Driver uncertainty"),
                                             p(id = "txt_j", module_text["driver_uncert", ]),
-                                            br(),
+                                            # br(),
                                             p(id = "txt_j", "A key component of what makes an ecological forecast a 'forecast' is that the model is driven by ", tags$b("forecasted"), "driving variables."),
-                                            # p("We will now use the weather forecast data loaded above to drive the calibrated model we built on the 'Build Model' tab to forecast chlorophyll-a concentrations into the future.")
+                                            p("We will now use the weather forecast data loaded in the previous tab to drive the calibrated model we built in Activity A - Objective 5 to forecast chlorophyll-a concentrations into the future on 2020-09-25.")
                                      ),
                                      column(6, align = "center",
-                                            # h4("Schematic of Input uncertainty")
                                             img(src = "04-generate-forecast.png",
                                                 height = "70%", 
                                                 width = "70%"), br()
@@ -4266,6 +4265,21 @@ server <- function(input, output, session) {#
     shinyjs::runjs("window.scrollTo(0, 600)") # scroll to top of page
   })
   
+  # Embedded Action links
+  observeEvent(input$act_A_obj_5, {
+    updateTabsetPanel(session, "maintab",
+                      selected = "mtab4")
+    updateTabsetPanel(session, "tabseries1",
+                      selected = "obj5")
+    shinyjs::runjs("window.scrollTo(0, 0)")
+  })
+  
+  observeEvent(input$obj_2, {
+    updateTabsetPanel(session, "tabseries1",
+                      selected = "obj2")
+    shinyjs::runjs("window.scrollTo(0, 620)")
+  })
+  
   # Downloading Student Handout ----
   
   # Hide download button until report is generated
@@ -4307,6 +4321,9 @@ server <- function(input, output, session) {#
     updateSliderInput(session, "nut_uptake2", value = nut_uptake1)
     
   })
+  
+  
+
   
   
   observe({
