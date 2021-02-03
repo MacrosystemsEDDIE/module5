@@ -16,18 +16,18 @@ q5e,e. Lake area (km2):
 q5f,f. Elevation (m):
 q6,Q6. Fill out the table below with the description of site variables:
 q6a,Air temperature
-q6b,Water temperature profile
+q6b,Surface water temperature
 q6c,Nitrate sensor
 q6d,Underwater PAR
 q6e,Chlorophyll-a
 q7,Q7. Describe the effect of each of the following variables on chlorophyll-a. Chlorophyll-a is used as a proxy measurement for phytoplankton concentration and primary productivity in aquatic environments.
 q7a,Air temperature
-q7b,Water temperature
+q7b,Surface water temperature
 q7c,Nitrate sensor
 q7d,Underwater PAR
 q8,"Q8. Were there any other relationships you found at your site? If so, please describe below."
 q9,"Q9. What is the relationship between each of these driving variables and productivity? For example, if the driving variable increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)."
-q9a,Water temperature profile
+q9a,Surface water temperature
 q9b,Incoming light
 q9c,Available nutrients
 q10,Q10. Classify the following as either a state variable or a parameter by dragging it into the corresponding bin.
@@ -36,8 +36,8 @@ q11a,Nutrient uptake by phytoplankton
 q11b,Phytoplankton mortality
 q12,"Q12. Using the default model (e.g. the default initial conditions and parameter values), simulate the baseline model scenario. Describe the pattern of chlorophyll-a concentration throughout the year:"
 q13,"Q13. Change the parameters to simulate the following scenarios, and describe the chlorophyll-a responses for:"
-q13a,"a. Medium grazing, medium mortality and high uptake (Save parameters and click 'Run Model')"
-q13b,"b. High grazing, high mortality and low uptake  (Save parameters and then click 'Run Model')"
+q13a,a. Medium mortality and high uptake (Save parameters and click 'Run Model')
+q13b,b. High mortality and low uptake  (Save parameters and then click 'Run Model')
 q14,"Q14. Develop a scenario (e.g. phytoplankton mortality is high, with  mortality = 0.9, etc.) and hypothesize how you think chlorophyll-a concentrations will respond prior to running the simulation. (Save parameters)"
 q14a,a. Write your hypothesis of how chlorophyll-a will respond to your scenario here:
 q14b,b. Run your model scenario. Was your hypothesis supported or refuted? Describe what you observed:
@@ -53,7 +53,7 @@ q20,Q20. How would you describe your forecast of primary productivity at your NE
 q21,Q21. How well did your forecast do compared to observations? (include r2 value) Why do you think it is important to assess the forecast?
 q22,Q22. Did your forecast improve when you updated your model parameters? Why do you think it is important to update the model?
 q23,Q23. Describe the new forecast of primary productivity. How do you think it will compare to observations after we observe the next round of data?
-q24,Q24. Why is the forecast cycle described as iterative (e.g. repetition of a process)?
+q24,Q24. Why is the forecast cycle described as 'iterative' (i.e. repetition of a process)?
 q25,Q25. Repeat Activity A and B with a different NEON site (ideally from a different region).
 q25a,a. Apply the same model scenario (with the same model structure and parameters) which you developed in Q14 to this new site. How do you expect chlorophyll-a concentrations will respond prior to running the simulation?
 q25b,b. Was your hypothesis supported or refuted? Why?
