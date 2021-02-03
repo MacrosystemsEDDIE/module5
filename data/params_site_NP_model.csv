@@ -1,8 +1,8 @@
-﻿site,maxUptake,kspar,ksdin,maxGrazing,ksphyto,pFaeces,mortalityRate,excretionRate,mineralizationRate,Chl_Nratio,Q10,addTemp,scaleNLOAD
-default,1,120,0.5,1,1,0.3,0.4,0.1,0.1,1,2,0,1
-CRAM,2.1,510,0.79,1,1,0.3,0.08,0.1,2,1,0.49,0,1
-SUGG,2.2,1,0.59,1,1,0.3,0.14,0.1,3.13,1,1.28,0,1
-BARC,2.5,559,17.55,1,1,0.3,0.06,0.1,0.75,1,3.24,0,1
-PRPO,3,33,1.93,1,1,0.3,0.05,0.1,3.34,1,1.52,0,1
-LIRO,2.2,576,2.51,1,1,0.3,0.06,0.1,2.01,1,8.06,0,1
-PRLA,2.7,155,0,1,1,0.3,0.06,0.1,0.1,1,5.69,0,1
+﻿site,maxUptake,kspar,ksdin,maxGrazing,ksphyto,pFaeces,mortalityRate,excretionRate,mineralizationRate,Chl_Nratio,Q10,addTemp,scaleNLOAD,refTEMP
+default,1,120,0.5,1,1,0.3,0.4,0.1,0.1,1,2,0,1,20
+CRAM,0.27,318,1.23,1,1,0.3,0.65,0.1,2,1,1.09,0,1,20
+SUGG,0.45,171,0.93,1,1,0.3,0.35,0.1,3.13,1,1,0,1,20
+BARC,0.12,0.86,1.14,1,1,0.3,0.86,0.1,0.75,1,1.68,0,1,20
+PRPO,0.29,26,0.27,1,1,0.3,0.79,0.1,3.34,1,0.95,0,1,20
+LIRO,0.21,204,0.56,1,1,0.3,0.79,0.1,2.01,1,1.53,0,1,20
+PRLA,0.45,204,0.56,1,1,0.3,0.69,0.1,0.1,1,1.1,0,1,20
