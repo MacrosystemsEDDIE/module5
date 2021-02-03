@@ -7,8 +7,8 @@ NP_model <- function(time, states, parms, inputs){
   DIN <- states[2]
   
   maxUptake <- parms[1]
-  kspar <- parms[2]
-  ksdin <- parms[3]
+  kspar <- parms[2] #uEinst m-2 s-1
+  ksdin <- parms[3] #mmol m-3
   maxGrazing <- parms[4]
   ksphyto <- parms[5]
   pFaeces <- parms[6]
@@ -17,6 +17,7 @@ NP_model <- function(time, states, parms, inputs){
   mineralizationRate <- parms[9]
   Chl_Nratio  <- parms[10]
   Q10 <- parms[11]
+  refTEMP <- parms[14]
   
   #OLD light forcing function
   #PAR <- 0.5*(540+440*sin(2*pi*time/365-1.4)) #50% of light is PAR
@@ -29,16 +30,10 @@ NP_model <- function(time, states, parms, inputs){
   
   #FLUX EQUATIONS HERE
   #f1 = N_Uptake 
-  #N_Uptake <- maxUptake*min((PAR/(PAR+kspar)),(DIN/(DIN+ksdin)))*PHYTO 
-  Temp_effect = Q10^((TEMP-20)/10)  
+  # N_Uptake <- maxUptake*min((PAR/(PAR+kspar)), (DIN/(DIN+ksdin)))*PHYTO
+  Temp_effect = Q10^((TEMP-refTEMP)/10)  
   N_Uptake <- maxUptake*PHYTO*(PAR/(PAR+kspar))*(DIN/(DIN+ksdin))*Temp_effect
-  #f2 = Grazing
-  # Grazing <- maxGrazing*ZOO*((PHYTO/(PHYTO+ksphyto)))*Temp_effect
-  #f3 = FaecesProduction 
-  # FaecesProduction <- Grazing*pFaeces
-  #f4 = Excretion
-  # Excretion <- excretionRate * ZOO
-  #f5 = Mortality
+  
   Mortality <- mortalityRate*PHYTO^2
   #f6 = Mineralization
   Mineralization <- mineralizationRate *
@@ -46,16 +41,12 @@ NP_model <- function(time, states, parms, inputs){
     Temp_effect
   
   #Convert from plankton biomass to Chlorophyll to compare to data
-  Chlorophyll <- Chl_Nratio*PHYTO
+  Chlorophyll <- PHYTO^Chl_Nratio
   
   dPHYTO <- N_Uptake - Mortality
-  # dZOO <- Grazing - FaecesProduction - Excretion -  Mortality
-  # dDETRITUS <- FaecesProduction + Mortality - Mineralization
   dDIN <- Mortality - N_Uptake #+ NLOAD + Excretion
   
   return(list(c(dPHYTO,
-                # dZOO,
-                # dDETRITUS,
                 dDIN),                          # the rate of change
-              c(Chlorophyll = Chlorophyll, PAR=PAR)))   # the ordinary output variables
+              c(Chlorophyll = Chlorophyll, PAR=PAR, TEMP = TEMP, N_Uptake = N_Uptake, Mortality = Mortality, Temp_effect = Temp_effect)))   # the ordinary output variables
 }

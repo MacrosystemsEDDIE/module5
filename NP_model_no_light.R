@@ -17,6 +17,7 @@ NP_model_noPAR <- function(time, states, parms, inputs){
   mineralizationRate <- parms[9]
   Chl_Nratio  <- parms[10]
   Q10 <- parms[11]
+  refTEMP <- parms[14]
   
   #OLD light forcing function
   #PAR <- 0.5*(540+440*sin(2*pi*time/365-1.4)) #50% of light is PAR
@@ -30,7 +31,7 @@ NP_model_noPAR <- function(time, states, parms, inputs){
   #FLUX EQUATIONS HERE
   #f1 = N_Uptake 
   #N_Uptake <- maxUptake*min((PAR/(PAR+kspar)),(DIN/(DIN+ksdin)))*PHYTO 
-  Temp_effect = Q10^((TEMP-20)/10)
+  Temp_effect = Q10^((TEMP-refTEMP)/10)
   N_Uptake <- maxUptake*PHYTO*(DIN/(DIN+ksdin))*Temp_effect
   #f2 = Grazing
   # Grazing <- maxGrazing*((PHYTO/(PHYTO+ksphyto))) # *Temp_effect
