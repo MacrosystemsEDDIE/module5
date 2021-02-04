@@ -93,6 +93,8 @@ if(file.exists(params$save_pars)) {
   par_tab <- read.csv(params$save_pars, row.names = 1)
 } else {
   par_tab <- data.frame(
+  "SWT" = rep("", 5),
+  "uPAR" = rep("", 5),
   "Phytos" = rep("", 5),
   "Zoops" = rep("", 5),
   "Nutrients" = rep("", 5),
@@ -102,8 +104,17 @@ if(file.exists(params$save_pars)) {
   )
 }
 
+if(length(params$a10_pars) == 0 & length(params$a10_states) == 0) {
+  state_par <- data.frame("States" = c("Nutrients", "Phytoplankton"),
+                        "Parameters" = c("Mortality", "Uptake"))
+} else {
+  state_par <- data.frame("State variables" = params$a10_states,
+                        "Parameters" = params$a10_pars)
+}
+
+
 # Check for existence of files
-pheno_chk <- file.exists(params$pheno_file)
+pheno_chk <- !is.null(params$pheno_file)
 site_html_chk <- file.exists(params$site_html)
 mod_ann_chk <- file.exists(params$mod_2019_png)
 noaa_plot_chk <- file.exists(params$noaa_plot)
@@ -189,41 +200,47 @@ The questions you must answer are embedded in the Shiny interface. You can answe
 With a partner, read through the table below, and answer the following questions:
 
 1. `r substr(quest["q1", ], 4, nchar(quest["q1", ]))`  
+\
 **Answer:** `r params$a1`  
 
 2. `r substr(quest["q2", ], 4, nchar(quest["q2", ]))`   
+\
 **Answer:** `r params$a2`  
 
 3. `r substr(quest["q3", ], 4, nchar(quest["q3", ]))`   
+\
 **Answer:** `r params$a3`   
 
 \
-
-Now navigate to the Shiny interface to answer the rest of the questions.
+Now navigate to the [Shiny interface](https://macrosystemseddie.shinyapps.io/module5) to answer the rest of the questions.
 
 # Exploration
 
 4. `r substr(quest["q4", ], 4, nchar(quest["q4", ]))` 
-    a.  `r substr(quest["q4a", ], 3, nchar(quest["q4a", ]))`  
-    **Answer:** `r params$a4a` &nbsp;
-    b.  `r substr(quest["q4b", ], 3, nchar(quest["q4b", ]))`  
-    **Answer:** `r params$a4b` &nbsp;
+    a.  `r substr(quest["q4a", ], 3, nchar(quest["q4a", ]))`  \
+    \
+    **Answer:** `r params$a4a` &nbsp;\
+    b.  `r substr(quest["q4b", ], 3, nchar(quest["q4b", ]))`  \
+    \
+    **Answer:** `r params$a4b` &nbsp;\
     c.  `r substr(quest["q4c", ], 3, nchar(quest["q4c", ]))`  
-    **Answer:** `r params$a4c` &nbsp;
+    \
+    **Answer:** `r params$a4c` &nbsp;\
     d.  `r substr(quest["q4d", ], 3, nchar(quest["q4d", ]))`  
-    **Answer:** `r params$a4d` &nbsp;
+    \
+    **Answer:** `r params$a4d` &nbsp;\
 
 # Activity A: Get Data &amp; Build Model
 
 ## Objective 1: Select and view site
 
 5. `r substr(quest["q5", ], 4, nchar(quest["q5", ]))`  
-    a. `r substr(quest["q5a", ], 3, nchar(quest["q5a", ]))` `r params$a5a`&nbsp;
-    b. `r substr(quest["q5b", ], 3, nchar(quest["q5b", ]))` `r params$a5b`&nbsp;
-    c. `r substr(quest["q5c", ], 3, nchar(quest["q5c", ]))` `r params$a5c`&nbsp;
-    d. `r substr(quest["q5d", ], 3, nchar(quest["q5d", ]))` `r params$a5d`&nbsp;
+\
+    a. `r substr(quest["q5a", ], 3, nchar(quest["q5a", ]))` `r params$a5a`&nbsp;\
+    b. `r substr(quest["q5b", ], 3, nchar(quest["q5b", ]))` `r params$a5b`&nbsp;\
+    c. `r substr(quest["q5c", ], 3, nchar(quest["q5c", ]))` `r params$a5c`&nbsp;\
+    d. `r substr(quest["q5d", ], 3, nchar(quest["q5d", ]))` `r params$a5d`&nbsp;\
     e. `r substr(quest["q5e", ], 3, nchar(quest["q5e", ]))` `r params$a5e`&nbsp;
-
 \
 
 ```{r}
@@ -282,20 +299,28 @@ if (!pheno_chk) {cat("-->")}
 9. `r substr(quest["q9", ], 4, nchar(quest["q9", ]))`  
 
   **Water temperature:** `r params$a9a`  
+  \
   **Incoming light:** `r params$a9b`  
+  \
   **Available nutrients:** `r params$a9c`  
-  
 \
+
 10. A state variable is one of the set of variables that are used to describe the mathematical &quot;state&quot; of a dynamical system. A parameter is a value introduced to represent properties of nature which are difficult to directly measure. Classify the following as either a state variable or a parameter by circling the corresponding option.
 
-**State variables:** `r params$a10_states`  
-**Parameters:** `r params$a10_pars`  
+```{r echo = FALSE, results = "asis"}
+library(knitr)
+kable(state_par, caption = "Table 3. Sorted parameters and state variabes.", row.names = FALSE)
+
+```
+ 
 \
 
 11. `r substr(quest["q11", ], 6, nchar(quest["q11", ]))`
 
   **Grazing of phytoplankton:** `r params$a11a`  
+  \
   **Zooplankton mortality:** `r params$a11b`  
+  \
   **Nutrient uptake by phytoplankton:** `r params$a11c`  
 \
 
@@ -303,29 +328,35 @@ if (!pheno_chk) {cat("-->")}
 
 ```{r echo = FALSE, results = "asis"}
 library(knitr)
-kable(par_tab, caption = "Table 3. Parameters used in Q12-15", row.names = TRUE)
+kable(par_tab, caption = "Table 4. Parameters used in Q12-15", row.names = TRUE)
 
 ```
 \
 
 12. `r substr(quest["q12", ], 6, nchar(quest["q12", ]))`  
-
-
+\
 **Answer:** `r params$a12`   
 \
 
 13. `r substr(quest["q13", ], 6, nchar(quest["q13", ]))`
+\
     a.  `r substr(quest["q13a", ], 3, nchar(quest["q13a", ]))`  
+    \
     **Answer:** `r params$a13a`  
+    \
     b.  `r substr(quest["q13b", ], 3, nchar(quest["q13b", ]))`  
+    \
     **Answer:** `r params$a13b`  
     \
 
-
 14. `r substr(quest["q14", ], 6, nchar(quest["q14", ]))`
+\
     a.  `r substr(quest["q14a", ], 3, nchar(quest["q14a", ]))`
+    \
     **Answer:** `r params$a14a`  
+    \
     b.  `r substr(quest["q14b", ], 3, nchar(quest["q14b", ]))`  
+    \
     **Answer:** `r params$a14b`  
 \
 15. `r substr(quest["q15", ], 6, nchar(quest["q15", ]))`
@@ -346,6 +377,7 @@ if (!mod_ann_chk) {cat("-->")}
 ## Objective 6: Examine uncertainty  
 \
 16. `r substr(quest["q16", ], 6, nchar(quest["q16", ]))`  
+\
 **Answer:** `r params$a16`
 \
 
@@ -360,29 +392,39 @@ if (!noaa_plot_chk) {cat("-->")}
 ```
 
 17. `r substr(quest["q17", ], 6, nchar(quest["q17", ]))`
+\
     a.  `r substr(quest["q17a", ], 3, nchar(quest["q17a", ]))`  
+    \
     **Answer:** `r params$a17a`  
+    \
     b.  `r substr(quest["q17b", ], 3, nchar(quest["q17b", ]))`  
+    \
     **Answer:** `r params$a17b`  
+    \
     c.  `r substr(quest["q17c", ], 3, nchar(quest["q17c", ]))`  
+    \
     **Answer:** `r params$a17c`  
     \
 
 
 ## Objective 7: Forecast
-
+\
 18. `r substr(quest["q18", ], 6, nchar(quest["q18", ]))`  
+\
 **Answer:** `r params$a18`
 \
 
 19. `r substr(quest["q19", ], 6, nchar(quest["q19", ]))`  
+\
 **Answer:** `r params$a19`
 \
 
 ## Objective 8: Communicate forecast
 \
 20. `r substr(quest["q20", ], 6, nchar(quest["q20", ]))`  
+\
 **Answer:** `r params$a20`  
+\
 
 ```{r results='asis', echo=FALSE}
 if (!comm_plot_chk) {cat("<!---")}
@@ -397,6 +439,7 @@ if (!comm_plot_chk) {cat("-->")}
 ## Objective 9: Assess forecast
 \
 21. `r substr(quest["q21", ], 6, nchar(quest["q21", ]))`  
+\
 **Answer:** `r params$a21`
 \
 
@@ -412,6 +455,7 @@ if (!assess_plot_chk) {cat("-->")}
 ## Objective 10: Update model
 
 22. `r substr(quest["q22", ], 6, nchar(quest["q22", ]))`  
+\
 **Answer:** `r params$a22`
 \
 
@@ -427,6 +471,7 @@ if (!update_plot_chk) {cat("-->")}
 ## Objective 11: Next forecast
 
 23. `r substr(quest["q23", ], 6, nchar(quest["q23", ]))`  
+\
 **Answer:** `r params$a23`
 \
 
@@ -441,6 +486,7 @@ if (!next_fc_plot_chk) {cat("-->")}
 ```
 
 24. `r substr(quest["q24", ], 6, nchar(quest["q24", ]))`  
+\
 **Answer:** `r params$a24`
 \
 
@@ -449,22 +495,29 @@ if (!next_fc_plot_chk) {cat("-->")}
 ## Objective 12: Compare productivity forecasts between two different NEON sites
 
 25. `r substr(quest["q25", ], 6, nchar(quest["q25", ]))`
-    a.  Apply the same model scenario (with the same model structure and parameters) which you developed in Q14 to this new site. How do you expect chlorophyll-a concentrations will respond _prior_ to running the simulation?  
+\
+    a.  `r substr(quest["q25a", ], 3, nchar(quest["q25a", ]))`  
+    \
     **Answer:** `r params$a25a`  
-    b.  Was your hypothesis supported or refuted? Why?  
+    \
+    b.  `r substr(quest["q25b", ], 3, nchar(quest["q25b", ]))`  
+    \
     **Answer:** `r params$a25b`  
-    c.  Revisit your hypothesis from page 3 Q3, what did you find out about the different productivity forecasts in warmer vs colder sites?  
+    \
+    c.  `r substr(quest["q25c", ], 3, nchar(quest["q25c", ]))`  
+    \
     **Answer:** `r params$a25c`  
 \
 
 26. `r substr(quest["q26", ], 6, nchar(quest["q26", ]))`  
+\
 **Answer:** `r params$a26`  
 \
 
 
 This module was developed by Moore, T.N., C.C. Carey, and R.Q. Thomas. 23 January 2021. Macrosystems EDDIE: Introduction to Ecological Forecasting. Macrosystems EDDIE Module 5, Version 1. http://module5.macrosystemseddie.org. Module development was supported by NSF grants DEB-1926050 and DBI-1933016.
 
-This document last modified: 13 January 2021 by TNM.
+This document last modified: 03 February 2021 by TNM.
 
 
 
