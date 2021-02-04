@@ -3651,6 +3651,7 @@ server <- function(input, output, session) {#
       geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs"))) +
       geom_hline(yintercept = 0, color = "gray") +
       geom_vline(xintercept = driv_fc()[1, 1], linetype = "dashed") +
+      geom_vline(xintercept = (driv_fc()[1, 1] + 7), linetype = "dotted") +
       ylab("Chlorophyll-a") +
       xlab("Time") +
       {if(input$update_fc2 > 0)         scale_color_manual(values = c("Obs" = cols[1], "New obs" = cols[2], "Median - original" = pair.cols[4], "Median - updated" = pair.cols[6]))} +
