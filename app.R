@@ -111,15 +111,15 @@ parms <- c(
   Chl_Nratio = 1, #mg chl (mmolN)-1
   Q10 = 2,  #unitless
   addTEMP = 0, # added to temperature
-  scaleNLOAD = 1 # multiplier for N loading
+  scaleNLOAD = 1, # multiplier for N loading
+  refTEMP = 20 # Reference temperature for q10
   
 )  
+
 
 # Initial conditions for NP
 yini <- c(
   PHYTO = 2, #mmolN m-3
-  # ZOO = 0.4, #mmolN m-3
-  # DETRITUS = 1, #mmolN m-3
   DIN = 9) #mmolN m-3
 
 # Load parameters and initial conditions
@@ -178,14 +178,15 @@ wid_pct3 <- "80%"
 
 
 par_df <- data.frame(
+  "SWT" = rep(NA, 5),
+  "uPAR" = rep(NA, 5),
   "Phytos" = rep(NA, 5),
-  # "Zoops" = rep(NA, 5),
   "Nutrients" = rep(NA, 5),
-  # "Grazing" = rep(NA, 5),
   "Mortality" = rep(NA, 5),
   "Uptake" = rep(NA, 5), row.names = c("Q12", "Q13a", "Q13b", "Q14", "Q15")
 )
 
+png_dpi <- 300
 
 ui <- function(req) {
   
@@ -852,9 +853,9 @@ border-color: #FFF;
                                    
                                    #** Sort state and process variables ====
                                    h2(tags$b("Exercise")),
-                                   p("When working with ecological models, the terms 'state variable' and 'parameter' are used. Using the model diagram above, can you identify which are state variables or parameters?"),
-                                   p(module_text["state_var", 1]),
-                                   p(module_text["parameter", 1]),
+                                   p(id = "txt_j", "When working with ecological models, the terms 'state variable' and 'parameter' are used. Using the model diagram above, can you identify which are state variables or parameters?"),
+                                   p(id = "txt_j", module_text["state_var", 1]),
+                                   p(id = "txt_j", module_text["parameter", 1]),
                                    
                                    fluidRow(
                                      column(12, align = "left",
@@ -926,11 +927,11 @@ border-color: #FFF;
                                    fluidRow(
                                      column(5,
                                             h3("Build Model"),
-                                            p("You will use observed data from the selected site on the 'Activity A' tab to drive the NP model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs.")
+                                            p(id = "txt_j", "You will use observed data from the selected site on the 'Activity A' tab to drive the NP model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs.")
                                      ),
                                      column(5, offset = 2,
                                             h4("Notes"),
-                                            p("How does the model output compare to in-lake observations? Here are some things you should look out for:"),
+                                            p(id = "txt_j", "How does the model output compare to in-lake observations? Here are some things you should look out for:"),
                                             tags$ol(
                                               tags$li("Is the model in the same range as the observations?"),
                                               tags$li("Does it capture the seasonal patterns?"),
@@ -947,15 +948,16 @@ border-color: #FFF;
                                                          label = div("Run Model",
                                                                      icon("running")),
                                                          width = "60%"), br(), br(),
-                                            p("To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates below."),
-                                            p("Inital conditions can also be adjusted to measured values from ", actionLink("obj_2", "Objective 2")," but you can also adjust the initial values to see how the model responds."),
-                                            p("The NP model simulates phytoplankton biomass which we convert to chlorophyll-a to allow comparison between the simulations and field observations.")
+                                            p(id = "txt_j", "To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates below."),
+                                            p(id = "txt_j", "Inital conditions can also be adjusted to measured values from ", actionLink("obj_2", "Objective 2")," but you can also adjust the initial values to see how the model responds."),
+                                            p(id = "txt_j", "The NP model simulates phytoplankton biomass which we convert to chlorophyll-a to allow comparison between the simulations and field observations.")
                                             ),
                                      column(5,
                                             h3("Model States"),
                                             wellPanel(
                                               plotlyOutput("mod_phyto_plot")
-                                            )
+                                            ),
+                                            checkboxInput("add_obs", "Add observations to the plots")
                                      ),
                                      column(5,
                                             h3("Primary Productivity"),
@@ -967,12 +969,12 @@ border-color: #FFF;
                                    ), hr(),
                                    fluidRow(
                                      
-                                     column(3,
+                                     column(2,
                                             # wellPanel(
                                             h3("Inputs"),
-                                            p("Select which variables the model will use as inputs. This means the model will use the variable measured on site as a driving variable in the model."),
+                                            p(id = "txt_j", "Select which variables the model will use as inputs. This means the model will use the variable measured on site as a driving variable in the model."),
                                             checkboxGroupInput("mod_sens", "Select model inputs:",
-                                                               choices = list("Surface water temperature", "Underwater light (uPAR)")),
+                                                               choices = list("Surface water temperature (SWT)", "Underwater light (uPAR)")),
                                      ),
                                      column(3,
                                             h3("Initial conditions"),
@@ -985,7 +987,7 @@ border-color: #FFF;
                                             p(tags$b("Nutrients")),
                                             sliderInput("nut_init", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
                                                                                 div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.01, max = 10, step = 0.01, value = 3)
+                                                        min = 0.01, max = 0.5, step = 0.01, value = 0.25)
                                             ),
                                      column(3,
                                             h3("Parameters"),
@@ -994,21 +996,21 @@ border-color: #FFF;
                                             sliderInput("mort_rate", label = div(style='width:300px;', 
                                                                                  div(style='float:left;', 'Lower death'), 
                                                                                  div(style='float:right;', 'Higher death')),
-                                                        min = 0.01, max = 0.6, value = 0.3, step = 0.005),
+                                                        min = 0, max = 1, value = 0.5, step = 0.01),
                                             p(tags$em("Uptake")),
                                             sliderInput("nut_uptake", label = div(style='width:300px;', 
                                                                                   div(style='float:left;', 'Low uptake'), 
                                                                                   div(style='float:right;', 'High uptake')),
-                                                        min = 0.01, max = 4, value = 0.8, step = 0.01)
+                                                        min = 0, max = 1, value = 0.5, step = 0.01)
                                             
                                      ),
-                                     column(3,
+                                     column(4,
                                             h3("Parameter Table"),
                                             p("For Q12-15 you are required to save your model setup which includes the initial conditions and parameters."),
                                             DTOutput("save_par", width = "10%"),
                                            br(),
-                                           p("Add your parameters by clicking on the target row in the table and then the 'Save model setup' button below."),
-                                            actionButton("save_params", "Save model setup", icon = icon("save")),
+                                           p("Add your parameters by clicking on the target row in the table", tags$b("BEFORE") ," you run the model."),
+                                            # actionButton("save_params", "Save model setup", icon = icon("save")),
                                             br(), br(), 
                                             
                                             br()
@@ -1035,7 +1037,6 @@ border-color: #FFF;
                                                             textAreaInput2(inputId = "q14b", label = quest["q14b", 1] , width = "90%"),
                                                             br(),
                                                             p(tags$b(quest["q15", 1])),
-                                                            checkboxInput("add_obs", tags$b("Add observations")),
                                                             p(tags$b("Note:"), "The model you are using is a very simplified model. Do not spend greater than 5-10 minutes trying to calibrate the model. The main aim is to get it simulating concentrations in the same ranges as observations and not identically matching the observations."),
                                                             imageOutput("mod_run_img")
                                                             )
@@ -1243,7 +1244,7 @@ border-color: #FFF;
                                                            width = "70%"),
                                               # br(), br(),
                                               conditionalPanel("input.load_fc2",
-                                                               numericInput('members2', 'No. of members', 16,
+                                                               numericInput('members2', 'No. of members (1-30)', 16,
                                                                             min = 1, max = 30, step = 1),
                                                                # uiOutput("eco_fc_members"),
                                                                radioButtons("type2", "Type of Visualization", choices = c("Data table", plot_types), selected = "Line"),
@@ -1251,7 +1252,7 @@ border-color: #FFF;
                                                                            # selec  ted = plot_types[2])
                                               ),
                                               h3(tags$b("Initial conditions")),
-                                              p(id = "txt_j", "Return to the 'Get Data' tab to find suitable values to input for each of the states. Use the start date of the weather forecast loaded above. If there is no value, choose a value based on the observed range."),
+                                              p(id = "txt_j", "Use the plot here, which shows measurements of  Chorophyll-a, to select and update your initial conditions before running your forecast. There is no up-to-date nutrient data so you will need to estimate this from the measurements in Activity A - Objective 5. Adjust this value to explore the sensitivity of the forecast to this value."),
                                             p(tags$b("Phytoplankton")),
                                             # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
                                             sliderInput("phy_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
@@ -1440,12 +1441,12 @@ border-color: #FFF;
                                             sliderInput("mort_rate2", label = div(style='width:300px;', 
                                                                                  div(style='float:left;', 'Lower death'), 
                                                                                  div(style='float:right;', 'Higher death')),
-                                                        min = 0.01, max = 0.6, value = 0.3, step = 0.005),
+                                                        min = 0, max = 1, value = 0.5, step = 0.01),
                                             p(tags$em("Uptake")),
                                             sliderInput("nut_uptake2", label = div(style='width:300px;', 
                                                                                   div(style='float:left;', 'Low uptake'), 
                                                                                   div(style='float:right;', 'High uptake')),
-                                                        min = 0.01, max = 4, value = 0.8, step = 0.01),
+                                                        min = 0, max = 1, value = 0.5, step = 0.01),
                                             actionButton('update_fc2', label = div("Update forecast",
                                                                                    icon("redo-alt")))
                                      ),
@@ -1490,7 +1491,7 @@ border-color: #FFF;
                                             h2("Next Forecast"),
                                             p(id = "txt_j", "With an updated model, we can now generate the next forecast driven by a new weather forecast"),
                                             h3("Initial conditions"),
-                                            p(id = "txt_j", "Remember, you will need to update the initial conditions based on the latest observed data."),
+                                            p(id = "txt_j", "Don't forget to update the initial conditions based on the latest observed data which are shown in the plot."),
                                             p(tags$b("Phytoplankton")),
                                             # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
                                             sliderInput("phy_init3", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
@@ -1739,9 +1740,12 @@ server <- function(input, output, session) {#
     parms <<- upd_parms
 
     if(siteID == "SUGG") {
-      updateSliderInput(session, "phy_init", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.1)
-      updateSliderInput(session, "phy_init2", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.1)
-      updateSliderInput(session, "phy_init3", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.1)
+      updateSliderInput(session, "phy_init", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.01)
+      updateSliderInput(session, "phy_init2", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.01)
+      updateSliderInput(session, "phy_init3", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.01)
+      updateSliderInput(session, "nut_init", min = 0.01, max = 2, step = 0.01)
+      updateSliderInput(session, "nut_init2", min = 0.01, max = 2, step = 0.01)
+      updateSliderInput(session, "nut_init3", min = 0.01, max = 2, step = 0.01)
     }
     
   })
@@ -2372,6 +2376,7 @@ server <- function(input, output, session) {#
     p <- p + 
       ylab(ylab) +
       xlab("Time") +
+      geom_hline(yintercept = 0) +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
     
@@ -2486,7 +2491,7 @@ server <- function(input, output, session) {#
     img_file <- "www/noaa_fc.png"
     
     # Save as a png file
-    ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
+    ggsave(img_file, p,  dpi = png_dpi, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
     # show("main_content")
   }, ignoreNULL = FALSE
@@ -2624,51 +2629,44 @@ server <- function(input, output, session) {#
     
     # Updated parameters
     parms[1] <- as.numeric(input$nut_uptake)
-    # parms[4] <- as.numeric(input$graz_rate)
     parms[7] <- as.numeric(input$mort_rate)
-    
-    npz_inputs <- create_npz_inputs(time = npz_inp[, 1], PAR = npz_inp[, 2], temp = npz_inp[, 3])
-    
-    # Alter Initial conditions
-    yini[1] <- input$phy_init
-    # yini[2] <- input$zoo_init
-    yini[2] <- input$nut_init
 
-    res <- matrix(NA, nrow = length(times), ncol = 4)
-    colnames(res) <- c("time", "Chla", "Phytoplankton", "Nutrients")
-    res[, 1] <- times
-    res[1, -1] <- c(yini[1], yini)
+    npz_inputs <- create_npz_inputs(time = npz_inp[, 1], PAR = npz_inp[, 2], temp = npz_inp[, 3])
+
+    # Alter Initial conditions
+    yini[1] <- input$phy_init * 0.016129 # Convert from ug/L to mmolN/m3
+    yini[2] <- input$nut_init * 16.129 # Convert from mg/L to mmolN/m3
     
-    # yini <- c(2,9)
-    # Looped model version
+    res <- matrix(NA, nrow = length(times), ncol = 3)
+    colnames(res) <- c("time", "Phytoplankton", "Nutrients")
+    res[, 1] <- times
+    res[1, -1] <- c(yini)
+
     for(i in 2:length(times)) {
       
-      if(all(c("Surface water temperature", "Underwater light (uPAR)") %in% input$mod_sens)) {
+      if(all(c("Surface water temperature (SWT)", "Underwater light (uPAR)") %in% input$mod_sens)) {
         out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                       parms = parms, method = "ode45", inputs = npz_inputs))
       } else if((c("Underwater light (uPAR)") %in% input$mod_sens)) {
         out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
                                       parms = parms, method = "ode45", inputs = npz_inputs))
-      } else if((c("Surface water temperature") %in% input$mod_sens)) {
+      } else if((c("Surface water temperature (SWT)") %in% input$mod_sens)) {
         out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noPAR,
                                       parms = parms, method = "ode45", inputs = npz_inputs))
       } else {
         out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noTPAR,
                                       parms = parms, method = "ode45", inputs = npz_inputs))
       }
-      
-      res[i, -1] <- out[2, c(4, 2, 3)]
+      res[i, -1] <- out[2, c(2, 3)]
       yini <- out[2, c(2:3)]
       
     }
     res <- as.data.frame(res)
     res$time <- npz_inp$Date
+    res$Chla <- (res$Phytoplankton * 62) # Convert from mmol/m3 to ug/L # * 4.97 + 1.58
+    res$Nutrients <- res$Nutrients * 0.062 # Convert from mmol/m3 to mg/L
     res <- res[, c("time", "Chla", "Nutrients")]
-    # res[ ,-1] <- ((res[ ,-1] / 1000) * 14) * 100
-    
     return(res)
-
-    
   })
   
   #* Model annual output data ----
@@ -2718,6 +2716,7 @@ server <- function(input, output, session) {#
       xlab("Time") +
       {if(input$add_obs) geom_point(data = chla, aes_string(names(chla)[1], names(chla)[2], color = shQuote("Obs")))} +
       # coord_cartesian(xlim = xlims, ylim = ylims) +
+      geom_hline(yintercept = 0, color = "gray") +
       scale_color_manual(values = cols[1:2]) +
       theme_minimal(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
@@ -2763,11 +2762,12 @@ server <- function(input, output, session) {#
     
     p <- ggplot() +
       geom_line(data = mlt, aes_string(names(mlt)[1], names(mlt)[3], color = names(mlt)[2])) +
-      ylab("N (μg/L)") +
+      ylab("N (mg/L)") +
       xlab("Time") +
       {if(input$add_obs) geom_point(data = din, aes_string(names(din)[1], names(din)[2], color = shQuote("Obs")))} +
       geom_hline(yintercept = 0, color = "gray") +
       facet_wrap(~variable, ncol = 1) +
+      geom_hline(yintercept = 0, color = "gray") +
       coord_cartesian(xlim = xlims, ylim = ylims) +
       theme_minimal(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))+
@@ -2854,20 +2854,22 @@ server <- function(input, output, session) {#
   
   # output$save_par <- renderTable(par_save())
   par_save <- reactiveValues(value = par_df)
-  observeEvent(input$save_params, {
-    if(input$save_params > 0) {
-      par_save$value[input$save_par_rows_selected, ] <<- c(input$phy_init, 
-                                                           # input$zoo_init, 
-                                                           input$nut_init, #input$graz_rate,
-                                                   input$mort_rate, input$nut_uptake)
-    }
-    if(input$save_params == 0) {
-      par_save$value[1, ] <<- c(input$phy_init, 
-                                # input$zoo_init, 
-                                input$nut_init, #input$graz_rate,
-                        input$mort_rate, input$nut_uptake)
-    }
-    }, ignoreNULL = FALSE)
+  # observeEvent(input$save_params, {
+  #   
+  #   if(input$save_params > 0) {
+  #     par_save$value[input$save_par_rows_selected, 1] <- "Surface water temperature (SWT)" %in% input$mod_sens
+  #     par_save$value[input$save_par_rows_selected, 2] <- "Underwater light (uPAR)" %in% input$mod_sens
+  #     par_save$value[input$save_par_rows_selected, 3:6] <<- c(input$phy_init, 
+  #                                                          input$nut_init,
+  #                                                  input$mort_rate, input$nut_uptake)
+  #   }
+    # if(input$save_params == 0) {
+    #   par_save$value[1, ] <<- c(input$phy_init, 
+    #                             # input$zoo_init, 
+    #                             input$nut_init, #input$graz_rate,
+    #                     input$mort_rate, input$nut_uptake)
+    # }
+    # }, ignoreNULL = FALSE)
   
   # Forecast Plots  ----
   #* Input Uncertainty ====
@@ -2915,13 +2917,11 @@ server <- function(input, output, session) {#
     
     # Parameters from 'Build Model'
     parms[1] <- as.numeric(input$nut_uptake)
-    # parms[4] <- as.numeric(input$graz_rate)
     parms[7] <- as.numeric(input$mort_rate)
     
     # Alter Initial conditions
-    yini[1] <- input$phy_init2
-    # yini[2] <- input$zoo_init2
-    yini[2] <- input$nut_init2
+    yini[1] <- input$phy_init2 * 0.016129 # Convert from ug/L to mmolN/m3
+    yini[2] <- input$nut_init2 * 16.129 # Convert from mg/L to mmolN/m3
     
     # progress$inc(0.33, detail = "Running the model")
     fc_length <- input$members2 # length(npz_fc_data())
@@ -2932,34 +2932,34 @@ server <- function(input, output, session) {#
 
       times <- 1:nrow(npz_inputs)
       
-      res <- matrix(NA, nrow = length(times), ncol = 4)
-      colnames(res) <- c("time", "Chla", "Phytoplankton", "Nutrients")
+      res <- matrix(NA, nrow = length(times), ncol = 3)
+      colnames(res) <- c("time", "Phytoplankton", "Nutrients")
       res[, 1] <- times
-      res[1, -1] <- c(yini[1], yini)
+      res[1, -1] <- c(yini)
       
-      # yini <- c(2,9)
-      # Looped model version
       for(i in 2:length(times)) {
         
-        if(all(c("Surface water temperature", "Underwater light (uPAR)") %in% input$mod_sens)) {
+        if(all(c("Surface water temperature (SWT)", "Underwater light (uPAR)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         } else if((c("Underwater light (uPAR)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
-        } else if((c("Surface water temperature") %in% input$mod_sens)) {
+        } else if((c("Surface water temperature (SWT)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noPAR,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         } else {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noTPAR,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         }
-        
-        res[i, -1] <- out[2, c(4, 2, 3)]
+        res[i, -1] <- out[2, c(2, 3)]
         yini <- out[2, c(2:3)]
         
       }
+
       res <- as.data.frame(res)
+      res$Chla <- (res$Phytoplankton * 62) # Convert from mmol/m3 to ug/L # * 4.97 + 1.58
+      res <- res[, c("time", "Chla")]
       res$time <- fc_out_dates
       
       
@@ -3104,6 +3104,7 @@ server <- function(input, output, session) {#
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
       geom_text(data = txt, aes(x, y, label = label)) +
+      geom_hline(yintercept = 0, color = "gray") +
       geom_vline(xintercept = vlin, linetype = "dashed") +
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Time") +
@@ -3205,6 +3206,7 @@ server <- function(input, output, session) {#
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs")),
                  size = 3) +
       geom_text(data = txt, aes(x, y, label = label), size = 12) +
+      geom_hline(yintercept = 0, color = "gray") +
       geom_vline(xintercept = df2[1, 1], linetype = "dashed") +
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Time") +
@@ -3300,6 +3302,7 @@ server <- function(input, output, session) {#
       {if(input$add_newobs) geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs")))} +
       {if(input$add_newobs) scale_color_manual(values = c("Median" = pair.cols[4], "Obs" = cols[1], "New obs" = cols[2]))} +
       {if(!input$add_newobs) scale_color_manual(values = c("Median" = pair.cols[4], "Obs" = cols[1]))} +
+      geom_hline(yintercept = 0, color = "gray") +
       geom_vline(xintercept = (df2[1, 1]), linetype = "dashed") +
       geom_vline(xintercept = (df2[1, 1] + 7), linetype = "dotted") +
       geom_text(data = txt, aes(x, y, label = label)) +
@@ -3447,6 +3450,7 @@ server <- function(input, output, session) {#
       {if(input$add_newobs) geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs")), size = 4)} +
       {if(input$add_newobs) scale_color_manual(values = c("Median" = pair.cols[4], "Obs" = cols[1], "New obs" = cols[2]))} +
       {if(!input$add_newobs) scale_color_manual(values = c("Median" = pair.cols[4], "Obs" = cols[1]))} +
+      geom_hline(yintercept = 0, color = "gray") +
       geom_vline(xintercept = (df2[1, 1]), linetype = "dashed") +
       geom_vline(xintercept = (df2[1, 1] + 7), linetype = "dotted") +
       geom_text(data = txt, aes(x, y, label = label), size = 8) +
@@ -3514,18 +3518,17 @@ server <- function(input, output, session) {#
     new_obs <- chla[chla[, 1] >= as.Date((driv_fc()[1, 1])) &
                       chla[, 1] <= (as.Date(driv_fc()[1, 1]) + 7), ]
     
+    
     # Parameters from 'Build Model'
     parms[1] <- as.numeric(input$nut_uptake2)
-    # parms[4] <- as.numeric(input$graz_rate2)
     parms[7] <- as.numeric(input$mort_rate2)
     
     # Alter Initial conditions
-    yini[1] <- input$phy_init2
-    # yini[2] <- input$zoo_init2
-    yini[2] <- input$nut_init2
+    yini[1] <- input$phy_init2 * 0.016129 # Convert from ug/L to mmolN/m3
+    yini[2] <- input$nut_init2 * 16.129 # Convert from mg/L to mmolN/m3
     
     # progress$inc(0.33, detail = "Running the model")
-    fc_length <- input$members2 #length(npz_fc_data())
+    fc_length <- input$members2 # length(npz_fc_data())
     
     fc_res <- lapply(1:fc_length, function(x) {
       
@@ -3533,37 +3536,40 @@ server <- function(input, output, session) {#
       
       times <- 1:nrow(npz_inputs)
       
-      res <- matrix(NA, nrow = length(times), ncol = 4)
-      colnames(res) <- c("time", "Chla", "Phytoplankton", "Nutrients")
+      res <- matrix(NA, nrow = length(times), ncol = 3)
+      colnames(res) <- c("time", "Phytoplankton", "Nutrients")
       res[, 1] <- times
-      res[1, -1] <- c(yini[1], yini)
+      res[1, -1] <- c(yini)
       
-      # yini <- c(2,9)
-      # Looped model version
       for(i in 2:length(times)) {
         
-        if(all(c("Surface water temperature", "Underwater light (uPAR)") %in% input$mod_sens)) {
+        if(all(c("Surface water temperature (SWT)", "Underwater light (uPAR)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         } else if((c("Underwater light (uPAR)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
-        } else if((c("Surface water temperature") %in% input$mod_sens)) {
+        } else if((c("Surface water temperature (SWT)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noPAR,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         } else {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noTPAR,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         }
-        
-        res[i, -1] <- out[2, c(4, 2, 3)]
+        res[i, -1] <- out[2, c(2, 3)]
         yini <- out[2, c(2:3)]
         
       }
-      res <- as.data.frame(res)
       
+      res <- as.data.frame(res)
+      res$Chla <- (res$Phytoplankton * 62) # Convert from mmol/m3 to ug/L # * 4.97 + 1.58
+      res <- res[, c("time", "Chla")]
       res$time <- fc_out_dates
-
+      
+      
+      
+      
+      # out$time <- npz_inp$Date
       out <- res[, c("time", "Chla")] #, "PHYTO", "ZOO")]
       progress$set(value = x/fc_length)
       return(out)
@@ -3572,6 +3578,7 @@ server <- function(input, output, session) {#
     
     mlt <- reshape2::melt(fc_res, id.vars = "time")
     
+    return(mlt)
   })
   
   plots <- list(main = NULL, l1 = NULL)
@@ -3642,6 +3649,7 @@ server <- function(input, output, session) {#
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
       geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs"))) +
+      geom_hline(yintercept = 0, color = "gray") +
       geom_vline(xintercept = driv_fc()[1, 1], linetype = "dashed") +
       ylab("Chlorophyll-a") +
       xlab("Time") +
@@ -3732,6 +3740,7 @@ server <- function(input, output, session) {#
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs")), size = 4) +
       geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs")), size = 4) +
+      geom_hline(yintercept = 0, color = "gray") +
       geom_vline(xintercept = driv_fc()[1, 1], linetype = "dashed") +
       ylab("Chlorophyll-a") +
       xlab("Time") +
@@ -3795,13 +3804,11 @@ server <- function(input, output, session) {#
     
     # Parameters from 'Build Model'
     parms[1] <- as.numeric(input$nut_uptake2)
-    # parms[4] <- as.numeric(input$graz_rate2)
     parms[7] <- as.numeric(input$mort_rate2)
     
     # Alter Initial conditions
-    yini[1] <- input$phy_init3
-    # yini[2] <- input$zoo_init3
-    yini[2] <- input$nut_init3
+    yini[1] <- input$phy_init3 * 0.016129 # Convert from ug/L to mmolN/m3
+    yini[2] <- input$nut_init3 * 16.129 # Convert from mg/L to mmolN/m3
     
     # progress$inc(0.33, detail = "Running the model")
     fc_length <- length(npz_fc_data2())
@@ -3812,34 +3819,38 @@ server <- function(input, output, session) {#
       
       times <- 1:nrow(npz_inputs)
       
-      res <- matrix(NA, nrow = length(times), ncol = 4)
-      colnames(res) <- c("time", "Chla", "Phytoplankton", "Nutrients")
+      res <- matrix(NA, nrow = length(times), ncol = 3)
+      colnames(res) <- c("time", "Phytoplankton", "Nutrients")
       res[, 1] <- times
-      res[1, -1] <- c(yini[1], yini)
+      res[1, -1] <- c(yini)
       
-      # Looped model version
       for(i in 2:length(times)) {
         
-        if(all(c("Surface water temperature", "Underwater light (uPAR)") %in% input$mod_sens)) {
+        if(all(c("Surface water temperature (SWT)", "Underwater light (uPAR)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         } else if((c("Underwater light (uPAR)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
-        } else if((c("Surface water temperature") %in% input$mod_sens)) {
+        } else if((c("Surface water temperature (SWT)") %in% input$mod_sens)) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noPAR,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         } else {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noTPAR,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
         }
-        
-        res[i, -1] <- out[2, c(4, 2, 3)]
+        res[i, -1] <- out[2, c(2, 3)]
         yini <- out[2, c(2:3)]
         
       }
+      
       res <- as.data.frame(res)
+      res$Chla <- (res$Phytoplankton * 62) # Convert from mmol/m3 to ug/L # * 4.97 + 1.58
+      res <- res[, c("time", "Chla")]
       res$time <- fc_out_dates2
+      
+      
+      
       
       # out$time <- npz_inp$Date
       out <- res[, c("time", "Chla")] #, "PHYTO", "ZOO")]
@@ -3930,6 +3941,7 @@ server <- function(input, output, session) {#
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Time") +
       geom_vline(xintercept = chla_obs[nrow(chla_obs), 1], linetype = "dashed") +
+      geom_hline(yintercept = 0, color = "gray") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "") +
@@ -4025,6 +4037,8 @@ server <- function(input, output, session) {#
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Time") +
       geom_text(data = txt, aes(x, y, label = label), size = 12) +
+      geom_hline(yintercept = 0, color = "gray") +
+      geom_hline(yintercept = 0) +
       theme_classic(base_size = 34) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "") +
@@ -4121,7 +4135,7 @@ server <- function(input, output, session) {#
                    a25c = input$q25c,
                    a26 = input$q26,
                    save_pars = par_file,
-                   pheno_file = pheno_file,
+                   pheno_file = pheno_file$img,
                    site_html = "data/site.html",
                    mod_2019_png = "www/mod_run_2019.png",
                    noaa_plot = "www/noaa_fc.png",
@@ -4130,6 +4144,7 @@ server <- function(input, output, session) {#
                    update_plot = "www/fc_update.png",
                    next_fc_plot = "www/new_fc.png"
     )
+    print(params)
     
     
     tmp_file <- paste0(tempfile(), ".docx") #Creating the temp where the .pdf is going to be stored
@@ -4305,20 +4320,24 @@ server <- function(input, output, session) {#
 
   # Updating sliders from first inputs ----
   observeEvent(input$run_mod_ann, {
+    # Initial conditions
     phy_init1 <- input$phy_init
     updateSliderInput(session, "phy_init2", value = phy_init1)
-    # zoo_init1 <- input$zoo_init
-    # updateSliderInput(session, "zoo_init2", value = zoo_init1)
     nut_init1 <- input$nut_init
     updateSliderInput(session, "nut_init2", value = nut_init1)
     
     # Parameters
-    # graz_rate1 <- input$graz_rate
-    # updateSliderInput(session, "graz_rate2", value = graz_rate1)
     mort_rate1 <- input$mort_rate
     updateSliderInput(session, "mort_rate2", value = mort_rate1)
     nut_uptake1 <- input$nut_uptake
     updateSliderInput(session, "nut_uptake2", value = nut_uptake1)
+    
+    # Update parameters in the table
+    par_save$value[input$save_par_rows_selected, 1] <<- "Surface water temperature (SWT)" %in% input$mod_sens
+    par_save$value[input$save_par_rows_selected, 2] <<- "Underwater light (uPAR)" %in% input$mod_sens
+    par_save$value[input$save_par_rows_selected, 3:6] <<- c(input$phy_init, 
+                                                            input$nut_init,
+                                                            input$mort_rate, input$nut_uptake)
     
   })
   
@@ -4380,7 +4399,7 @@ server <- function(input, output, session) {#
       if(input$q12 == "") "Activity A: Objective 5 - Q. 12",
       if(input$q13a == "" | input$q13b == "") "Activity A: Objective 5 - Q. 13",
       if(input$q14a == "" | input$q14b == "") "Activity A: Objective 5 - Q. 14",
-      if(input$save_params == 0) "Activity A: Objective 5 - Q. 15 Save table of parameters",
+      if(all(is.na(par_save$value$SWT))) "Activity A: Objective 5 - Q. 15 Table of parameters",
       if(!file.exists("www/mod_run_2019.png")) "Activity A: Objective 5 - Q. 15 Save plot of model run",
       if(input$q16 == "") "Activity B: Objective 6 - Q. 16",
       if(input$save_noaa_plot == 0) "Activity B: Objective 6 - Q. 16 Save plot of NOAA weather forecast",
@@ -4390,8 +4409,8 @@ server <- function(input, output, session) {#
       if(input$save_comm_plot == 0) "Activity B: Objective 7 - Q. 19 Save plot of ecological forecast",
       if(input$q20 == "") "Activity B: Objective 8 - Q. 20",
       if(input$q21 == "") "Activity B: Objective 9 - Q. 21",
-      if(input$save_assess_plot == 0) "Activity B: Objective 10 - Q. 21 Save plot of assessment of the ecological forecast",
-      if(input$q22 == "") "Q. 22",
+      if(input$save_assess_plot == 0) "Activity B: Objective 9 - Q. 21 Save plot of assessment of the ecological forecast",
+      if(input$q22 == "") "Activity B: Objective 10 - Q. 22",
       if(input$save_update_fc_plot == 0) "Activity B: Objective 10 - Q. 22 Save plot of updated ecological forecast",
       if(input$q23 == "") "Activity B: Objective 11 - Q. 23",
       if(input$save_new_fc_plot == 0) "Activity B: Objective 11 - Q. 23 Save plot of new ecological forecast",
