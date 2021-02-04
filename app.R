@@ -125,6 +125,7 @@ yini <- c(
 # Load parameters and initial conditions
 site_parms <- read.csv("data/params_site_NP_model.csv", fileEncoding = "UTF-8-BOM")
 site_yini <- read.csv("data/yini_sites_NP_model.csv", fileEncoding = "UTF-8-BOM")
+upd_parms <- read.csv("data/upd_params_site.csv", fileEncoding = "UTF-8-BOM")
 
 # question 6 table with numeric input
 # code from https://stackoverflow.com/questions/46707434/how-to-have-table-in-shiny-filled-by-user
@@ -1445,25 +1446,19 @@ border-color: #FFF;
                                             h3("Parameters"),
                                             h4(tags$b("Phytoplankton parameters")),
                                             p("Use the buttons below to increase or decrease the value of your parameters. The updated parameter values are displayed in a table beneath the plot."), 
-                                            p(tags$b("Mortality")),
-                                            actionButton("minus1", "Decrease", icon = icon("minus")),
-                                            actionButton("plus1", "Increase", icon = icon("plus")),
-                                            br(), br(),
-                                            # sliderInput("mort_rate2", label = div(style='width:300px;', 
-                                            #                                      div(style='float:left;', 'Lower death'), 
-                                            #                                      div(style='float:right;', 'Higher death')),
-                                            #             min = 0, max = 1, value = 0.5, step = 0.01),
-                                            p(tags$b("Uptake")),
-                                            actionButton("minus2", "Decrease", icon = icon("minus")),
-                                            actionButton("plus2", "Increase", icon = icon("plus")),
-                                            # sliderInput("nut_uptake2", label = div(style='width:300px;', 
-                                            #                                       div(style='float:left;', 'Low uptake'), 
-                                            #                                       div(style='float:right;', 'High uptake')),
-                                            #             min = 0, max = 1, value = 0.5, step = 0.01),
-                                            br(), br(), 
+                                            radioButtons("upd_mort_rate", "Mortality Rate", choices = c("Decrease", "Keep the same", "Increase"),
+                                                         selected = character(0), inline = TRUE),
+                                            br(), 
+                                            radioButtons("upd_nut_rate", "Nutrient Uptake", choices = c("Decrease", "Keep the same", "Increase"),
+                                                         selected = character(0), inline = TRUE),
+                                            br(), 
                                             p("Re-run your forecast with the updated parameters."),
+                                            p(tags$b("WARNING:"), "You only get one opportunity to update your model parameter so think carefully about what the parameter represents before updating your forecast. You can return to Activity A - Objective 5 to re-familiarise yourself with how the parameters affect model performance."),
                                             actionButton('update_fc2', label = div("Update forecast",
-                                                                                   icon("redo-alt")))
+                                                                                   icon("redo-alt"))),
+                                            conditionalPanel("input.update_fc2",
+                                                             h3("Forecast updated!")
+                                            )
                                      ),
                                      column(8,
                                             # h4("Schematic of Forecast uncertainty"),
@@ -2925,6 +2920,10 @@ server <- function(input, output, session) {#
   
   
   driv_fc <- eventReactive(input$run_fc2, {
+    
+    shinyjs::enable("update_fc2")
+    shinyjs::enable("upd_mort_rate")
+    shinyjs::enable("upd_nut_rate")
 
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
@@ -3513,37 +3512,112 @@ server <- function(input, output, session) {#
   )
   
   # Plus minus for rates
-  pars_react <- reactiveValues(mort_rate = NULL, nut_uptake = NULL)
-  
+  pars_react <- reactiveValues(mort_rate = NA, nut_uptake = NA)
+
+  # Nutrient uptake
   observe({
-    pars_react$mort_rate <- par_save$value[5, c(5)]
-    pars_react$nut_uptake <- par_save$value[5, c(6)]
+    
+    req(!is.null(input$upd_nut_rate))
+    
+    ridx <- which(upd_parms$site == siteID)
+    upd <- upd_parms$maxUptake[ridx]
+    
+    # Add random noise to parameter 
+    rand1 <- round(rnorm(1, 0.08, 0.03), 2)
+    rand2 <- round(rnorm(1, 0.04, 0.01), 2)
+    rand3 <- round(rnorm(1, 0, 0.01), 2)
+    
+    if(input$upd_nut_rate == "Keep the same") {
+      pars_react$nut_uptake <- par_save$value[5, c(6)]
+    } else if(input$upd_nut_rate == "Increase") {
+      if(par_save$value[5, c(6)] < upd) {
+        pars_react$nut_uptake <- upd + rand3
+      } else if(par_save$value[5, c(6)] > upd) {
+        new_val <- par_save$value[5, c(6)] + rand1
+        pars_react$nut_uptake <- ifelse(new_val > 1, 1, new_val)
+      } else if( par_save$value[5, c(6)] == upd ) {
+        new_val <- par_save$value[5, c(6)] + rand2
+        pars_react$nut_uptake <- ifelse(new_val > 1, 1, new_val)
+      }
+    } else if(input$upd_nut_rate == "Decrease") {
+      if(par_save$value[5, c(6)] > upd) {
+        pars_react$nut_uptake <- upd + rand3
+      } else if(par_save$value[5, c(6)] < upd) {
+        new_val <- par_save$value[5, c(6)] - rand1
+        pars_react$nut_uptake <- ifelse(new_val < 0.01, 0.01, new_val)
+      } else if( par_save$value[5, c(6)] == upd ) {
+        new_val <- par_save$value[5, c(6)] - rand2
+        pars_react$nut_uptake <- ifelse(new_val < 0.01, 0.01, new_val)
+      }
+    } 
   })
   
-  observeEvent(input$minus1, {
-    if(pars_react$mort_rate > 0.01) {
-      pars_react$mort_rate <- pars_react$mort_rate - 0.01
-    }
-  })
-  observeEvent(input$plus1, {
-    if(pars_react$mort_rate < 1) {
-      pars_react$mort_rate <- pars_react$mort_rate + 0.01
-    }
+  # mortality rate
+  observe({
+    
+    req(!is.null(input$upd_mort_rate))
+    
+    ridx <- which(upd_parms$site == siteID)
+    upd <- upd_parms$mortalityRate[ridx]
+    
+    # Add random noise to parameter 
+    rand1 <- round(rnorm(1, 0.08, 0.03), 2)
+    rand2 <- round(rnorm(1, 0.04, 0.01), 2)
+    rand3 <- round(rnorm(1, 0, 0.01), 2)
+    
+    if(input$upd_mort_rate == "Keep the same") {
+      pars_react$mort_rate <- par_save$value[5, c(5)]
+    } else if(input$upd_mort_rate == "Increase") {
+      if(par_save$value[5, c(5)] < upd) {
+        pars_react$mort_rate <- upd + rand3
+      } else if(par_save$value[5, c(5)] > upd) {
+        new_val <- par_save$value[5, c(5)] + rand1
+        pars_react$mort_rate <- ifelse(new_val > 1, 1, new_val)
+      } else if( par_save$value[5, c(5)] == upd ) {
+        new_val <- par_save$value[5, c(5)] + rand2
+        pars_react$mort_rate <- ifelse(new_val > 1, 1, new_val)
+      }
+    } else if(input$upd_mort_rate == "Decrease") {
+      if(par_save$value[5, c(5)] > upd) {
+        pars_react$mort_rate <- upd + rand3
+      } else if(par_save$value[5, c(5)] < upd) {
+        new_val <- par_save$value[5, c(5)] - rand1
+        pars_react$mort_rate <- ifelse(new_val < 0.01, 0.01, new_val)
+      } else if( par_save$value[5, c(5)] == upd ) {
+        new_val <- par_save$value[5, c(5)] - rand2
+        pars_react$mort_rate <- ifelse(new_val < 0.01, 0.01, new_val)
+      }
+    } 
   })
   
-  observeEvent(input$minus2, {
-    if(pars_react$nut_uptake > 0.01) {
-      pars_react$nut_uptake <- pars_react$nut_uptake - 0.01
-    }
-  })
-  observeEvent(input$plus2, {
-    if(pars_react$nut_uptake < 1) {
-      pars_react$nut_uptake <- pars_react$nut_uptake + 0.01
-    }
-  })
+  # observeEvent(input$minus1, {
+  #   if(pars_react$mort_rate > 0.01) {
+  #     pars_react$mort_rate <- pars_react$mort_rate - 0.01
+  #   }
+  # })
+  # observeEvent(input$plus1, {
+  #   if(pars_react$mort_rate < 1) {
+  #     pars_react$mort_rate <- pars_react$mort_rate + 0.01
+  #   }
+  # })
+  # 
+  # observeEvent(input$minus2, {
+  #   if(pars_react$nut_uptake > 0.01) {
+  #     pars_react$nut_uptake <- pars_react$nut_uptake - 0.01
+  #   }
+  # })
+  # observeEvent(input$plus2, {
+  #   if(pars_react$nut_uptake < 1) {
+  #     pars_react$nut_uptake <- pars_react$nut_uptake + 0.01
+  #   }
+  # })
   
   #* Update model ====
   fc_update <- eventReactive(input$update_fc2,{
+    
+    shinyjs::disable("update_fc2")
+    shinyjs::disable("upd_mort_rate")
+    shinyjs::disable("upd_nut_rate")
     
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
@@ -3614,9 +3688,6 @@ server <- function(input, output, session) {#
       res <- res[, c("time", "Chla")]
       res$time <- fc_out_dates
       
-      
-      
-      
       # out$time <- npz_inp$Date
       out <- res[, c("time", "Chla")] #, "PHYTO", "ZOO")]
       progress$set(value = x/fc_length)
@@ -3634,9 +3705,9 @@ server <- function(input, output, session) {#
   #* Data Assim plot ====
   output$update_plot <- renderPlotly({
     
-    # validate(
-    #   need(input$update_fc2 > 0, message = paste0("Click 'Update forecast'"))
-    # )
+    validate(
+      need(input$run_fc2 > 0, message = paste0("Run Forecast in Objective 7"))
+    )
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site in Objective 1.")
@@ -3692,7 +3763,9 @@ server <- function(input, output, session) {#
         scale_fill_manual(values = c("Original" = pair.cols[3]))
     }
     
-    
+      txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 4), (chla_obs[nrow(chla_obs), 1] + 10)),
+                        y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("7 Days ago", "Today"))
+      if(input$update_fc2 > 0) txt$y <- max(df4$p97.5, na.rm = TRUE)
 
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
@@ -3700,6 +3773,7 @@ server <- function(input, output, session) {#
       geom_hline(yintercept = 0, color = "gray") +
       geom_vline(xintercept = driv_fc()[1, 1], linetype = "dashed") +
       geom_vline(xintercept = (driv_fc()[1, 1] + 7), linetype = "dotted") +
+      geom_text(data = txt, aes(x, y, label = label)) +
       ylab("Chlorophyll-a") +
       xlab("Time") +
       {if(input$update_fc2 > 0)         scale_color_manual(values = c("Obs" = cols[1], "New obs" = cols[2], "Median - original" = pair.cols[4], "Median - updated" = pair.cols[6]))} +
