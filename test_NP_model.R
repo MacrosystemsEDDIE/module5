@@ -60,7 +60,7 @@ help_text <- read.csv("data/help_text.csv", row.names = 1)
 
 # Reference for downloading variables
 neon_vars <- read.csv("data/neon_variables.csv")
-# alt_neon_vars <- gsub("Water temperature profile", "Surface water temperature", neon_vars$Short_name)
+# alt_neon_vars <- gsub("Water temperature profile", "Surface water temperature (SWT)", neon_vars$Short_name)
 noaa_dic <- read.csv("data/noaa_dict.csv")
 
 # colors for plots
@@ -134,7 +134,7 @@ ui <- fluidPage(
                         width = "60%"),
            checkboxInput("add_obs", "Add observations", value = TRUE),
            checkboxGroupInput("mod_sens", "Switch on or off the temperature sensitivity:",
-                              choices = list("Surface water temperature", "Underwater light (uPAR)"))
+                              choices = list("Surface water temperature (SWT)", "Underwater light (uPAR)"))
     )
   ),
   fluidRow(
@@ -288,13 +288,13 @@ server <- function(input, output, session) {
     
     for(i in 2:length(times)) {
       
-      if(all(c("Surface water temperature", "Underwater light (uPAR)") %in% input$mod_sens)) {
+      if(all(c("Surface water temperature (SWT)", "Underwater light (uPAR)") %in% input$mod_sens)) {
         out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                       parms = parms, method = "ode45", inputs = npz_inputs))
       } else if((c("Underwater light (uPAR)") %in% input$mod_sens)) {
         out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
                                       parms = parms, method = "ode45", inputs = npz_inputs))
-      } else if((c("Surface water temperature") %in% input$mod_sens)) {
+      } else if((c("Surface water temperature (SWT)") %in% input$mod_sens)) {
         out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noPAR,
                                       parms = parms, method = "ode45", inputs = npz_inputs))
       } else {
