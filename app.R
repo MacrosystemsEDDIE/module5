@@ -225,6 +225,14 @@ ui <- function(req) {
                           data.step = 1,
                           data.intro = help_text["welcome", 1]
                         ),
+                        tags$style(".btn-file {  
+             background-color:#98CAB2; 
+             border-color: #579277; 
+             }
+
+             .progress-bar {
+             background-color: #579277;
+             }"),
                         tags$style(HTML("
                         #first {
                         border: 4px double red;
@@ -375,11 +383,12 @@ ui <- function(req) {
                                  h3("Save your progress"),
                                  p(id = "txt_j", "If you run out of time to finish all the activities you can save your progress and return to it at a later date. Click the 'Download' button below and a file 'module5_answers_ID_number.rds' will download. Store this file in a safe place locally on your computer."),
                                  # bookmarkButton(id = "bookmark1"),
-                                 downloadButton("download_answers", label = "Download user input"),
+                                 tags$style(type="text/css", "#download_answers {background-color:#579277;color: white}"),
+                                 downloadButton("download_answers", label = "Download user input", class = "butt1"),
                                  br(),
                                  h3("Resume your progress"),
                                  p(id = "txt_j", "To reload the app input you can upload the downloaded '.rds' file below and it will populate your answers into the Shiny app."),
-                                 fileInput("upload_answers", "Upload data", accept = ".rds"),
+                                 fileInput("upload_answers", "Upload data", accept = ".rds"), # B77C2C
                                  p(id = "txt_j", HTML(paste0(tags$b("Note:"), " You will need to navigate to tabs Objective 1, 2 and 3 in Activity A after uploading your file for the inputs to load."))),
                                  p(id = "txt_j", "Currently the plots do not save to the file.  If you generated plots during your last session, you will need to reload the data and reproduce the plots before generating your report.  Additionally, the answers for Q.10 will need to be re-submitted.")
                           ),
@@ -387,12 +396,13 @@ ui <- function(req) {
                                  introBox(
                                    h3("Generate Report"),
                                    p("This will take the answers you have input into this app and generate a Microsoft Word document (.docx) document with your answers which you can download and make further edits before submitting. Return here when you have completed the module."),
-                                   actionButton("generate", "Generate Report (.docx)", icon = icon("file"), width = "190px" # id = "dl_btn", # This is the only button that shows up when the app is loaded
+                                   actionButton("generate", "Generate Report (.docx)", icon = icon("file"), width = "190px", class = "btn-primary"
+                                                # id = "dl_btn", # This is the only button that shows up when the app is loaded
                                                 # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
                                    ), br(), br(),
                                    data.step = 6, data.intro = help_text["finish", 1]
                                  ),
-                                 
+                                 tags$style(type="text/css", "#download {background-color:#579277;color: white}"),
                                  conditionalPanel(condition = "output.reportbuilt", # This button appears after the report has been generated and is ready for download.
                                                   downloadButton("download", "Download Report", width = "60px", style = "width:190px;"
                                                                  # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
@@ -965,6 +975,7 @@ border-color: #FFF;
                                             wellPanel(
                                               plotlyOutput("mod_ann_plot")
                                             ),
+                                            tags$style(type="text/css", "#save_mod_run {background-color:#9ECBB5;color: black}"),
                                             actionButton("save_mod_run", "Save plot", icon = icon("save")), br()
                                      ),
                                    ), hr(),
@@ -1181,6 +1192,7 @@ border-color: #FFF;
                                                                ),
                                               conditionalPanel("input.type == 'Line' | input.type == 'Distribution'",
                                                                plotlyOutput("fc_plot"),
+                                                               tags$style(type="text/css", "#save_mod_run {background-color:#9ECBB5;color: black}"),
                                                                actionButton("save_noaa_plot", "Save plot", icon = icon("save"))
                                                                )
                                               )
@@ -1276,6 +1288,7 @@ border-color: #FFF;
                                                                ),
                                               conditionalPanel("input.type2 == 'Line' | input.type2 == 'Distribution'",
                                                                plotlyOutput("plot_ecof2"),
+                                                               tags$style(type="text/css", "#save_comm_plot {background-color:#9ECBB5;color: black}"),
                                                                actionButton("save_comm_plot", "Save plot", icon = icon("save"))
                                                                )
                                               ),
@@ -1390,6 +1403,7 @@ border-color: #FFF;
                                             wellPanel(
                                               plotlyOutput("assess_plot")
                                             ),
+                                            tags$style(type="text/css", "#save_assess_plot {background-color:#9ECBB5;color: black}"),
                                             actionButton("save_assess_plot", "Save plot", icon = icon("save"))
                                      ),
                                    ),
@@ -1464,6 +1478,7 @@ border-color: #FFF;
                                             # h4("Schematic of Forecast uncertainty"),
                                             wellPanel(
                                               plotlyOutput("update_plot"),
+                                              tags$style(type="text/css", "#save_update_fc_plot {background-color:#9ECBB5;color: black}"),
                                               actionButton("save_update_fc_plot", "Save plot", icon = icon("save"))
                                             ),
                                             h4("Table of parameters"),
@@ -1527,6 +1542,7 @@ border-color: #FFF;
                                             h3("New Forecast plot"),
                                             wellPanel(
                                               plotlyOutput("plot_ecof4"),
+                                              tags$style(type="text/css", "#save_new_fc_plot {background-color:#9ECBB5;color: black}"),
                                               actionButton("save_new_fc_plot", "Save plot", icon = icon("save"))
                                               )
                                             )
