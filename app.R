@@ -942,7 +942,7 @@ border-color: #FFF;
                                    ),
                                    fluidRow(
                                      column(2,
-                                            br(), br(), br(), br(), br(),
+                                            br(), br(), br(),# br(), br(),
                                             h3("Run Model"),
                                             actionButton("run_mod_ann",
                                                          label = div("Run Model",
@@ -1158,7 +1158,7 @@ border-color: #FFF;
                                    ),
                                    hr(),
                                    fluidRow(
-                                     column(2,
+                                     column(3,
                                             h3("Explore Weather Forecast"),
                                             p(id = "txt_j", "Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS", target = "_blank"), " forecast for the NEON site you chose in Activity A."),
                                             p(id = "txt_j", "Inspect the different meteorological outputs. You can adjust the number of members, which is the number of forecasts and also how it is visualized. A line plot shows each individual member while the distribution calculates the median (represented as a solid line) and the 95th percentile (represented as a shaded polygon)."),
@@ -1173,7 +1173,7 @@ border-color: #FFF;
                                                                )
                                             )
                                      ),
-                                     column(10,
+                                     column(9,
                                             wellPanel(
                                               conditionalPanel("input.type == 'Data table'",
                                                                DTOutput("viz_output")
@@ -1277,7 +1277,9 @@ border-color: #FFF;
                                                                plotlyOutput("plot_ecof2"),
                                                                actionButton("save_comm_plot", "Save plot", icon = icon("save"))
                                                                )
-                                              )
+                                              ),
+                                            h4("Table of parameters"),
+                                            DTOutput("cal_pars1", width = "50%")
                                             )
                                      ),
                                    hr(),
@@ -1435,18 +1437,31 @@ border-color: #FFF;
                                    ), br(), hr(),
                                    fluidRow(
                                      column(4,
+                                            h3(tags$b("Initial conditions")),
+                                            p(tags$b("Phytoplankton")),
+                                            sliderInput("phy_init3", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
+                                                                                 div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
+                                                        min = 0.01, max = 10, step = 0.01, value = 2),
                                             h3("Parameters"),
                                             h4(tags$b("Phytoplankton parameters")),
-                                            p(tags$em("Mortality")),
-                                            sliderInput("mort_rate2", label = div(style='width:300px;', 
-                                                                                 div(style='float:left;', 'Lower death'), 
-                                                                                 div(style='float:right;', 'Higher death')),
-                                                        min = 0, max = 1, value = 0.5, step = 0.01),
-                                            p(tags$em("Uptake")),
-                                            sliderInput("nut_uptake2", label = div(style='width:300px;', 
-                                                                                  div(style='float:left;', 'Low uptake'), 
-                                                                                  div(style='float:right;', 'High uptake')),
-                                                        min = 0, max = 1, value = 0.5, step = 0.01),
+                                            p("Use the buttons below to increase or decrease the value of your parameters. The updated parameter values are displayed in a table beneath the plot."), 
+                                            p(tags$b("Mortality")),
+                                            actionButton("minus1", "Decrease", icon = icon("minus")),
+                                            actionButton("plus1", "Increase", icon = icon("plus")),
+                                            br(), br(),
+                                            # sliderInput("mort_rate2", label = div(style='width:300px;', 
+                                            #                                      div(style='float:left;', 'Lower death'), 
+                                            #                                      div(style='float:right;', 'Higher death')),
+                                            #             min = 0, max = 1, value = 0.5, step = 0.01),
+                                            p(tags$b("Uptake")),
+                                            actionButton("minus2", "Decrease", icon = icon("minus")),
+                                            actionButton("plus2", "Increase", icon = icon("plus")),
+                                            # sliderInput("nut_uptake2", label = div(style='width:300px;', 
+                                            #                                       div(style='float:left;', 'Low uptake'), 
+                                            #                                       div(style='float:right;', 'High uptake')),
+                                            #             min = 0, max = 1, value = 0.5, step = 0.01),
+                                            br(), br(), 
+                                            p("Re-run your forecast with the updated parameters."),
                                             actionButton('update_fc2', label = div("Update forecast",
                                                                                    icon("redo-alt")))
                                      ),
@@ -1455,7 +1470,9 @@ border-color: #FFF;
                                             wellPanel(
                                               plotlyOutput("update_plot"),
                                               actionButton("save_update_fc_plot", "Save plot", icon = icon("save"))
-                                            )
+                                            ),
+                                            h4("Table of parameters"),
+                                            DTOutput("comp_pars", width = "50%")
                                             )
                                      ),
                                    hr(),
@@ -1494,11 +1511,11 @@ border-color: #FFF;
                                             p(id = "txt_j", "Don't forget to update the initial conditions based on the latest observed data which are shown in the plot."),
                                             p(tags$b("Phytoplankton")),
                                             # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
-                                            sliderInput("phy_init3", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
+                                            sliderInput("phy_init4", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
                                                                                 div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
                                                         min = 0.01, max = 10, step = 0.01, value = 2),
                                             p(tags$b("Nutrients")),
-                                            sliderInput("nut_init3", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
+                                            sliderInput("nut_init4", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
                                                                                 div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
                                                         min = 0.01, max = 10, step = 0.01, value = 3),
                                             wellPanel(
@@ -1743,9 +1760,10 @@ server <- function(input, output, session) {#
       updateSliderInput(session, "phy_init", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.01)
       updateSliderInput(session, "phy_init2", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.01)
       updateSliderInput(session, "phy_init3", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.01)
+      updateSliderInput(session, "phy_init4", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.01)
       updateSliderInput(session, "nut_init", min = 0.01, max = 2, step = 0.01)
       updateSliderInput(session, "nut_init2", min = 0.01, max = 2, step = 0.01)
-      updateSliderInput(session, "nut_init3", min = 0.01, max = 2, step = 0.01)
+      updateSliderInput(session, "nut_init4", min = 0.01, max = 2, step = 0.01)
     }
     
   })
@@ -3494,6 +3512,36 @@ server <- function(input, output, session) {#
   }, ignoreNULL = FALSE
   )
   
+  # Plus minus for rates
+  pars_react <- reactiveValues(mort_rate = NULL, nut_uptake = NULL)
+  
+  observe({
+    pars_react$mort_rate <- par_save$value[5, c(5)]
+    pars_react$nut_uptake <- par_save$value[5, c(6)]
+  })
+  
+  observeEvent(input$minus1, {
+    if(pars_react$mort_rate > 0.01) {
+      pars_react$mort_rate <- pars_react$mort_rate - 0.01
+    }
+  })
+  observeEvent(input$plus1, {
+    if(pars_react$mort_rate < 1) {
+      pars_react$mort_rate <- pars_react$mort_rate + 0.01
+    }
+  })
+  
+  observeEvent(input$minus2, {
+    if(pars_react$nut_uptake > 0.01) {
+      pars_react$nut_uptake <- pars_react$nut_uptake - 0.01
+    }
+  })
+  observeEvent(input$plus2, {
+    if(pars_react$nut_uptake < 1) {
+      pars_react$nut_uptake <- pars_react$nut_uptake + 0.01
+    }
+  })
+  
   #* Update model ====
   fc_update <- eventReactive(input$update_fc2,{
     
@@ -3520,11 +3568,11 @@ server <- function(input, output, session) {#
     
     
     # Parameters from 'Build Model'
-    parms[1] <- as.numeric(input$nut_uptake2)
-    parms[7] <- as.numeric(input$mort_rate2)
+    parms[1] <- as.numeric(pars_react$nut_uptake)
+    parms[7] <- as.numeric(pars_react$mort_rate)
     
     # Alter Initial conditions
-    yini[1] <- input$phy_init2 * 0.016129 # Convert from ug/L to mmolN/m3
+    yini[1] <- input$phy_init3 * 0.016129 # Convert from ug/L to mmolN/m3
     yini[2] <- input$nut_init2 * 16.129 # Convert from mg/L to mmolN/m3
     
     # progress$inc(0.33, detail = "Running the model")
@@ -3670,6 +3718,30 @@ server <- function(input, output, session) {#
     return(gp)
   })
   
+  # Data table of parameters
+  output$comp_pars <- renderDT({
+    validate(
+      need(!is.na(par_save$value[5, c(5)]),
+           message = "Save calibrated parameters in Activity A - Objective 5 - Q15")
+    ) 
+    df <- data.frame("Mortality" = rep(NA, 2), "Uptake" = rep(NA, 2), row.names = c("Calibrated", "Updated"))
+    df[1, ] <- c(par_save$value[5, c(5)], par_save$value[5, c(6)])
+    df[2, ] <- c(pars_react$mort_rate, pars_react$nut_uptake)
+    
+    datatable(df, rownames = TRUE, options = list(dom = 't'))
+  })
+  
+  # data table of cal_pars1
+  # Data table of parameters
+  output$cal_pars1 <- renderDT({
+    validate(
+      need(!is.na(par_save$value[5, c(5)]),
+           message = "Save calibrated parameters in Activity A - Objective 5 - Q15")
+    ) 
+    df <- data.frame("Mortality" = rep(NA, 1), "Uptake" = rep(NA, 1), row.names = c("Calibrated"))
+    df[1, ] <- c(par_save$value[5, c(5)], par_save$value[5, c(6)])
+    datatable(df, rownames = TRUE, options = list(dom = 't'))
+  })
   
   #* Save plot for updated forecast ====
   observeEvent(input$save_update_fc_plot, { 
@@ -3804,12 +3876,12 @@ server <- function(input, output, session) {#
                      when it is finished running.", value = 0.01)
     
     # Parameters from 'Build Model'
-    parms[1] <- as.numeric(input$nut_uptake2)
-    parms[7] <- as.numeric(input$mort_rate2)
+    parms[1] <- as.numeric(pars_react$nut_uptake)
+    parms[7] <- as.numeric(pars_react$mort_rate)
     
     # Alter Initial conditions
-    yini[1] <- input$phy_init3 * 0.016129 # Convert from ug/L to mmolN/m3
-    yini[2] <- input$nut_init3 * 16.129 # Convert from mg/L to mmolN/m3
+    yini[1] <- input$phy_init4 * 0.016129 # Convert from ug/L to mmolN/m3
+    yini[2] <- input$nut_init4 * 16.129 # Convert from mg/L to mmolN/m3
     
     # progress$inc(0.33, detail = "Running the model")
     fc_length <- length(npz_fc_data2())
@@ -3872,7 +3944,7 @@ server <- function(input, output, session) {#
     phy_init2 <- input$phy_init2
     updateSliderInput(session, "phy_init3", value = phy_init2)
     nut_init2 <- input$nut_init2
-    updateSliderInput(session, "nut_init3", value = nut_init2)
+    updateSliderInput(session, "nut_init4", value = nut_init2)
   })
   
   output$plot_ecof4 <- renderPlotly({
@@ -4200,7 +4272,7 @@ server <- function(input, output, session) {#
     toggleState(id = "prevBtn1", condition = rv1$prev > 0)
     toggleState(id = "nextBtn1", condition = rv1$nxt < 7)
     hide(selector = ".page")
-    show(paste0("mtab", rv1$nxt))
+    # show(paste0("mtab", rv1$nxt))
   })
   
   observeEvent(input$nextBtn1, {
@@ -4228,7 +4300,7 @@ server <- function(input, output, session) {#
     toggleState(id = "prevBtn1a", condition = rv1a$prev > 0)
     toggleState(id = "nextBtn1a", condition = rv1a$nxt < 6)
     hide(selector = ".page")
-    show(paste0("mtab", rv1a$nxt))
+    # show(paste0("mtab", rv1a$nxt))
   })
   
   observeEvent(input$nextBtn1a, {
@@ -4258,7 +4330,7 @@ server <- function(input, output, session) {#
     toggleState(id = "prevBtn2a", condition = rv2a$prev > 5)
     toggleState(id = "nextBtn2a", condition = rv2a$nxt < 12)
     hide(selector = ".page")
-    show(paste0("mtab", rv2a$nxt))
+    # show(paste0("mtab", rv2a$nxt))
   })
   
   observeEvent(input$nextBtn2a, {
@@ -4328,10 +4400,10 @@ server <- function(input, output, session) {#
     updateSliderInput(session, "nut_init2", value = nut_init1)
     
     # Parameters
-    mort_rate1 <- input$mort_rate
-    updateSliderInput(session, "mort_rate2", value = mort_rate1)
-    nut_uptake1 <- input$nut_uptake
-    updateSliderInput(session, "nut_uptake2", value = nut_uptake1)
+    # mort_rate1 <- input$mort_rate
+    # updateSliderInput(session, "mort_rate2", value = mort_rate1)
+    # nut_uptake1 <- input$nut_uptake
+    # updateSliderInput(session, "nut_uptake2", value = nut_uptake1)
     
     # Update parameters in the table
     par_save$value[input$save_par_rows_selected, 1] <<- "Surface water temperature (SWT)" %in% input$mod_sens
@@ -4340,6 +4412,12 @@ server <- function(input, output, session) {#
                                                             input$nut_init,
                                                             input$mort_rate, input$nut_uptake)
     
+  })
+  
+  observeEvent(input$update_fc2, {
+    # Initial conditions
+    phy_init4 <- input$phy_init3
+    updateSliderInput(session, "phy_init4", value = phy_init4)
   })
   
   
