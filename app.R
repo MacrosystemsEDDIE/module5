@@ -3018,6 +3018,10 @@ server <- function(input, output, session) {#
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
+      need(!is.na(par_save$value[5, c(5)]),
+           message = "Save calibrated parameters in Activity A - Objective 5 - Q15")
+    )
+    validate(
       need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
     )
     validate(
@@ -3045,6 +3049,10 @@ server <- function(input, output, session) {#
     
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
+    )
+    validate(
+      need(!is.na(par_save$value[5, c(5)]),
+           message = "Save calibrated parameters in Activity A - Objective 5 - Q15")
     )
     validate(
       need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
@@ -3535,6 +3543,7 @@ server <- function(input, output, session) {#
   observe({
     
     req(!is.null(input$upd_nut_rate))
+    !is.na(par_save$value[5, c(5)])
     
     ridx <- which(upd_parms$site == siteID)
     upd <- upd_parms$maxUptake[ridx]
@@ -3573,6 +3582,7 @@ server <- function(input, output, session) {#
   observe({
     
     req(!is.null(input$upd_mort_rate))
+    req(!is.na(par_save$value[5, c(5)]))
     
     ridx <- which(upd_parms$site == siteID)
     upd <- upd_parms$mortalityRate[ridx]
