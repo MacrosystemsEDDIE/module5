@@ -3543,7 +3543,7 @@ server <- function(input, output, session) {#
   observe({
     
     req(!is.null(input$upd_nut_rate))
-    !is.na(par_save$value[5, c(5)])
+    req(!is.na(par_save$value[5, c(6)]))
     
     ridx <- which(upd_parms$site == siteID)
     upd <- upd_parms$maxUptake[ridx]
