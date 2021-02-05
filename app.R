@@ -693,12 +693,16 @@ border-color: #FFF;
                                      #** Data Table ----
                                      column(4,
                                             h3("Data Table"),
+                                            p("This is a Shiny data table. It is interactive and allows you to navigate through the data table by searching or clicking through the different pages."),
                                             DT::DTOutput("neon_datatable")
                                      ),
                                      #** Plot of data ----
                                      column(8,
                                             h3("Data Plot"),
-                                            plotlyOutput("var_plot"),
+                                            p("All plots in this Shiny app are generated using Plotly. This allows you to hover your mouse over the plot to get information from each of the plots. You can inspect the data closely by clicking and zooming into particular areas. There is a tool box at the top of the plot which has the selection function required for Q6."),
+                                            introBox(
+                                              plotlyOutput("var_plot"), data.hint = "This a hint"
+                                            ),
                                             wellPanel(
                                               br(),
                                               # conditionalPanel("input.table01_rows_selected > 1",
@@ -724,6 +728,7 @@ border-color: #FFF;
                                                            column(10, offset = 1,
                                                                   h3("Questions"),
                                                                   h4(quest["q6", 1]),
+                                                                  p("Make sure you select data that best represent an annual period (i.e. one or two complete years), be wary of including potential outliers in your selection."),
                                                                   DTOutput('q6_tab'),
                                                                   br()
                                                                   )
@@ -1193,7 +1198,8 @@ border-color: #FFF;
                                                                ),
                                               conditionalPanel("input.type == 'Line' | input.type == 'Distribution'",
                                                                plotlyOutput("fc_plot"),
-                                                               tags$style(type="text/css", "#save_mod_run {background-color:#9ECBB5;color: black}"),
+                                                               p("With plots that have a legend you can also interactively remove/add features from the plot by clicking on items within the legend."),
+                                                               tags$style(type="text/css", "#save_noaa_plot {background-color:#9ECBB5;color: black}"),
                                                                actionButton("save_noaa_plot", "Save plot", icon = icon("save"))
                                                                )
                                               )
@@ -1210,9 +1216,10 @@ border-color: #FFF;
                                                          h4(quest["q17", 1]),
                                                          textAreaInput2(inputId = "q17a", label = quest["q17a", 1], width = "90%"),
                                                          textAreaInput2(inputId = "q17b", label = quest["q17b", 1], width = "90%"),
-                                                         textAreaInput2(inputId = "q17c", label = quest["q17c", 1], width = "90%"),
-                                                         br()
-                                                  )
+                                                         textAreaInput2(inputId = "q17c", label = quest["q17c", 1], width = "90%")
+                                                  ),
+                                                  column(5, offset = 3, align = "center",
+                                                         imageOutput("noaa_fc_img"))
                                                 )
                                             )
                                      )
@@ -1418,7 +1425,9 @@ border-color: #FFF;
                                                          h3("Questions"),
                                                          h4(quest["q21", 1]),
                                                          textAreaInput2(inputId = "q21", label = "", width = "90%"),
-                                                         br()
+                                                         ),
+                                                  column(5, offset = 3, align = "center",
+                                                         imageOutput("assess_plot_img")
                                                   )
                                                 )
                                             )
@@ -1497,7 +1506,10 @@ border-color: #FFF;
                                                          h4(quest["q22", 1]),
                                                          textAreaInput2(inputId = "q22", label = "", width = "90%"),
                                                          br()
-                                                  )
+                                                  ),
+                                                  column(5, offset = 3, align = "center",
+                                                         imageOutput("update_plot_img")
+                                                         )
                                                 )
                                             )
                                      )
@@ -1560,7 +1572,9 @@ border-color: #FFF;
                                                          textAreaInput2(inputId = "q23", label = "", width = "90%"),
                                                          h4(quest["q24", 1]),
                                                          textAreaInput2(inputId = "q24", label = "", width = "90%"),
-                                                         br()
+                                                  ),
+                                                  column(5, offset = 3, align = "center",
+                                                         imageOutput("new_fc_plot_img")
                                                   )
                                                 )
                                             )
@@ -1671,7 +1685,6 @@ server <- function(input, output, session) {#
     introjs(session, events = list(onbeforechange = readCallback("switchTabs")))
   })
   hintjs(session, options = list("hintButtonLabel"="That was a hint"))
-  
   
   
   ## observe the Hide button being pressed
@@ -1922,7 +1935,7 @@ server <- function(input, output, session) {#
   output$var_desc <- renderDT({
     var_desc <- neon_vars[!duplicated(neon_vars$Short_name), c("Short_name", "description")]
     colnames(var_desc) <- c("Name", "Description")
-    datatable(var_desc, rownames = FALSE, options = list(pageLength = 5))
+    datatable(var_desc, rownames = FALSE, options = list(pageLength = 4))
   })
   # Site data datatable ----
   output$neon_datatable <- DT::renderDT({
@@ -2392,7 +2405,7 @@ server <- function(input, output, session) {#
       
       p <- p +
         geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date), alpha = 0.8) + 
-        geom_line(data = df3, aes(time, p50, color = fc_date)) +
+        geom_line(data = df3, aes(time, p50, color = "Median")) +
         scale_fill_manual(values = pair.cols[1]) +
         guides(fill = guide_legend(override.aes = list(alpha = c(0.9))),
                alpha = NULL, title = "Forecast date") +
@@ -2411,6 +2424,7 @@ server <- function(input, output, session) {#
       theme(panel.background = element_rect(fill = NA, color = 'black'))
     
     gp <- ggplotly(p, dynamicTicks = TRUE)
+    # Code to remove parentheses in plotly
     for (i in 1:length(gp$x$data)){
       if (!is.null(gp$x$data[[i]]$name)){
         gp$x$data[[i]]$name =  gsub("\\(","",str_split(gp$x$data[[i]]$name,",")[[1]][1])
@@ -2430,9 +2444,6 @@ server <- function(input, output, session) {#
     validate(
       need(input$load_fc > 0, "Please load the forecast")
     )
-    # validate(
-    #   need(!is.null(input$fc_date), "Please select a date")
-    # )
     validate(
       need(input$members >= 1 & input$members <= membs, paste0("Please select a number of members between 1 and ", membs))
       
@@ -2524,8 +2535,27 @@ server <- function(input, output, session) {#
     ggsave(img_file, p,  dpi = png_dpi, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
     # show("main_content")
-  }, ignoreNULL = FALSE
+    }, ignoreNULL = FALSE
   )
+  
+  # Render image for NOAA plot
+  output$noaa_fc_img <- renderImage({
+    
+    validate(
+      need(input$table01_rows_selected != "",
+           message = "Please select a site on the 'Activity A' tab")
+    )
+    validate(
+      need(input$load_fc > 0, "Please load the forecast")
+    )
+    validate(
+      need(input$save_noaa_plot > 0, "If plot is missing please click 'Save Plot' under the weather forecast plot above.")
+    )
+    
+    list(src = "www/noaa_fc.png",
+         alt = "Image failed to render",
+         width = "100%")
+  }, deleteFile = FALSE)
   
   # Input table for q13 ----
   output$q13a_tab <- DT::renderDT(
@@ -3388,7 +3418,10 @@ server <- function(input, output, session) {#
   
   output$assess_plot <- renderPlotly({
     validate(
-      need(input$assess_fc3 > 0, message = paste0("Click 'Assess'"))
+      need(input$add_newobs, message = paste0("Check 'Add new observations'"))
+    )
+    validate(
+      need(input$assess_fc3 > 0, message = paste0("Click 'Assess forecast'"))
     )
     df <- as_plot()
     origin <- data.frame(x = 0, y = 0) # included to ensure 0,0 is in the plot
@@ -3431,7 +3464,7 @@ server <- function(input, output, session) {#
   observeEvent(input$save_assess_plot, {
     
     validate(
-      need(input$assess_fc3 > 0, message = paste0("Click 'Assess'"))
+      need(input$assess_fc3 > 0, message = paste0("Click 'Assess forecast'"))
     )
     validate(
       need(input$members2 >= 1 & input$members2 <= 30,
@@ -3532,9 +3565,26 @@ server <- function(input, output, session) {#
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
-    # show("main_content")
-  }, ignoreNULL = FALSE
+    }, ignoreNULL = FALSE
   )
+  
+  # Preview assess plot
+  output$assess_plot_img <- renderImage({
+    
+    validate(
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
+    )
+    validate(
+      need(input$assess_fc3 > 0, message = paste0("Click 'Assess'"))
+    )
+    validate(
+      need(input$save_assess_plot > 0, "If plot is missing please click 'Save Plot' under the Plot forecast vs observed plot above.")
+    )
+    
+    list(src = "www/assess_fc.png",
+         alt = "Image failed to render",
+         width = "100%")
+  }, deleteFile = FALSE)
   
   # Plus minus for rates
   pars_react <- reactiveValues(mort_rate = NA, nut_uptake = NA)
@@ -3929,9 +3979,26 @@ server <- function(input, output, session) {#
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
-    # show("main_content")
-  }, ignoreNULL = FALSE
+    }, ignoreNULL = FALSE
   )
+  
+  # Preview assess plot
+  output$update_plot_img <- renderImage({
+    
+    validate(
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
+    )
+    validate(
+      need(input$run_fc2 > 0, message = paste0("Run Forecast in Objective 7"))
+    )
+    validate(
+      need(input$save_update_fc_plot > 0, "If plot is missing please click 'Save plot' under the plot above.")
+    )
+    
+    list(src = "www/fc_update.png",
+         alt = "Image failed to render",
+         width = "100%")
+  }, deleteFile = FALSE)
   
   #* New Forecast ====
   npz_fc_data2 <- reactive({
@@ -4225,9 +4292,26 @@ server <- function(input, output, session) {#
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
-    # show("main_content")
-  }, ignoreNULL = FALSE
+    }, ignoreNULL = FALSE
   )
+  
+  # Preview new forecast plot
+  output$new_fc_plot_img <- renderImage({
+    
+    validate(
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
+    )
+    validate(
+      need(input$run_fc2 > 0, message = paste0("Run Forecast in Objective 7"))
+    )
+    validate(
+      need(input$save_new_fc_plot > 0, "If plot is missing please click 'Save plot' under the 'New Forecast plot' above.")
+    )
+    
+    list(src = "www/new_fc.png",
+         alt = "Image failed to render",
+         width = "100%")
+  }, deleteFile = FALSE)
 
   
   #** Render Report ----
