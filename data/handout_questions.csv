@@ -27,13 +27,13 @@ q7c,Nitrate sensor
 q7d,Underwater PAR
 q8,"Q8. Were there any other relationships you found at your site? If so, please describe below."
 q9,"Q9. What is the relationship between each of these driving variables and productivity? For example, if the driving variable increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)."
-q9a,Surface water temperature
-q9b,Incoming light
-q9c,Available nutrients
+q9a,a. Surface water temperature
+q9b,b. Incoming light
+q9c,c. Available nutrients
 q10,Q10. Classify the following as either a state variable or a parameter by dragging it into the corresponding bin.
 q11,Q11. We are using chlorophyll-a as a proxy of aquatic primary productivity. Select how you envision each parameter to affect chlorophyll-a concentrations:
-q11a,Nutrient uptake by phytoplankton
-q11b,Phytoplankton mortality
+q11a,a. Nutrient uptake by phytoplankton
+q11b,b. Phytoplankton mortality
 q12,"Q12. Without using surface water temperature or underwater light (uPAR) as inputs into your model, adjust the initial conditions and parameters of your model to best replicate the observations. Make sure you select the 'Q12' row in the parameter table to save your setup. Describe how the model simulation compares to the observations."
 q13,Q13. Explore the model's sensitivity to SWT and uPAR:
 q13a,"a. Switch on surface water temperature by checking the box. Adjust initial conditions and parameters to replicate observations.  Is the model sensitive to SWT? Did it help improve the model fit? (Select the ""Q13a"" row in the Parameter Table to store your model setup there)."
@@ -50,7 +50,7 @@ q17c,"c. Using the interactivity of the weather forecast plot, compare the air t
 q18,"Q18. How does driver uncertainty affect the forecast, specifically, does an increase in the number of members increase or decrease the range of uncertainty in the forecasts? How does that change over time?"
 q19,Q19. What do you think are the main sources of uncertainty in your ecological forecast?
 q20,Q20. How would you describe your forecast of primary productivity at your NEON site so it could be understood by a fellow classmate?
-q21,Q21. How well did your forecast do compared to observations? (include r2 value) Why do you think it is important to assess the forecast?
+q21,Q21. How well did your forecast do compared to observations? (include R2 value) Why do you think it is important to assess the forecast?
 q22,Q22. Did your forecast improve when you updated your model parameters? Why do you think it is important to update the model?
 q23,Q23. Describe the new forecast of primary productivity. How do you think it will compare to observations after we observe the next round of data?
 q24,Q24. Why is the forecast cycle described as 'iterative' (i.e. repetition of a process)?
