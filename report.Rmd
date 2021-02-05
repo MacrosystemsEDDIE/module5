@@ -87,6 +87,7 @@ time <- Sys.time()
 
 # Read in assessment questions
 quest <- read.csv("data/handout_questions.csv", row.names = 1)
+module_text <- read.csv("data/module_text.csv", row.names = 1, header = FALSE)
 # quest["q1", ] <- substr(quest["q1", ], 2, nchar(quest["q1", ]))
 
 if(file.exists(params$save_pars)) {
@@ -154,8 +155,7 @@ By the end of this module, you will be able to:
 
 **Forecasting** is a tool that can be used for understanding and predicting macrosystems dynamics. To anticipate and prepare for increased variability in populations, communities, and ecosystems, there is a pressing need to know the future state of ecological systems across space and time (Dietze et al. 2018). Ecological forecasting is an emerging approach which provides an estimate of the future state of an ecological system with uncertainty, allowing society to prepare for changes in important ecosystem services. Ecological forecasts are a powerful test of the scientific method because ecologists make a hypothesis of how an ecological system works; embed their hypothesis in a model; use the model to make a forecast of future conditions; and then when observations become available, assess the accuracy of their forecast, which indicates if their hypothesis is supported or needs to be updated. Forecasts that are effectively communicated to the public and managers will be most useful for aiding decision-making. Consequently, macrosystems ecologists are increasingly using ecological forecasts to predict how ecosystems are changing over space and time (Dietze and Lynch 2019).  
 \
-In this module, students will apply the iterative forecasting cycle to develop an ecological forecast for a National Ecological Observation Network (NEON) site of their choice. This module will introduce students to the basic components of an ecological forecast; how a forecasting model is constructed; how changes to model inputs affect forecast uncertainty; and how productivity forecasts vary across ecoclimatic domains.  
-\
+In this module, students will apply the iterative forecasting cycle to develop an ecological forecast for a National Ecological Observation Network (NEON) site of their choice. This module will introduce students to the basic components of an ecological forecast; how a forecasting model is constructed; how changes to model inputs affect forecast uncertainty; and how productivity forecasts vary across ecoclimatic domains.  \
 
 ## Module overview:
 
@@ -163,6 +163,7 @@ In this module, students will apply the iterative forecasting cycle to develop a
 - Activity A: Visualize data from a selected NEON site and build an ecological model
 - Activity B: Generate a forecast and work through each stage of the iterative forecast cycle
 - Activity C: Apply a forecast to a different NEON site and compare forecasts among sites
+\
 
 ## Today's focal question: _What is an Ecological Forecast?_
 
@@ -172,7 +173,7 @@ We will be using ecological data collected by the National Ecological Observatio
 
 ## R Shiny App:
 
-The lesson content is hosted on an R Shiny App at [https://macrosystemseddie.shinyapps.io/module5/](https://macrosystemseddie.shinyapps.io/module5/).  
+The lesson content is hosted on an R Shiny App at [https://macrosystemseddie.shinyapps.io/module5/](https://macrosystemseddie.shinyapps.io/module5/)  
 This can be accessed via any internet browser and allows you to navigate through the lesson via this app. You will fill in the questions below on this handout as you complete the lesson activities.
 
 ## Optional pre-class readings and video:
@@ -196,52 +197,60 @@ Videos:
 The questions you must answer are embedded in the Shiny interface. You can answer the questions there and generate a report at the end or you can fill out the questions within this document.
 
 # Think about it!
-
+\
 With a partner, read through the table below, and answer the following questions:
 
 1. `r substr(quest["q1", ], 4, nchar(quest["q1", ]))`  
 \
-**Answer:** `r params$a1`  
+**Answer:** `r params$a1`\
 
 2. `r substr(quest["q2", ], 4, nchar(quest["q2", ]))`   
 \
-**Answer:** `r params$a2`  
+**Answer:** `r params$a2`\
 
 3. `r substr(quest["q3", ], 4, nchar(quest["q3", ]))`   
 \
-**Answer:** `r params$a3`   
+**Answer:** `r params$a3`\
 
-\
 Now navigate to the [Shiny interface](https://macrosystemseddie.shinyapps.io/module5) to answer the rest of the questions.
 
-# Exploration
+# Exploration\
 
 4. `r substr(quest["q4", ], 4, nchar(quest["q4", ]))` 
-    a.  `r substr(quest["q4a", ], 3, nchar(quest["q4a", ]))`  \
+\
+    a.  `r substr(quest["q4a", ], 3, nchar(quest["q4a", ]))`  
     \
-    **Answer:** `r params$a4a` &nbsp;\
-    b.  `r substr(quest["q4b", ], 3, nchar(quest["q4b", ]))`  \
+    **Answer:** `r params$a4a` &nbsp;
     \
-    **Answer:** `r params$a4b` &nbsp;\
+    b.  `r substr(quest["q4b", ], 3, nchar(quest["q4b", ]))`  
+    \
+    **Answer:** `r params$a4b` &nbsp;
+    \
     c.  `r substr(quest["q4c", ], 3, nchar(quest["q4c", ]))`  
     \
-    **Answer:** `r params$a4c` &nbsp;\
+    **Answer:** `r params$a4c` &nbsp;
+    \
     d.  `r substr(quest["q4d", ], 3, nchar(quest["q4d", ]))`  
     \
-    **Answer:** `r params$a4d` &nbsp;\
+    **Answer:** `r params$a4d` &nbsp;
+    \
 
 # Activity A: Get Data &amp; Build Model
 
-## Objective 1: Select and view site
+## Objective 1: Select and view site\
 
 5. `r substr(quest["q5", ], 4, nchar(quest["q5", ]))`  
-\
-    a. `r substr(quest["q5a", ], 3, nchar(quest["q5a", ]))` `r params$a5a`&nbsp;\
-    b. `r substr(quest["q5b", ], 3, nchar(quest["q5b", ]))` `r params$a5b`&nbsp;\
-    c. `r substr(quest["q5c", ], 3, nchar(quest["q5c", ]))` `r params$a5c`&nbsp;\
-    d. `r substr(quest["q5d", ], 3, nchar(quest["q5d", ]))` `r params$a5d`&nbsp;\
-    e. `r substr(quest["q5e", ], 3, nchar(quest["q5e", ]))` `r params$a5e`&nbsp;
-\
+
+*Table 1. Site Characteristics*
+
+| | |
+| --- | --- |
+| `r substr(quest["q5a", ], 3, nchar(quest["q5a", ]))` | `r params$a5a` |
+| `r substr(quest["q5b", ], 3, nchar(quest["q5b", ]))` | `r params$a5b` |
+| `r substr(quest["q5c", ], 3, nchar(quest["q5c", ]))` | `r params$a5c` |
+| `r substr(quest["q5d", ], 3, nchar(quest["q5d", ]))` | `r params$a5d` |
+| `r substr(quest["q5e", ], 3, nchar(quest["q5e", ]))` | `r params$a5e` |
+
 
 ```{r}
 if(file.exists(params$site_html)) {
@@ -260,10 +269,10 @@ if (!pheno_chk) {cat("-->")}
 ```
 
 ## Objective 2: Explore data
-
+\
 6. `r substr(quest["q6", ], 4, nchar(quest["q6", ]))`
 
-*Table 1. Description of site variables:*  
+*Table 2. Description of site variables:*  
 
 | **Variable** | **Mean** | **Minimum** | **Maximum** |
 | --- | --- | --- | --- |
@@ -275,12 +284,12 @@ if (!pheno_chk) {cat("-->")}
 
 \
 
-## Objective 3: Explore variable relationships
+## Objective 3: Explore variable relationships\
 
-7. `r substr(quest["q7", ], 4, nchar(quest["q7", ]))`  
+7. `r substr(quest["q7", ], 4, nchar(quest["q7", ]))`
 \
 
-*Table 2. Description of effect of each variable on chlorophyll-a*  
+*Table 3. Description of effect of each variable on chlorophyll-a*  
 
 | **Variable** | **Relationship** |
 | --- | --- |
@@ -290,53 +299,49 @@ if (!pheno_chk) {cat("-->")}
 | Underwater PAR | `r params$a7d` |
 \
 8. `r substr(quest["q8", ], 4, nchar(quest["q8", ]))`  
+\
 **Answer:** `r params$a8`  
-
 \
 
-## Objective 4: Understand model  
+## Objective 4: Understand model\
 
 9. `r substr(quest["q9", ], 4, nchar(quest["q9", ]))`  
-
-  **Water temperature:** `r params$a9a`  
-  \
-  **Incoming light:** `r params$a9b`  
-  \
-  **Available nutrients:** `r params$a9c`  
+\
+    a.  `r substr(quest["q9a", ], 3, nchar(quest["q9a", ]))`: `r params$a9a`  
+    \
+    b.  `r substr(quest["q9b", ], 3, nchar(quest["q9b", ]))`: `r params$a9b`  
+    \
+    c.  `r substr(quest["q9c", ], 3, nchar(quest["q9c", ]))`: `r params$a9c` 
 \
 
-10. A state variable is one of the set of variables that are used to describe the mathematical &quot;state&quot; of a dynamical system. A parameter is a value introduced to represent properties of nature which are difficult to directly measure. Classify the following as either a state variable or a parameter by circling the corresponding option.
-
+10. `r module_text["state_var", 1]` `r module_text["parameter", 1]` `r substr(quest["q10", ], 6, nchar(quest["q10", ]))` 
+\
 ```{r echo = FALSE, results = "asis"}
 library(knitr)
-kable(state_par, caption = "Table 3. Sorted parameters and state variabes.", row.names = FALSE)
+kable(state_par, caption = "Table 4. Sorted parameters and state variabes.", row.names = FALSE)
 
 ```
  
 \
 
 11. `r substr(quest["q11", ], 6, nchar(quest["q11", ]))`
-
-  **Grazing of phytoplankton:** `r params$a11a`  
-  \
-  **Zooplankton mortality:** `r params$a11b`  
-  \
-  **Nutrient uptake by phytoplankton:** `r params$a11c`  
+\
+    a.  `r substr(quest["q11a", ], 3, nchar(quest["q11a", ]))`: `r params$a11a`\
+    b.  `r substr(quest["q11b", ], 3, nchar(quest["q11b", ]))`: `r params$a11b`  
 \
 
-## Objective 5: Build model  
+## Objective 5: Build model\
 
 ```{r echo = FALSE, results = "asis"}
 library(knitr)
-kable(par_tab, caption = "Table 4. Parameters used in Q12-15", row.names = TRUE)
+kable(par_tab, caption = "Table 5. Parameters used in Q12-15", row.names = TRUE)
 
 ```
 \
 
 12. `r substr(quest["q12", ], 6, nchar(quest["q12", ]))`  
 \
-**Answer:** `r params$a12`   
-\
+**Answer:** `r params$a12`\
 
 13. `r substr(quest["q13", ], 6, nchar(quest["q13", ]))`
 \
@@ -374,13 +379,12 @@ if (!mod_ann_chk) {cat("-->")}
 
 # Activity B: Forecast!
 
-## Objective 6: Examine uncertainty  
-\
+## Objective 6: Examine uncertainty\
+
 16. `r substr(quest["q16", ], 6, nchar(quest["q16", ]))`  
 \
 **Answer:** `r params$a16`
 \
-
 
 ```{r results='asis', echo=FALSE}
 if (!noaa_plot_chk) {cat("<!---")}
@@ -407,20 +411,20 @@ if (!noaa_plot_chk) {cat("-->")}
     \
 
 
-## Objective 7: Forecast
-\
+## Objective 7: Forecast\
+
 18. `r substr(quest["q18", ], 6, nchar(quest["q18", ]))`  
 \
 **Answer:** `r params$a18`
 \
 
-19. `r substr(quest["q19", ], 6, nchar(quest["q19", ]))`  
+19. `r substr(quest["q19", ], 6, nchar(quest["q19", ]))`\
 \
-**Answer:** `r params$a19`
+**Answer:** `r params$a19`  
 \
 
-## Objective 8: Communicate forecast
-\
+## Objective 8: Communicate forecast\
+
 20. `r substr(quest["q20", ], 6, nchar(quest["q20", ]))`  
 \
 **Answer:** `r params$a20`  
@@ -436,8 +440,8 @@ if (!comm_plot_chk) {cat("-->")}
 ```
 \
 
-## Objective 9: Assess forecast
-\
+## Objective 9: Assess forecast\
+
 21. `r substr(quest["q21", ], 6, nchar(quest["q21", ]))`  
 \
 **Answer:** `r params$a21`
@@ -452,7 +456,7 @@ if (!assess_plot_chk) {cat("<!---")}
 if (!assess_plot_chk) {cat("-->")}
 ```
 
-## Objective 10: Update model
+## Objective 10: Update model\
 
 22. `r substr(quest["q22", ], 6, nchar(quest["q22", ]))`  
 \
@@ -468,7 +472,7 @@ if (!update_plot_chk) {cat("<!---")}
 if (!update_plot_chk) {cat("-->")}
 ```
 
-## Objective 11: Next forecast
+## Objective 11: Next forecast\
 
 23. `r substr(quest["q23", ], 6, nchar(quest["q23", ]))`  
 \
@@ -484,30 +488,29 @@ if (!next_fc_plot_chk) {cat("<!---")}
 ```{r results='asis', echo=FALSE}
 if (!next_fc_plot_chk) {cat("-->")}
 ```
+\
 
 24. `r substr(quest["q24", ], 6, nchar(quest["q24", ]))`  
 \
-**Answer:** `r params$a24`
-\
+**Answer:** `r params$a24`\
 
 # Activity C: Scale
 
-## Objective 12: Compare productivity forecasts between two different NEON sites
+## Objective 12: Compare productivity forecasts between two different NEON sites\
 
 25. `r substr(quest["q25", ], 6, nchar(quest["q25", ]))`
 \
     a.  `r substr(quest["q25a", ], 3, nchar(quest["q25a", ]))`  
     \
-    **Answer:** `r params$a25a`  
-    \
+    **Answer:** `r params$a25a`\
+    
     b.  `r substr(quest["q25b", ], 3, nchar(quest["q25b", ]))`  
     \
-    **Answer:** `r params$a25b`  
-    \
+    **Answer:** `r params$a25b`\
+    
     c.  `r substr(quest["q25c", ], 3, nchar(quest["q25c", ]))`  
     \
-    **Answer:** `r params$a25c`  
-\
+    **Answer:** `r params$a25c`\
 
 26. `r substr(quest["q26", ], 6, nchar(quest["q26", ]))`  
 \
@@ -517,7 +520,4 @@ if (!next_fc_plot_chk) {cat("-->")}
 
 This module was developed by Moore, T.N., C.C. Carey, and R.Q. Thomas. 23 January 2021. Macrosystems EDDIE: Introduction to Ecological Forecasting. Macrosystems EDDIE Module 5, Version 1. http://module5.macrosystemseddie.org. Module development was supported by NSF grants DEB-1926050 and DBI-1933016.
 
-This document last modified: 03 February 2021 by TNM.
-
-
-
+This document last modified: 05 February 2021 by TNM.
