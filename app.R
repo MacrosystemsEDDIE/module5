@@ -429,6 +429,7 @@ ui <- function(req) {
                                               textInput("id_number", "ID number:"),
                                               introBox(
                                                 h3(tags$b("Questions")),
+                                                p("Note: The size of these text boxes can be adjusted by clicking and dragging the bottom right of the text box."),
                                                 textAreaInput2(inputId = "q1", label = quest["q1", 1]),
                                                 data.step = 5, data.intro = help_text["questions", 1]
                                               ),
@@ -3055,7 +3056,7 @@ server <- function(input, output, session) {#
       need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
     )
     validate(
-      need(input$load_fc2 > 0, "Load Forecast inputs")
+      need(input$load_fc2 > 0, "Click 'Load Forecast inputs'")
     )
     validate(
       need(input$members2 >= 1 & input$members2 <= 30,
