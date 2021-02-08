@@ -243,6 +243,10 @@ ui <- function(req) {
                         #bla_border {
                         border: 2px solid black;
                         }
+                        #bla_border2 {
+                        border: 1px solid black;
+                        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+                        }
                         #txt_j {
                         text-align: justify;
                         }
@@ -328,12 +332,17 @@ ui <- function(req) {
                           ),
                         hr(),
                         fluidRow(
-                          column(5,
+                          column(3,
                                  h3("Macrosystems EDDIE"),
                                  p(id = "txt_j", module_text["Macro", ]),
-                                 p(HTML(paste0("For more information see the website ",a(href = "https://serc.carleton.edu/eddie/macrosystems/index.html", "here", target = "_blank"), ".")))
+                                 p(HTML(paste0("For more information see the website ", a(href = "https://serc.carleton.edu/eddie/macrosystems/index.html", "here", target = "_blank"), ".")))
                                  ),
-                          column(5, offset = 2, 
+                          column(3,
+                                 h3("Privacy Policy"),
+                                 p(id = "txt_j", module_text["privacy_policy", ], HTML(paste0("For information regarding assessment data, please visit our website ", a(href = "https://serc.carleton.edu/eddie/macrosystems/assessment", "here", target = "_blank"), "."))),
+                                 p()
+                          ),
+                          column(5, offset = 1, 
                                  # id = "second", # Add border
                                  br(), br(), 
                                  img(src = "MacroEDDIE Logo.png", height = "70%", 
@@ -360,7 +369,7 @@ ui <- function(req) {
                           ),
                           column(6, align = "center", offset = 1,
                                  br(), br(),
-                                 img(src = "mod5_overview.png", height = "80%", id = "bla_border",
+                                 img(src = "activity_outline.png", height = "80%", id = "bla_border",
                                      width = "80%", tags$style("border: solid 2px black;"))
                                  
                           )
@@ -496,13 +505,13 @@ ui <- function(req) {
                                  tags$ul(
                                    tags$li(id = "txt_j", a(href = EF_links$webpage[1], EF_links$Forecast[1], target = "_blank"), br(), p(EF_links$About[1])),
                                    a(img(src = "fc_examples/npn.png", height = "50%",
-                                       width = "50%"), href = EF_links$webpage[1], target = "_blank"), br(), hr(),
+                                       width = "50%", id = "bla_border2"), href = EF_links$webpage[1], target = "_blank"), br(), hr(),
                                    tags$li(id = "txt_j", a(href = EF_links$webpage[2], EF_links$Forecast[2], target = "_blank"), br(), p(EF_links$About[2])),
                                    a(img(src = "fc_examples/flare.png", height = "50%",
-                                       width = "50%"), href = EF_links$webpage[2], target = "_blank"), br(), hr(),
+                                       width = "50%", id = "bla_border2"), href = EF_links$webpage[2], target = "_blank"), br(), hr(),
                                    tags$li(id = "txt_j", a(href = EF_links$webpage[3], EF_links$Forecast[3], target = "_blank"), br(), p(EF_links$About[3])),
                                    a(img(src = "fc_examples/ecocast.png", height = "50%",
-                                       width = "50%"), href = EF_links$webpage[3], target = "_blank")
+                                       width = "50%", id = "bla_border2"), href = EF_links$webpage[3], target = "_blank")
                                    )
                                  ),
                           column(4, offset = 2, 
@@ -510,13 +519,13 @@ ui <- function(req) {
                                    br(), br(), br(), br(),
                                    tags$li(id = "txt_j", a(href = EF_links$webpage[4], EF_links$Forecast[4], target = "_blank"), br(), p(EF_links$About[4])),
                                    a(img(src = "fc_examples/sturgeon.png", height = "50%",
-                                       width = "50%"), href = EF_links$webpage[4], target = "_blank"), br(), hr(),
+                                       width = "50%", id = "bla_border2"), href = EF_links$webpage[4], target = "_blank"), br(), hr(),
                                    tags$li(id = "txt_j", a(href = EF_links$webpage[5], EF_links$Forecast[5], target = "_blank"), br(), p(EF_links$About[5])),
                                    a(img(src = "fc_examples/grasslands.png", height = "50%",
-                                       width = "50%"), href = EF_links$webpage[5], target = "_blank"), br(), hr(),
+                                       width = "50%", id = "bla_border2"), href = EF_links$webpage[5], target = "_blank"), br(), hr(),
                                    tags$li(id = "txt_j", a(href = EF_links$webpage[6], EF_links$Forecast[6], target = "_blank"), br(), p(EF_links$About[6])),
                                    a(img(src = "fc_examples/portal_forecast.png", height = "50%",
-                                         width = "50%"), href = EF_links$webpage[6], target = "_blank")
+                                         width = "50%", id = "bla_border2"), href = EF_links$webpage[6], target = "_blank")
                                    )
                                  )
                           ),
