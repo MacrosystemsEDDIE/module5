@@ -710,9 +710,7 @@ border-color: #FFF;
                                      column(8,
                                             h3("Data Plot"),
                                             p("All plots in this Shiny app are generated using Plotly. This allows you to hover your mouse over the plot to get information from each of the plots. You can inspect the data closely by clicking and zooming into particular areas. There is a tool box at the top of the plot which has the selection function required for Q6."),
-                                            introBox(
-                                              plotlyOutput("var_plot"), data.hint = "This a hint"
-                                            ),
+                                            plotlyOutput("var_plot"),
                                             wellPanel(
                                               br(),
                                               # conditionalPanel("input.table01_rows_selected > 1",
@@ -1690,11 +1688,10 @@ border-color: #FFF;
 server <- function(input, output, session) {#
   
   # Help button ----
-  # introjs(session, events = list(onbeforechange = readCallback("switchTabs")))  ## NEED to uncomment before launching!
   observeEvent(input$help, {
     introjs(session, events = list(onbeforechange = readCallback("switchTabs")))
   })
-  hintjs(session, options = list("hintButtonLabel"="That was a hint"))
+  # hintjs(session, options = list("hintButtonLabel"="That was a hint"))
   
   
   ## observe the Hide button being pressed
