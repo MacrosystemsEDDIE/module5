@@ -159,24 +159,6 @@ q7_table <- data.frame(
 mod_choices <- c("Negative", "No change", "Positive")
 
 wid_pct3 <- "80%"
-# q13a_table <- data.frame(
-#   Value = c(as.character(div(style="margin-bottom: 0px; padding-bottom: 0px;", numericInput("13a_graz", "", 0, width = wid_pct3))), 
-#            as.character(numericInput("13a_mort", "", 0, width = wid_pct3)),
-#            as.character(numericInput("13a_nutri", "", 0, width = wid_pct3)))
-# )
-# 
-# q13b_table <- data.frame(
-#   Value = c(as.character(numericInput("13b_graz", "", 0, width = wid_pct3)), 
-#             as.character(numericInput("13b_mort", "", 0, width = wid_pct3)),
-#             as.character(numericInput("13b_nutri", "", 0, width = wid_pct3)))
-# )
-# 
-# q14_table <- data.frame(
-#   Value = c(as.character(numericInput("14_graz", "", 0, width = wid_pct3)), 
-#             as.character(numericInput("14_mort", "", 0, width = wid_pct3)),
-#             as.character(numericInput("14_nutri", "", 0, width = wid_pct3)))
-# )
-
 
 par_df <- data.frame(
   "SWT" = rep(NA, 5),
@@ -2289,7 +2271,7 @@ server <- function(input, output, session) {#
            message = "Please select a site on the 'Activity A' tab")
     )
     validate(
-      need(input$load_fc > 0, "Please load the forecast")
+      need(input$load_fc > 0, "Click 'Load Forecast'")
     )
     # validate(
     #   need(!is.null(input$fc_date), "Please select a date")
@@ -2339,7 +2321,7 @@ server <- function(input, output, session) {#
            message = "Please select a site on the 'Activity A' tab")
       )
     validate(
-      need(input$load_fc > 0, "Please load the forecast")
+      need(input$load_fc > 0, "Click 'Load Forecast'")
     )
     # validate(
     #   need(!is.null(input$fc_date), "Please select a date")
@@ -2449,7 +2431,7 @@ server <- function(input, output, session) {#
            message = "Please select a site on the 'Activity A' tab")
     )
     validate(
-      need(input$load_fc > 0, "Please load the forecast")
+      need(input$load_fc > 0, "Click 'Load Forecast'")
     )
     validate(
       need(input$members >= 1 & input$members <= membs, paste0("Please select a number of members between 1 and ", membs))
@@ -2553,7 +2535,7 @@ server <- function(input, output, session) {#
            message = "Please select a site on the 'Activity A' tab")
     )
     validate(
-      need(input$load_fc > 0, "Please load the forecast")
+      need(input$load_fc > 0, "Click 'Load Forecast'")
     )
     validate(
       need(input$save_noaa_plot > 0, "If plot is missing please click 'Save Plot' under the weather forecast plot above.")
@@ -3673,28 +3655,6 @@ server <- function(input, output, session) {#
       }
     } 
   })
-  
-  # observeEvent(input$minus1, {
-  #   if(pars_react$mort_rate > 0.01) {
-  #     pars_react$mort_rate <- pars_react$mort_rate - 0.01
-  #   }
-  # })
-  # observeEvent(input$plus1, {
-  #   if(pars_react$mort_rate < 1) {
-  #     pars_react$mort_rate <- pars_react$mort_rate + 0.01
-  #   }
-  # })
-  # 
-  # observeEvent(input$minus2, {
-  #   if(pars_react$nut_uptake > 0.01) {
-  #     pars_react$nut_uptake <- pars_react$nut_uptake - 0.01
-  #   }
-  # })
-  # observeEvent(input$plus2, {
-  #   if(pars_react$nut_uptake < 1) {
-  #     pars_react$nut_uptake <- pars_react$nut_uptake + 0.01
-  #   }
-  # })
   
   #* Update model ====
   fc_update <- eventReactive(input$update_fc2,{
