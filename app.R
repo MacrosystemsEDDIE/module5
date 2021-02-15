@@ -12,7 +12,7 @@ library(slickR); library(tinytex); library(rvest, quietly = TRUE, warn.conflicts
 library(rLakeAnalyzer); library(LakeMetabolizer); 
 library(DT, quietly = TRUE, warn.conflicts = FALSE); library(rintrojs)
 library(stringr); library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
-library(RColorBrewer); library(ggpubr)
+library(RColorBrewer); library(ggpubr); library(readr)
 
 # Options for Spinner
 options(spinner.color = "#0275D8", spinner.color.background = "#ffffff", spinner.size = 2)
@@ -67,6 +67,8 @@ noaa_dic <- read.csv("data/noaa_dict.csv")
 model_slides <- list.files("www/model_slides", full.names = TRUE)
 recap_slides <- list.files("www/shiny_slides", full.names = TRUE)
 
+# Tab names for updating buttons
+tab_names <- read.csv("data/tab_names.csv", fileEncoding = "UTF-8-BOM")
 
 # colors for plots
 cols <- RColorBrewer::brewer.pal(8, "Dark2")
@@ -76,6 +78,9 @@ pair.cols <- RColorBrewer::brewer.pal(8, "Paired")
 # colors for theme
 obj_bg <- "#D4ECE1"
 ques_bg <- "#B8E0CD"
+nav_bg <- "#DDE4E1"
+nav_butt <- "#31ED92"
+nav_txt <- "#000000" # white = #fff; black = #000000
 
 # Load text input
 module_text <- read.csv("data/module_text.csv", row.names = 1, header = FALSE)
@@ -177,6 +182,7 @@ ui <- function(req) {
   tagList( # Added functionality for not losing your settings
     # shinythemes::themeSelector(), # user-defined theme
     tags$style(type = "text/css", "text-align: justify"),
+    tags$script(type="text/javascript", src = "tabinfo.js"),
     fluidPage(
       column(1, offset = 11, align = "right",
              introBox(
@@ -242,6 +248,9 @@ ui <- function(req) {
                         transition:transform 0.25s ease;
                         max-width: 100%; width: 100%; height: auto
                         }
+                        #nextBtn1:hover {
+                        background-color: yellow;
+                        }
                         #dl_btn {
                         width:290px
                         }
@@ -271,6 +280,7 @@ ui <- function(req) {
                         # ),
                         introBox(
                         fluidRow(
+                          textOutput("names"),
                           
                                    
                           column(6,
@@ -1650,18 +1660,29 @@ border-color: #FFF;
     # Tab navigation buttons ----
     br(), hr(),
     introBox(
+      h4("Use the buttons below to navigate through the tabs", align = "center"),
       fluidRow(
-        column(2, align = "right", offset = 4,
-               actionButton("prevBtn1", "< Previous", 
-                            style = "color: #fff; background-color: #6DB08D; border-color: #00664B; padding:15px; font-size:22px; width:180px") ,
+        column(6, align = "center", 
+               # wellPanel(
+                 style = paste0("background: ", nav_bg),
+                 br(),
+                 actionButton("prevBtn1", "< Module Overview", 
+                              style = paste0("color: ", nav_txt, "; background-color: ", nav_butt, "; border-color: #00664B; padding:15px; font-size:22px;")),
+                 br(), br()
+               # )
+               
         ),
-        column(3, align = "left",
-               actionButton("nextBtn1", "Next >",
-                            style = "color: #fff; background-color: #6DB08D; border-color: #00664B; padding:15px; font-size:22px; width:180px")
+        column(6, align = "center",
+               # wellPanel(
+                 style = paste0("background: ", nav_bg),
+                 br(),
+                 actionButton("nextBtn1", "Introduction >",
+                              style = paste0("color: ", nav_txt, "; background-color: ", nav_butt, "; border-color: #00664B; padding:15px; font-size:22px;")),
+                 br(), br()
+               # )
         )
       ), data.step = 3, data.intro = help_text["tab_nav2", 1], data.position = "right"
     ),
-    h4("Use buttons to navigate between the Activity tabs", align = "center"),
     br(), br()
     )
   }
@@ -4427,15 +4448,105 @@ server <- function(input, output, session) {#
     # show(paste0("mtab", rv1$nxt))
   })
   
+  
+  # Next button
+  observe({
+    curr_tab1 <- input$maintab
+    idx <- which(tab_names$tab_id == curr_tab1)
+    new_nam <- tab_names$name[idx + 1]
+    if (curr_tab1 == "mtab4") {
+      curr_obj <- input$tabseries1
+      idx2 <- which(tab_names$tab_id == curr_obj)
+      new_nam <- tab_names$name[idx2 + 1]
+    }
+    if (curr_tab1 == "mtab5") {
+      curr_obj <- input$tabseries2
+      idx2 <- which(tab_names$tab_id == curr_obj)
+      new_nam <- tab_names$name[idx2 + 1]
+    } 
+    if(curr_tab1 == "mtab6") {
+      updateActionButton(session, inputId = "nextBtn1", label = paste("Next >"))
+    } else {
+      # shinyjs::show(id = "nextBtn1")
+      updateActionButton(session, inputId = "nextBtn1", label = paste(new_nam, ">"))
+    }
+  })
+  
+  # Previous button
+  observe({
+    curr_tab1 <- input$maintab
+    idx <- which(tab_names$tab_id == curr_tab1)
+    new_nam <- tab_names$name[idx - 1]
+    
+    if (curr_tab1 == "mtab4") {
+      curr_obj <- input$tabseries1
+      idx2 <- which(tab_names$tab_id == curr_obj)
+      if(curr_obj == "obj1") idx2 <- idx2 - 1 # Move off Activty A label
+      new_nam <- tab_names$name[idx2 - 1]
+    }
+    if (curr_tab1 == "mtab5") {
+      curr_obj <- input$tabseries2
+      idx2 <- which(tab_names$tab_id == curr_obj)
+      if(curr_obj == "obj6") idx2 <- idx2 - 1 # Move off Activty B label
+      new_nam <- tab_names$name[idx2 - 1]
+    } 
+    if(curr_tab1 == "mtab1") {
+      updateActionButton(session, inputId = "prevBtn1", label = paste("< Previous"))
+    } else {
+      # shinyjs::show(id = "prevBtn1")
+      updateActionButton(session, inputId = "prevBtn1", label = paste("<", new_nam))
+    }
+  })
+  
+  
+  # Advancing Tabs
   observeEvent(input$nextBtn1, {
-    updateTabsetPanel(session, "maintab",
-                      selected = paste0("mtab", rv1$nxt))
+    
+    curr_tab1 <- input$maintab
+    idx <- which(tab_names$tab_id == curr_tab1)
+    if (curr_tab1 == "mtab4" & rv1a$nxt < 6) {
+      curr_obj <- input$tabseries1
+
+      updateTabsetPanel(session, "tabseries1",
+                        selected = paste0("obj", rv1a$nxt))
+      
+    } else if (curr_tab1 == "mtab5" & rv2a$nxt < 12) {
+      curr_obj <- input$tabseries2
+      updateTabsetPanel(session, "tabseries2",
+                        selected = paste0("obj", rv2a$nxt))
+    } else {
+      updateTabsetPanel(session, "tabseries1",
+                        selected = "obj1")
+      updateTabsetPanel(session, "tabseries2",
+                        selected = "obj6")
+      updateTabsetPanel(session, "maintab",
+                        selected = paste0("mtab", rv1$nxt))
+    }
     shinyjs::runjs("window.scrollTo(0, 0)") # scroll to top of page
   })
   
+  # Moving back through tabs
   observeEvent(input$prevBtn1, {
-    updateTabsetPanel(session, "maintab",
-                      selected = paste0("mtab", rv1$prev))
+    curr_tab1 <- input$maintab
+    idx <- which(tab_names$tab_id == curr_tab1)
+    if (curr_tab1 == "mtab4" & rv1a$prev > 0) {
+      curr_obj <- input$tabseries1
+      
+      updateTabsetPanel(session, "tabseries1",
+                        selected = paste0("obj", rv1a$prev))
+      
+    } else if (curr_tab1 == "mtab5" & rv2a$prev > 5) {
+      curr_obj <- input$tabseries2
+      updateTabsetPanel(session, "tabseries2",
+                        selected = paste0("obj", rv2a$prev))
+    } else {
+      updateTabsetPanel(session, "tabseries1",
+                        selected = "obj5")
+      updateTabsetPanel(session, "tabseries2",
+                        selected = "obj11")
+      updateTabsetPanel(session, "maintab",
+                        selected = paste0("mtab", rv1$prev))
+    }
     shinyjs::runjs("window.scrollTo(0, 0)")
     
   })
@@ -4850,6 +4961,10 @@ server <- function(input, output, session) {#
     updateTextAreaInput(session, "q7b", value = up_answers$a7b)
     updateTextAreaInput(session, "q7c", value = up_answers$a7c)
     updateTextAreaInput(session, "q7d", value = up_answers$a7d)
+  })
+  
+  output$names <- renderText({
+    input$tabNames
   })
   
   # Memory tables
