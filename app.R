@@ -12,7 +12,7 @@ library(slickR); library(tinytex); library(rvest, quietly = TRUE, warn.conflicts
 library(rLakeAnalyzer); library(LakeMetabolizer); 
 library(DT, quietly = TRUE, warn.conflicts = FALSE); library(rintrojs)
 library(stringr); library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
-library(RColorBrewer); library(ggpubr); library(readr)
+library(RColorBrewer); library(ggpubr); library(readr); library(shinyBS)
 
 # Options for Spinner
 options(spinner.color = "#0275D8", spinner.color.background = "#ffffff", spinner.size = 2)
@@ -81,6 +81,7 @@ ques_bg <- "#B8E0CD"
 nav_bg <- "#DDE4E1"
 nav_butt <- "#31ED92"
 nav_txt <- "#000000" # white = #fff; black = #000000
+slider_col <- "#2CB572"
 
 # Load text input
 module_text <- read.csv("data/module_text.csv", row.names = 1, header = FALSE)
@@ -182,7 +183,7 @@ ui <- function(req) {
   tagList( # Added functionality for not losing your settings
     # shinythemes::themeSelector(), # user-defined theme
     tags$style(type = "text/css", "text-align: justify"),
-    tags$script(type="text/javascript", src = "tabinfo.js"),
+    tags$head(tags$link(rel = "shortcut icon", href = "macroeddi_ico_green.ico")), # Add icon for web bookmarks
     fluidPage(
       column(1, offset = 11, align = "right",
              introBox(
@@ -213,6 +214,7 @@ ui <- function(req) {
                           data.step = 1,
                           data.intro = help_text["welcome", 1]
                         ),
+                        
                         tags$style(".btn-file {  
              background-color:#98CAB2; 
              border-color: #579277; 
@@ -221,6 +223,15 @@ ui <- function(req) {
              .progress-bar {
              background-color: #579277;
              }"),
+                        # Change progress bar color
+                        tags$style(paste0("
+                                   .irs-bar,
+.irs-bar-edge,
+.irs-single,
+.irs-grid-pol {
+  background: ", slider_col, ";
+  border-color: ", slider_col, ";
+}")),
                         tags$style(HTML("
                         #first {
                         border: 4px double red;
@@ -243,6 +254,14 @@ ui <- function(req) {
                         }
                         #txt_l {
                         text-align: left;
+                        }
+                        #ackn {
+                        color: gray;
+                        font-size: 12px
+                        }
+                        #app_update {
+                        color: gray;
+                        font-size: 12px
                         }
                         #pheno img {
                         transition:transform 0.25s ease;
@@ -280,9 +299,6 @@ ui <- function(req) {
                         # ),
                         introBox(
                         fluidRow(
-                          textOutput("names"),
-                          
-                                   
                           column(6,
                                  #* Module text ====
                                  h2("Introduction to Ecological Forecasting"),
@@ -601,8 +617,8 @@ border-color: #FFF;
                                                              )
                                      ,
                                             DTOutput("table01"),
-                                            p(tags$b("Click 'View live feed' to see the latest image from the webcam on site (this may take 10-30 seconds).")),
-                                            actionButton("view_webcam", label = "View live feed", icon = icon("eye"))
+                                            p(tags$b("Click 'View latest photo' to see the latest image from the webcam on site (this may take 10-30 seconds).")),
+                                            actionButton("view_webcam", label = "View latest photo", icon = icon("eye"))
                                      ),
                                      #** Site map ----
                                      column(4,
@@ -1070,19 +1086,19 @@ border-color: #FFF;
                                    )
                           
                           ),
-                        br(), hr(),
-                        fluidRow(
-                          column(2, align = "right", offset = 4,
-                                 actionButton("prevBtn1a", "< Previous", 
-                                              style = "width: 100px")
-                          ),
-                          column(2, align = "left",
-                                 actionButton("nextBtn1a", "Next >", 
-                                              style = "width: 100px")
-                          )
-                        ),
-                        h5("Use buttons to navigate between the Objective tabs", align = "center"),
-                        hr(), br()
+                        # br(), hr(),
+                        # fluidRow(
+                        #   column(2, align = "right", offset = 4,
+                        #          actionButton("prevBtn1a", "< Previous", 
+                        #                       style = "width: 100px")
+                        #   ),
+                        #   column(2, align = "left",
+                        #          actionButton("nextBtn1a", "Next >", 
+                        #                       style = "width: 100px")
+                        #   )
+                        # ),
+                        # h5("Use buttons to navigate between the Objective tabs", align = "center"),
+                        # hr(), br()
                         ),
                
                
@@ -1224,7 +1240,7 @@ border-color: #FFF;
                                             )
                                      )
                                    ),
-                                   hr(),
+                                   # hr(),
                                    
                           ),
                           tabPanel(title = "Objective 7 - Forecast", value = "obj7",
@@ -1322,7 +1338,7 @@ border-color: #FFF;
                                             )
                                      )
                                    ),
-                                   hr(),
+                                   # hr(),
                                    ),
                           #* Objective 8 - Communicate Forecast ====
                           tabPanel(title = "Objective 8 - Communicate forecast",  value = "obj8",
@@ -1364,7 +1380,7 @@ border-color: #FFF;
                                             )
                                      )
                                    ),
-                                   hr(),
+                                   # hr(),
                                    ),
                           tabPanel(title = "Objective 9 -  Assess forecast",  value = "obj9",
                                    fluidRow(
@@ -1433,7 +1449,7 @@ border-color: #FFF;
                                             )
                                      )
                                    ),
-                                   hr(),
+                                   # hr(),
                                    ),
                           tabPanel(title = "Objective 10 - Update model",  value = "obj10",
                                    #*
@@ -1514,7 +1530,7 @@ border-color: #FFF;
                                             )
                                      )
                                    ),
-                                   hr(),
+                                   # hr(),
                                    ),
                           tabPanel(title = "Objective 11 - Next forecast",  value = "obj11",
                                    fluidRow(
@@ -1591,22 +1607,30 @@ border-color: #FFF;
                                             img(src = "mod5_viz_v2.png", height = "80%", 
                                                 width = "80%", align = "left")
                                      )
+                                     ),
+                                   fluidRow(
+                                     column(12,
+                                            h2("Completed Activity B!"),
+                                            p("This is the end of Activity B. If you have been inputting your answers into the app, it is recommended to return to the 'Introduction' tab and generate the final report before completing Activity C. Otherwise you could lose your progress."),
+                                            p("You can add your answers for Activity C into the downloaded Word document."),
+                                            actionButton("return_intro", "Return to Introduction", icon = icon("home"))
+                                            )
                                      )
                                    )
                           ),
-                        br(), hr(),
-                        fluidRow(
-                          column(6, align = "right",
-                                 actionButton("prevBtn2a", "< Previous", 
-                                              style = "width: 100px")
-                          ),
-                          column(6, align = "left",
-                                 actionButton("nextBtn2a", "Next >", 
-                                              style = "width: 100px")
-                          )
-                        ),
-                        h5("Use buttons to navigate between the objective tabs", align = "center"),
-                        hr(), br()
+                        # br(), hr(),
+                        # fluidRow(
+                        #   column(6, align = "right",
+                        #          actionButton("prevBtn2a", "< Previous", 
+                        #                       style = "width: 100px")
+                        #   ),
+                        #   column(6, align = "left",
+                        #          actionButton("nextBtn2a", "Next >", 
+                        #                       style = "width: 100px")
+                        #   )
+                        # ),
+                        # h5("Use buttons to navigate between the objective tabs", align = "center"),
+                        # hr(), br()
                         ),
                tabPanel(title = "Activity C", value = "mtab6",
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
@@ -1647,13 +1671,13 @@ border-color: #FFF;
                                  )
                           )
                         ),
-                        fluidRow(
-                          column(12,
-                                 h2("Completed Module!"),
-                                 p("This is the end of the module. If you have been inputting your answers into the app you will need to return to the 'Introduction' tab and generate the final report"),
-                                 actionButton("return_intro", "Return to Introduction", icon = icon("home"))
-                                 )
-                        ),
+                        # fluidRow(
+                        #   column(12,
+                        #          h2("Completed Module!"),
+                        #          p("This is the end of the module. If you have been inputting your answers into the app you will need to return to the 'Introduction' tab and generate the final report"),
+                        #          actionButton("return_intro", "Return to Introduction", icon = icon("home"))
+                        #          )
+                        # ),
                         hr(),
                         )
                ),
@@ -1668,6 +1692,7 @@ border-color: #FFF;
                  br(),
                  actionButton("prevBtn1", "< Module Overview", 
                               style = paste0("color: ", nav_txt, "; background-color: ", nav_butt, "; border-color: #00664B; padding:15px; font-size:22px;")),
+               bsTooltip("prevBtn1", title = "Navigate to previous tab", placement = "left", trigger = "hover"),
                  br(), br()
                # )
                
@@ -1678,12 +1703,19 @@ border-color: #FFF;
                  br(),
                  actionButton("nextBtn1", "Introduction >",
                               style = paste0("color: ", nav_txt, "; background-color: ", nav_butt, "; border-color: #00664B; padding:15px; font-size:22px;")),
+               bsTooltip("nextBtn1", title = "Navigate to next tab", placement = "right", trigger = "hover"),
                  br(), br()
                # )
         )
       ), data.step = 3, data.intro = help_text["tab_nav2", 1], data.position = "right"
     ),
-    br(), br()
+    hr(), 
+    fluidRow(
+      column(8, offset = 1,
+             p(module_text["acknowledgement", ], id = "ackn"),
+             textOutput("app_update")
+             ),
+    )
     )
   }
 
@@ -1855,7 +1887,7 @@ server <- function(input, output, session) {#
            message = "Please select a site in the table.")
     )
     validate(
-      need(!is.null(pheno_file$img), "Click 'View live feed' to download the image.")
+      need(!is.null(pheno_file$img), "Click 'View latest photo' to download the image.")
     )
     list(src = pheno_file$img,
          alt = "Image failed to render",
@@ -4963,8 +4995,20 @@ server <- function(input, output, session) {#
     updateTextAreaInput(session, "q7d", value = up_answers$a7d)
   })
   
-  output$names <- renderText({
-    input$tabNames
+  # Remove tool tip from forward and back buttons
+  observe({
+    if(input$nextBtn1 > 2) {
+      removeTooltip(session, "nextBtn1")
+    }
+    if(input$nextBtn1 > 2) {
+      removeTooltip(session, "prevBtn1")
+    }
+  })
+  
+  # Add last update time
+  output$app_update <- renderText({
+    app_time <- format(file.info("app.R")$mtime, "%Y-%m-%d")
+    paste0("This app was last updated on: ", app_time)
   })
   
   # Memory tables
