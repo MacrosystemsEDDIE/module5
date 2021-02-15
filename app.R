@@ -175,6 +175,10 @@ par_df <- data.frame(
   "Uptake" = rep(NA, 5), row.names = c("Q12", "Q13a", "Q13b", "Q14", "Q15")
 )
 
+# Add last update time
+app_time <- format(file.info("app.R")$mtime, "%Y-%m-%d")
+app_update_txt <- paste0("This app was last updated on: ", app_time)
+
 png_dpi <- 300
 
 ui <- function(req) {
@@ -256,10 +260,6 @@ ui <- function(req) {
                         text-align: left;
                         }
                         #ackn {
-                        color: gray;
-                        font-size: 12px
-                        }
-                        #app_update {
                         color: gray;
                         font-size: 12px
                         }
@@ -990,6 +990,7 @@ border-color: #FFF;
                                             wellPanel(
                                               plotlyOutput("mod_phyto_plot")
                                             ),
+                                            p(tags$b("Add observations")),
                                             checkboxInput("add_obs", "Add observations to the plots")
                                      ),
                                      column(5,
@@ -1713,7 +1714,7 @@ border-color: #FFF;
     fluidRow(
       column(8, offset = 1,
              p(module_text["acknowledgement", ], id = "ackn"),
-             textOutput("app_update")
+             p(app_update_txt, id = "ackn")
              ),
     )
     )
@@ -2771,6 +2772,13 @@ server <- function(input, output, session) {#
     return(res)
   })
   
+  # Add popover
+  observe({
+    if(input$run_mod_ann >= 1) {
+      addTooltip(session, "mod_phyto_plot", title = "Plot of simulated nutrient concentrations", trigger = "hover", placement = "top")
+    }
+  })
+  
   #* Model annual output data ----
   output$mod_ann_datatable <- DT::renderDT({
     mod_run1()
@@ -2863,12 +2871,12 @@ server <- function(input, output, session) {#
     
     
     p <- ggplot() +
-      geom_line(data = mlt, aes_string(names(mlt)[1], names(mlt)[3], color = names(mlt)[2])) +
+      geom_line(data = mlt, aes_string(names(mlt)[1], names(mlt)[3], color = shQuote("Model"))) +
       ylab("N (mg/L)") +
       xlab("Time") +
       {if(input$add_obs) geom_point(data = din, aes_string(names(din)[1], names(din)[2], color = shQuote("Obs")))} +
       geom_hline(yintercept = 0, color = "gray") +
-      facet_wrap(~variable, ncol = 1) +
+      # facet_wrap(~variable, ncol = 1) +
       geom_hline(yintercept = 0, color = "gray") +
       coord_cartesian(xlim = xlims, ylim = ylims) +
       theme_minimal(base_size = 12) +
@@ -5000,15 +5008,9 @@ server <- function(input, output, session) {#
     if(input$nextBtn1 > 2) {
       removeTooltip(session, "nextBtn1")
     }
-    if(input$nextBtn1 > 2) {
+    if(input$prevBtn1 > 2) {
       removeTooltip(session, "prevBtn1")
     }
-  })
-  
-  # Add last update time
-  output$app_update <- renderText({
-    app_time <- format(file.info("app.R")$mtime, "%Y-%m-%d")
-    paste0("This app was last updated on: ", app_time)
   })
   
   # Memory tables
