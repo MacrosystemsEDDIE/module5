@@ -26,11 +26,12 @@ obj_03,We will use chlorophyll-a sensor data to estimate primary productivity. C
 obj_04,"Using your understanding of aquatic ecosystems, you will build a simple ecological model to predict primary productivity."
 obj_05,Test different scenarios with your model to understand how it will respond under different environmental conditions. Use observed data to calibrate the model (i.e. make your model better match observed data).
 obj_06,Gain an understanding of what uncertainty is in the context of an ecological forecast and explore weather forecast data. Demonstrate how uncertainty can be quantified.
-obj_07,"Use weather forecast data to drive the calibrated ecological model built on the ""Activity A"" tab to forecast primary productivity."
-obj_08,Forecasts that are effectively communicated to the public and managers will be most useful for aiding decision-making. Here you will think about how to communicate your forecast to an end-user.
-obj_09,A fundamental part of the forecast cycle is assessing how well your forecast performed relative to observations. Here we will use a simple assessment of plotting forecast results against observations.
-obj_10,Update our model/hypothesis to improve our forecasts based on the recent observations that have been collected. Ecological forecasters call this recalibration of a model.
-obj_11,"The forecast cycle is an iterative process. Now after communicating and assessing our forecast and updating our model, we will now generate the next forecast. Ecological forecasters call this data assimilation because data are ""assimilated"" to update the initial conditions."
+obj_07,"Using the observed data from the site, you will build a linear model to convert air temperature to surface water temperature and shortwave radiation (SWR) to underwater photosynthetic active radiation (uPAR). This will allow you to then use the weather forecast data to generate a forecast with your ecological model."
+obj_08,"Use weather forecast data to drive the calibrated ecological model built on the ""Activity A"" tab to forecast primary productivity."
+obj_09,Forecasts that are effectively communicated to the public and managers will be most useful for aiding decision-making. Here you will think about how to communicate your forecast to an end-user.
+obj_10,A fundamental part of the forecast cycle is assessing how well your forecast performed relative to observations. Here we will use a simple assessment of plotting forecast results against observations.
+obj_11,Update our model/hypothesis to improve our forecasts based on the recent observations that have been collected. Ecological forecasters call this recalibration of a model.
+obj_12,"The forecast cycle is an iterative process. Now after communicating and assessing our forecast and updating our model, we will now generate the next forecast. Ecological forecasters call this data assimilation because data are ""assimilated"" to update the initial conditions."
 weather_forecast1,A weather forecast is probably the most widely used and applied forecast. Here we will examine the output from a weather forecast model from NOAA.
 weather_forecast2,"Weather forecasts use multiple simulations from the same model, but alters the initial conditions of the model to generate different potential futures."
 model1,"A model is a representation (physical, conceptual or mathematical) of a real phenomenon that is difficult to observe directly."
@@ -50,3 +51,4 @@ fc_cycle_end,"We have now stepped through each of the steps in the forecast cycl
 phenocam,A 'phenocam' is a digital camera capturing time-lapse images of foliage and lake sites. It can be used to generate quantitative measures of plant phenology.
 privacy_policy,This Shiny App does not collect or store your any of your data.
 acknowledgement,"This module was initially developed by: Moore, T.N., C.C. Carey, and R.Q. Thomas. 23 January 2021. Macrosystems EDDIE: Introduction to Ecological Forecasting. Macrosystems EDDIE Module 5, Version 1. http://module5.macrosystemseddie.org. Module development was supported by NSF grants DEB-1926050 and DBI-1933016."
+linear_regression,"Linear regression attempts to model the relationship between two variables by fitting a linear equation to observed data. One variable is considered to be an explanatory variable, and the other is considered to be a dependent variable. For example, we will model surface water temperature using air temperature and underwater PAR using shortwave radiation."
