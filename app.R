@@ -297,6 +297,14 @@ ui <- function(req) {
 
                 background:#B8E0CD
                 }
+                .box.box-solid.box-warning>.box-header {
+
+                }
+
+                .box.box-solid.box-warning{
+
+                background:#FFBE85
+                }
                         ")),
                         # fluidRow(
                         #   column(6,
@@ -427,7 +435,10 @@ ui <- function(req) {
                           column(7, offset = 1,
                                  h3("Student Activities"),
                                  p("Within Introduction, Exploration and Activities A, B and C tabs there are questions for students to complete as part of this module. These can be completed by writing your answers into the text boxes within the green boxes. If you do not complete the module in one continuous sitting you can download a file with your responses saved which you can then upload when you return. When you finish the module, you can generate a report which will embed your answers and saved plots into a Word (.docx) file which you can download and make further edits to before submitting to your instructor."),
-                                 p(tags$b("WARNING:"), " The Shiny app will disconnect from the server if it is left idle for 15 minutes. If this happens you will lose all your inputs into the app. It is recommended to download the user input at the end of the class, but you can also download throughout the class."),
+                                 box(width = 12, status = "warning",
+                                     solidHeader = TRUE,
+                                   p(tags$b("WARNING:"), " The Shiny app will disconnect from the server if it is left idle for 15 minutes. If this happens you will lose all your inputs into the app. It is recommended to download the user input at the end of the class, but you can also download throughout the class."),
+                                 ),
                                  p("Alternatively, you can download the questions as a Word (.docx) file  and record your answers there. If you opt for this option, you can hide the green question boxes by unchecking the box below."),
                                  checkboxInput("show_q1", "Show questions", value = TRUE),
                                  tags$style(type="text/css", "#stud_dl {background-color:#579277;color: white}"),
@@ -1568,7 +1579,10 @@ border-color: #FFF;
                                                          selected = character(0), inline = TRUE),
                                             br(), 
                                             p("Re-run your forecast with the updated parameters."),
-                                            p(tags$b("WARNING:"), "You only get one opportunity to update your model parameter so think carefully about what the parameter represents before updating your forecast. You can return to Activity A - Objective 5 to re-familiarise yourself with how the parameters affect model performance."),
+                                            box(width = 10, status = "warning",
+                                                solidHeader = TRUE,
+                                                p(tags$b("WARNING:"), "You only get one opportunity to update your model parameter so think carefully about what the parameter represents before updating your forecast. You can return to Activity A - Objective 5 to re-familiarise yourself with how the parameters affect model performance.")
+                                            ),
                                             actionButton('update_fc2', label = div("Update forecast",
                                                                                    icon("redo-alt"))),
                                             textOutput("warn_update"),
@@ -1651,7 +1665,7 @@ border-color: #FFF;
                                               actionButton("save_new_fc_plot", "Save plot", icon = icon("save"))
                                               ),
                                             br(),
-                                            DTOutput("fc_table")
+                                            DTOutput("fc_table", width = "80%")
                                             )
                                      ),
                                    hr(),
@@ -3517,7 +3531,7 @@ server <- function(input, output, session) {#
     if(is.null(input$modsett_rows_selected)) {
       showModal(modalDialog(
         title = "Important Message",
-        "Select a row in the Model Settings table before clicking 'Run model'"
+        "Select a row in the Model Settings table before clicking 'Run Forecast'"
       ))
     } else {
       # Reactivate the update buttons
@@ -4166,7 +4180,7 @@ server <- function(input, output, session) {#
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
-      need(input$assess_fc3 > 0, message = paste0("Click 'Assess'"))
+      need(input$assess_fc3 > 0, message = paste0("Click 'Assess forecast'"))
     )
     validate(
       need(input$save_assess_plot > 0, "If plot is missing please click 'Save Plot' under the Plot forecast vs observed plot above.")
@@ -4918,9 +4932,9 @@ server <- function(input, output, session) {#
   })
   
   #* render datatable for FC params
-  output$fc_table <- renderDT({
-    final_parms$df
-  })
+  output$fc_table <- renderDT(
+    final_parms$df, rownames = TRUE, options = list(dom = 't')
+  )
   
   #* Save plot for new  forecast ====
   observe({
