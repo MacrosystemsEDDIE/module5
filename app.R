@@ -358,8 +358,40 @@ ui <- function(req) {
                                  )
                           )
                         ),
-               # 2. Introduction ----
-               tabPanel(title = "Introduction", value = "mtab2",
+               # 2. Presentation recap ----
+               tabPanel(title = "Presentation", value = "mtab2",
+                        img(src = "project-eddie-banner-2020_green.png", height = 100, 
+                            width = 1544, top = 5),
+                        fluidRow(
+                          hr(),
+                          column(4,
+                                 h3("Presentation"),
+                                 p("The presentation accompanying this module covers the introduction to forecasting, the nutrient-phytoplankton model (NP) and the importance and relevance of ecological forecasts."),
+                                 p("What is a forecast?"),
+                                 tags$ul(
+                                   tags$li(module_text["what_forecast", ])
+                                 ),
+                                 p("Why do we forecast?"),
+                                 tags$ul(
+                                   tags$li(module_text["why_forecast", ])
+                                 ),
+                                 p("How do we generate a forecast?"),tags$ul(
+                                   tags$li(module_text["how_forecast", ])
+                                 ),
+                                 p("Click through the slides to recap some of the main points from the lecture.")
+                          ),
+                          column(8, offset = 0, align = "center",
+                                 h3("Key Slides", 
+                                    align = "center"),
+                                 h5("Click the arrows to navigate through the slides", align = "center"),
+                                 wellPanel(
+                                   slickROutput("slides", width = "600px", height = "450px")
+                                   )
+                                 )
+                        )
+               ),
+               # 3. Introduction ----
+               tabPanel(title = "Introduction", value = "mtab3",
                         # tags$style(type="text/css", "body {padding-top: 65px;}"),
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
                             width = 1544, top = 5),
@@ -458,33 +490,7 @@ ui <- function(req) {
                                      ),
                                  )
                         ),
-                        fluidRow(
-                          hr(),
-                          column(4,
-                                 h3("Presentation Recap"),
-                                 p("The presentation accompanying this module covers the introduction to forecasting, the nutrient-phytoplankton model (NP) and the importance and relevance of ecological forecasts."),
-                                 p("What is a forecast?"),
-                                 tags$ul(
-                                   tags$li(module_text["what_forecast", ])
-                                 ),
-                                 p("Why do we forecast?"),
-                                 tags$ul(
-                                   tags$li(module_text["why_forecast", ])
-                                 ),
-                                 p("How do we generate a forecast?"),tags$ul(
-                                   tags$li(module_text["how_forecast", ])
-                                 ),
-                                 p("Click through the slides to recap some of the main points from the lecture.")
-                          ),
-                          column(8, offset = 0, align = "center",
-                                 h3("Key Slides", 
-                                    align = "center"),
-                                 h5("Click the arrows to navigate through the slides", align = "center"),
-                                 wellPanel(
-                                   slickROutput("slides", width = "600px", height = "450px")
-                                   )
-                                 )
-                        ), hr(),
+                        hr(),
                         fluidRow(
                           column(6,
                                  h3("Data sources"),
@@ -498,8 +504,8 @@ ui <- function(req) {
                                  )
                           )
                         ),
-               # 3. Exploration ----
-               tabPanel(title = "Exploration", value = "mtab3",
+               # 4. Exploration ----
+               tabPanel(title = "Exploration", value = "mtab4",
                         # tags$style(type="text/css", "body {padding-top: 65px;}"),
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
                             width = 1544, top = 5),
@@ -556,8 +562,8 @@ ui <- function(req) {
                           )
                         ),
                
-               # 4. Activity A ----
-               tabPanel(title = "Activity A", value = "mtab4",
+               # 5. Activity A ----
+               tabPanel(title = "Activity A", value = "mtab5",
                         tags$style(".nav-tabs {
   background-color: #DDE4E1;
   border-color: #FFF;
@@ -937,7 +943,7 @@ border-color: #FFF;
                                             )
                                      )
                                    ),
-                          tabPanel(title = "Objective 5 - Build Model", value = "obj5",
+                          tabPanel(title = "Objective 5 - Build model", value = "obj5",
                                    #* Objective 5 - Run ecological model ====
                                    fluidRow(
                                      column(12,
@@ -1040,7 +1046,7 @@ border-color: #FFF;
                                             
                                      ),
                                      column(4,
-                                            h3("Parameter Table"),
+                                            h3("Model Settings"),
                                             p("For Q12-15 you are required to save your model setup which includes the initial conditions and parameters."),
                                             DTOutput("save_par", width = "10%"),
                                            br(),
@@ -1087,24 +1093,11 @@ border-color: #FFF;
                                    )
                           
                           ),
-                        # br(), hr(),
-                        # fluidRow(
-                        #   column(2, align = "right", offset = 4,
-                        #          actionButton("prevBtn1a", "< Previous", 
-                        #                       style = "width: 100px")
-                        #   ),
-                        #   column(2, align = "left",
-                        #          actionButton("nextBtn1a", "Next >", 
-                        #                       style = "width: 100px")
-                        #   )
-                        # ),
-                        # h5("Use buttons to navigate between the Objective tabs", align = "center"),
-                        # hr(), br()
                         ),
                
                
-               # 5. Forecast! ----
-               tabPanel(title = "Activity B", value = "mtab5",
+               # 5. Activity B ----
+               tabPanel(title = "Activity B", value = "mtab6",
                         # tags$style(type="text/css", "body {padding-top: 65px;}"),
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
                             width = 1544, top = 5),
@@ -1117,7 +1110,7 @@ border-color: #FFF;
                         ),
                         tabsetPanel(id = "tabseries2",
                           tabPanel(title = "Objective 6 - Examine uncertainty", value = "obj6",
-                                   #* Forecasting text ====
+                                   #** Forecasting text ====
                                    fluidRow(
                                      column(12,
                                             wellPanel(style = paste0("background: ", obj_bg),
@@ -1142,7 +1135,7 @@ border-color: #FFF;
                                      )
                                    ),
                                    hr(),
-                                   #* What is Uncertainty? ====
+                                   #** What is Uncertainty? ====
                                    fluidRow(
                                      column(4,
                                             h3("What is Uncertainty?"),
@@ -1244,14 +1237,80 @@ border-color: #FFF;
                                    # hr(),
                                    
                           ),
-                          tabPanel(title = "Objective 7 - Forecast", value = "obj7",
-                                   #* Objective 7 - Run Forecast ====
+                          tabPanel(title = "Objective 7 - Prepare inputs", value = "obj7",
+                                   #* Objective 7 - Prepare inputs ====
+                                   fluidRow(
+                                     column(12,
+                                            wellPanel(style = paste0("background: ", obj_bg),
+                                                      h3("Objective 7 - Prepare inputs"),
+                                                      p(id = "txt_j", module_text["obj_07", ])
+                                            )
+                                     ),
+                                     column(6,
+                                            h4("Linear Regression"),
+                                            p(id = "txt_j", module_text["linear_regression", ]),
+                                            p("The equation form for a linear regression is: ", withMathJax("$$y = mx + b $$")),
+                                     ),
+                                     column(6, align = "center",
+                                            img(src = "linear_regression_example.png", 
+                                                height = "50%", 
+                                                width = "50%"),
+                                            p(tags$em("An example plot showing surface water temperature vs. air temperature with a regression line added (orange dashed) with the corresponding equation."))
+                                            )
+                                            
+                                   ),
+                                   hr(),
+                                   fluidRow(
+                                     column(6,
+                                            h3("Air vs Surface water temperature"),
+                                            wellPanel(
+                                              plotlyOutput("at_wt")
+                                            ),
+                                            p("You can add a linear regression to the whole data or a subset by selecting data points using the 'Box Select' or 'Lasson Select' tool. This may be required if you have many points around 0 or you want to exclude obvious outliers."),
+                                            actionButton("add_lm2", "Add linear regression"),
+                                            p("Clear selected points and regression line"),
+                                            actionButton("clear_sel2", "Clear plot"),
+                                            br(),
+                                            wellPanel(
+                                              p(tags$b("Linear regression equation:")),
+                                              uiOutput('lm2_eqn')
+                                            )
+                                     ),
+                                     column(6,
+                                            h3("SWR vs uPAR"),
+                                            wellPanel(
+                                              plotlyOutput("sw_upar")
+                                            ),
+                                            p("You can add a linear regression to the whole data or a subset by selecting data points using the 'Box Select' or 'Lasson Select' tool. This may be required if you have many points around 0 or you want to exclude obvious outliers."),
+                                            actionButton("add_lm3", "Add linear regression"),
+                                            p("Clear selected points and regression line"),
+                                            actionButton("clear_sel3", "Clear plot"),
+                                            br(),
+                                            wellPanel(
+                                              p(tags$b("Linear regression equation:")),
+                                              uiOutput('lm3_eqn')
+                                            )
+                                     ),
+                                   ),
+                                   fluidRow(
+                                     column(12,
+                                            h3("Convert NOAA weather forecast"),
+                                            actionButton("conv_fc", "Convert forecast!"),
+                                            plotlyOutput("conv_plot"),
+                                            hr()
+                                     )
+                                   ),
+                                   
+                                   
+                          ),
+                          tabPanel(title = "Objective 8 - Forecast", value = "obj8",
+                                   #* Objective 8 - Run Forecast ====
                                    #** Input Uncertainty ====
                                    fluidRow(
                                      column(12,
                                             wellPanel(style = paste0("background: ", obj_bg),
-                                              h3("Objective 7 - Generate an Ecological Forecast"),
-                                              p(id = "txt_j", module_text["obj_07", ])
+                                              h3("Objective 8 - Generate an Ecological Forecast"),
+                                              p(id = "txt_j", module_text["obj_08", ])
                                             )
                                      )
                                    ),
@@ -1341,13 +1400,13 @@ border-color: #FFF;
                                    ),
                                    # hr(),
                                    ),
-                          #* Objective 8 - Communicate Forecast ====
-                          tabPanel(title = "Objective 8 - Communicate forecast",  value = "obj8",
+                          #* Objective 9 - Communicate Forecast ====
+                          tabPanel(title = "Objective 9 - Communicate forecast",  value = "obj9",
                                    fluidRow(
                                      column(12,
                                             wellPanel(style = paste0("background: ", obj_bg),
-                                              h3("Objective 8 - Communicate an Ecological Forecast"),
-                                              p(id = "txt_j", module_text["obj_08", ])
+                                              h3("Objective 9 - Communicate an Ecological Forecast"),
+                                              p(id = "txt_j", module_text["obj_09", ])
                                             )
                                      )
                                    ),
@@ -1383,12 +1442,12 @@ border-color: #FFF;
                                    ),
                                    # hr(),
                                    ),
-                          tabPanel(title = "Objective 9 -  Assess forecast",  value = "obj9",
+                          tabPanel(title = "Objective 10 -  Assess forecast",  value = "obj10",
                                    fluidRow(
                                      column(12,
                                             wellPanel(style = paste0("background: ", obj_bg),
-                                              h3("Objective 9 - Assess an Ecological Forecast"),
-                                              p(id = "txt_j", module_text["obj_09", ])
+                                              h3("Objective 10 - Assess an Ecological Forecast"),
+                                              p(id = "txt_j", module_text["obj_10", ])
                                             )
                                      )
                                    ),
@@ -1452,17 +1511,17 @@ border-color: #FFF;
                                    ),
                                    # hr(),
                                    ),
-                          tabPanel(title = "Objective 10 - Update model",  value = "obj10",
+                          tabPanel(title = "Objective 11 - Update model",  value = "obj11",
                                    #*
                                    fluidRow(
                                      column(12,
                                             wellPanel(style = paste0("background: ", obj_bg),
-                                              h3("Objective 10 - Update Model"),
-                                              p(id = "txt_j", module_text["obj_10", ])
+                                              h3("Objective 11 - Update Model"),
+                                              p(id = "txt_j", module_text["obj_11", ])
                                               )
                                             )
                                      ), 
-                                   #* Objective 10 - Update Model ====
+                                   #* Objective 11 - Update Model ====
                                    fluidRow(
                                      column(6,
                                             h3("Update Model"),
@@ -1533,16 +1592,16 @@ border-color: #FFF;
                                    ),
                                    # hr(),
                                    ),
-                          tabPanel(title = "Objective 11 - Next forecast",  value = "obj11",
+                          tabPanel(title = "Objective 12 - Next forecast",  value = "obj12",
                                    fluidRow(
                                      column(12,
                                             wellPanel(style = paste0("background: ", obj_bg),
-                                              h3("Objective 11 - Next Forecast"),
-                                              p(id = "txt_j", module_text["obj_11", ])
+                                              h3("Objective 12 - Next Forecast"),
+                                              p(id = "txt_j", module_text["obj_12", ])
                                             )
                                      )
                                    ),
-                                   #* Objective 11 - New Forecast ====
+                                   #* Objective 12 - New Forecast ====
                                    fluidRow(
                                      column(4,
                                             h2("Next Forecast"),
@@ -1619,21 +1678,8 @@ border-color: #FFF;
                                      )
                                    )
                           ),
-                        # br(), hr(),
-                        # fluidRow(
-                        #   column(6, align = "right",
-                        #          actionButton("prevBtn2a", "< Previous", 
-                        #                       style = "width: 100px")
-                        #   ),
-                        #   column(6, align = "left",
-                        #          actionButton("nextBtn2a", "Next >", 
-                        #                       style = "width: 100px")
-                        #   )
-                        # ),
-                        # h5("Use buttons to navigate between the objective tabs", align = "center"),
-                        # hr(), br()
                         ),
-               tabPanel(title = "Activity C", value = "mtab6",
+               tabPanel(title = "Activity C", value = "mtab7",
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
                             width = 1544, top = 5),
                         br(),
@@ -1891,7 +1937,7 @@ server <- function(input, output, session) {#
       need(!is.null(pheno_file$img), "Click 'View latest photo' to download the image.")
     )
     list(src = pheno_file$img,
-         alt = "Image failed to render",
+         alt = "Image failed to render. Please click 'Save plot' again.",
          height = 320, 
          width = 350)
   }, deleteFile = FALSE)
@@ -2102,6 +2148,373 @@ server <- function(input, output, session) {#
                   Shiny.unbindAll(table.table().node());
                   Shiny.bindAll(table.table().node());")
   )
+
+  #** Save air and water temp ----
+  selected2 <- reactiveValues(sel = NULL)
+  observeEvent(input$clear_sel2, {
+    selected2$sel <- NULL
+    lmfit2$lm <- NULL
+  })
+  
+  #selected
+  observe({
+    # suppress warnings  
+    storeWarn<- getOption("warn")
+    options(warn = -1) 
+    selected2$sel <- event_data(event = "plotly_selected", source = "B")
+    
+    #restore warnings, delayed so plot is completed
+    shinyjs::delay(expr =({ 
+      options(warn = storeWarn) 
+    }) ,ms = 100) 
+  })
+  
+  wtemp_airtemp <- reactive({ # view_var
+    validate(
+      need(input$table01_rows_selected != "",
+           message = "Please select a site in Objective 1.")
+    )
+    
+    ref <- "Air temperature"
+    x_var <- neon_vars$id[which(neon_vars$Short_name == ref)][1]
+    x_units <- neon_vars$units[which(neon_vars$Short_name == ref)][1]
+    x_file <- file.path("data", paste0(siteID, "_", x_var, "_", x_units, ".csv"))
+    validate(
+      need(file.exists(x_file), message = paste0(ref, " is not available at this site."))
+    )
+    xvar <- read.csv(x_file)
+    xvar[, 1] <- as.POSIXct(xvar[, 1], tz = "UTC")
+    xvar$Date <- as.Date(xvar[, 1])
+    xvar <- plyr::ddply(xvar, c("Date"), function(x) mean(x[, 2], na.rm = TRUE)) # Daily average - also puts everything on same timestamp
+    
+    
+    ref2 <- "Surface water temperature"
+    y_var <- neon_vars$id[which(neon_vars$Short_name == ref2)][1]
+    y_units <- neon_vars$units[which(neon_vars$Short_name == ref2)][1]
+    y_file <- file.path("data", paste0(siteID, "_", y_var, "_", y_units, ".csv"))
+    validate(
+      need(file.exists(y_file), message = paste0(ref2, " is not available at this site."))
+    )
+    yvar <- read.csv(y_file)
+    yvar[, 1] <- as.POSIXct(yvar[, 1], tz = "UTC")
+    yvar$Date <- as.Date(yvar[, 1])
+    if(ref2 == "Surface water temperature") {
+      yvar <- yvar[yvar[, 2] == min(yvar[, 2], na.rm = TRUE), c(1, 3)] # subset to Surface water temperature
+    }
+    yvar <- plyr::ddply(yvar, c("Date"), function(y) mean(y[, 2], na.rm = TRUE)) # Daily average - also puts everything on same timestamp
+    
+    df <- merge(xvar, yvar, by = "Date")
+    
+    validate(
+      need(nrow(df) > 0, message = "No variables at matching timesteps.")
+    )
+    colnames(df)[-1] <- c("X", "Y")
+    
+    
+    
+    sel <- tryCatch(df[(selected2$sel$pointNumber+1),,drop=FALSE] , error=function(e){NULL})
+    
+    
+    return(list(data = df, sel = sel))
+  })
+  
+  lmfit2 <- reactiveValues(lm = NULL)
+  
+  observeEvent(input$add_lm2, {
+    if(is.null(selected2$sel)) {
+      df <- wtemp_airtemp()$data
+    } else {
+      df <- selected2$sel[, 2:4]
+    }
+    lmfit2$lm <- lm(df[, 3] ~ df[, 2])
+  })
+  
+  output$lm2_r2 <- renderText({
+    validate(
+      need(!is.null(lmfit2$lm),
+           message = "Please click 'Add linear regression'.")
+    )
+    if(!is.null(lmfit2$lm)) {
+      r2 <- round(summary(lmfit2$lm)$r.squared, 2)
+      paste0("R2 = ", r2)
+    } else {
+      "R2 = NULL"
+    }
+  })
+  
+  output$lm2_eqn <- renderUI({
+    validate(
+      need(!is.null(lmfit2$lm),
+           message = "Please click 'Add linear regression'.")
+    )
+    coeff <- lmfit2$lm$coefficients
+    coeff <- as.character(round(coeff, 2))
+    r2 <- as.character(round(summary(lmfit2$lm)$r.squared, 2))
+    formula <- "$$ wtemp = %s * airtemp + %s   ;   r^2 = %s $$"
+    text <- sprintf(formula, coeff[2], coeff[1], r2)
+    withMathJax(  
+      tags$p(text)
+    )
+  })
+  
+  # Air temp vs Water temp plot ----
+  output$at_wt <- renderPlotly({
+    validate(
+      need(input$table01_rows_selected != "",
+           message = "Please select a site in Objective 1.")
+    )
+    
+    obj <- wtemp_airtemp()$sel
+
+    p <- ggplot() +
+      geom_point(data = wtemp_airtemp()$data, aes_string(names(wtemp_airtemp()$data)[2], names(wtemp_airtemp()$data)[3]), color = "black") +
+      ylab("Surface water temperature (\u00B0C)") +
+      xlab("Air temperature (\u00B0C)") +
+      theme_minimal(base_size = 12) 
+    
+    if(nrow(obj) != 0) {
+      p <- p + 
+        geom_point(data = obj, aes_string(names(obj)[2], names(obj)[3]), color = cols[2])
+    }
+    if(!is.null(lmfit2$lm)) {
+      coeff = lmfit2$lm$coefficients
+      p <- p + 
+        geom_abline(slope = coeff[2], intercept = coeff[1], color = cols[2], linetype = "dashed")
+    }
+    
+    return(ggplotly(p, dynamicTicks = TRUE, source = "B"))
+    
+  })
+  
+  #** Save SWR and uPAR ----
+  selected3 <- reactiveValues(sel = NULL)
+  observeEvent(input$clear_sel3, {
+    selected3$sel <- NULL
+    lmfit3$lm <- NULL
+  })
+  
+  #selected
+  observe({
+    # suppress warnings  
+    storeWarn<- getOption("warn")
+    options(warn = -1) 
+    selected3$sel <- event_data(event = "plotly_selected", source = "C")
+    
+    #restore warnings, delayed so plot is completed
+    shinyjs::delay(expr =({ 
+      options(warn = storeWarn) 
+    }) ,ms = 100) 
+  })
+  
+  swr_upar <- reactive({ # view_var
+    validate(
+      need(input$table01_rows_selected != "",
+           message = "Please select a site in Objective 1.")
+    )
+    
+    ref <- "Shortwave radiation"
+    x_var <- neon_vars$id[which(neon_vars$Short_name == ref)][1]
+    x_units <- neon_vars$units[which(neon_vars$Short_name == ref)][1]
+    x_file <- file.path("data", paste0(siteID, "_", x_var, "_", x_units, ".csv"))
+    validate(
+      need(file.exists(x_file), message = paste0(ref, " is not available at this site."))
+    )
+    xvar <- read.csv(x_file)
+    xvar[, 1] <- as.POSIXct(xvar[, 1], tz = "UTC")
+    xvar$Date <- as.Date(xvar[, 1])
+    xvar <- plyr::ddply(xvar, c("Date"), function(x) mean(x[, 2], na.rm = TRUE)) # Daily average - also puts everything on same timestamp
+    
+    
+    ref2 <- "Underwater PAR"
+    y_var <- neon_vars$id[which(neon_vars$Short_name == ref2)][1]
+    y_units <- neon_vars$units[which(neon_vars$Short_name == ref2)][1]
+    y_file <- file.path("data", paste0(siteID, "_", y_var, "_", y_units, ".csv"))
+    validate(
+      need(file.exists(y_file), message = paste0(ref2, " is not available at this site."))
+    )
+    yvar <- read.csv(y_file)
+    yvar[, 1] <- as.POSIXct(yvar[, 1], tz = "UTC")
+    yvar$Date <- as.Date(yvar[, 1])
+    yvar <- plyr::ddply(yvar, c("Date"), function(y) mean(y[, 2], na.rm = TRUE)) # Daily average - also puts everything on same timestamp
+    
+    df <- merge(xvar, yvar, by = "Date")
+    
+    validate(
+      need(nrow(df) > 0, message = "No variables at matching timesteps.")
+    )
+    colnames(df)[-1] <- c("X", "Y")
+    
+    
+    
+    sel <- tryCatch(df[(selected3$sel$pointNumber+1),,drop=FALSE] , error=function(e){NULL})
+    
+    
+    return(list(data = df, sel = sel))
+  })
+  
+  lmfit3 <- reactiveValues(lm = NULL)
+  
+  observeEvent(input$add_lm3, {
+    if(is.null(selected3$sel)) {
+      df <- swr_upar()$data
+    } else {
+      df <- selected3$sel[, 2:4]
+    }
+    lmfit3$lm <- lm(df[, 3] ~ df[, 2])
+  })
+  
+  output$lm3_r2 <- renderText({
+    validate(
+      need(!is.null(lmfit3$lm),
+           message = "Please click 'Add linear regression'.")
+    )
+    if(!is.null(lmfit3$lm)) {
+      r2 <- round(summary(lmfit3$lm)$r.squared, 2)
+      paste0("R2 = ", r2)
+    } else {
+      "R2 = NULL"
+    }
+  })
+  
+  output$lm3_eqn <- renderUI({
+    validate(
+      need(!is.null(lmfit3$lm),
+           message = "Please click 'Add linear regression'.")
+    )
+    coeff <- lmfit3$lm$coefficients
+    coeff <- as.character(round(coeff, 2))
+    r2 <- as.character(round(summary(lmfit3$lm)$r.squared, 2))
+    if(coeff[1] < 0) {
+      formula <- "$$ uPAR = %s * SWR %s   ;   r^2 = %s $$"
+    } else {
+      formula <- "$$ uPAR = %s * SWR + %s   ;   r^2 = %s $$"
+    }
+    text <- sprintf(formula, coeff[2], coeff[1], r2)
+    withMathJax(  
+      tags$p(text)
+    )
+  })
+  
+  # SWR vs uPAR plot ----
+  output$sw_upar <- renderPlotly({
+    validate(
+      need(input$table01_rows_selected != "",
+           message = "Please select a site in Objective 1.")
+    )
+    
+    obj <- swr_upar()$sel
+    
+    p <- ggplot() +
+      geom_point(data = swr_upar()$data, aes_string(names(swr_upar()$data)[2], names(swr_upar()$data)[3]), color = "black") +
+      ylab("Underwater PAR (micromolesPerSquareMeterPerSecond)") +
+      xlab("Shortwave radiation (wattsPerSquareMeter)") +
+      theme_minimal(base_size = 12) 
+    
+    if(nrow(obj) != 0) {
+      p <- p + 
+        geom_point(data = obj, aes_string(names(obj)[2], names(obj)[3]), color = cols[2])
+    }
+    if(!is.null(lmfit3$lm)) {
+      coeff = lmfit3$lm$coefficients
+      p <- p + 
+        geom_abline(slope = coeff[2], intercept = coeff[1], color = cols[2], linetype = "dashed")
+    }
+    
+    return(ggplotly(p, dynamicTicks = TRUE, source = "C"))
+    
+  })
+  
+  #** Convert NOAA forecast data ----
+  fc_conv <- reactiveValues(lst = NULL)
+  
+  observeEvent(input$conv_fc, {
+    validate(
+      need(input$table01_rows_selected != "",
+           message = "Please select a site in Objective 1.")
+    )
+    validate(
+      need(input$load_fc > 0, "Load weather forecast in Objective 6.")
+    )
+    validate(
+      need(!is.null(lmfit2$lm),
+           message = "Please add a regression line for the air vs. water temperature.")
+    )
+    validate(
+      need(!is.null(lmfit3$lm),
+           message = "Please add a regression line for the SWR vs. uPAR.")
+    )
+    
+    fc_idx <- which(names(fc_data()) == "2020-09-25")
+    
+    coeffs1 <- lmfit2$lm$coefficients # temp
+    coeffs2 <- lmfit2$lm$coefficients # radiation
+    
+    fc_conv_list <- lapply(1:30, function(x) {
+      df <- fc_data()[[fc_idx]]
+      sub <- df[(df[, 2] %in% c("air_temperature",
+                                "surface_downwelling_shortwave_flux_in_air",
+                                "precipitation_flux")), c(1, 2, 2 + x)]
+      df2 <- tidyr::pivot_wider(data = sub, id_cols = time, names_from = L1, values_from = 3)
+      df2$air_temperature <- df2$air_temperature - 273.15
+      df2$date <- as.Date(df2$time)
+      df2$time <- NULL
+      df3 <- plyr::ddply(df2, "date", function(x){
+        colMeans(x[, 1:3], na.rm = TRUE)
+      })
+      # df3 <- df3[2:16, ]
+      fc_out_dates <<- df3$date
+      df3$wtemp <- coeffs1[2] * df3$air_temperature + coeffs1[1]
+      df3$upar <- coeffs2[2] * df3$surface_downwelling_shortwave_flux_in_air + coeffs2[1]
+      
+      df3 <- df3[, c("date", "wtemp", "upar")]
+      df3$fc_date <- "2020-09-25"
+      return(df3)
+    })
+    
+    fc_conv$lst <- fc_conv_list
+    
+  })
+  
+  #** Plot of converted data
+  output$conv_plot <- renderPlotly({
+    validate(
+      need(input$table01_rows_selected != "",
+           message = "Please select a site in Objective 1.")
+    )
+    validate(
+      need(input$load_fc > 0, "Load weather forecast in Objective 6.")
+    )
+    validate(
+      need(!is.null(lmfit2$lm),
+           message = "Please add a regression line for the air vs. water temperature.")
+    )
+    validate(
+      need(!is.null(lmfit3$lm),
+           message = "Please add a regression line for the SWR vs. uPAR.")
+    )
+    validate(
+      need(input$conv_fc > 0, "Click 'Convert forecast'.")
+    )
+    
+    l1 <- fc_conv$lst
+    idvars <- colnames(l1[[1]])
+    mlt1 <- reshape::melt(l1, id.vars = idvars)
+    
+    mlt2 <- reshape2::melt(mlt1, id.vars = c("date", "fc_date", "L1"))
+    print(head(mlt2))
+    
+    p <- ggplot()
+    p <- p +
+      geom_line(data = mlt2, aes(date, value, group = L1, color = fc_date)) +
+      scale_color_manual(values = pair.cols[2]) +
+      facet_wrap(~variable, scales = "free_y", nrow = 2) +
+      labs(color = "Forecast date") +
+      theme_minimal(base_size = 12)
+    
+    gp <- ggplotly(p, dynamicTicks = TRUE)
+    return(gp)
+    
+  })
   
   
   # Comparison plot ----
@@ -2124,7 +2537,7 @@ server <- function(input, output, session) {#
     # if(input$x_var == "Surface water temperature") {
     #   ref <- "Water temperature profile"
     # } else {
-      ref <- input$x_var
+    ref <- input$x_var
     # }
     
     x_var <- neon_vars$id[which(neon_vars$Short_name == ref)][1]
@@ -2146,7 +2559,7 @@ server <- function(input, output, session) {#
     # if(input$y_var == "Surface water temperature") {
     #   ref2 <- "Water temperature profile"
     # } else {
-      ref2 <- input$y_var
+    ref2 <- input$y_var
     # }
     y_var <- neon_vars$id[which(neon_vars$Short_name == ref2)][1]
     y_units <- neon_vars$units[which(neon_vars$Short_name == ref2)][1]
@@ -2292,6 +2705,8 @@ server <- function(input, output, session) {#
       
     }
   }) 
+  
+  
   
   
   
@@ -2596,7 +3011,7 @@ server <- function(input, output, session) {#
     )
     
     list(src = "www/noaa_fc.png",
-         alt = "Image failed to render",
+         alt = "Image failed to render. Please click 'Save plot' again.",
          width = "100%")
   }, deleteFile = FALSE)
   
@@ -2950,7 +3365,7 @@ server <- function(input, output, session) {#
     )
     
     list(src = "www/mod_run_2019.png",
-         alt = "Image failed to render",
+         alt = "Image failed to render. Please click 'Save plot' again.",
          # height = "100%", 
          width = "100%")
   }, deleteFile = FALSE)
@@ -3029,7 +3444,7 @@ server <- function(input, output, session) {#
                  detail = "This may take a while. This window will disappear  
                      when it is finished running.", value = 0.01)
     
-    # Parameters from 'Build Model'
+    # Parameters from 'Build model'
     parms[1] <- as.numeric(input$nut_uptake)
     parms[7] <- as.numeric(input$mort_rate)
     
@@ -3042,8 +3457,10 @@ server <- function(input, output, session) {#
 
     fc_res <- lapply(1:fc_length, function(x) {
       
-      npz_inputs <- npz_fc_data()[[x]]
-
+      noaa_fc <- fc_conv$lst[[x]]
+      npz_inputs <- create_npz_inputs(time = noaa_fc$date, PAR = noaa_fc$upar, temp = noaa_fc$wtemp)
+      # npz_inputs <- npz_fc_data()[[x]]
+      
       times <- 1:nrow(npz_inputs)
       
       res <- matrix(NA, nrow = length(times), ncol = 3)
@@ -3356,14 +3773,14 @@ server <- function(input, output, session) {#
       need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
     )
     validate(
-      need(input$run_fc2 > 0, "Need to generate forecast in Objective 7")
+      need(input$run_fc2 > 0, "Need to generate forecast in Objective 8")
     )
     validate(
-      need(input$save_comm_plot > 0, "If plot is missing please return to Objective 7 and click 'Save Plot'")
+      need(input$save_comm_plot > 0, "If plot is missing please return to Objective 8 and click 'Save Plot'")
     )
     
     list(src = "www/comm_fc_plot.png",
-         alt = "Image failed to render",
+         alt = "Image failed to render. Please click 'Save plot' again.",
          # height = "100%", 
          width = "100%")
   }, deleteFile = FALSE)
@@ -3632,7 +4049,7 @@ server <- function(input, output, session) {#
     )
     
     list(src = "www/assess_fc.png",
-         alt = "Image failed to render",
+         alt = "Image failed to render. Please click 'Save plot' again.",
          width = "100%")
   }, deleteFile = FALSE)
   
@@ -3746,7 +4163,7 @@ server <- function(input, output, session) {#
                       chla[, 1] <= (as.Date(driv_fc()[1, 1]) + 7), ]
     
     
-    # Parameters from 'Build Model'
+    # Parameters from 'Build model'
     parms[1] <- as.numeric(pars_react$nut_uptake)
     parms[7] <- as.numeric(pars_react$mort_rate)
     
@@ -3759,7 +4176,9 @@ server <- function(input, output, session) {#
     
     fc_res <- lapply(1:fc_length, function(x) {
       
-      npz_inputs <- npz_fc_data()[[x]]
+      noaa_fc <- fc_conv$lst[[x]]
+      npz_inputs <- create_npz_inputs(time = noaa_fc$date, PAR = noaa_fc$upar, temp = noaa_fc$wtemp)
+      # npz_inputs <- npz_fc_data()[[x]]
       
       times <- 1:nrow(npz_inputs)
       
@@ -3811,7 +4230,7 @@ server <- function(input, output, session) {#
   output$update_plot <- renderPlotly({
     
     validate(
-      need(input$run_fc2 > 0, message = paste0("Run Forecast in Objective 7"))
+      need(input$run_fc2 > 0, message = paste0("Run Forecast in Objective 8"))
     )
     validate(
       need(input$table01_rows_selected != "",
@@ -4017,16 +4436,68 @@ server <- function(input, output, session) {#
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
-      need(input$run_fc2 > 0, message = paste0("Run Forecast in Objective 7"))
+      need(input$run_fc2 > 0, message = paste0("Run Forecast in Objective 8"))
     )
     validate(
       need(input$save_update_fc_plot > 0, "If plot is missing please click 'Save plot' under the plot above.")
     )
     
     list(src = "www/fc_update.png",
-         alt = "Image failed to render",
+         alt = "Image failed to render. Please click 'Save plot' again.",
          width = "100%")
   }, deleteFile = FALSE)
+  
+  #** Convert NOAA forecast data 2 ----
+  fc_conv2 <- reactiveValues(lst = NULL)
+  
+  observeEvent(input$load_fc3, {
+    validate(
+      need(input$table01_rows_selected != "",
+           message = "Please select a site in Objective 1.")
+    )
+    validate(
+      need(input$load_fc > 0, "Load weather forecast in Objective 6.")
+    )
+    validate(
+      need(!is.null(lmfit2$lm),
+           message = "Please add a regression line for the air vs. water temperature.")
+    )
+    validate(
+      need(!is.null(lmfit3$lm),
+           message = "Please add a regression line for the SWR vs. uPAR.")
+    )
+    
+    fc_idx <- which(names(fc_data()) == "2020-10-02")
+    
+    coeffs1 <- lmfit2$lm$coefficients # temp
+    coeffs2 <- lmfit2$lm$coefficients # radiation
+    
+    fc_conv_list <- lapply(1:30, function(x) {
+      df <- fc_data()[[fc_idx]]
+      sub <- df[(df[, 2] %in% c("air_temperature",
+                                "surface_downwelling_shortwave_flux_in_air",
+                                "precipitation_flux")), c(1, 2, 2 + x)]
+      df2 <- tidyr::pivot_wider(data = sub, id_cols = time, names_from = L1, values_from = 3)
+      df2$air_temperature <- df2$air_temperature - 273.15
+      df2$date <- as.Date(df2$time)
+      df2$time <- NULL
+      df3 <- plyr::ddply(df2, "date", function(x){
+        colMeans(x[, 1:3], na.rm = TRUE)
+      })
+      # df3 <- df3[2:16, ]
+      fc_out_dates <<- df3$date
+      df3$wtemp <- coeffs1[2] * df3$air_temperature + coeffs1[1]
+      df3$upar <- coeffs2[2] * df3$surface_downwelling_shortwave_flux_in_air + coeffs2[1]
+      
+      df3 <- df3[, c("date", "wtemp", "upar")]
+      df3$fc_date <- "2020-09-25"
+      return(df3)
+    })
+    
+    fc_conv2$lst <- fc_conv_list
+    
+  })
+  
   
   #* New Forecast ====
   npz_fc_data2 <- reactive({
@@ -4071,7 +4542,7 @@ server <- function(input, output, session) {#
                  detail = "This may take a while. This window will disappear  
                      when it is finished running.", value = 0.01)
     
-    # Parameters from 'Build Model'
+    # Parameters from 'Build model'
     parms[1] <- as.numeric(pars_react$nut_uptake)
     parms[7] <- as.numeric(pars_react$mort_rate)
     
@@ -4080,11 +4551,13 @@ server <- function(input, output, session) {#
     yini[2] <- input$nut_init4 * 16.129 # Convert from mg/L to mmolN/m3
     
     # progress$inc(0.33, detail = "Running the model")
-    fc_length <- length(npz_fc_data2())
+    fc_length <- length(fc_conv2$lst)
     
     fc_res <- lapply(1:fc_length, function(x) {
       
-      npz_inputs <- npz_fc_data2()[[x]]
+      noaa_fc <- fc_conv2$lst[[x]]
+      npz_inputs <- create_npz_inputs(time = noaa_fc$date, PAR = noaa_fc$upar, temp = noaa_fc$wtemp)
+      # npz_inputs <- npz_fc_data2()[[x]]
       
       times <- 1:nrow(npz_inputs)
       
@@ -4330,14 +4803,14 @@ server <- function(input, output, session) {#
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
-      need(input$run_fc2 > 0, message = paste0("Run Forecast in Objective 7"))
+      need(input$run_fc2 > 0, message = paste0("Run Forecast in Objective 8"))
     )
     validate(
       need(input$save_new_fc_plot > 0, "If plot is missing please click 'Save plot' under the 'New Forecast plot' above.")
     )
     
     list(src = "www/new_fc.png",
-         alt = "Image failed to render",
+         alt = "Image failed to render. Please click 'Save plot' again.",
          width = "100%")
   }, deleteFile = FALSE)
 
@@ -4483,7 +4956,7 @@ server <- function(input, output, session) {#
   
   observe({
     toggleState(id = "prevBtn1", condition = rv1$prev > 0)
-    toggleState(id = "nextBtn1", condition = rv1$nxt < 7)
+    toggleState(id = "nextBtn1", condition = rv1$nxt < 8)
     hide(selector = ".page")
     # show(paste0("mtab", rv1$nxt))
   })
@@ -4494,17 +4967,17 @@ server <- function(input, output, session) {#
     curr_tab1 <- input$maintab
     idx <- which(tab_names$tab_id == curr_tab1)
     new_nam <- tab_names$name[idx + 1]
-    if (curr_tab1 == "mtab4") {
+    if (curr_tab1 == "mtab5") {
       curr_obj <- input$tabseries1
       idx2 <- which(tab_names$tab_id == curr_obj)
       new_nam <- tab_names$name[idx2 + 1]
     }
-    if (curr_tab1 == "mtab5") {
+    if (curr_tab1 == "mtab6") {
       curr_obj <- input$tabseries2
       idx2 <- which(tab_names$tab_id == curr_obj)
       new_nam <- tab_names$name[idx2 + 1]
     } 
-    if(curr_tab1 == "mtab6") {
+    if(curr_tab1 == "mtab7") {
       updateActionButton(session, inputId = "nextBtn1", label = paste("Next >"))
     } else {
       # shinyjs::show(id = "nextBtn1")
@@ -4518,13 +4991,13 @@ server <- function(input, output, session) {#
     idx <- which(tab_names$tab_id == curr_tab1)
     new_nam <- tab_names$name[idx - 1]
     
-    if (curr_tab1 == "mtab4") {
+    if (curr_tab1 == "mtab5") {
       curr_obj <- input$tabseries1
       idx2 <- which(tab_names$tab_id == curr_obj)
       if(curr_obj == "obj1") idx2 <- idx2 - 1 # Move off Activty A label
       new_nam <- tab_names$name[idx2 - 1]
     }
-    if (curr_tab1 == "mtab5") {
+    if (curr_tab1 == "mtab6") {
       curr_obj <- input$tabseries2
       idx2 <- which(tab_names$tab_id == curr_obj)
       if(curr_obj == "obj6") idx2 <- idx2 - 1 # Move off Activty B label
@@ -4544,13 +5017,13 @@ server <- function(input, output, session) {#
     
     curr_tab1 <- input$maintab
     idx <- which(tab_names$tab_id == curr_tab1)
-    if (curr_tab1 == "mtab4" & rv1a$nxt < 6) {
+    if (curr_tab1 == "mtab5" & rv1a$nxt < 6) {
       curr_obj <- input$tabseries1
 
       updateTabsetPanel(session, "tabseries1",
                         selected = paste0("obj", rv1a$nxt))
       
-    } else if (curr_tab1 == "mtab5" & rv2a$nxt < 12) {
+    } else if (curr_tab1 == "mtab6" & rv2a$nxt < 13) {
       curr_obj <- input$tabseries2
       updateTabsetPanel(session, "tabseries2",
                         selected = paste0("obj", rv2a$nxt))
@@ -4569,13 +5042,13 @@ server <- function(input, output, session) {#
   observeEvent(input$prevBtn1, {
     curr_tab1 <- input$maintab
     idx <- which(tab_names$tab_id == curr_tab1)
-    if (curr_tab1 == "mtab4" & rv1a$prev > 0) {
+    if (curr_tab1 == "mtab5" & rv1a$prev > 0) {
       curr_obj <- input$tabseries1
       
       updateTabsetPanel(session, "tabseries1",
                         selected = paste0("obj", rv1a$prev))
       
-    } else if (curr_tab1 == "mtab5" & rv2a$prev > 5) {
+    } else if (curr_tab1 == "mtab6" & rv2a$prev > 5) {
       curr_obj <- input$tabseries2
       updateTabsetPanel(session, "tabseries2",
                         selected = paste0("obj", rv2a$prev))
@@ -4583,7 +5056,7 @@ server <- function(input, output, session) {#
       updateTabsetPanel(session, "tabseries1",
                         selected = "obj5")
       updateTabsetPanel(session, "tabseries2",
-                        selected = "obj11")
+                        selected = "obj12")
       updateTabsetPanel(session, "maintab",
                         selected = paste0("mtab", rv1$prev))
     }
@@ -4599,29 +5072,7 @@ server <- function(input, output, session) {#
     rv1a$nxt <- readr::parse_number(curr_tab1) + 1
   })
   
-  observe({
-    toggleState(id = "prevBtn1a", condition = rv1a$prev > 0)
-    toggleState(id = "nextBtn1a", condition = rv1a$nxt < 6)
-    hide(selector = ".page")
-    # show(paste0("mtab", rv1a$nxt))
-  })
-  
-  observeEvent(input$nextBtn1a, {
-    updateTabsetPanel(session, "tabseries1",
-                      selected = paste0("obj", rv1a$nxt))
-    shinyjs::runjs("window.scrollTo(0, 0)") # scroll to top of page
-  })
-  
-  observeEvent(input$prevBtn1a, {
-    updateTabsetPanel(session, "tabseries1",
-                      selected = paste0("obj", rv1a$prev))
-    shinyjs::runjs("window.scrollTo(0, 0)")
-    
-  })
-  
-  
   #* Tab 2a ----
-  
   rv2a <- reactiveValues(prev = 0, nxt = 2)
   observeEvent(input$tabseries2, {
     curr_tab1 <- input$tabseries2
@@ -4629,37 +5080,17 @@ server <- function(input, output, session) {#
     rv2a$nxt <- readr::parse_number(curr_tab1) + 1
   })
   
-  observe({
-    toggleState(id = "prevBtn2a", condition = rv2a$prev > 5)
-    toggleState(id = "nextBtn2a", condition = rv2a$nxt < 12)
-    hide(selector = ".page")
-    # show(paste0("mtab", rv2a$nxt))
-  })
-  
-  observeEvent(input$nextBtn2a, {
-    updateTabsetPanel(session, "tabseries2",
-                      selected = paste0("obj", rv2a$nxt))
-    shinyjs::runjs("window.scrollTo(0, 0)") # scroll to top of page
-  })
-  
-  observeEvent(input$prevBtn2a, {
-    updateTabsetPanel(session, "tabseries2",
-                      selected = paste0("obj", rv2a$prev))
-    shinyjs::runjs("window.scrollTo(0, 0)")
-    
-  })
-  
   # Return to Introduction tab
   observeEvent(input$return_intro, {
     updateTabsetPanel(session, "maintab",
-                      selected = "mtab2")
+                      selected = "mtab3")
     shinyjs::runjs("window.scrollTo(0, 600)") # scroll to top of page
   })
   
   # Embedded Action links
   observeEvent(input$act_A_obj_5, {
     updateTabsetPanel(session, "maintab",
-                      selected = "mtab4")
+                      selected = "mtab5")
     updateTabsetPanel(session, "tabseries1",
                       selected = "obj5")
     shinyjs::runjs("window.scrollTo(0, 0)")
@@ -4748,7 +5179,7 @@ server <- function(input, output, session) {#
   # Read values from state$values when we restore
   onRestore(function(state) {
     updateTabsetPanel(session, "maintab",
-                      selected = "mtab4")
+                      selected = "mtab5")
     updateTabsetPanel(session, "tabseries1",
                       selected = "obj1")
   })
@@ -4786,17 +5217,17 @@ server <- function(input, output, session) {#
       if(input$q16 == "") "Activity B: Objective 6 - Q. 16",
       if(input$save_noaa_plot == 0) "Activity B: Objective 6 - Q. 16 Save plot of NOAA weather forecast",
       if(input$q17a == "" | input$q17b == "" | input$q17c == "") "Activity B: Objective 6 - Q. 17",
-      if(input$q18 == "") "Activity B: Objective 7 - Q. 18",
-      if(input$q19 == "") "Activity B: Objective 7 - Q. 19",
-      if(input$save_comm_plot == 0) "Activity B: Objective 7 - Q. 19 Save plot of ecological forecast",
-      if(input$q20 == "") "Activity B: Objective 8 - Q. 20",
-      if(input$q21 == "") "Activity B: Objective 9 - Q. 21",
-      if(input$save_assess_plot == 0) "Activity B: Objective 9 - Q. 21 Save plot of assessment of the ecological forecast",
-      if(input$q22 == "") "Activity B: Objective 10 - Q. 22",
-      if(input$save_update_fc_plot == 0) "Activity B: Objective 10 - Q. 22 Save plot of updated ecological forecast",
-      if(input$q23 == "") "Activity B: Objective 11 - Q. 23",
-      if(input$save_new_fc_plot == 0) "Activity B: Objective 11 - Q. 23 Save plot of new ecological forecast",
-      if(input$q24 == "") "Activity B: Objective 11 - Q. 24",
+      if(input$q18 == "") "Activity B: Objective 8 - Q. 18",
+      if(input$q19 == "") "Activity B: Objective 8 - Q. 19",
+      if(input$save_comm_plot == 0) "Activity B: Objective 8 - Q. 19 Save plot of ecological forecast",
+      if(input$q20 == "") "Activity B: Objective 9 - Q. 20",
+      if(input$q21 == "") "Activity B: Objective 10 - Q. 21",
+      if(input$save_assess_plot == 0) "Activity B: Objective 10 - Q. 21 Save plot of assessment of the ecological forecast",
+      if(input$q22 == "") "Activity B: Objective 11 - Q. 22",
+      if(input$save_update_fc_plot == 0) "Activity B: Objective 11 - Q. 22 Save plot of updated ecological forecast",
+      if(input$q23 == "") "Activity B: Objective 12 - Q. 23",
+      if(input$save_new_fc_plot == 0) "Activity B: Objective 12 - Q. 23 Save plot of new ecological forecast",
+      if(input$q24 == "") "Activity B: Objective 12 - Q. 24",
       if(input$q25a == "" | input$q25b == "" | input$q25c == "") "Activity C: Q. 25",
       if(input$q26 == "") "Activity C: Q. 26"
     )
@@ -4971,13 +5402,13 @@ server <- function(input, output, session) {#
   })
   
   observe({
-    req(input$maintab == "mtab4" & exists("up_answers") & input$tabseries1 == "obj1")
+    req(input$maintab == "mtab5" & exists("up_answers") & input$tabseries1 == "obj1")
     req(!is.null(up_answers$site_row))
     tryCatch(updateSelectizeInput(session, "row_num", selected = up_answers$site_row), error = function(e) {NA})
   })
   
   observe({
-    req(input$maintab == "mtab4" & exists("up_answers") & input$tabseries1 == "obj2")
+    req(input$maintab == "mtab5" & exists("up_answers") & input$tabseries1 == "obj2")
     updateNumericInput(session, "q6a_mean", value = up_answers$a6a_mean)
     updateNumericInput(session, "q6a_max", value = up_answers$a6a_max)
     updateNumericInput(session, "q6a_min", value = up_answers$a6a_min)
@@ -4996,7 +5427,7 @@ server <- function(input, output, session) {#
   })
   
   observe({
-    req(input$maintab == "mtab4" & exists("up_answers") & input$tabseries1 == "obj3")
+    req(input$maintab == "mtab5" & exists("up_answers") & input$tabseries1 == "obj3")
     updateTextAreaInput(session, "q7a", value = up_answers$a7a)
     updateTextAreaInput(session, "q7b", value = up_answers$a7b)
     updateTextAreaInput(session, "q7c", value = up_answers$a7c)
