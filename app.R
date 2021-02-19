@@ -459,7 +459,7 @@ ui <- function(req) {
                                  h3("Resume your progress"),
                                  p(id = "txt_j", "To reload the app input you can upload the downloaded '.rds' file below and it will populate your answers into the Shiny app."),
                                  fileInput("upload_answers", "Upload data", accept = ".rds"), # B77C2C
-                                 p(id = "txt_j", HTML(paste0(tags$b("Note:"), " You will need to navigate to tabs Objective 1, 2 and 3 in Activity A after uploading your file for the inputs to load."))),
+                                 p(id = "txt_j", HTML(paste0(tags$b("Note:"), " You will need to navigate to tabs Objective 1, 2 and 3 in Activity A after uploading your file for the inputs to load there. You will also need to load the NOAA data in Objective 6."))),
                                  p(id = "txt_j", "Currently the plots do not save to the file.  If you generated plots during your last session, you will need to reload the data and reproduce the plots before generating your report.  Additionally, the answers for Q.10 will need to be re-submitted.")
                           ),
                           column(4, offset = 1,
@@ -1318,11 +1318,11 @@ border-color: #FFF;
                                    fluidRow(
                                      column(12,
                                             h3("Convert NOAA weather forecast"),
-                                            p("The model we are using uses data on a daily timestep so we will  aggregate the hourly weather forecast to daily averages first and then use the linear model to convert it to surface water temperature and underwater PAR."),
+                                            p("The model we are using uses data on a daily timestep so we will aggregate the hourly weather forecast to daily averages first and then use the linear model to convert the 30 members in the ensemble to surface water temperature and underwater PAR."),
                                             actionButton("conv_fc", "Convert forecast!", icon = icon("exchange")),
                                             br(),
                                             wellPanel(
-                                              plotlyOutput("conv_plot"),
+                                              plotlyOutput("conv_plot", height = "600px"),
                                             ),
                                             hr()
                                      )
@@ -2185,7 +2185,9 @@ server <- function(input, output, session) {#
   selected2 <- reactiveValues(sel = NULL)
   observeEvent(input$clear_sel2, {
     selected2$sel <- NULL
-    lmfit2$lm <- NULL
+    lmfit2$m <- NULL
+    lmfit2$b <- NULL
+    lmfit2$r2 <- NULL
   })
   
   #selected
@@ -2250,7 +2252,7 @@ server <- function(input, output, session) {#
     return(list(data = df, sel = sel))
   })
   
-  lmfit2 <- reactiveValues(lm = NULL)
+  lmfit2 <- reactiveValues(m = NULL, b = NULL, r2 = NULL)
   
   observeEvent(input$add_lm2, {
     if(is.null(selected2$sel)) {
@@ -2258,17 +2260,20 @@ server <- function(input, output, session) {#
     } else {
       df <- selected2$sel[, 2:4]
     }
-    lmfit2$lm <- lm(df[, 3] ~ df[, 2])
+    fit <- lm(df[, 3] ~ df[, 2])
+    coeffs <- fit$coefficients
+    lmfit2$m <- round(coeffs[2], 2)
+    lmfit2$b <- round(coeffs[1], 2)
+    lmfit2$r2 <- round(summary(fit)$r.squared, 2)
   })
   
   output$lm2_r2 <- renderText({
     validate(
-      need(!is.null(lmfit2$lm),
+      need(!is.null(lmfit2$r2),
            message = "Please click 'Add linear regression'.")
     )
-    if(!is.null(lmfit2$lm)) {
-      r2 <- round(summary(lmfit2$lm)$r.squared, 2)
-      paste0("R2 = ", r2)
+    if(!is.null(lmfit2$r2)) {
+      paste0("R2 = ", lmfit2$r2)
     } else {
       "R2 = NULL"
     }
@@ -2276,14 +2281,11 @@ server <- function(input, output, session) {#
   
   output$lm2_eqn <- renderUI({
     validate(
-      need(!is.null(lmfit2$lm),
+      need(!is.null(lmfit2$m),
            message = "Please click 'Add linear regression'.")
     )
-    coeff <- lmfit2$lm$coefficients
-    coeff <- as.character(round(coeff, 2))
-    r2 <- as.character(round(summary(lmfit2$lm)$r.squared, 2))
     formula <- "$$ wtemp = %s * airtemp + %s   ;   r^2 = %s $$"
-    text <- sprintf(formula, coeff[2], coeff[1], r2)
+    text <- sprintf(formula, lmfit2$m, lmfit2$b, lmfit2$r2)
     withMathJax(  
       tags$p(text)
     )
@@ -2308,10 +2310,9 @@ server <- function(input, output, session) {#
       p <- p + 
         geom_point(data = obj, aes_string(names(obj)[2], names(obj)[3]), color = cols[2])
     }
-    if(!is.null(lmfit2$lm)) {
-      coeff = lmfit2$lm$coefficients
+    if(!is.null(lmfit2$m)) {
       p <- p + 
-        geom_abline(slope = coeff[2], intercept = coeff[1], color = cols[2], linetype = "dashed")
+        geom_abline(slope = lmfit2$m, intercept = lmfit2$b, color = cols[2], linetype = "dashed")
     }
     
     return(ggplotly(p, dynamicTicks = TRUE, source = "B"))
@@ -2322,7 +2323,9 @@ server <- function(input, output, session) {#
   selected3 <- reactiveValues(sel = NULL)
   observeEvent(input$clear_sel3, {
     selected3$sel <- NULL
-    lmfit3$lm <- NULL
+    lmfit3$m <- NULL
+    lmfit3$b <- NULL
+    lmfit3$r2 <- NULL
   })
   
   #selected
@@ -2384,7 +2387,7 @@ server <- function(input, output, session) {#
     return(list(data = df, sel = sel))
   })
   
-  lmfit3 <- reactiveValues(lm = NULL)
+  lmfit3 <- reactiveValues(m = NULL, b = NULL, r2 = NULL)
   
   observeEvent(input$add_lm3, {
     if(is.null(selected3$sel)) {
@@ -2392,16 +2395,20 @@ server <- function(input, output, session) {#
     } else {
       df <- selected3$sel[, 2:4]
     }
-    lmfit3$lm <- lm(df[, 3] ~ df[, 2])
+    fit <- lm(df[, 3] ~ df[, 2])
+    coeffs <- fit$coefficients
+    lmfit3$m <- round(coeffs[2], 2)
+    lmfit3$b <- round(coeffs[1], 2)
+    lmfit3$r2 <- round(summary(fit)$r.squared, 2)
   })
   
   output$lm3_r2 <- renderText({
     validate(
-      need(!is.null(lmfit3$lm),
+      need(!is.null(lmfit3$r2),
            message = "Please click 'Add linear regression'.")
     )
-    if(!is.null(lmfit3$lm)) {
-      r2 <- round(summary(lmfit3$lm)$r.squared, 2)
+    if(!is.null(lmfit3$m)) {
+      r2 <- round(lmfit3$r2, 2)
       paste0("R2 = ", r2)
     } else {
       "R2 = NULL"
@@ -2410,18 +2417,15 @@ server <- function(input, output, session) {#
   
   output$lm3_eqn <- renderUI({
     validate(
-      need(!is.null(lmfit3$lm),
+      need(!is.null(lmfit3$m),
            message = "Please click 'Add linear regression'.")
     )
-    coeff <- lmfit3$lm$coefficients
-    coeff <- as.character(round(coeff, 2))
-    r2 <- as.character(round(summary(lmfit3$lm)$r.squared, 2))
-    if(coeff[1] < 0) {
+    if(lmfit3$b < 0) {
       formula <- "$$ uPAR = %s * SWR %s   ;   r^2 = %s $$"
     } else {
       formula <- "$$ uPAR = %s * SWR + %s   ;   r^2 = %s $$"
     }
-    text <- sprintf(formula, coeff[2], coeff[1], r2)
+    text <- sprintf(formula, lmfit3$m, lmfit3$b, lmfit3$r2)
     withMathJax(  
       tags$p(text)
     )
@@ -2446,10 +2450,9 @@ server <- function(input, output, session) {#
       p <- p + 
         geom_point(data = obj, aes_string(names(obj)[2], names(obj)[3]), color = cols[2])
     }
-    if(!is.null(lmfit3$lm)) {
-      coeff = lmfit3$lm$coefficients
+    if(!is.null(lmfit3$m)) {
       p <- p + 
-        geom_abline(slope = coeff[2], intercept = coeff[1], color = cols[2], linetype = "dashed")
+        geom_abline(slope = lmfit3$m, intercept = lmfit3$b, color = cols[2], linetype = "dashed")
     }
     
     return(ggplotly(p, dynamicTicks = TRUE, source = "C"))
@@ -2468,18 +2471,21 @@ server <- function(input, output, session) {#
       need(input$load_fc > 0, "Load weather forecast in Objective 6.")
     )
     validate(
-      need(!is.null(lmfit2$lm),
+      need(!is.null(lmfit2$m),
            message = "Please add a regression line for the air vs. water temperature.")
     )
     validate(
-      need(!is.null(lmfit3$lm),
+      need(!is.null(lmfit3$m),
            message = "Please add a regression line for the SWR vs. uPAR.")
     )
     
-    fc_idx <- which(names(fc_data()) == "2020-09-25")
+    progress <- shiny::Progress$new()
+    # Make sure it closes when we exit this reactive, even if there's an error
+    on.exit(progress$close())
+    progress$set(message = paste0("Converting NOAA data."), 
+                 detail = "This window will disappear when it is finished converting.", value = 0.01)
     
-    coeffs1 <- lmfit2$lm$coefficients # temp
-    coeffs2 <- lmfit2$lm$coefficients # radiation
+    fc_idx <- which(names(fc_data()) == "2020-09-25")
     
     fc_conv_list <- lapply(1:30, function(x) {
       df <- fc_data()[[fc_idx]]
@@ -2495,15 +2501,28 @@ server <- function(input, output, session) {#
       })
       # df3 <- df3[2:16, ]
       fc_out_dates <<- df3$date
-      df3$wtemp <- coeffs1[2] * df3$air_temperature + coeffs1[1]
-      df3$upar <- coeffs2[2] * df3$surface_downwelling_shortwave_flux_in_air + coeffs2[1]
+      df3$wtemp <- lmfit2$m * df3$air_temperature + lmfit2$b
+      df3$upar <- lmfit3$m * df3$surface_downwelling_shortwave_flux_in_air + lmfit3$b
       
       df3 <- df3[, c("date", "wtemp", "upar")]
       df3$fc_date <- "2020-09-25"
+      progress$set(value = x/30)
       return(df3)
     })
     
+    progress$close()
     fc_conv$lst <- fc_conv_list
+    
+    l1 <- fc_conv$lst
+    idvars <- colnames(l1[[1]])
+    mlt1 <- reshape::melt(l1, id.vars = idvars)
+    if(min(mlt1$upar, na.rm = TRUE) <= 0) {
+      showModal(modalDialog(
+        title = "Uh oh!",
+        "Inspect your Underwater PAR plot. It looks like you have negative values which isn't possible!
+        Adjust your linear regression and convert the forecast again."
+      ))
+    }
     
   })
   
@@ -2517,11 +2536,11 @@ server <- function(input, output, session) {#
       need(input$load_fc > 0, "Load weather forecast in Objective 6.")
     )
     validate(
-      need(!is.null(lmfit2$lm),
+      need(!is.null(lmfit2$m),
            message = "Please add a regression line for the air vs. water temperature.")
     )
     validate(
-      need(!is.null(lmfit3$lm),
+      need(!is.null(lmfit3$m),
            message = "Please add a regression line for the SWR vs. uPAR.")
     )
     validate(
@@ -4674,18 +4693,15 @@ server <- function(input, output, session) {#
       need(input$load_fc > 0, "Load weather forecast in Objective 6.")
     )
     validate(
-      need(!is.null(lmfit2$lm),
+      need(!is.null(lmfit2$m),
            message = "Please add a regression line for the air vs. water temperature.")
     )
     validate(
-      need(!is.null(lmfit3$lm),
+      need(!is.null(lmfit3$m),
            message = "Please add a regression line for the SWR vs. uPAR.")
     )
     
     fc_idx <- which(names(fc_data()) == "2020-10-02")
-    
-    coeffs1 <- lmfit2$lm$coefficients # temp
-    coeffs2 <- lmfit2$lm$coefficients # radiation
     
     fc_conv_list <- lapply(1:30, function(x) {
       df <- fc_data()[[fc_idx]]
@@ -4701,16 +4717,15 @@ server <- function(input, output, session) {#
       })
       # df3 <- df3[2:16, ]
       fc_out_dates2 <<- df3$date
-      df3$wtemp <- coeffs1[2] * df3$air_temperature + coeffs1[1]
-      df3$upar <- coeffs2[2] * df3$surface_downwelling_shortwave_flux_in_air + coeffs2[1]
+      df3$wtemp <- lmfit2$m * df3$air_temperature + lmfit2$b
+      df3$upar <- lmfit3$m * df3$surface_downwelling_shortwave_flux_in_air + lmfit3$b
       
       df3 <- df3[, c("date", "wtemp", "upar")]
-      df3$fc_date <- "2020-09-25"
+      df3$fc_date <- "2020-10-02"
       return(df3)
     })
     
     fc_conv2$lst <- fc_conv_list
-    
   })
   
   
@@ -5064,12 +5079,17 @@ server <- function(input, output, session) {#
     
     par_file <- "data/par_save.csv"
     write.csv(par_save$value, par_file, quote = FALSE, row.names = TRUE)
+    summ_file <- "data/mod_setting_summary.csv"
+    write.csv(final_parms$df, summ_file, quote = FALSE, row.names = TRUE)
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
     progress$set(message = "Gathering data and building report.", 
                  detail = "This may take a while. This window will disappear  
                      when the report is ready.", value = 1)
+    
+    # Prepare regression equations
+    
    
     # Set up parameters to pass to Rmd document
     params <- list(name = input$name,
@@ -5143,10 +5163,16 @@ server <- function(input, output, session) {#
                    comm_plot = "www/comm_fc_plot.png",
                    assess_plot = "www/assess_fc.png",
                    update_plot = "www/fc_update.png",
-                   next_fc_plot = "www/new_fc.png"
+                   next_fc_plot = "www/new_fc.png",
+                   wt_m = lmfit2$m,
+                   wt_b = lmfit2$b,
+                   wt_r2 = lmfit2$r2,
+                   upar_m = lmfit3$m,
+                   upar_b = lmfit3$b,
+                   upar_r2 = lmfit3$r2,
+                   mod_summ = summ_file
     )
-    print(params)
-    
+
     
     tmp_file <- paste0(tempfile(), ".docx") #Creating the temp where the .pdf is going to be stored
     
@@ -5557,11 +5583,16 @@ server <- function(input, output, session) {#
       a26 = input$q26,
       param_df = par_save$value,
       site_row = input$table01_rows_selected ,
-      mod_input = input$mod_sens
-      # mod_ann_plot = p_mod_run$plot
+      mod_input = input$mod_sens,
+      wt_m = lmfit2$m,
+      wt_b = lmfit2$b,
+      wt_r2 = lmfit2$r2,
+      upar_m = lmfit3$m,
+      upar_b = lmfit3$b,
+      upar_r2 = lmfit3$r2
     )
     # ans_list <- data.frame(matrix(unlist(ans_list), nrow=length(ans_list), byrow = TRUE))
-    # print(par_save())
+    # print(ans_list)
   })
   
   output$download_answers <- downloadHandler(
@@ -5635,12 +5666,16 @@ server <- function(input, output, session) {#
     updateSliderInput(session, "mort_rate", value = up_answers$param_df$Mortality[idx])
     updateSliderInput(session, "nut_uptake", value = up_answers$param_df$Uptake[idx])
     
-    
+    # Update reactive values
     par_save$value <- up_answers$param_df
+    lmfit2$m <- up_answers$wt_m
+    lmfit2$b <- up_answers$wt_b
+    lmfit2$r2 <- up_answers$wt_r2
+    lmfit3$m <- up_answers$upar_m
+    lmfit3$b <- up_answers$upar_b
+    lmfit3$r2 <- up_answers$upar_r2
     
-    # Save as a png file
-    ggsave("www/mod_run_2019.png", up_answers$mod_ann_plot,  dpi = 300, width = 580, height = 320, units = "mm")
-    
+    print(lmfit3$m)
   })
   
   observe({
