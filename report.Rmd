@@ -77,6 +77,13 @@ params:
   assess_plot: ""
   update_plot: ""
   next_fc_plot: ""
+  wt_m: NULL
+  wt_b: NULL
+  wt_r2: NULL
+  upar_m: NULL
+  upar_b: NULL
+  upar_r2: NULL
+  mod_summ: "data/mod_setting_summary.csv"
 ---
 
 ```{r setup, include=FALSE}
@@ -84,6 +91,33 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 ```{r}
 time <- Sys.time()
+
+if(!is.null(params$wt_m)) {
+  wt_m <- params$wt_m
+  wt_b <- params$wt_b
+  wt_r2 <- params$wt_r2
+  wt_lin_reg <- TRUE
+} else {
+  wt_m <- 0
+  wt_b <- 0
+  wt_r2 <- 0
+  wt_lin_reg <- FALSE
+}
+
+
+if(!is.null(params$upar_lm)) {
+  upar_m <- params$upar_m
+  upar_b <- params$upar_b
+  upar_r2 <- params$upar_r2
+  upar_lin_reg <- TRUE
+} else {
+  upar_m <- 0
+  upar_b <- 0
+  upar_r2 <- 0
+  upar_lin_reg <- FALSE
+}
+
+
 
 # Read in assessment questions
 quest <- read.csv("data/handout_questions.csv", row.names = 1)
@@ -103,6 +137,19 @@ if(file.exists(params$save_pars)) {
   "Mortality" = rep("", 5),
   "Uptake" = rep("", 5), row.names = c("Q12", "Q13a", "Q13b", "Q14", "Q15")
   )
+}
+
+if(file.exists(params$mod_summ)) {
+  mod_sett <- read.csv(params$mod_summ, row.names = 1)
+} else {
+  mod_sett <- data.frame(
+  "SWT" = rep("", 3),
+  "uPAR" = rep("", 3),
+  "Phytos" = rep("", 3),
+  "Nutrients" = rep("", 3),
+  "Mortality" = rep("", 3),
+  "Uptake" = rep("", 3), row.names = c("Forecast 1", "Updated Forecast", "Forecast 2")
+)
 }
 
 if(length(params$a10_pars) == 0 & length(params$a10_states) == 0) {
@@ -239,6 +286,11 @@ Now navigate to the [Shiny interface](https://macrosystemseddie.shinyapps.io/mod
 
 ## Objective 1: Select and view site\
 
+***
+`r module_text["obj_01", ]`
+
+***
+
 5. `r substr(quest["q5", ], 4, nchar(quest["q5", ]))`  
 
 *Table 1. Site Characteristics*
@@ -268,8 +320,13 @@ if (!pheno_chk) {cat("<!---")}
 if (!pheno_chk) {cat("-->")}
 ```
 
-## Objective 2: Explore data
-\
+## Objective 2: Explore data\
+
+***
+`r module_text["obj_02", ]`
+
+***
+
 6. `r substr(quest["q6", ], 4, nchar(quest["q6", ]))`
 
 *Table 2. Description of site variables:*  
@@ -285,6 +342,11 @@ if (!pheno_chk) {cat("-->")}
 \
 
 ## Objective 3: Explore variable relationships\
+
+***
+`r module_text["obj_03", ]`
+
+***
 
 7. `r substr(quest["q7", ], 4, nchar(quest["q7", ]))`
 \
@@ -304,6 +366,11 @@ if (!pheno_chk) {cat("-->")}
 \
 
 ## Objective 4: Understand model\
+
+***
+`r module_text["obj_04", ]`
+
+***
 
 9. `r substr(quest["q9", ], 4, nchar(quest["q9", ]))`  
 \
@@ -331,6 +398,11 @@ kable(state_par, caption = "Table 4. Sorted parameters and state variabes.", row
 \
 
 ## Objective 5: Build model\
+
+***
+`r module_text["obj_05", ]`
+
+***
 
 ```{r echo = FALSE, results = "asis"}
 library(knitr)
@@ -381,6 +453,11 @@ if (!mod_ann_chk) {cat("-->")}
 
 ## Objective 6: Examine uncertainty\
 
+***
+`r module_text["obj_06", ]`
+
+***
+
 16. `r substr(quest["q16", ], 6, nchar(quest["q16", ]))`  
 \
 **Answer:** `r params$a16`
@@ -410,8 +487,65 @@ if (!noaa_plot_chk) {cat("-->")}
     **Answer:** `r params$a17c`  
     \
 
+## Objective 7: Prepare inputs\
 
-## Objective 7: Forecast\
+***
+`r module_text["obj_07", ]`
+
+***
+
+**Linear Regression**\
+`r module_text["linear_regression", ]`\
+The equation form for a linear regression is:\
+$$y = mx + b $$
+\
+
+Linear regression equation for surface water temperature and air temperature:
+
+```{r results='asis', echo=FALSE}
+if (!wt_lin_reg) {cat("<!---")}
+```
+$$wtemp = `r wt_m` * airtemp + `r wt_b` $$
+$$r^2 = `r wt_r2`$$
+```{r results='asis', echo=FALSE}
+if (!wt_lin_reg) {cat("-->")}
+```
+```{r results='asis', echo=FALSE}
+if (wt_lin_reg) {cat("<!---")}
+```
+*Please enter the values for "m" and "b" below:*
+$$wtemp = m * airtemp + b $$
+```{r results='asis', echo=FALSE}
+if (wt_lin_reg) {cat("-->")}
+```
+\
+
+Linear regression equation for underwater PAR (uPAR) and shortwave radiation (SWR):
+
+```{r results='asis', echo=FALSE}
+if (!upar_lin_reg) {cat("<!---")}
+```
+$$uPAR = `r upar_m` * SWR + `r upar_b` $$
+$$r^2 = `r upar_r2`$$
+```{r results='asis', echo=FALSE}
+if (!upar_lin_reg) {cat("-->")}
+```
+```{r results='asis', echo=FALSE}
+if (upar_lin_reg) {cat("<!---")}
+```
+*Please enter the values for "m" and "b" below:*
+$$uPAR = m * SWR + b $$
+```{r results='asis', echo=FALSE}
+if (upar_lin_reg) {cat("-->")}
+```
+\
+
+## Objective 8: Forecast\
+
+***
+`r module_text["obj_08", ]`
+
+***
 
 18. `r substr(quest["q18", ], 6, nchar(quest["q18", ]))`  
 \
@@ -423,7 +557,12 @@ if (!noaa_plot_chk) {cat("-->")}
 **Answer:** `r params$a19`  
 \
 
-## Objective 8: Communicate forecast\
+## Objective 9: Communicate forecast\
+
+***
+`r module_text["obj_09", ]`
+
+***
 
 20. `r substr(quest["q20", ], 6, nchar(quest["q20", ]))`  
 \
@@ -440,7 +579,12 @@ if (!comm_plot_chk) {cat("-->")}
 ```
 \
 
-## Objective 9: Assess forecast\
+## Objective 10: Assess forecast\
+
+***
+`r module_text["obj_10", ]`
+
+***
 
 21. `r substr(quest["q21", ], 6, nchar(quest["q21", ]))`  
 \
@@ -456,7 +600,12 @@ if (!assess_plot_chk) {cat("<!---")}
 if (!assess_plot_chk) {cat("-->")}
 ```
 
-## Objective 10: Update model\
+## Objective 11: Update model\
+
+***
+`r module_text["obj_11", ]`
+
+***
 
 22. `r substr(quest["q22", ], 6, nchar(quest["q22", ]))`  
 \
@@ -472,7 +621,12 @@ if (!update_plot_chk) {cat("<!---")}
 if (!update_plot_chk) {cat("-->")}
 ```
 
-## Objective 11: Next forecast\
+## Objective 12: Next forecast\
+
+***
+`r module_text["obj_12", ]`
+
+***
 
 23. `r substr(quest["q23", ], 6, nchar(quest["q23", ]))`  
 \
@@ -494,9 +648,21 @@ if (!next_fc_plot_chk) {cat("-->")}
 \
 **Answer:** `r params$a24`\
 
+```{r echo = FALSE, results = "asis"}
+library(knitr)
+kable(mod_sett, caption = "Table 6. Model settings used in the first forecast, updated forecast and the second forecast.", row.names = TRUE)
+
+```
+\
+
 # Activity C: Scale
 
-## Objective 12: Compare productivity forecasts between two different NEON sites\
+## Objective 13: Compare productivity forecasts between two different NEON sites\
+
+***
+`r module_text["obj_13", ]`
+
+***
 
 25. `r substr(quest["q25", ], 6, nchar(quest["q25", ]))`
 \
