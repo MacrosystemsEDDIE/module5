@@ -1272,7 +1272,8 @@ border-color: #FFF;
                                      column(6,
                                             h4("Linear Regression"),
                                             p(id = "txt_j", module_text["linear_regression", ]),
-                                            p("The equation form for a linear regression is: ", withMathJax("$$y = mx + b $$")),
+                                            p("The equation form for a linear regression is: "),
+                                            p(withMathJax("$$y = mx + b $$"), style = "font-size: 20px;"),
                                      ),
                                      column(6, align = "center",
                                             img(src = "linear_regression_example.png", 
@@ -3265,6 +3266,14 @@ server <- function(input, output, session) {#
     if(input$run_mod_ann >= 1) {
       addTooltip(session, "mod_phyto_plot", title = "Plot of simulated nutrient concentrations", trigger = "hover", placement = "top")
     }
+    if(input$run_mod_ann == 20) {
+      showModal(modalDialog(
+        title = "Hmmmmmmmmmmmmm...",
+        "Looks like you have been running your model quite a lot!\n
+        Remember this is a simplified model so it will not match the patterns in your data. Aim to get the chlorophyll-a in a similar range to the observed values for Q15 and then proceed with Activity B."
+      ))
+    }
+    
   })
   
   #* Model annual output data ----
