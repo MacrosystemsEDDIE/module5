@@ -1290,7 +1290,7 @@ border-color: #FFF;
                                             wellPanel(
                                               plotlyOutput("at_wt")
                                             ),
-                                            p("You can add a linear regression to the whole data or a subset by selecting data points using the 'Box Select' or 'Lasson Select' tool. This may be required if you have many points around 0 or you want to exclude obvious outliers."),
+                                            p("You can add a linear regression to the whole data or a subset by selecting data points using the 'Box Select' or 'Lasso Select' tool. This may be required if you have many points around 0 or you want to exclude obvious outliers."),
                                             actionButton("add_lm2", "Add linear regression"),
                                             p("Clear selected points and regression line"),
                                             actionButton("clear_sel2", "Clear plot"),
@@ -1301,11 +1301,11 @@ border-color: #FFF;
                                             )
                                      ),
                                      column(6,
-                                            h3("SWR vs uPAR"),
+                                            h3("Shortwave radiation vs underwater PAR"),
                                             wellPanel(
                                               plotlyOutput("sw_upar")
                                             ),
-                                            p("You can add a linear regression to the whole data or a subset by selecting data points using the 'Box Select' or 'Lasson Select' tool. This may be required if you have many points around 0 or you want to exclude obvious outliers."),
+                                            p("You can add a linear regression to the whole data or a subset by selecting data points using the 'Box Select' or 'Lasso Select' tool. This may be required if you have many points around 0 or you want to exclude obvious outliers."),
                                             actionButton("add_lm3", "Add linear regression"),
                                             p("Clear selected points and regression line"),
                                             actionButton("clear_sel3", "Clear plot"),
@@ -1319,7 +1319,7 @@ border-color: #FFF;
                                    fluidRow(
                                      column(12,
                                             h3("Convert NOAA weather forecast"),
-                                            p("The model we are using uses data on a daily timestep so we will aggregate the hourly weather forecast to daily averages first and then use the linear model to convert the 30 members in the ensemble to surface water temperature and underwater PAR."),
+                                            p("The model we are using uses data on a daily timestep so we will aggregate the hourly weather forecast to daily averages first and then use the linear model to convert the 30 members in the ensemble from air temperature (predictor variable) to surface water temperature (response variable) and shortwave radiation (predictor variable) to underwater PAR (response variable)."),
                                             actionButton("conv_fc", "Convert forecast!", icon = icon("exchange")),
                                             br(),
                                             wellPanel(
