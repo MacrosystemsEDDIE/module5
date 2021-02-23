@@ -52,7 +52,7 @@ q19,Q19. What do you think are the main sources of uncertainty in your ecologica
 q20,Q20. How would you describe your forecast of primary productivity at your NEON site so it could be understood by a fellow classmate?
 q21,Q21. How well did your forecast do compared to observations? (include R2 value) Why do you think it is important to assess the forecast?
 q22,Q22. Did your forecast improve when you updated your model parameters? Why do you think it is important to update the model?
-q23,Q23. Describe the new forecast of primary productivity. How do you think it will compare to observations after we observe the next round of data?
+q23,Q23. Describe the new forecast of primary productivity.
 q24,Q24. Why is the forecast cycle described as 'iterative' (i.e. repetition of a process)?
 q25,Q25. Repeat Activity A and B with a different NEON site (ideally from a different region).
 q25a,a. Apply the same model scenario (with the same model structure and parameters) which you developed in Q14 to this new site. How do you expect chlorophyll-a concentrations will respond prior to running the simulation?
