@@ -30,12 +30,14 @@ source("url_exists.R")
 
 # Load in sp format with coordinates
 neon_sites <- readRDS("data/neon_sites.rds")
+neon_sites <- neon_sites[which(neon_sites$siteID %in% c("CRAM", "BARC", "PRPO", "LIRO", "PRLA")), ]
 neon_sites$uid <- paste0("M", seq_len(nrow(neon_sites)))
 
 #Load in the dataframe
 neon_sites_df <- read.csv("data/neon_sites.csv")
 neon_sites_df$long <- round(neon_sites_df$long, 3)
 neon_sites_df$lat <- round(neon_sites_df$lat, 3)
+neon_sites_df <- neon_sites_df[which(neon_sites_df$siteID %in% c("CRAM", "BARC", "PRPO", "LIRO", "PRLA")), ]
 neon_sites_df$uid <- paste0("M", seq_len(nrow(neon_sites_df))) # For leaflet map
 # siteID <- "XXXX"
 
@@ -48,8 +50,8 @@ neon_sites <- neon_sites[neon_sites$type == "Aquatic", ]
 neon_sites_df <- neon_sites_df[neon_sites_df$type == "Aquatic", ]
 
 # Subset out lakes which don't work - Toolik
-neon_sites <- neon_sites[1:6, ]
-neon_sites_df <- neon_sites_df[1:6, ]
+# neon_sites <- neon_sites[1:6, ]
+# neon_sites_df <- neon_sites_df[1:6, ]
 
 # Read in assessment questions
 quest <- read.csv("data/handout_questions.csv", row.names = 1)
