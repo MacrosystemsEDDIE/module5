@@ -12,7 +12,7 @@ library(slickR); library(tinytex); library(rvest, quietly = TRUE, warn.conflicts
 library(rLakeAnalyzer); library(LakeMetabolizer); 
 library(DT, quietly = TRUE, warn.conflicts = FALSE); library(rintrojs)
 library(stringr); library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
-library(RColorBrewer); library(ggpubr); library(readr); library(shinyBS)
+library(RColorBrewer); library(ggpubr); library(readr); library(shinyBS); library(httr)
 
 # Options for Spinner
 options(spinner.color = "#0275D8", spinner.color.background = "#ffffff", spinner.size = 2)
@@ -26,6 +26,7 @@ source("NP_model_no_temp_no_light.R")
 source("NP_model_no_light.R")
 source("NP_model_no_temp.R")
 source("textAreaInput2.R")
+source("url_exists.R")
 
 # Load in sp format with coordinates
 neon_sites <- readRDS("data/neon_sites.rds")
@@ -85,7 +86,17 @@ slider_col <- "#2CB572"
 
 # Load text input
 module_text <- read.csv("data/module_text.csv", row.names = 1, header = FALSE)
+
+# Load EF and check if available if not use saved html 
 EF_links <- read.csv("data/eco_forecast_examples.csv")
+EF_links$use_html <- NA
+for(i in seq_len(nrow(EF_links))) {
+  if(url_exists(EF_links$webpage[i])) {
+    EF_links$use_html[i] <- EF_links$webpage[i]
+  } else {
+    EF_links$use_html[i] <- EF_links$local_html[i]
+  }
+}
 
 # Icons
 neonIcons <- iconList(
@@ -188,7 +199,7 @@ fc_par_df <- data.frame(
 app_time <- format(file.info("app.R")$mtime, "%Y-%m-%d")
 web_time <- format(file.info("www/usanpn_eab.html")$mtime, "%Y-%m-%d")
 app_update_txt <- paste0("This app was last updated on: ", app_time)
-web_cache_txt <- paste0("(These webpages were last cached on: ", web_time, ")")
+web_cache_txt <- paste0("(If the links to the websites are broken it will take you to a cached version. These webpages were last cached on: ", web_time, ")")
 
 png_dpi <- 300
 
@@ -541,24 +552,24 @@ ui <- function(req) {
                         fluidRow(
                           column(4, offset = 1,
                                  tags$ul(
-                                   tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$local_html[1], ".html' target='_blank' >", EF_links$Forecast[1], "</a>")),
+                                   tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[1], "' target='_blank' >", EF_links$Forecast[1], "</a>")),
                                            br(), p(EF_links$About[1])),
                                    
-                                   HTML(paste0("<a href='", EF_links$local_html[1], ".html' target='_blank'>
+                                   HTML(paste0("<a href='", EF_links$use_html[1], "' target='_blank'>
                                                  <img src='fc_examples/", EF_links$img[1], "' height='50%' width='50%' id='bla_border2'/>
                                                  </a>")),
                                    br(), hr(),
                                    
-                                   tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$local_html[2], ".html' target='_blank' >", EF_links$Forecast[2], "</a>")),
+                                   tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[2], "' target='_blank' >", EF_links$Forecast[2], "</a>")),
                                            br(), p(EF_links$About[2])),
-                                   HTML(paste0("<a href='", EF_links$local_html[2], ".html' target='_blank'>
+                                   HTML(paste0("<a href='", EF_links$use_html[2], "' target='_blank'>
                                                  <img src='fc_examples/", EF_links$img[2], "' height='50%' width='50%' id='bla_border2'/>
                                                  </a>")),
                                    br(), hr(),
                                    
-                                   tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$local_html[3], ".html' target='_blank' >", EF_links$Forecast[3], "</a>")),
+                                   tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[3], "' target='_blank' >", EF_links$Forecast[3], "</a>")),
                                            br(), p(EF_links$About[3])),
-                                   HTML(paste0("<a href='", EF_links$local_html[3], ".html' target='_blank'>
+                                   HTML(paste0("<a href='", EF_links$use_html[3], "' target='_blank'>
                                                  <img src='fc_examples/", EF_links$img[3], "' height='50%' width='50%' id='bla_border2'/>
                                                  </a>")),
                                    br(), hr(),
@@ -566,17 +577,17 @@ ui <- function(req) {
                                  ),
                           column(4, offset = 2, 
                                  tags$ul(
-                                   tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$local_html[5], ".html' target='_blank' >", EF_links$Forecast[5], "</a>")),
+                                   tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[5], "' target='_blank' >", EF_links$Forecast[5], "</a>")),
                                            br(), p(EF_links$About[5])),
-                                   HTML(paste0("<a href='", EF_links$local_html[5], ".html' target='_blank'>
+                                   HTML(paste0("<a href='", EF_links$use_html[5], "' target='_blank'>
                                                  <img src='fc_examples/", EF_links$img[5], "' height='50%' width='50%' id='bla_border2'/>
                                                  </a>")),
                                    br(), hr(),
                                    
-                                   tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$local_html[6], ".html' target='_blank' >", EF_links$Forecast[6], "</a>")),
+                                   tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[6], "' target='_blank' >", EF_links$Forecast[6], "</a>")),
                                            br(), p(EF_links$About[6])),
                                    
-                                   HTML(paste0("<a href='", EF_links$local_html[6], ".html' target='_blank'>
+                                   HTML(paste0("<a href='", EF_links$use_html[6], "' target='_blank'>
                                                  <img src='fc_examples/", EF_links$img[6], "' height='50%' width='50%' id='bla_border2'/>
                                                  </a>")),
                                    br(), hr(),
