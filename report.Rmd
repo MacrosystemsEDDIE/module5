@@ -105,7 +105,7 @@ if(!is.null(params$wt_m)) {
 }
 
 
-if(!is.null(params$upar_lm)) {
+if(!is.null(params$upar_m)) {
   upar_m <- params$upar_m
   upar_b <- params$upar_b
   upar_r2 <- params$upar_r2
