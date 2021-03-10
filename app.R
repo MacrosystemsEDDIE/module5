@@ -5716,8 +5716,6 @@ server <- function(input, output, session) {#
     lmfit3$m <- up_answers$upar_m
     lmfit3$b <- up_answers$upar_b
     lmfit3$r2 <- up_answers$upar_r2
-    
-    print(lmfit3$m)
   })
   
   observe({
