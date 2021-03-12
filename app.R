@@ -10,7 +10,7 @@ library(sortable)
 # remotes::install_github('yonicd/slickR') # removed from CRAN - now only on GitHub
 library(slickR); library(tinytex); library(rvest, quietly = TRUE, warn.conflicts = FALSE)
 library(rLakeAnalyzer); library(LakeMetabolizer); 
-library(DT, quietly = TRUE, warn.conflicts = FALSE); library(rintrojs)
+library(DT, quietly = TRUE, warn.conflicts = FALSE); library(rintrojs); library(hover)
 library(stringr); library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
 library(RColorBrewer); library(ggpubr); library(readr); library(shinyBS); library(httr)
 
@@ -110,7 +110,7 @@ neonIcons <- iconList(
 plot_types <- c("Line", "Distribution")
 
 # Sorting variables
-state_vars <- c("Phytoplankton", "Nutrients")
+state_vars <- c("Phytoplankton", "Nitrogen")
 process_vars <- c("Mortality", "Uptake")
 
 # Statistics
@@ -135,6 +135,7 @@ parms <- c(
   
 )  
 
+calib_model_png <- gsub("www/", "", list.files("www/calib_model/", full.names = TRUE))
 
 # Initial conditions for NP
 yini <- c(
@@ -149,22 +150,27 @@ upd_parms <- read.csv("data/upd_params_site.csv", fileEncoding = "UTF-8-BOM")
 # question 6 table with numeric input
 # code from https://stackoverflow.com/questions/46707434/how-to-have-table-in-shiny-filled-by-user
 wid_pct <- "80%"
+# q6_table <- data.frame(
+#   mean = c(as.character(numericInput("q6a_mean", "", 0, width = wid_pct)), 
+#            as.character(numericInput("q6b_mean", "", 0, width = wid_pct)),
+#            as.character(numericInput("q6c_mean", "", 0, width = wid_pct)),
+#            as.character(numericInput("q6d_mean", "", 0, width = wid_pct)),
+#            as.character(numericInput("q6e_mean", "", 0, width = wid_pct))),
+#   min = c(as.character(numericInput("q6a_min", "", 0, width = wid_pct)), 
+#           as.character(numericInput("q6b_min", "", 0, width = wid_pct)),
+#           as.character(numericInput("q6c_min", "", 0, width = wid_pct)),
+#           as.character(numericInput("q6d_min", "", 0, width = wid_pct)),
+#           as.character(numericInput("q6e_min", "", 0, width = wid_pct))),
+#   max = c(as.character(numericInput("q6a_max", "", 0, width = wid_pct)), 
+#           as.character(numericInput("q6b_max", "", 0, width = wid_pct)),
+#           as.character(numericInput("q6c_max", "", 0, width = wid_pct)),
+#           as.character(numericInput("q6d_max", "", 0, width = wid_pct)),
+#           as.character(numericInput("q6e_max", "", 0, width = wid_pct)))
+# )
 q6_table <- data.frame(
-  mean = c(as.character(numericInput("q6a_mean", "", 0, width = wid_pct)), 
-           as.character(numericInput("q6b_mean", "", 0, width = wid_pct)),
-           as.character(numericInput("q6c_mean", "", 0, width = wid_pct)),
-           as.character(numericInput("q6d_mean", "", 0, width = wid_pct)),
-           as.character(numericInput("q6e_mean", "", 0, width = wid_pct))),
-  min = c(as.character(numericInput("q6a_min", "", 0, width = wid_pct)), 
-          as.character(numericInput("q6b_min", "", 0, width = wid_pct)),
-          as.character(numericInput("q6c_min", "", 0, width = wid_pct)),
-          as.character(numericInput("q6d_min", "", 0, width = wid_pct)),
-          as.character(numericInput("q6e_min", "", 0, width = wid_pct))),
-  max = c(as.character(numericInput("q6a_max", "", 0, width = wid_pct)), 
-          as.character(numericInput("q6b_max", "", 0, width = wid_pct)),
-          as.character(numericInput("q6c_max", "", 0, width = wid_pct)),
-          as.character(numericInput("q6d_max", "", 0, width = wid_pct)),
-          as.character(numericInput("q6e_max", "", 0, width = wid_pct)))
+  Mean = rep(0, 5),
+  Min = rep(0, 5),
+  Max = rep(0, 5), row.names = c("Air temperature", "Surface water temperature", "Nitrogen", "Underwater PAR", "Chlorophyll-a")
 )
 
 wid_pct2 <- "100%"
@@ -183,7 +189,7 @@ par_df <- data.frame(
   "SWT" = rep(NA, 5),
   "uPAR" = rep(NA, 5),
   "Phytos" = rep(NA, 5),
-  "Nutrients" = rep(NA, 5),
+  "Nitrogen" = rep(NA, 5),
   "Mortality" = rep(NA, 5),
   "Uptake" = rep(NA, 5), row.names = c("Q12", "Q13a", "Q13b", "Q14", "Q15")
 )
@@ -192,7 +198,7 @@ fc_par_df <- data.frame(
   "SWT" = rep(NA, 3),
   "uPAR" = rep(NA, 3),
   "Phytos" = rep(NA, 3),
-  "Nutrients" = rep(NA, 3),
+  "Nitrogen" = rep(NA, 3),
   "Mortality" = rep(NA, 3),
   "Uptake" = rep(NA, 3), row.names = c("Forecast 1", "Updated Forecast", "Forecast 2")
 )
@@ -207,7 +213,6 @@ png_dpi <- 300
 
 ui <- function(req) {
   
-  
   tagList( # Added functionality for not losing your settings
     # shinythemes::themeSelector(), # user-defined theme
     tags$style(type = "text/css", "text-align: justify"),
@@ -216,9 +221,9 @@ ui <- function(req) {
       column(1, offset = 11, align = "right",
              introBox(
                actionButton("help", label = "", icon = icon("question-circle")), data.step = 7, data.intro = help_text["help", 1]
-               )
              )
-      ),
+      )
+    ),
     navbarPage(title = "Module 5: Introduction to Ecological Forecasting", 
                position = "static-top", id = "maintab",
                # HTML('<p style="text-align:justify">'),
@@ -233,17 +238,17 @@ ui <- function(req) {
                tabPanel(introBox("Module Overview",
                                  data.step = 2,
                                  data.intro = help_text["tab_nav1", 1]
-                                 ),
-                        value = "mtab1",
-                        introjsUI(), # must include in UI
-                        introBox(
-                          img(src = "project-eddie-banner-2020_green.png", height = 100, 
-                              width = 1544, top = 5),
-                          data.step = 1,
-                          data.intro = help_text["welcome", 1]
-                        ),
-                        
-                        tags$style(".btn-file {  
+               ),
+               value = "mtab1",
+               introjsUI(), # must include in UI
+               introBox(
+                 img(src = "project-eddie-banner-2020_green.png", height = 100, 
+                     width = 1544, top = 5),
+                 data.step = 1,
+                 data.intro = help_text["welcome", 1]
+               ),
+               
+               tags$style(".btn-file {  
              background-color:#98CAB2; 
              border-color: #579277; 
              }
@@ -251,8 +256,8 @@ ui <- function(req) {
              .progress-bar {
              background-color: #579277;
              }"),
-                        # Change progress bar color
-                        tags$style(paste0("
+               # Change progress bar color
+               tags$style(paste0("
                                    .irs-bar,
 .irs-bar-edge,
 .irs-single,
@@ -260,7 +265,13 @@ ui <- function(req) {
   background: ", slider_col, ";
   border-color: ", slider_col, ";
 }")),
-                        tags$style(HTML("
+               includeCSS("www/slider_cols.css"),
+               includeCSS("www/button_animations.css"),
+               tags$style(HTML("
+               .irs-bar {
+                        border-color: transparent;
+                        background-color: transparent;
+                        }
                         #first {
                         border: 4px double red;
                         }
@@ -312,6 +323,10 @@ ui <- function(req) {
 
                 background:#B8E0CD
                 }
+                .box.box-solid.box-success{
+
+                background: #DDE4E1;
+                }
                 .box.box-solid.box-warning>.box-header {
 
                 }
@@ -321,75 +336,75 @@ ui <- function(req) {
                 background:#FFBE85
                 }
                         ")),
-                        # fluidRow(
-                        #   column(6,
-                        #          tableOutput('loc_env')
-                        #          ),
-                        #   column(6,
-                        #          tableOutput('glob_env')
-                        #   )
-                        # ),
-                        introBox(
-                        fluidRow(
-                          column(6,
-                                 #* Module text ====
-                                 h2("Introduction to Ecological Forecasting"),
-                                 h3("Summary"),
-                                 p(id = "txt_j", module_text["intro_eco_forecast", ]),
-                                 p(id = "txt_j", module_text["this_module", ])
-                          ), 
-                          column(5, offset = 1,
-                                    br(), br(), br(),
-                                    img(src = "mod5_viz_v2.png", height = "80%", 
-                                        width = "80%", align = "left")
-                                    )
-                        ), data.step = 8, data.intro = help_text["start", 1]
-                        ),
-                        hr(),
-                        fluidRow(
-                          column(4,
-                                 # h3("Ecological Forecasting"),
-                                 # p(id = "txt_j", module_text["eco_forecast1", ]),
-                                 h3("Module Activities"),
-                                 tags$ul(
-                                   tags$li(id = "txt_j", module_text["act_A", ]),
-                                   tags$li(id = "txt_j", module_text["act_B", ]),
-                                   tags$li(id = "txt_j", module_text["act_C", ])
-                                 )
-                                 
-                                 ),
-                          column(6, offset = 2,
-                                 h3("Learning Outcomes"),
-                                 tags$line(),
-                                 tags$ul(
-                                   tags$li(id = "txt_j", module_text["LO1", ]),
-                                   tags$li(id = "txt_j", module_text["LO2", ]),
-                                   tags$li(id = "txt_j", module_text["LO3", ]),
-                                   tags$li(id = "txt_j", module_text["LO4", ]),
-                                   tags$li(id = "txt_j", module_text["LO5", ])
-                                   )
-                                 )
-                          ),
-                        hr(),
-                        fluidRow(
-                          column(3,
-                                 h3("Macrosystems EDDIE"),
-                                 p(id = "txt_j", module_text["Macro", ]),
-                                 p(HTML(paste0("For more information see the website ", a(href = "https://serc.carleton.edu/eddie/macrosystems/index.html", "here", target = "_blank"), ".")))
-                                 ),
-                          column(3,
-                                 h3("Privacy Policy"),
-                                 p(id = "txt_j", module_text["privacy_policy", ], HTML(paste0("For information regarding assessment data, please visit our website ", a(href = "https://serc.carleton.edu/eddie/macrosystems/assessment", "here", target = "_blank"), "."))),
-                                 p()
-                          ),
-                          column(5, offset = 1, 
-                                 # id = "second", # Add border
-                                 br(), br(), 
-                                 img(src = "MacroEDDIE Logo.png", height = "70%", 
-                                     width = "70%", align = "center")
-                                 )
-                          )
-                        ),
+               # fluidRow(
+               #   column(6,
+               #          tableOutput('loc_env')
+               #          ),
+               #   column(6,
+               #          tableOutput('glob_env')
+               #   )
+               # ),
+               introBox(
+                 fluidRow(
+                   column(6,
+                          #* Module text ====
+                          h2("Introduction to Ecological Forecasting"),
+                          h3("Summary"),
+                          p(id = "txt_j", module_text["intro_eco_forecast", ]),
+                          p(id = "txt_j", module_text["this_module", ])
+                   ), 
+                   column(5, offset = 1,
+                          br(), br(), br(),
+                          img(src = "mod5_viz_v2.png", height = "80%", 
+                              width = "80%", align = "left")
+                   )
+                 ), data.step = 8, data.intro = help_text["start", 1]
+               ),
+               hr(),
+               fluidRow(
+                 column(4,
+                        # h3("Ecological Forecasting"),
+                        # p(id = "txt_j", module_text["eco_forecast1", ]),
+                        h3("Module Activities"),
+                        tags$ul(
+                          tags$li(id = "txt_j", module_text["act_A", ]),
+                          tags$li(id = "txt_j", module_text["act_B", ]),
+                          tags$li(id = "txt_j", module_text["act_C", ])
+                        )
+                        
+                 ),
+                 column(6, offset = 2,
+                        h3("Learning Outcomes"),
+                        tags$line(),
+                        tags$ul(
+                          tags$li(id = "txt_j", module_text["LO1", ]),
+                          tags$li(id = "txt_j", module_text["LO2", ]),
+                          tags$li(id = "txt_j", module_text["LO3", ]),
+                          tags$li(id = "txt_j", module_text["LO4", ]),
+                          tags$li(id = "txt_j", module_text["LO5", ])
+                        )
+                 )
+               ),
+               hr(),
+               fluidRow(
+                 column(3,
+                        h3("Macrosystems EDDIE"),
+                        p(id = "txt_j", module_text["Macro", ]),
+                        p(HTML(paste0("For more information see the website ", a(href = "https://serc.carleton.edu/eddie/macrosystems/index.html", "here", target = "_blank"), ".")))
+                 ),
+                 column(3,
+                        h3("Privacy Policy"),
+                        p(id = "txt_j", module_text["privacy_policy", ], HTML(paste0("For information regarding assessment data, please visit our website ", a(href = "https://serc.carleton.edu/eddie/macrosystems/assessment", "here", target = "_blank"), "."))),
+                        p()
+                 ),
+                 column(5, offset = 1, 
+                        # id = "second", # Add border
+                        br(), br(), 
+                        img(src = "MacroEDDIE Logo.png", height = "70%", 
+                            width = "70%", align = "center")
+                 )
+               )
+               ),
                # 2. Presentation recap ----
                tabPanel(title = "Presentation", value = "mtab2",
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
@@ -418,8 +433,8 @@ ui <- function(req) {
                                  h5("Click the arrows to navigate through the slides", align = "center"),
                                  wellPanel(
                                    slickROutput("slides", width = "600px", height = "450px")
-                                   )
                                  )
+                          )
                         )
                ),
                # 3. Introduction ----
@@ -452,28 +467,25 @@ ui <- function(req) {
                                  p("Within Introduction, Exploration and Activities A, B and C tabs there are questions for students to complete as part of this module. These can be completed by writing your answers into the text boxes within the green boxes. If you do not complete the module in one continuous sitting you can download a file with your responses saved which you can then upload when you return. When you finish the module, you can generate a report which will embed your answers and saved plots into a Word (.docx) file which you can download and make further edits to before submitting to your instructor."),
                                  box(width = 12, status = "warning",
                                      solidHeader = TRUE,
-                                   p(tags$b("WARNING:"), " The Shiny app will disconnect from the server if it is left idle for 15 minutes. If this happens you will lose all your inputs into the app. It is recommended to download the user input at the end of the class, but you can also download throughout the class."),
+                                     p(tags$b("WARNING:"), " The Shiny app will disconnect from the server if it is left idle for 15 minutes. If this happens you will lose all your inputs into the app. It is recommended to download the user input at the end of the class, but you can also download throughout the class."),
                                  ),
                                  p("Alternatively, you can download the questions as a Word (.docx) file  and record your answers there. If you opt for this option, you can hide the green question boxes by unchecking the box below."),
                                  checkboxInput("show_q1", "Show questions", value = TRUE),
                                  tags$style(type="text/css", "#stud_dl {background-color:#579277;color: white}"),
                                  conditionalPanel("output.handoutbuilt",
                                                   downloadButton(outputId = "stud_dl", label = "Download Student Handout"),
-                                                  )
-                                 ), 
+                                 )
+                          ), 
                         ), hr(),
                         #* Generate report buttons ====
                         fluidRow(
                           column(4,offset = 1,
                                  h3("Save your progress"),
-                                 p(id = "txt_j", "If you run out of time to finish all the activities you can save your progress and return to it at a later date. Click the 'Download' button below and a file 'module5_answers_ID_number.rds' will download. Store this file in a safe place locally on your computer."),
-                                 # bookmarkButton(id = "bookmark1"),
-                                 tags$style(type="text/css", "#download_answers {background-color:#579277;color: white}"),
-                                 downloadButton("download_answers", label = "Download user input", class = "butt1"),
+                                 p(id = "txt_j", "If you run out of time to finish all the activities you can save your progress and return to it at a later date. Click the 'Download user input' button at the bottom of the page and a file 'module5_answers_ID_number.eddie' will download. Store this file in a safe place locally on your computer."),
                                  br(),
                                  h3("Resume your progress"),
-                                 p(id = "txt_j", "To reload the app input you can upload the downloaded '.rds' file below and it will populate your answers into the Shiny app."),
-                                 fileInput("upload_answers", "Upload data", accept = ".rds"), # B77C2C
+                                 p(id = "txt_j", "To reload the app input you can upload the downloaded '.eddie' file below and it will populate your answers into the Shiny app."),
+                                 fileInput("upload_answers", "Upload data", accept = c(".eddie", ".rds")), # B77C2C
                                  p(id = "txt_j", HTML(paste0(tags$b("Note:"), " You will need to navigate to tabs Objective 1, 2 and 3 in Activity A after uploading your file for the inputs to load there. You will also need to load the NOAA data in Objective 6."))),
                                  p(id = "txt_j", "Currently the plots do not save to the file.  If you generated plots during your last session, you will need to reload the data and reproduce the plots before generating your report.  Additionally, the answers for Q.10 will need to be re-submitted.")
                           ),
@@ -519,26 +531,26 @@ ui <- function(req) {
                                               ),
                                               textAreaInput2(inputId = "q2", label = quest["q2", 1], width = "90%"),
                                               textAreaInput2(inputId = "q3", label = quest["q3", 1], width = "90%")
-                                              )
-                                       ),
-                                     
+                                       )
                                      ),
-                                 )
+                                     
+                                 ),
+                          )
                         ),
                         hr(),
                         fluidRow(
                           column(6,
                                  h3("Data sources"),
                                  p(HTML(paste0('This module will introduce key concepts within Ecological forecasting through exploration of ', a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data", target = "_blank"), ", building a model and then generating a short-term ecological forecast.")))
-                                 ),
+                          ),
                           column(6, align = "center",
                                  a(
                                    href = "https://www.neonscience.org/",
                                    img(src = "NSF-NEON-logo.png", title = "NEON - NSF logo"), target = "_blank"
-                                   )
                                  )
                           )
-                        ),
+                        )
+               ),
                # 4. Exploration ----
                tabPanel(title = "Exploration", value = "mtab4",
                         # tags$style(type="text/css", "body {padding-top: 65px;}"),
@@ -549,7 +561,7 @@ ui <- function(req) {
                                  h3("Examples of Current Ecological Forecasts"),
                                  p("Here are links to some current examples of ecological forecasts. Select one of the examples and answer Q4 below."),
                                  p(web_cache_txt, id = "ackn")
-                                 )
+                          )
                         ),
                         fluidRow(
                           column(4, offset = 1,
@@ -575,8 +587,8 @@ ui <- function(req) {
                                                  <img src='fc_examples/", EF_links$img[3], "' height='50%' width='50%' id='bla_border2'/>
                                                  </a>")),
                                    br(), hr(),
-                                   ),
                                  ),
+                          ),
                           column(4, offset = 2, 
                                  tags$ul(
                                    tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[5], "' target='_blank' >", EF_links$Forecast[5], "</a>")),
@@ -593,9 +605,9 @@ ui <- function(req) {
                                                  <img src='fc_examples/", EF_links$img[6], "' height='50%' width='50%' id='bla_border2'/>
                                                  </a>")),
                                    br(), hr(),
-                                   )
                                  )
-                          ),
+                          )
+                        ),
                         fluidRow(
                           column(10, align = "left",
                                  box(id = "box2", width = 10, status = "primary",
@@ -609,11 +621,11 @@ ui <- function(req) {
                                               textAreaInput2(inputId = "q4c", label = quest["q4c", 1], width = "90%"),
                                               textAreaInput2(inputId = "q4d", label = quest["q4d", 1], width = "90%")
                                        )
-                                       ),
                                      ),
                                  ),
-                          )
-                        ),
+                          ),
+                        )
+               ),
                
                # 5. Activity A ----
                tabPanel(title = "Activity A", value = "mtab5",
@@ -640,515 +652,542 @@ border-color: #FFF;
                                  h3("Activity A: Visualize data from a selected NEON site"),
                                  h4("Get Data & Build Model"),
                                  p("Complete objectives 1-3 to gather the information you will need for your model. Followed by objectives 4-5 to build and calibrate the model you will use to generate the forecast.")
-                                 )
+                          )
                         ),
                         tabsetPanel(id = "tabseries1",
-                          tabPanel(title = "Objective 1 - Select and view site",
-                                   
-                                   value = "obj1", id = "wh_link",
-                                   
-                                   tags$style("outline: 5px dotted green;"),
-                                   #* Objective 1 ====
-                                   introBox(
-                                            fluidRow(
-                                              column(12,
-                                                     wellPanel(style = paste0("background: ", obj_bg),
-                                                               h3("Objective 1 - Select a Site"),
-                                                               p(module_text["obj_01", ])
-                                                     )
-                                              )
-                                            ),
-                                   data.step = 4, data.intro = help_text["objectives", 1], data.position = "top"),
-                                   #* NEON Map ====
-                                   fluidRow(
-                                     # conditionalPanel(condition = "input.site_html > 1",
-                                     #** NEON Intro ----
-                                     column(4,
-                                            h2("Site Description"),
-                                            p("Select a site in the table to highlight on the map"),
-                                            conditionalPanel("input.row_num > 25",
-                                                             selectizeInput("row_num", "Select row",
-                                                                            choices = 1:nrow(neon_sites_df), 
-                                                                            options = list(
-                                                                              placeholder = 'Please select a row',
-                                                                              onInitialize = I('function() { this.setValue(""); }')),
-                                                                            )
-                                                             )
-                                     ,
-                                            DTOutput("table01"),
-                                            p(tags$b("Click 'View latest photo' to see the latest image from the webcam on site (this may take 10-30 seconds).")),
-                                            actionButton("view_webcam", label = "View latest photo", icon = icon("eye"))
-                                     ),
-                                     #** Site map ----
-                                     column(4,
-                                            h2("Map of NEON sites"),
-                                            wellPanel(
-                                              leafletOutput("neonmap")
-                                            )
-                                     )
-                                     
-                                     ,
-                                     #** Site photo ----
-                                     column(4,
-                                            h2("Phenocam"),
-                                            textOutput("prompt1"),
-                                            wellPanel(
-                                              imageOutput("pheno"),
-                                              p(id = "txt_j", module_text["phenocam", ])
-                                              # withSpinner(imageOutput("pheno"), type = 1,
-                                              #             hide.ui = FALSE
-                                              # )
-                                            )
-                                     )
-                                   ), br(),
-                                   span(textOutput("site_name1"), style = "font-size: 22px;
-                                        font-style: bold;"),
-                                   fluidRow(
-                                     wellPanel(
-                                       h4(tags$b("About Site")),
-                                       uiOutput("site_html"),
-                                       textOutput("prompt2"),
-                                       htmlOutput("site_link")
-                                       ),
-                                     ),
-                                   fluidRow(
-                                     column(10, align = "left",
-                                            box(id = "box3", width = 10, status = "primary",
-                                                solidHeader = TRUE,
-                                                fluidRow(
-                                                  column(7, offset = 1,
-                                                         h3("Questions"),
-                                                         h4(quest["q5", 1]),
-                                                         p("If the information for your lake is not on the NEON website then you can input NA (Not Available) into the text box.")
-                                                  )
-                                                ),
-                                                fluidRow(
-                                                  column(4, offset = 1, align = "left", style = paste0("background: ", ques_bg),
-                                                         textInput(inputId = "q5a", label = quest["q5a", 1] , width = "90%"),
-                                                         textInput(inputId = "q5b", label = quest["q5b", 1], width = "90%"),
-                                                         textInput(inputId = "q5c", label = quest["q5c", 1], width = "90%")
-                                                  ),
-                                                  column(4, offset = 1, align = "left", style = paste0("background: ", ques_bg),
-                                                         textInput(inputId = "q5d", label = quest["q5d", 1] , width = "90%"),
-                                                         textInput(inputId = "q5e", label = quest["q5e", 1], width = "90%"),
-                                                         textInput(inputId = "q5f", label = quest["q5f", 1], width = "90%")
-                                                         )
-                                                  )
-                                                )
-                                            )
-                                     )
-                                   ),
-                          tabPanel(title = "Objective 2 - Explore data",  value = "obj2",
-                                   #* Objective 2 - Explore the Data ====
-                                   fluidRow(
-                                     column(12,
-                                            wellPanel(style = paste0("background: ", obj_bg),
-                                              h3("Objective 2 - Inspect the Data"),
-                                              p(id = "txt_j", module_text["obj_02", ]),
-                                              p("If there are some variables which you are not familiar with, visit the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal", target = "_blank"), "and click 'Explore Data Products' to learn more about how the data are collected.")
-                                              )
-                                            )
-                                   ),
-                                   fluidRow(
-                                     column(8, offset = 2,
-                                            h3("Variable descriptions"),
-                                            DT::DTOutput("var_desc")
-                                            )
-                                   ),
-                                   # fluidRow(
-                                   #   column(12,
-                                   #          
-                                   #          )
-                                   #   ),
-                                   hr(),
-                                   fluidRow(
-                                     #** Data Table ----
-                                     column(4,
-                                            h3("Data Table"),
-                                            p("This is a Shiny data table. It is interactive and allows you to navigate through the data table by searching or clicking through the different pages."),
-                                            DT::DTOutput("neon_datatable")
-                                     ),
-                                     #** Plot of data ----
-                                     column(8,
-                                            h3("Data Plot"),
-                                            p("All plots in this Shiny app are generated using Plotly. This allows you to hover your mouse over the plot to get information from each of the plots. You can inspect the data closely by clicking and zooming into particular areas. There is a tool box at the top of the plot which has the selection function required for Q6."),
-                                            plotlyOutput("var_plot"),
-                                            useShinyjs(),  # Set up shinyjs
-                                            selectizeInput("view_var", "Select variable",
-                                                           choices = unique(neon_vars$Short_name),
-                                                           options = list(
-                                                             placeholder = 'Please select a variable',
-                                                             onInitialize = I('function() { this.setValue(""); }')),
-                                            ),
-                                            wellPanel(
-                                              br(),
-                                              # conditionalPanel("input.table01_rows_selected > 1",
-                                                               h4("Variable Description"),
-                                                               textOutput("txt_out")
-                                                               # )
-                                              
-                                              )
-                                            )
-                                     ), hr(),
-                                   fluidRow(
-                                     column(4,
-                                            h3("Calculate statistics"),
-                                            selectInput("stat_calc", label = "Select calculation:", choices = stats),
-                                            textOutput("out_stats")
-                                            ),
-                                     column(8,
-                                            # fluidRow(
-                                              # column(10, align = "left",
-                                                     box(id = "box4", width = 12, status = "primary",
-                                                         solidHeader = TRUE,
-                                                         fluidRow(
-                                                           column(10, offset = 1,
-                                                                  h3("Questions"),
-                                                                  h4(quest["q6", 1]),
-                                                                  p("Make sure you select data that best represent an annual period (i.e. one or two complete years), be wary of including potential outliers in your selection."),
-                                                                  DTOutput('q6_tab'),
-                                                                  br()
-                                                                  )
-                                                           )
-                                                         )
-                                                     # )
-                                              # )
-                                            )
-                                     )
-                                   ),
-                          tabPanel(title = "Objective 3 - Explore variable relationships", value = "obj3",
-                                   #* Objective 3 - Explore variable relationships ====
-                                   fluidRow(
-                                     column(12,
-                                            wellPanel(style = paste0("background: ", obj_bg),
-                                              h3("Objective 3 - Explore variable relationships"),
-                                              p(id = "txt_j", module_text["obj_03", ])
-                                              )
-                                            )
-                                     ),
-                                   fluidRow(
-                                     column(12, align = "center",
-                                            img(src = "01-hypothesis.png", height = "30%", 
-                                                width = "30%")
-                                     )
-                                   ),
-                                   #** Explore variable relationships ----
-                                   fluidRow(
-                                     #** Data Table ----
-                                     column(4,
-                                            h3("Investigate variable relationships"),
-                                            p("For Q. 7 you will keep 'Chlorophyll-a' as the y-variable and explore its relationship with the other variables at this site."), 
-                                            selectizeInput("y_var", "Select Y variable",
-                                                           choices = unique(neon_vars$Short_name), 
-                                                           options = list(
-                                                             placeholder = 'Please select a variable',
-                                                             onInitialize = I('function() { this.setValue("Chlorophyll-a"); }'))),
-                                            selectizeInput("x_var", "Select X variable",
-                                                           choices = unique(neon_vars$Short_name),
-                                                           options = list(
-                                                             placeholder = 'Please select a variable',
-                                                             onInitialize = I('function() { this.setValue(""); }'))),
-                                            p("While for Q. 8, you can select any two variables and investigate if there is any relationship. e.g. air temperature and surface water temperature")
-                                            ),
-                                     #** Plot of data ----
-                                     column(6,
-                                            h3("Comparison Plot"),
-                                            wellPanel(
-                                              # conditionalPanel("input.var_plot", 
-                                              plotlyOutput("xy_plot")
-                                              # )
-                                            )
-                                     )
-                                   ),
-                                   fluidRow(
-                                     hr(),
-                                     column(10, align = "left",
-                                            box(id = "box5", width = 12, status = "primary",
-                                                solidHeader = TRUE,
-                                                fluidRow(
-                                                  column(10, offset = 1,
-                                                         h3("Questions"),
-                                                         h4(quest["q7", 1]),
-                                                         DTOutput('q7_tab'),
-                                                         br(),
-                                                         h4(quest["q8", 1]),
-                                                         textAreaInput2(inputId = "q8", label = "", width = "90%"),
-                                                         br()
-                                                         )
-                                                  )
-                                                )
-                                            )
-                                     ),
-                                   fluidRow(
-                                     hr(),
-                                     column(12,
-                                            h3("Next step"),
-                                            p("Next we will use these data and the identified related variables to help build our ecological model.")
-                                            )
-                                     )
-                                   ),
-                          tabPanel(title = "Objective 4 - Understand model", value = "obj4",
-                                   #* Objective 4 - Understand the ecological model ====
-                                   fluidRow(
-                                     column(12,
-                                            wellPanel(style = paste0("background: ", obj_bg),
-                                              h3("Objective 4 - Understand the ecological model"),
-                                              p(module_text["obj_04", ])
-                                            )
-                                     ),
-                                   ),
-                                   fluidRow(
-                                     column(12, align = "center",
-                                            img(src = "02-build-model.png", height = "30%", 
-                                                width = "30%")
-                                     )
-                                   ), br(), br(), hr(),
-                                   #* Intro text ====
-                                   fluidRow(
-                                     # conditionalPanel(condition = "input.site_html > 1",
-                                     #** NEON Intro ----
-                                     column(4,
-                                            h3("What is a Model?"),
-                                            h4("Read through this section and scroll through the slides"),
-                                            p(id = "txt_j", module_text["model1", ]),
-                                            p(id = "txt_j", module_text["model2", ]),
-                                            p(id = "txt_j", module_text["model3", ]),
-                                            p(id = "txt_j", module_text["mod_desc", ]),
-                                            p(id = "txt_j", module_text["phyto_chla", ]),
-                                            p("Click through the images to see how we can go from a conceptual food web model to a mathematical representation of the interaction of Nutrients (N) and Phytoplankton (P).", id = "txt_j")
-                                     ),
-                                     column(8, 
-                                            br(), br(), br(),
-                                            h5("Click on the arrows to navigate through the slides", align = "center"), 
-                                            wellPanel(
-                                              slickROutput("slck_model", width = "600px", height = "450px")
-                                              )
-                                            )
-                                   ),
-                                   hr(),
-                                   fluidRow(
-                                     column(10, align = "left",
-                                            box(id = "box6", width = 12, status = "primary",
-                                                solidHeader = TRUE,
-                                                fluidRow(
-                                                  column(10, offset = 1,
-                                                         h3("Questions"),
-                                                         h4(quest["q9", 1]),
-                                                         radioButtons("q9a", quest["q9a", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
-                                                         radioButtons("q9b", quest["q9b", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
-                                                         radioButtons("q9c", quest["q9c", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
-                                                         br()
-                                                  )
-                                                )
-                                            )
-                                     )
-                                   ),
-                                   hr(),
-                                   
-                                   #** Sort state and process variables ====
-                                   h2(tags$b("Exercise")),
-                                   p(id = "txt_j", "When working with ecological models, the terms 'state variable' and 'parameter' are used. Using the model diagram above, can you identify which are state variables or parameters?"),
-                                   p(id = "txt_j", module_text["state_var", 1]),
-                                   p(id = "txt_j", module_text["parameter", 1]),
-                                   
-                                   fluidRow(
-                                     column(12, align = "left",
-                                            box(id = "box7", width = 12, status = "primary",
-                                                solidHeader = TRUE,
-                                                fluidRow(
-                                                  column(8, offset = 1,
-                                                         h3("Questions"),
-                                                         h4(quest["q10", 1]),
-                                                    bucket_list(
-                                                      header = "",
-                                                      group_name = "bucket_list_group",
-                                                      orientation = "horizontal",
-                                                      add_rank_list(
-                                                        text = tags$b("Drag from here"),
-                                                        labels = sample(c(state_vars, process_vars)),
-                                                        input_id = "rank_list_1"
-                                                      ),
-                                                      add_rank_list(
-                                                        text = tags$b("State variable"),
-                                                        labels = NULL,
-                                                        input_id = "rank_list_2"
-                                                      ),
-                                                      add_rank_list(
-                                                        text = tags$b("Parameter"),
-                                                        labels = NULL,
-                                                        input_id = "rank_list_3"
+                                    tabPanel(title = "Objective 1 - Select and view site",
+                                             
+                                             value = "obj1", id = "wh_link",
+                                             
+                                             tags$style("outline: 5px dotted green;"),
+                                             #* Objective 1 ====
+                                             introBox(
+                                               fluidRow(
+                                                 column(12,
+                                                        wellPanel(style = paste0("background: ", obj_bg),
+                                                                  h3("Objective 1 - Select a Site"),
+                                                                  p(module_text["obj_01", ])
+                                                        )
+                                                 )
+                                               ),
+                                               data.step = 4, data.intro = help_text["objectives", 1], data.position = "top"),
+                                             #* NEON Map ====
+                                             fluidRow(
+                                               # conditionalPanel(condition = "input.site_html > 1",
+                                               #** NEON Intro ----
+                                               column(4,
+                                                      h2("Site Description"),
+                                                      p("Select a site in the table to highlight on the map"),
+                                                      conditionalPanel("input.row_num > 25",
+                                                                       selectizeInput("row_num", "Select row",
+                                                                                      choices = 1:nrow(neon_sites_df), 
+                                                                                      options = list(
+                                                                                        placeholder = 'Please select a row',
+                                                                                        onInitialize = I('function() { this.setValue(""); }')),
+                                                                       )
                                                       )
-                                                    ),
-                                                    br(),
-                                                    h4(quest["q11", 1]),
-                                                    radioButtons("q11a", quest["q11a", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
-                                                    radioButtons("q11b", quest["q11b", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
-                                                    br()
-                                                  ),
-                                                  column(2,
-                                                         wellPanel(
-                                                           useShinyjs(),  # Set up shinyjs
-                                                           actionButton("ans_btn", "Check answers"),
-                                                           textOutput("state_ans"),
-                                                           textOutput("proc_ans")
-                                                           )
-                                                         )
-                                                  )
-                                                )
-                                            )
-                                     )
-                                   ),
-                          tabPanel(title = "Objective 5 - Build model", value = "obj5",
-                                   #* Objective 5 - Run ecological model ====
-                                   fluidRow(
-                                     column(12,
-                                            # h2(tags$b("Simulate")),
-                                            wellPanel(style = paste0("background: ", obj_bg),
-                                              h3("Objective 5 - Test scenarios and calibrate model"),
-                                              p(module_text["obj_05", ])
-                                            ),
-                                            # p("Before running the model, Answer Q 12."),
-                                            # p("You will need to scroll past the two panels below to find the controls for running the model."),
-                                            # p("Run the scenarios described in Q 13 and describe how the model responds.")
-                                            )
-                                     ),
-                                   fluidRow(
-                                     column(12, align = "center",
-                                            img(src = "02-build-model.png", height = "30%", 
-                                                width = "30%")
-                                     )
-                                   ), br(), hr(),
-                                   fluidRow(
-                                     column(5,
-                                            h3("Build Model"),
-                                            p(id = "txt_j", "You will use observed data from the selected site on the 'Activity A' tab to drive the NP model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs.")
-                                     ),
-                                     column(5, offset = 2,
-                                            h4("Notes"),
-                                            p(id = "txt_j", "How does the model output compare to in-lake observations? Here are some things you should look out for:"),
-                                            tags$ol(
-                                              tags$li("Is the model in the same range as the observations?"),
-                                              tags$li("Does it capture the seasonal patterns?"),
-                                              tags$li("Does the model simulate events seen as spikes?")
-                                            ),
-                                            p("Can you think of any potential reasons why the model does not do so well?")
-                                     ),
-                                   ),
-                                   fluidRow(
-                                     column(2,
-                                            br(), br(), br(),# br(), br(),
-                                            h3("Run Model"),
-                                            actionButton("run_mod_ann",
-                                                         label = div("Run Model",
-                                                                     icon("running")),
-                                                         width = "60%"), br(), br(),
-                                            p(id = "txt_j", "To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates below."),
-                                            p(id = "txt_j", "Inital conditions can also be adjusted to measured values from ", actionLink("obj_2", "Objective 2")," but you can also adjust the initial values to see how the model responds."),
-                                            p(id = "txt_j", "The NP model simulates phytoplankton biomass which we convert to chlorophyll-a to allow comparison between the simulations and field observations.")
-                                            ),
-                                     column(5,
-                                            h3("Model States"),
-                                            wellPanel(
-                                              plotlyOutput("mod_phyto_plot")
-                                            ),
-                                            p(tags$b("Add observations")),
-                                            checkboxInput("add_obs", "Add observations to the plots")
-                                     ),
-                                     column(5,
-                                            h3("Primary Productivity"),
-                                            wellPanel(
-                                              plotlyOutput("mod_ann_plot")
-                                            ),
-                                            tags$style(type="text/css", "#save_mod_run {background-color:#9ECBB5;color: black}"),
-                                            actionButton("save_mod_run", "Save plot", icon = icon("save")), br()
-                                     ),
-                                   ), hr(),
-                                   fluidRow(
-                                     
-                                     column(2,
-                                            # wellPanel(
-                                            h3("Inputs"),
-                                            p(id = "txt_j", "Select which variables the model will use as inputs. This means the model will use the variable measured on site as a driving variable in the model."),
-                                            checkboxGroupInput("mod_sens", "Select model inputs:",
-                                                               choices = list("Surface water temperature (SWT)", "Underwater light (uPAR)")),
-                                     ),
-                                     column(3,
-                                            h3("Initial conditions"),
-                                            p("Adjust these to values that are within reasonable ranges as seen in the 'Objective 2 - Explore data' tab. Phytoplankton corresponds to chlorophyll-a concentrations and nutrients corresponds to Dissolved Inorganic Nitrogen."),
-                                            p(tags$b("Phytoplankton")),
-                                            # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
-                                            sliderInput("phy_init", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
-                                                                                div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.01, max = 10, step = 0.01, value = 2),
-                                            p(tags$b("Nutrients")),
-                                            sliderInput("nut_init", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
-                                                                                div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.01, max = 0.5, step = 0.01, value = 0.25)
-                                            ),
-                                     column(3,
-                                            h3("Parameters"),
-                                            h4(tags$b("Phytoplankton parameters")),
-                                            p(tags$em("Mortality")),
-                                            sliderInput("mort_rate", label = div(style='width:300px;', 
-                                                                                 div(style='float:left;', 'Lower death'), 
-                                                                                 div(style='float:right;', 'Higher death')),
-                                                        min = 0, max = 1, value = 0.5, step = 0.01),
-                                            p(tags$em("Uptake")),
-                                            sliderInput("nut_uptake", label = div(style='width:300px;', 
-                                                                                  div(style='float:left;', 'Low uptake'), 
-                                                                                  div(style='float:right;', 'High uptake')),
-                                                        min = 0, max = 1, value = 0.5, step = 0.01)
-                                            
-                                     ),
-                                     column(4,
-                                            h3("Model Settings"),
-                                            p("For Q12-15 you are required to save your model setup which includes the initial conditions and parameters."),
-                                            DTOutput("save_par", width = "10%"),
-                                           br(),
-                                           p("Add your parameters by clicking on the target row in the table", tags$b("BEFORE") ," you run the model."),
-                                            # actionButton("save_params", "Save model setup", icon = icon("save")),
-                                            br(), br(), 
-                                            
-                                            br()
-                                     ),
-                                   ),
-                                   fluidRow(
-                                     column(12,
-                                            box(id = "box8", width = 12, status = "primary",
-                                                solidHeader = TRUE,
-                                                fluidRow(
-                                                  column(12, offset = 1,
-                                                         h3("Questions")
-                                                  ),
-                                                  column(5, offset = 1,
-                                                         textAreaInput2(inputId = "q12", label = quest["q12", 1] , width = "90%"),
-                                                         br(),
-                                                         p(tags$b(quest["q13", 1])),
-                                                         textAreaInput2(inputId = "q13a", label = quest["q13a", 1] , width = "90%"),
-                                                         textAreaInput2(inputId = "q13b", label = quest["q13b", 1] , width = "90%"),
-                                                         br()
-                                                  ), column(5,
-                                                            p(tags$b(quest["q14", 1])),
-                                                            textAreaInput2(inputId = "q14a", label = quest["q14a", 1] , width = "90%"),
-                                                            textAreaInput2(inputId = "q14b", label = quest["q14b", 1] , width = "90%"),
-                                                            br(),
-                                                            p(tags$b(quest["q15", 1])),
-                                                            p(tags$b("Note:"), "The model you are using is a very simplified model. Do not spend greater than 5-10 minutes trying to calibrate the model. The main aim is to get it simulating concentrations in the same ranges as observations and not identically matching the observations."),
-                                                            imageOutput("mod_run_img")
+                                                      ,
+                                                      DTOutput("table01"),
+                                                      p(tags$b("Click 'View latest photo' to see the latest image from the webcam on site (this may take 10-30 seconds).")),
+                                                      actionButton("view_webcam", label = "View latest photo", icon = icon("eye"))
+                                               ),
+                                               #** Site map ----
+                                               column(4,
+                                                      h2("Map of NEON sites"),
+                                                      wellPanel(
+                                                        leafletOutput("neonmap")
+                                                      )
+                                               )
+                                               
+                                               ,
+                                               #** Site photo ----
+                                               column(4,
+                                                      h2("Phenocam"),
+                                                      textOutput("prompt1"),
+                                                      wellPanel(
+                                                        imageOutput("pheno"),
+                                                        p(id = "txt_j", module_text["phenocam", ])
+                                                        # withSpinner(imageOutput("pheno"), type = 1,
+                                                        #             hide.ui = FALSE
+                                                        # )
+                                                      )
+                                               )
+                                             ), br(),
+                                             span(textOutput("site_name1"), style = "font-size: 22px;
+                                        font-style: bold;"),
+                                             fluidRow(
+                                               wellPanel(
+                                                 h4(tags$b("About Site")),
+                                                 uiOutput("site_html"),
+                                                 textOutput("prompt2"),
+                                                 htmlOutput("site_link")
+                                               ),
+                                             ),
+                                             fluidRow(
+                                               column(10, align = "left",
+                                                      box(id = "box3", width = 10, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(7, offset = 1,
+                                                                   h3("Questions"),
+                                                                   h4(quest["q5", 1]),
+                                                                   p("If the information for your lake is not on the NEON website then you can input NA (Not Available) into the text box.")
                                                             )
-                                                  )
-                                                )
-                                            )
-                                   ),
-                                   fluidRow(
-                                     column(5, offset = 1,
-                                            h3("Next step"),
-                                            p("Now we have built and calibrated our model using observations from 2019. We are going to use this to forecast short-term primary productivity!"))
-                                     )
-                                   )
-                          
-                          ),
+                                                          ),
+                                                          fluidRow(
+                                                            column(4, offset = 1, align = "left", style = paste0("background: ", ques_bg),
+                                                                   textInput(inputId = "q5a", label = quest["q5a", 1] , width = "90%"),
+                                                                   textInput(inputId = "q5b", label = quest["q5b", 1], width = "90%"),
+                                                                   textInput(inputId = "q5c", label = quest["q5c", 1], width = "90%")
+                                                            ),
+                                                            column(4, offset = 1, align = "left", style = paste0("background: ", ques_bg),
+                                                                   textInput(inputId = "q5d", label = quest["q5d", 1] , width = "90%"),
+                                                                   textInput(inputId = "q5e", label = quest["q5e", 1], width = "90%"),
+                                                                   textInput(inputId = "q5f", label = quest["q5f", 1], width = "90%")
+                                                            )
+                                                          )
+                                                      )
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(5, offset = 1,
+                                                      h3("Next step"),
+                                                      p("We will explore the data which has been measured at this site by NEON.."))
+                                             )
+                                    ),
+                                    tabPanel(title = "Objective 2 - Explore data",  value = "obj2",
+                                             #* Objective 2 - Explore the Data ====
+                                             fluidRow(
+                                               column(12,
+                                                      wellPanel(style = paste0("background: ", obj_bg),
+                                                                h3("Objective 2 - Inspect the Data"),
+                                                                p(id = "txt_j", module_text["obj_02", ]),
+                                                                p("If there are some variables which you are not familiar with, visit the ", a(href = "https://data.neonscience.org/home", "NEON Data Portal", target = "_blank"), "and click 'Explore Data Products' to learn more about how the data are collected.")
+                                                      )
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(8, offset = 2,
+                                                      h3("Variable descriptions"),
+                                                      DT::DTOutput("var_desc")
+                                               )
+                                             ),
+                                             # fluidRow(
+                                             #   column(12,
+                                             #          
+                                             #          )
+                                             #   ),
+                                             hr(),
+                                             fluidRow(
+                                               #** Data Table ----
+                                               column(4,
+                                                      h3("Data Table"),
+                                                      p("This is a Shiny data table. It is interactive and allows you to navigate through the data table by searching or clicking through the different pages."),
+                                                      DT::DTOutput("neon_datatable")
+                                               ),
+                                               #** Plot of data ----
+                                               column(8,
+                                                      h3("Data Plot"),
+                                                      p("All plots in this Shiny app are generated using Plotly. This allows you to hover your mouse over the plot to get information from each of the plots. You can inspect the data closely by clicking and zooming into particular areas. There is a tool box at the top of the plot which has the selection function required for Q6."),
+                                                      plotlyOutput("var_plot"),
+                                                      useShinyjs(),  # Set up shinyjs
+                                                      selectizeInput("view_var", "Select variable",
+                                                                     choices = unique(neon_vars$Short_name),
+                                                                     options = list(
+                                                                       placeholder = 'Please select a variable',
+                                                                       onInitialize = I('function() { this.setValue(""); }')),
+                                                      ),
+                                                      wellPanel(
+                                                        br(),
+                                                        # conditionalPanel("input.table01_rows_selected > 1",
+                                                        h4("Variable Description"),
+                                                        textOutput("txt_out")
+                                                        # )
+                                                        
+                                                      )
+                                               )
+                                             ), hr(),
+                                             fluidRow(
+                                               column(4,
+                                                      h3("Calculate statistics"),
+                                                      selectInput("stat_calc", label = "Select calculation:", choices = stats),
+                                                      textOutput("out_stats")
+                                               ),
+                                               column(8,
+                                                      # fluidRow(
+                                                      # column(10, align = "left",
+                                                      box(id = "box4", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(10, offset = 1,
+                                                                   h3("Questions"),
+                                                                   h4(quest["q6", 1]),
+                                                                   p("Make sure you select data that best represent an annual period (i.e. one or two complete years), be wary of including potential outliers in your selection."),
+                                                                   p("To edit the table you must double click the cell and then type in your answer."),
+                                                                   DTOutput("q6_tab"),
+                                                                   bsTooltip("q6_tab", title = "Double click the cell to edit", placement = "top", trigger = "hover"),
+                                                                   br()
+                                                            )
+                                                          )
+                                                      )
+                                                      # )
+                                                      # )
+                                               )
+                                             )
+                                    ),
+                                    tabPanel(title = "Objective 3 - Explore variable relationships", value = "obj3",
+                                             #* Objective 3 - Explore variable relationships ====
+                                             fluidRow(
+                                               column(12,
+                                                      wellPanel(style = paste0("background: ", obj_bg),
+                                                                h3("Objective 3 - Explore variable relationships"),
+                                                                p(id = "txt_j", module_text["obj_03", ])
+                                                      )
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(12, align = "center",
+                                                      img(src = "01-hypothesis.png", height = "30%", 
+                                                          width = "30%")
+                                               )
+                                             ),
+                                             #** Explore variable relationships ----
+                                             fluidRow(
+                                               #** Data Table ----
+                                               column(4,
+                                                      h3("Investigate variable relationships"),
+                                                      p("For Q. 7 you will keep 'Chlorophyll-a' as the y-variable and explore its relationship with the other variables at this site."), 
+                                                      selectizeInput("y_var", "Select Y variable",
+                                                                     choices = unique(neon_vars$Short_name), 
+                                                                     options = list(
+                                                                       placeholder = 'Please select a variable',
+                                                                       onInitialize = I('function() { this.setValue("Chlorophyll-a"); }'))),
+                                                      selectizeInput("x_var", "Select X variable",
+                                                                     choices = unique(neon_vars$Short_name),
+                                                                     options = list(
+                                                                       placeholder = 'Please select a variable',
+                                                                       onInitialize = I('function() { this.setValue(""); }'))),
+                                                      p("While for Q. 8, you can select any two variables and investigate if there is any relationship. e.g. air temperature and surface water temperature")
+                                               ),
+                                               #** Plot of data ----
+                                               column(6,
+                                                      h3("Comparison Plot"),
+                                                      wellPanel(
+                                                        # conditionalPanel("input.var_plot", 
+                                                        plotlyOutput("xy_plot")
+                                                        # )
+                                                      )
+                                               )
+                                             ),
+                                             fluidRow(
+                                               hr(),
+                                               column(10, align = "left",
+                                                      box(id = "box5", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(10, offset = 1,
+                                                                   h3("Questions"),
+                                                                   h4(quest["q7", 1]),
+                                                                   DTOutput('q7_tab'),
+                                                                   br(),
+                                                                   h4(quest["q8", 1]),
+                                                                   textAreaInput2(inputId = "q8", label = "", width = "90%"),
+                                                                   br()
+                                                            )
+                                                          )
+                                                      )
+                                               )
+                                             ),
+                                             fluidRow(
+                                               hr(),
+                                               column(12,
+                                                      h3("Next step"),
+                                                      p("Next we will use these data and the identified related variables to help build our ecological model.")
+                                               )
+                                             )
+                                    ),
+                                    tabPanel(title = "Objective 4 - Understand model", value = "obj4",
+                                             #* Objective 4 - Understand the ecological model ====
+                                             fluidRow(
+                                               column(12,
+                                                      wellPanel(style = paste0("background: ", obj_bg),
+                                                                h3("Objective 4 - Understand the ecological model"),
+                                                                p(module_text["obj_04", ])
+                                                      )
+                                               ),
+                                             ),
+                                             fluidRow(
+                                               column(12, align = "center",
+                                                      img(src = "02-build-model.png", height = "30%", 
+                                                          width = "30%")
+                                               )
+                                             ), br(), br(), hr(),
+                                             #* Intro text ====
+                                             fluidRow(
+                                               # conditionalPanel(condition = "input.site_html > 1",
+                                               #** NEON Intro ----
+                                               column(4,
+                                                      h3("What is a Model?"),
+                                                      h4("Read through this section and scroll through the slides"),
+                                                      p(id = "txt_j", module_text["model1", ]),
+                                                      p(id = "txt_j", module_text["model2", ]),
+                                                      p(id = "txt_j", module_text["model3", ]),
+                                                      p(id = "txt_j", module_text["mod_desc", ]),
+                                                      p(id = "txt_j", module_text["phyto_chla", ]),
+                                                      p("Click through the images to see how we can go from a conceptual food web model to a mathematical representation of the interaction of Nitrogen (N) and Phytoplankton (P).", id = "txt_j")
+                                               ),
+                                               column(8, 
+                                                      br(), br(), br(),
+                                                      h5("Click on the arrows to navigate through the slides", align = "center"), 
+                                                      wellPanel(
+                                                        slickROutput("slck_model", width = "600px", height = "450px")
+                                                      )
+                                               )
+                                             ),
+                                             hr(),
+                                             fluidRow(
+                                               column(10, align = "left",
+                                                      box(id = "box6", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(10, offset = 1,
+                                                                   h3("Questions"),
+                                                                   h4(quest["q9", 1]),
+                                                                   radioButtons("q9a", quest["q9a", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
+                                                                   radioButtons("q9b", quest["q9b", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
+                                                                   radioButtons("q9c", quest["q9c", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
+                                                                   br()
+                                                            )
+                                                          )
+                                                      )
+                                               )
+                                             ),
+                                             hr(),
+                                             
+                                             #** Sort state and process variables ====
+                                             h2(tags$b("Exercise")),
+                                             p(id = "txt_j", "When working with ecological models, the terms 'state variable' and 'parameter' are used. Using the model diagram above, can you identify which are state variables or parameters?"),
+                                             p(id = "txt_j", module_text["state_var", 1]),
+                                             p(id = "txt_j", module_text["parameter", 1]),
+                                             
+                                             fluidRow(
+                                               column(12, align = "left",
+                                                      box(id = "box7", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(8, offset = 1,
+                                                                   h3("Questions"),
+                                                                   h4(quest["q10", 1]),
+                                                                   bucket_list(
+                                                                     header = "",
+                                                                     group_name = "bucket_list_group",
+                                                                     orientation = "horizontal",
+                                                                     add_rank_list(
+                                                                       text = tags$b("Drag from here"),
+                                                                       labels = sample(c(state_vars, process_vars)),
+                                                                       input_id = "rank_list_1"
+                                                                     ),
+                                                                     add_rank_list(
+                                                                       text = tags$b("State variable"),
+                                                                       labels = NULL,
+                                                                       input_id = "rank_list_2"
+                                                                     ),
+                                                                     add_rank_list(
+                                                                       text = tags$b("Parameter"),
+                                                                       labels = NULL,
+                                                                       input_id = "rank_list_3"
+                                                                     )
+                                                                   ),
+                                                                   br(),
+                                                                   h4(quest["q11", 1]),
+                                                                   radioButtons("q11a", quest["q11a", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
+                                                                   radioButtons("q11b", quest["q11b", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
+                                                                   br()
+                                                            ),
+                                                            column(2,
+                                                                   wellPanel(
+                                                                     useShinyjs(),  # Set up shinyjs
+                                                                     actionButton("ans_btn", "Check answers"),
+                                                                     textOutput("state_ans"),
+                                                                     textOutput("proc_ans")
+                                                                   )
+                                                            )
+                                                          )
+                                                      )
+                                               )
+                                             )
+                                    ),
+                                    tabPanel(title = "Objective 5 - Build model", value = "obj5",
+                                             #* Objective 5 - Run ecological model ====
+                                             fluidRow(
+                                               column(12,
+                                                      # h2(tags$b("Simulate")),
+                                                      wellPanel(style = paste0("background: ", obj_bg),
+                                                                h3("Objective 5 - Test scenarios and calibrate model"),
+                                                                p(module_text["obj_05", ])
+                                                      ),
+                                                      # p("Before running the model, Answer Q 12."),
+                                                      # p("You will need to scroll past the two panels below to find the controls for running the model."),
+                                                      # p("Run the scenarios described in Q 13 and describe how the model responds.")
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(6,
+                                                      p("Here we are going to use the NP model to simulate primary productivity. We will be comparing our model output to chlorophyll-a sensor data and adjusting the models parameters to try and replicate the sensor measurements.")
+                                                      ),
+                                               column(6, align = "center",
+                                                      img(src = "02-build-model.png", height = "75%", 
+                                                          width = "75%")
+                                               )
+                                             ), br(), hr(),
+                                             fluidRow(
+                                               column(6,
+                                                      h3("Build Model"),
+                                                      p(id = "txt_j", "You will use observed data from the selected site on the 'Activity A' tab to drive the NP model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs."),
+                                               ),
+                                               column(6,
+                                                      h4("Calibration tips"),
+                                                      p(id = "txt_j", "How does the model output compare to in-lake observations? Here are some things you should look out for:"),
+                                                      tags$ol(
+                                                        tags$li("Is the model in the same range as the observations?"),
+                                                        tags$li("Does it capture the seasonal patterns?"),
+                                                        tags$li("Does the model simulate events seen as spikes?")
+                                                      ),
+                                               ),
+                                               hr(),
+                                               column(12,
+                                                      h3("Calibration target"),
+                                                      p("Below are some example images of what a 'calibrated' model output looks like. Remember this is a simplified model so do not expect it to simulate chorophyll-a concentrations exactly."),
+                                                      br()
+                                               ),
+                                               column(6, align = "center",
+                                                      img(src = calib_model_png[1], height = "75%", width = "75%", id = "bla_border"),
+                                                      p(tags$em("Calibrated model ", tags$b("without"), " surface water temperature or underwater PAR as inputs to the model."))
+                                               ),
+                                               column(6, align = "center",
+                                                      img(src = calib_model_png[2], height = "75%", width = "75%", id = "bla_border"),
+                                                      p(tags$em("Calibrated model ", tags$b("with"), " surface water temperature and underwater PAR as inputs to the model."))
+                                               ),
+                                             ),
+                                             fluidRow(
+                                               column(3,
+                                                      br(), br(), br(),# br(), br(),
+                                                      h3("Run Model"),
+                                                      p(id = "txt_j", "To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates below."),
+                                                      p(id = "txt_j", "Inital conditions can also be adjusted to measured values from ", actionLink("obj_2", "Objective 2")," but you can also adjust the initial values to see how the model responds."),
+                                                      p(id = "txt_j", "The NP model simulates phytoplankton biomass which we convert to chlorophyll-a to allow comparison between the simulations and field observations."),
+                                                      br(), br(),
+                                                      actionButton("run_mod_ann",
+                                                                   label = div("Run Model",
+                                                                               icon("running")),
+                                                                   width = "60%"), 
+                                               ),
+                                               # column(5,
+                                               #        h3("Model States"),
+                                               #        wellPanel(
+                                               #          plotlyOutput("mod_phyto_plot")
+                                               #        ),
+                                               #        p(tags$b("Add observations")),
+                                               #        checkboxInput("add_obs", "Add observations to the plots")
+                                               # ),
+                                               column(9,
+                                                      h3("Primary Productivity"),
+                                                      wellPanel(
+                                                        plotlyOutput("mod_ann_plot")
+                                                      ),
+                                                      p(tags$b("Add observations")),
+                                                      checkboxInput("add_obs", "Add observations to the plots"),
+                                                      tags$style(type="text/css", "#save_mod_run {background-color:#9ECBB5;color: black}"),
+                                                      actionButton("save_mod_run", "Save plot", icon = icon("save")), br()
+                                               ),
+                                             ), hr(),
+                                             fluidRow(
+                                               
+                                               column(2,
+                                                      # wellPanel(
+                                                      h3("Inputs"),
+                                                      p(id = "txt_j", "Select which variables the model will use as inputs. This means the model will use the variable measured on site as a driving variable in the model."),
+                                                      checkboxGroupInput("mod_sens", "Select model inputs:",
+                                                                         choices = list("Surface water temperature (SWT)", "Underwater light (uPAR)")),
+                                               ),
+                                               column(3,
+                                                      h3("Initial conditions"),
+                                                      p("Adjust these to values that are within reasonable ranges as seen in the 'Objective 2 - Explore data' tab. Phytoplankton corresponds to chlorophyll-a concentrations or use hover your mouse over the plot."),
+                                                      p(tags$b("Phytoplankton")),
+                                                      # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
+                                                      sliderInput("phy_init", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
+                                                                                          div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
+                                                                  min = 0.01, max = 10, step = 0.01, value = 2),
+                                                      p(tags$b("Nitrogen")),
+                                                      sliderInput("nut_init", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
+                                                                                          div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
+                                                                  min = 0.01, max = 0.5, step = 0.01, value = 0.25),
+                                                      p("Nitrogen ranges (from Objective 2)"),
+                                                      DTOutput("nutri_table"),
+                                                      br(),
+                                                      p("Use these values to help you select a suitable value to begin with.")
+                                               ),
+                                               column(3,
+                                                      h3("Parameters"),
+                                                      p("These are the key parameters that control phytoplankton biomass. Change these to adjust the rate at which phytoplankton die (Mortality) or reproduce by taking up available nutrient (Uptake),"),
+                                                      # h4(tags$b("Phytoplankton parameters")),
+                                                      p(tags$em("Mortality")),
+                                                      sliderInput("mort_rate", label = div(style='width:300px;', 
+                                                                                           div(style='float:left;', 'Lower death'), 
+                                                                                           div(style='float:right;', 'Higher death')),
+                                                                  min = 0, max = 1, value = 0.5, step = 0.01),
+                                                      p(tags$em("Uptake")),
+                                                      sliderInput("nut_uptake", label = div(style='width:300px;', 
+                                                                                            div(style='float:left;', 'Low uptake'), 
+                                                                                            div(style='float:right;', 'High uptake')),
+                                                                  min = 0, max = 1, value = 0.5, step = 0.01)
+                                                      
+                                               ),
+                                               column(4,
+                                                      h3("Model Settings"),
+                                                      p("For Q12-15 you are required to save your model setup which includes the initial conditions and parameters."),
+                                                      DTOutput("save_par", width = "10%"),
+                                                      br(),
+                                                      p("Add your parameters by clicking on the target row in the table", tags$b("BEFORE") ," you run the model.")
+                                               ),
+                                             ), hr(), br(),
+                                             fluidRow(
+                                               column(12,
+                                                      box(id = "box8", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(12, offset = 1,
+                                                                   h3("Questions")
+                                                            ),
+                                                            column(5, offset = 1,
+                                                                   textAreaInput2(inputId = "q12", label = quest["q12", 1] , width = "90%"),
+                                                                   br(),
+                                                                   p(tags$b(quest["q13", 1])),
+                                                                   textAreaInput2(inputId = "q13a", label = quest["q13a", 1] , width = "90%"),
+                                                                   textAreaInput2(inputId = "q13b", label = quest["q13b", 1] , width = "90%"),
+                                                                   br()
+                                                            ), column(5,
+                                                                      p(tags$b(quest["q14", 1])),
+                                                                      textAreaInput2(inputId = "q14a", label = quest["q14a", 1] , width = "90%"),
+                                                                      textAreaInput2(inputId = "q14b", label = quest["q14b", 1] , width = "90%"),
+                                                                      br(),
+                                                                      p(tags$b(quest["q15", 1])),
+                                                                      p(tags$b("Note:"), "The model you are using is a very simplified model. Do not spend greater than 5-10 minutes trying to calibrate the model. The main aim is to get it simulating concentrations in the same ranges as observations and not identically matching the observations."),
+                                                                      imageOutput("mod_run_img")
+                                                            )
+                                                          )
+                                                      )
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(5, offset = 1,
+                                                      h3("Next step"),
+                                                      p("Now we have built and calibrated our model using observations from 2019. We are going to use this to forecast short-term primary productivity!"))
+                                             )
+                                    )
+                                    
                         ),
+               ),
                
                
                # 5. Activity B ----
@@ -1165,586 +1204,616 @@ border-color: #FFF;
                         ),
                         tabsetPanel(id = "tabseries2",
                                     #* Objective 6 - Examine uncertainty ====
-                          tabPanel(title = "Objective 6 - Examine uncertainty", value = "obj6",
-                                   #** Forecasting text ====
-                                   fluidRow(
-                                     column(12,
-                                            wellPanel(style = paste0("background: ", obj_bg),
-                                              h3("Objective 6 - Understand uncertainty and explore a weather forecast"),
-                                              p(id = "txt_j", module_text["obj_06", ])
-                                            ))
-                                   ),
-                                   fluidRow(
-                                     column(6,
-                                            h3("Ecological Forecasting"),
-                                            p(id = "txt_j", module_text["eco_forecast2", ]),
-                                            br(),
-                                            p(id = "txt_j", "For this module, we will use our models developed and calibrated in ", actionLink("act_A_obj_5", label = "Activity A - Objective 5"), "to forecast productivity 30 days into the future using NOAA weather forecasts on 2020-09-25 and 2020-10-02."),
-                                            p(id = "txt_j", "Before we dive into this, we first need to understand what we mean when we talk about uncertainty!")
-                                     ),
-                                     column(6, align = "center",
-                                            br(), br(),
-                                            img(src = "03-quantify-uncertainty.png",
-                                                height = "70%", 
-                                                width = "70%")
-                                            # HTML('<center><img src="What_is_EF.png"></center>'),
-                                     )
-                                   ),
-                                   hr(),
-                                   #** What is Uncertainty? ====
-                                   fluidRow(
-                                     column(4,
-                                            h3("What is Uncertainty?"),
-                                            p(id = "txt_j", module_text["uncert1", ]),
-                                            br(),
-                                            p(id = "txt_j", "We will use the model you built in Activity A to create an ecological forecast."),
-                                            p(id = "txt_j", "One source of uncertainty is the data used to drive the model. For your forecast, you will be using actual NOAA weather forecast to drive your model. Load and examine these data below.")
-                                     ),
-                                     column(8, align = "center",
-                                            img(src = "What_is_uncert.png", height = "60%", 
-                                                width = "60%")
-                                     )
-                                   ),
-                                   hr(),
-                                   fluidRow(
-                                     #** Weather Forecast ----
-                                     column(12, align = "center",
-                                            h3("Weather Forecast"), hr()
-                                     ),
-                                   ),
-                                   fluidRow(
-                                     column(5,
-                                            p(id = "txt_j", module_text["weather_forecast1", ]),
-                                            p(id = "txt_j", HTML(paste0("Weather forecasts are produced using ",tags$b("ensemble modelling"), "."))),
-                                            p(id = "txt_j", module_text["ens_mod1", ]),
-                                            p(id = "txt_j", module_text["weather_forecast2", ])
-                                     ),
-                                     column(6,
-                                            # br(), br(),
-                                           
-                                            )
-                                     ),
-                                   hr(),
-                                   fluidRow(
-                                     column(10, align = "left",
-                                            box(id = "box9", width = 12, status = "primary",
-                                                solidHeader = TRUE,
-                                                fluidRow(
-                                                  column(10, offset = 1,
-                                                         h3("Questions"),
-                                                         h4(quest["q16", 1]),
-                                                         textAreaInput2(inputId = "q16", label = "", width = "90%"),
-                                                         br()
-                                                  )
-                                                )
-                                            )
-                                     )
-                                   ),
-                                   hr(),
-                                   fluidRow(
-                                     column(3,
-                                            h3("Explore Weather Forecast"),
-                                            p(id = "txt_j", "Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS", target = "_blank"), " forecast for the NEON site you chose in Activity A."),
-                                            p(id = "txt_j", "Inspect the different meteorological outputs. You can adjust the number of members, which is the number of forecasts and also how it is visualized. A line plot shows each individual member while the distribution calculates the median (represented as a solid line) and the 95th percentile (represented as a shaded polygon)."),
-                                            actionButton('load_fc', "Load Forecast", icon = icon("download")), br(),
-                                            # actionButton('plot_fc', "Plot Forecast!", icon = icon("chart-line")),
-                                            wellPanel(
-                                              conditionalPanel("input.load_fc",
-                                                               uiOutput("sel_fc_vars"),
-                                                               uiOutput("sel_fc_dates"),
-                                                               uiOutput("sel_fc_members"),
-                                                               radioButtons("type", "Type of Visualization", choices = c("Data table", plot_types)),
-                                                               )
-                                            )
-                                     ),
-                                     column(9,
-                                            wellPanel(
-                                              conditionalPanel("input.type == 'Data table'",
-                                                               DTOutput("viz_output")
-                                                               ),
-                                              conditionalPanel("input.type == 'Line' | input.type == 'Distribution'",
-                                                               plotlyOutput("fc_plot"),
-                                                               p("With plots that have a legend you can also interactively remove/add features from the plot by clicking on items within the legend."),
-                                                               tags$style(type="text/css", "#save_noaa_plot {background-color:#9ECBB5;color: black}"),
-                                                               actionButton("save_noaa_plot", "Save plot", icon = icon("save"))
-                                                               )
-                                              )
-                                            )
-                                     ),
-                                   hr(),
-                                   fluidRow(
-                                     column(10, align = "left",
-                                            box(id = "box10", width = 12, status = "primary",
-                                                solidHeader = TRUE,
-                                                fluidRow(
-                                                  column(10, offset = 1,
-                                                         h3("Questions"),
-                                                         h4(quest["q17", 1]),
-                                                         textAreaInput2(inputId = "q17a", label = quest["q17a", 1], width = "90%"),
-                                                         textAreaInput2(inputId = "q17b", label = quest["q17b", 1], width = "90%"),
-                                                         textAreaInput2(inputId = "q17c", label = quest["q17c", 1], width = "90%")
-                                                  ),
-                                                  column(5, offset = 3, align = "center",
-                                                         imageOutput("noaa_fc_img"))
-                                                )
-                                            )
-                                     )
-                                   ),
-                                   # hr(),
-                                   
-                          ),
-                          tabPanel(title = "Objective 7 - Prepare inputs", value = "obj7",
-                                   #* Objective 7 - Prepare inputs ====
-                                   fluidRow(
-                                     column(12,
-                                            wellPanel(style = paste0("background: ", obj_bg),
-                                                      h3("Objective 7 - Prepare inputs"),
-                                                      p(id = "txt_j", module_text["obj_07", ])
-                                            )
-                                     ),
-                                     column(6,
-                                            h4("Linear Regression"),
-                                            p(id = "txt_j", module_text["linear_regression", ]),
-                                            p("The equation form for a linear regression is: "),
-                                            p(withMathJax("$$y = mx + b $$"), style = "font-size: 20px;"),
-                                     ),
-                                     column(6, align = "center",
-                                            img(src = "linear_regression_example.png", 
-                                                height = "50%", 
-                                                width = "50%"),
-                                            p(tags$em("An example plot showing surface water temperature vs. air temperature with a regression line added (orange dashed) with the corresponding equation."))
-                                            )
-                                            
-                                   ),
-                                   hr(),
-                                   fluidRow(
-                                     column(6,
-                                            h3("Air vs Surface water temperature"),
-                                            wellPanel(
-                                              plotlyOutput("at_wt")
-                                            ),
-                                            p("You can add a linear regression to the whole data or a subset by selecting data points using the 'Box Select' or 'Lasso Select' tool. This may be required if you have many points around 0 or you want to exclude obvious outliers."),
-                                            actionButton("add_lm2", "Add linear regression"),
-                                            p("Clear selected points and regression line"),
-                                            actionButton("clear_sel2", "Clear plot"),
-                                            br(),
-                                            wellPanel(
-                                              p(tags$b("Linear regression equation:")),
-                                              uiOutput('lm2_eqn')
-                                            )
-                                     ),
-                                     column(6,
-                                            h3("Shortwave radiation vs underwater PAR"),
-                                            wellPanel(
-                                              plotlyOutput("sw_upar")
-                                            ),
-                                            p("You can add a linear regression to the whole data or a subset by selecting data points using the 'Box Select' or 'Lasso Select' tool. This may be required if you have many points around 0 or you want to exclude obvious outliers."),
-                                            actionButton("add_lm3", "Add linear regression"),
-                                            p("Clear selected points and regression line"),
-                                            actionButton("clear_sel3", "Clear plot"),
-                                            br(),
-                                            wellPanel(
-                                              p(tags$b("Linear regression equation:")),
-                                              uiOutput('lm3_eqn')
-                                            )
-                                     ),
-                                   ),
-                                   fluidRow(
-                                     column(12,
-                                            h3("Convert NOAA weather forecast"),
-                                            p("The model we are using uses data on a daily timestep so we will aggregate the hourly weather forecast to daily averages first and then use the linear model to convert the 30 members in the ensemble from air temperature (predictor variable) to surface water temperature (response variable) and shortwave radiation (predictor variable) to underwater PAR (response variable)."),
-                                            actionButton("conv_fc", "Convert forecast!", icon = icon("exchange")),
-                                            br(),
-                                            wellPanel(
-                                              plotlyOutput("conv_plot", height = "600px"),
-                                            ),
-                                            hr()
-                                     )
-                                   ),
-                                   
-                                   
-                          ),
-                          tabPanel(title = "Objective 8 - Forecast", value = "obj8",
-                                   #* Objective 8 - Run Forecast ====
-                                   #** Input Uncertainty ====
-                                   fluidRow(
-                                     column(12,
-                                            wellPanel(style = paste0("background: ", obj_bg),
-                                              h3("Objective 8 - Generate an Ecological Forecast"),
-                                              p(id = "txt_j", module_text["obj_08", ])
-                                            )
-                                     )
-                                   ),
-                                   fluidRow(
-                                     column(6,
-                                            h3("Driver uncertainty"),
-                                            p(id = "txt_j", module_text["driver_uncert", ]),
-                                            # br(),
-                                            p(id = "txt_j", "A key component of what makes an ecological forecast a 'forecast' is that the model is driven by ", tags$b("forecasted"), "driving variables."),
-                                            p("We will now use the weather forecast data loaded in the previous tab to drive the calibrated model we built in Activity A - Objective 5 to forecast chlorophyll-a concentrations into the future on 2020-09-25.")
-                                     ),
-                                     column(6, align = "center",
-                                            img(src = "04-generate-forecast.png",
-                                                height = "70%", 
-                                                width = "70%"), br()
-                                            ),
-                                     ),
-                                   fluidRow(
-                                     column(12,
-                                            hr()
-                                     )
-                                   ),
-                                   fluidRow(
-                                     column(3,
-                                            h3("Run Forecast"),
-                                            # wellPanel(
-                                              actionButton('load_fc2', label = div("Load forecast inputs", icon("download")),
-                                                           width = "70%"),
-                                              # br(), br(),
-                                              conditionalPanel("input.load_fc2",
-                                                               numericInput('members2', 'No. of members (1-30)', 16,
-                                                                            min = 1, max = 30, step = 1),
-                                                               # uiOutput("eco_fc_members"),
-                                                               radioButtons("type2", "Type of Visualization", choices = c("Data table", plot_types), selected = "Line"),
-                                                               # selectInput('type2', 'Plot type', plot_types,
-                                                                           # selec  ted = plot_types[2])
-                                              ),
-                                              h3(tags$b("Initial conditions")),
-                                              p(id = "txt_j", "Use the plot here, which shows measurements of  Chorophyll-a, to select and update your initial conditions before running your forecast. There is no up-to-date nutrient data so you will need to estimate this from the measurements in Activity A - Objective 5. Adjust this value to explore the sensitivity of the forecast to this value."),
-                                            p(tags$b("Phytoplankton")),
-                                            # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
-                                            sliderInput("phy_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
-                                                                                div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.01, max = 10, step = 0.01, value = 2),
-                                            p(tags$b("Nutrients")),
-                                            sliderInput("nut_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
-                                                                                div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.01, max = 10, step = 0.01, value = 3)
-                                     ),
-                                     column(8,
-                                            wellPanel(
-                                              conditionalPanel("input.type2 == 'Data table'",
-                                                               DTOutput("viz_output2")
-                                                               ),
-                                              conditionalPanel("input.type2 == 'Line' | input.type2 == 'Distribution'",
-                                                               plotlyOutput("plot_ecof2"),
-                                                               tags$style(type="text/css", "#save_comm_plot {background-color:#9ECBB5;color: black}"),
-                                                               actionButton("save_comm_plot", "Save plot", icon = icon("save"))
-                                                               )
-                                              ),
-                                            actionButton('run_fc2', label = div("Run Forecast", icon("running"))),
-                                            h4("Model settings"),
-                                            p("Explore how the forecast looks using the different model settings you saved in Objective 5."),
-                                            # DTOutput("cal_pars1", width = "50%")
-                                            DTOutput("modsett", width = "50%"),
-                                            p("Save your model plot when you are happy with your forecast.")
-                                            )
-                                     ),
-                                   hr(),
-                                   fluidRow(
-                                     column(10, align = "left",
-                                            box(id = "box11", width = 12, status = "primary",
-                                                solidHeader = TRUE,
-                                                fluidRow(
-                                                  column(10, offset = 1,
-                                                         h3("Questions"),
-                                                         h4(quest["q18", 1]),
-                                                         textAreaInput2(inputId = "q18", label = "", width = "90%"),
-                                                         h4(quest["q19", 1]),
-                                                         textAreaInput2(inputId = "q19", label = "", width = "90%"),
-                                                         br()
-                                                  )
-                                                )
-                                            )
-                                     )
-                                   ),
-                                   # hr(),
-                                   ),
-                          #* Objective 9 - Communicate Forecast ====
-                          tabPanel(title = "Objective 9 - Communicate forecast",  value = "obj9",
-                                   fluidRow(
-                                     column(12,
-                                            wellPanel(style = paste0("background: ", obj_bg),
-                                              h3("Objective 9 - Communicate an Ecological Forecast"),
-                                              p(id = "txt_j", module_text["obj_09", ])
-                                            )
-                                     )
-                                   ),
-                                   fluidRow(
-                                     column(6,
-                                            wellPanel(
-                                              imageOutput("comm_fc")
-                                            ),
-                                            # h3("Communicate Forecast"),
-                                            # p(id = "txt_j", module_text["comm_forecast", ]),
-                                     ),
-                                     column(6, align = "center",
-                                            img(src = "05-communicate-forecast.png",
-                                                height = "70%", 
-                                                width = "70%")
-                                            )
-                                     ),
-                                   hr(),
-                                   fluidRow(
-                                     column(10, align = "left",
-                                            box(id = "box12", width = 12, status = "primary",
-                                                solidHeader = TRUE,
-                                                fluidRow(
-                                                  column(10, offset = 1,
-                                                         h3("Questions"),
-                                                         h4(quest["q20", 1]),
-                                                         textAreaInput2(inputId = "q20", label = "", width = "90%"),
-                                                         br()
-                                                  )
-                                                )
-                                            )
-                                     )
-                                   ),
-                                   # hr(),
-                                   ),
-                          tabPanel(title = "Objective 10 -  Assess forecast",  value = "obj10",
-                                   fluidRow(
-                                     column(12,
-                                            wellPanel(style = paste0("background: ", obj_bg),
-                                              h3("Objective 10 - Assess an Ecological Forecast"),
-                                              p(id = "txt_j", module_text["obj_10", ])
-                                            )
-                                     )
-                                   ),
-                                   fluidRow(
-                                     column(5,
-                                            h3("One week later..."),
-                                            p(id = "txt_j", "A week has passed since the forecast, and you have collected a new week of data. Now you are curious to see how well your forecast performed. We can run an actual comparison to see how the forecast predictions compare to actual observed data."),
-                                     ),
-                                     column(6, align = "center",
-                                            img(src = "06-assess-forecast.png",
-                                                height = "70%", 
-                                                width = "70%")
-                                     )
-                                   ),
-                                   fluidRow(
-                                     column(3,
-                                            br(), br(), br(),
-                                            wellPanel(
-                                              h4("Assess forecast performance"),
-                                              p(id = "txt_j", "Comparing forecast results to actual measurements gives us an indication of how accurately our model is forecasting."),
-                                              p(id = "txt_j", "This is an important step as it indicates how well our model represents the system we are forecasting, as well as gives us an opportunity to improve the model for future forecasts."),
-                                              checkboxInput("add_newobs", label = "Add new observations", FALSE),
-                                              conditionalPanel("input.add_newobs",
-                                                               actionButton('assess_fc3', label = div("Assess forecast",
-                                                                                                      icon("clipboard-check"))))
-                                              
-                                            )
-                                     ),
-                                     column(5,
-                                            h3(tags$b("Add in new observations")),
-                                            wellPanel(
-                                              plotlyOutput("plot_ecof3")
-                                            )
-                                     ),
-                                     column(4,
-                                            h3(tags$b("Plot forecast vs observed")),
-                                            wellPanel(
-                                              plotlyOutput("assess_plot")
-                                            ),
-                                            tags$style(type="text/css", "#save_assess_plot {background-color:#9ECBB5;color: black}"),
-                                            actionButton("save_assess_plot", "Save plot", icon = icon("save"))
-                                     ),
-                                   ),
-                                   hr(),
-                                   fluidRow(
-                                     column(10, align = "left",
-                                            box(id = "box13", width = 12, status = "primary",
-                                                solidHeader = TRUE,
-                                                fluidRow(
-                                                  column(10, offset = 1,
-                                                         h3("Questions"),
-                                                         h4(quest["q21", 1]),
-                                                         textAreaInput2(inputId = "q21", label = "", width = "90%"),
-                                                         ),
-                                                  column(5, offset = 3, align = "center",
-                                                         imageOutput("assess_plot_img")
-                                                  )
-                                                )
-                                            )
-                                     )
-                                   ),
-                                   # hr(),
-                                   ),
-                          tabPanel(title = "Objective 11 - Update model",  value = "obj11",
-                                   #*
-                                   fluidRow(
-                                     column(12,
-                                            wellPanel(style = paste0("background: ", obj_bg),
-                                              h3("Objective 11 - Update Model"),
-                                              p(id = "txt_j", module_text["obj_11", ])
-                                              )
-                                            )
-                                     ), 
-                                   #* Objective 11 - Update Model ====
-                                   fluidRow(
-                                     column(6,
-                                            h3("Update Model"),
-                                            p(id = "txt_j", "How did your forecast perform compared to observations?"),
-                                            p(id = "txt_j", "What does this tell you about the model?"),
-                                            p(id = "txt_j", "One of the best things about ecological forecasting is that it allows us to test our hypotheses about how the world works (as described by our model). If there is a poor fit between our forecast and observed data, our model may not be accurately capturing environmental processes."),
-                                            p(id = "txt_j", "One of the mechanisms causing a poor fit could be the parameter values. To update the model, adjust the parameters to see if you can improve the forecast."),
-                                     ),
-                                     column(6, align = "center",
-                                            img(src = "07-update-model.png",
-                                                height = "70%", 
-                                                width = "70%")
-                                     )
-                                   ), br(), hr(),
-                                   fluidRow(
-                                     column(4,
-                                            h3(tags$b("Initial conditions")),
-                                            p(tags$b("Phytoplankton")),
-                                            sliderInput("phy_init3", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
-                                                                                 div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.01, max = 10, step = 0.01, value = 2),
-                                            h3("Parameters"),
-                                            h4(tags$b("Phytoplankton parameters")),
-                                            p("Use the buttons below to increase or decrease the value of your parameters. The updated parameter values are displayed in a table beneath the plot."), 
-                                            radioButtons("upd_mort_rate", "Mortality Rate", choices = c("Decrease", "Keep the same", "Increase"),
-                                                         selected = character(0), inline = TRUE),
-                                            br(), 
-                                            radioButtons("upd_nut_rate", "Nutrient Uptake", choices = c("Decrease", "Keep the same", "Increase"),
-                                                         selected = character(0), inline = TRUE),
-                                            br(), 
-                                            p("Re-run your forecast with the updated parameters."),
-                                            box(width = 10, status = "warning",
-                                                solidHeader = TRUE,
-                                                p(tags$b("WARNING:"), "You only get one opportunity to update your model parameter so think carefully about what the parameter represents before updating your forecast. You can return to Activity A - Objective 5 to re-familiarise yourself with how the parameters affect model performance.")
-                                            ),
-                                            actionButton('update_fc2', label = div("Update forecast",
-                                                                                   icon("redo-alt"))),
-                                            textOutput("warn_update"),
-                                            conditionalPanel("input.update_fc2",
-                                                             h3("Forecast updated!")
-                                            )
-                                     ),
-                                     column(8,
-                                            # h4("Schematic of Forecast uncertainty"),
-                                            wellPanel(
-                                              plotlyOutput("update_plot"),
-                                              tags$style(type="text/css", "#save_update_fc_plot {background-color:#9ECBB5;color: black}"),
-                                              actionButton("save_update_fc_plot", "Save plot", icon = icon("save"))
-                                            ),
-                                            h4("Table of parameters"),
-                                            DTOutput("comp_pars", width = "50%")
-                                            )
-                                     ),
-                                   hr(),
-                                   fluidRow(
-                                     column(10, align = "left",
-                                            box(id = "box14", width = 12, status = "primary",
-                                                solidHeader = TRUE,
-                                                fluidRow(
-                                                  column(10, offset = 1,
-                                                         h3("Questions"),
-                                                         h4(quest["q22", 1]),
-                                                         textAreaInput2(inputId = "q22", label = "", width = "90%"),
-                                                         br()
-                                                  ),
-                                                  column(5, offset = 3, align = "center",
-                                                         imageOutput("update_plot_img")
-                                                         )
-                                                )
-                                            )
-                                     )
-                                   ),
-                                   # hr(),
-                                   ),
-                          tabPanel(title = "Objective 12 - Next forecast",  value = "obj12",
-                                   fluidRow(
-                                     column(12,
-                                            wellPanel(style = paste0("background: ", obj_bg),
-                                              h3("Objective 12 - Next Forecast"),
-                                              p(id = "txt_j", module_text["obj_12", ])
-                                            )
-                                     )
-                                   ),
-                                   #* Objective 12 - New Forecast ====
-                                   fluidRow(
-                                     column(4,
-                                            h2("Next Forecast"),
-                                            p(id = "txt_j", "With an updated model, we can now generate the next forecast driven by a new weather forecast"),
-                                            h3("Initial conditions"),
-                                            p(id = "txt_j", "Don't forget to update the initial conditions based on the latest observed data which are shown in the plot."),
-                                            p(tags$b("Phytoplankton")),
-                                            # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
-                                            sliderInput("phy_init4", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
-                                                                                div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.01, max = 10, step = 0.01, value = 2),
-                                            p(tags$b("Nutrients")),
-                                            sliderInput("nut_init4", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
-                                                                                div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
-                                                        min = 0.01, max = 10, step = 0.01, value = 3),
-                                            wellPanel(
-                                              actionButton('load_fc3', label = div("Load forecast inputs", icon("download")),
-                                                           width = "70%"), br(),
-                                              conditionalPanel("input.load_fc3",
-                                                               actionButton('run_fc3', label = div("Run Forecast", icon("running")),
-                                                                            width = "70%")
-                                                               ),
-                                              
-                                            )
-                                     ),
-                                     column(8,
-                                            h3("New Forecast plot"),
-                                            wellPanel(
-                                              plotlyOutput("plot_ecof4"),
-                                              tags$style(type="text/css", "#save_new_fc_plot {background-color:#9ECBB5;color: black}"),
-                                              actionButton("save_new_fc_plot", "Save plot", icon = icon("save"))
-                                              ),
-                                            br(),
-                                            DTOutput("fc_table", width = "80%")
-                                            )
-                                     ),
-                                   hr(),
-                                   fluidRow(
-                                     column(10, align = "left",
-                                            box(id = "box15", width = 12, status = "primary",
-                                                solidHeader = TRUE,
-                                                fluidRow(
-                                                  column(10, offset = 1,
-                                                         h3("Questions"),
-                                                         h4(quest["q23", 1]),
-                                                         textAreaInput2(inputId = "q23", label = "", width = "90%"),
-                                                         h4(quest["q24", 1]),
-                                                         textAreaInput2(inputId = "q24", label = "", width = "90%"),
-                                                  ),
-                                                  column(5, offset = 3, align = "center",
-                                                         imageOutput("new_fc_plot_img")
-                                                  )
-                                                )
-                                            )
-                                     )
-                                   ),
-                                   hr(),
-                                   fluidRow(
-                                     column(4, offset = 1, 
-                                            h2("The Forecast Cycle"),
-                                            p(module_text["fc_cycle_end", ]),
-                                            ),
-                                     column(5, offset = 1,
-                                            br(), br(), br(),
-                                            img(src = "mod5_viz_v2.png", height = "80%", 
-                                                width = "80%", align = "left")
-                                     )
-                                     ),
-                                   fluidRow(
-                                     column(12,
-                                            h2("Completed Activity B!"),
-                                            p("This is the end of Activity B. If you have been inputting your answers into the app, it is recommended to return to the 'Introduction' tab and generate the final report before completing Activity C. Otherwise you could lose your progress."),
-                                            p("You can add your answers for Activity C into the downloaded Word document."),
-                                            actionButton("return_intro", "Return to Introduction", icon = icon("home"))
-                                            )
-                                     )
-                                   )
-                          ),
+                                    tabPanel(title = "Objective 6 - Examine uncertainty", value = "obj6",
+                                             #** Forecasting text ====
+                                             fluidRow(
+                                               column(12,
+                                                      wellPanel(style = paste0("background: ", obj_bg),
+                                                                h3("Objective 6 - Understand uncertainty and explore a weather forecast"),
+                                                                p(id = "txt_j", module_text["obj_06", ])
+                                                      ))
+                                             ),
+                                             fluidRow(
+                                               column(6,
+                                                      h3("Ecological Forecasting"),
+                                                      p(id = "txt_j", module_text["eco_forecast2", ]),
+                                                      br(),
+                                                      p(id = "txt_j", "For this module, we will use our models developed and calibrated in ", actionLink("act_A_obj_5", label = "Activity A - Objective 5"), "to forecast productivity 30 days into the future using NOAA weather forecasts on 2020-09-25 and 2020-10-02."),
+                                                      p(id = "txt_j", "Before we dive into this, we first need to understand what we mean when we talk about uncertainty!")
+                                               ),
+                                               column(6, align = "center",
+                                                      br(), br(),
+                                                      img(src = "03-quantify-uncertainty.png",
+                                                          height = "70%", 
+                                                          width = "70%")
+                                                      # HTML('<center><img src="What_is_EF.png"></center>'),
+                                               )
+                                             ),
+                                             hr(),
+                                             #** What is Uncertainty? ====
+                                             fluidRow(
+                                               column(4,
+                                                      h3("What is Uncertainty?"),
+                                                      p(id = "txt_j", module_text["uncert1", ]),
+                                                      br(),
+                                                      p(id = "txt_j", "We will use the model you built in Activity A to create an ecological forecast."),
+                                                      p(id = "txt_j", "One source of uncertainty is the data used to drive the model. For your forecast, you will be using actual NOAA weather forecast to drive your model. Load and examine these data below.")
+                                               ),
+                                               column(8, align = "center",
+                                                      img(src = "What_is_uncert.png", height = "60%", 
+                                                          width = "60%")
+                                               )
+                                             ),
+                                             hr(),
+                                             fluidRow(
+                                               #** Weather Forecast ----
+                                               column(12, align = "center",
+                                                      h3("Weather Forecast"), hr()
+                                               ),
+                                             ),
+                                             fluidRow(
+                                               column(5,
+                                                      p(id = "txt_j", module_text["weather_forecast1", ]),
+                                                      p(id = "txt_j", HTML(paste0("Weather forecasts are produced using ",tags$b("ensemble modelling"), "."))),
+                                                      p(id = "txt_j", module_text["ens_mod1", ]),
+                                                      p(id = "txt_j", module_text["weather_forecast2", ])
+                                               ),
+                                               column(6,
+                                                      # br(), br(),
+                                                      
+                                               )
+                                             ),
+                                             hr(),
+                                             fluidRow(
+                                               column(10, align = "left",
+                                                      box(id = "box9", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(10, offset = 1,
+                                                                   h3("Questions"),
+                                                                   h4(quest["q16", 1]),
+                                                                   textAreaInput2(inputId = "q16", label = "", width = "90%"),
+                                                                   br()
+                                                            )
+                                                          )
+                                                      )
+                                               )
+                                             ),
+                                             hr(),
+                                             fluidRow(
+                                               column(3,
+                                                      h3("Explore Weather Forecast"),
+                                                      p(id = "txt_j", "Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS", target = "_blank"), " forecast for the NEON site you chose in Activity A."),
+                                                      p(id = "txt_j", "Inspect the different meteorological outputs. You can adjust the number of members, which is the number of forecasts and also how it is visualized. A line plot shows each individual member while the distribution calculates the median (represented as a solid line) and the 95th percentile (represented as a shaded polygon)."),
+                                                      actionButton('load_fc', "Load Forecast", icon = icon("download")), br(),
+                                                      # actionButton('plot_fc', "Plot Forecast!", icon = icon("chart-line")),
+                                                      wellPanel(
+                                                        conditionalPanel("input.load_fc",
+                                                                         uiOutput("sel_fc_vars"),
+                                                                         uiOutput("sel_fc_dates"),
+                                                                         uiOutput("sel_fc_members"),
+                                                                         radioButtons("type", "Type of Visualization", choices = c("Data table", plot_types)),
+                                                        )
+                                                      )
+                                               ),
+                                               column(9,
+                                                      wellPanel(
+                                                        conditionalPanel("input.type == 'Data table'",
+                                                                         DTOutput("viz_output")
+                                                        ),
+                                                        conditionalPanel("input.type == 'Line' | input.type == 'Distribution'",
+                                                                         plotlyOutput("fc_plot"),
+                                                                         p("With plots that have a legend you can also interactively remove/add features from the plot by clicking on items within the legend."),
+                                                                         tags$style(type="text/css", "#save_noaa_plot {background-color:#9ECBB5;color: black}"),
+                                                                         actionButton("save_noaa_plot", "Save plot", icon = icon("save"))
+                                                        )
+                                                      )
+                                               )
+                                             ),
+                                             hr(),
+                                             fluidRow(
+                                               column(10, align = "left",
+                                                      box(id = "box10", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(10, offset = 1,
+                                                                   h3("Questions"),
+                                                                   h4(quest["q17", 1]),
+                                                                   textAreaInput2(inputId = "q17a", label = quest["q17a", 1], width = "90%"),
+                                                                   textAreaInput2(inputId = "q17b", label = quest["q17b", 1], width = "90%"),
+                                                                   textAreaInput2(inputId = "q17c", label = quest["q17c", 1], width = "90%")
+                                                            ),
+                                                            column(5, offset = 3, align = "center",
+                                                                   imageOutput("noaa_fc_img"))
+                                                          )
+                                                      )
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(5, offset = 1,
+                                                      h3("Next step"),
+                                                      p("Now we have loaded in weather forecast data, we will need to convert it into inputs that are used by our model which are surface water temperature and underwater PAR."))
+                                             )
+                                             # hr(),
+                                             
+                                    ),
+                                    tabPanel(title = "Objective 7 - Prepare inputs", value = "obj7",
+                                             #* Objective 7 - Prepare inputs ====
+                                             fluidRow(
+                                               column(12,
+                                                      wellPanel(style = paste0("background: ", obj_bg),
+                                                                h3("Objective 7 - Prepare inputs"),
+                                                                p(id = "txt_j", module_text["obj_07", ])
+                                                      )
+                                               ),
+                                               column(6,
+                                                      h4("Linear Regression"),
+                                                      p(id = "txt_j", module_text["linear_regression", ]),
+                                                      p("The equation form for a linear regression is: "),
+                                                      p(withMathJax("$$y = mx + b $$"), style = "font-size: 20px;"),
+                                               ),
+                                               column(6, align = "center",
+                                                      img(src = "linear_regression_example.png", 
+                                                          height = "50%", 
+                                                          width = "50%"),
+                                                      p(tags$em("An example plot showing surface water temperature vs. air temperature with a regression line added (orange dashed) with the corresponding equation."))
+                                               )
+                                               
+                                             ),
+                                             hr(),
+                                             fluidRow(
+                                               column(6,
+                                                      h3("Air vs Surface water temperature"),
+                                                      wellPanel(
+                                                        plotlyOutput("at_wt")
+                                                      ),
+                                                      p("You can add a linear regression to the whole data or a subset by selecting data points using the 'Box Select' or 'Lasso Select' tool. This may be required if you have many points around 0 or you want to exclude obvious outliers."),
+                                                      actionButton("add_lm2", "Add linear regression"),
+                                                      p("Clear selected points and regression line"),
+                                                      actionButton("clear_sel2", "Clear plot"),
+                                                      br(),
+                                                      wellPanel(
+                                                        p(tags$b("Linear regression equation:")),
+                                                        uiOutput('lm2_eqn')
+                                                      )
+                                               ),
+                                               column(6,
+                                                      h3("Shortwave radiation vs underwater PAR"),
+                                                      wellPanel(
+                                                        plotlyOutput("sw_upar")
+                                                      ),
+                                                      p("You can add a linear regression to the whole data or a subset by selecting data points using the 'Box Select' or 'Lasso Select' tool. This may be required if you have many points around 0 or you want to exclude obvious outliers."),
+                                                      actionButton("add_lm3", "Add linear regression"),
+                                                      p("Clear selected points and regression line"),
+                                                      actionButton("clear_sel3", "Clear plot"),
+                                                      br(),
+                                                      wellPanel(
+                                                        p(tags$b("Linear regression equation:")),
+                                                        uiOutput('lm3_eqn')
+                                                      )
+                                               ),
+                                             ),
+                                             fluidRow(
+                                               column(12,
+                                                      h3("Convert NOAA weather forecast"),
+                                                      p("The model we are using uses data on a daily timestep so we will aggregate the hourly weather forecast to daily averages first and then use the linear model to convert the 30 members in the ensemble from air temperature (predictor variable) to surface water temperature (response variable) and shortwave radiation (predictor variable) to underwater PAR (response variable)."),
+                                                      actionButton("conv_fc", "Convert forecast!", icon = icon("exchange")),
+                                                      br(),
+                                                      wellPanel(
+                                                        plotlyOutput("conv_plot", height = "600px"),
+                                                      ),
+                                                      hr()
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(5, offset = 1,
+                                                      h3("Next step"),
+                                                      p("Now we have converted the weather forecast data into inputs that are used by our model (surface water temperature and underwater PAR), we will use them to generate a forecast of primary productivity with the model we built in Objective 5."))
+                                             )
+                                             
+                                             
+                                    ),
+                                    tabPanel(title = "Objective 8 - Forecast", value = "obj8",
+                                             #* Objective 8 - Run Forecast ====
+                                             #** Input Uncertainty ====
+                                             fluidRow(
+                                               column(12,
+                                                      wellPanel(style = paste0("background: ", obj_bg),
+                                                                h3("Objective 8 - Generate an Ecological Forecast"),
+                                                                p(id = "txt_j", module_text["obj_08", ])
+                                                      )
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(6,
+                                                      h3("Driver uncertainty"),
+                                                      p(id = "txt_j", module_text["driver_uncert", ]),
+                                                      # br(),
+                                                      p(id = "txt_j", "A key component of what makes an ecological forecast a 'forecast' is that the model is driven by ", tags$b("forecasted"), "driving variables."),
+                                                      p("We will now use the weather forecast data loaded in the previous tab to drive the calibrated model we built in Activity A - Objective 5 to forecast chlorophyll-a concentrations into the future on 2020-09-25.")
+                                               ),
+                                               column(6, align = "center",
+                                                      img(src = "04-generate-forecast.png",
+                                                          height = "70%", 
+                                                          width = "70%"), br()
+                                               ),
+                                             ),
+                                             fluidRow(
+                                               column(12,
+                                                      hr()
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(3,
+                                                      h3("Run Forecast"),
+                                                      # wellPanel(
+                                                      actionButton('load_fc2', label = div("Load forecast inputs", icon("download")),
+                                                                   width = "70%"),
+                                                      # br(), br(),
+                                                      conditionalPanel("input.load_fc2",
+                                                                       numericInput('members2', 'No. of members (1-30)', 16,
+                                                                                    min = 1, max = 30, step = 1),
+                                                                       # uiOutput("eco_fc_members"),
+                                                                       radioButtons("type2", "Type of Visualization", choices = c("Data table", plot_types), selected = "Line"),
+                                                                       # selectInput('type2', 'Plot type', plot_types,
+                                                                       # selec  ted = plot_types[2])
+                                                      ),
+                                                      h3(tags$b("Initial conditions")),
+                                                      p(id = "txt_j", "Use the plot here, which shows measurements of  Chorophyll-a, to select and update your initial conditions before running your forecast. There is no up-to-date nutrient data so you will need to estimate this from the measurements in Activity A - Objective 5. Adjust this value to explore the sensitivity of the forecast to this value."),
+                                                      p(tags$b("Phytoplankton")),
+                                                      # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
+                                                      sliderInput("phy_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
+                                                                                           div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
+                                                                  min = 0.01, max = 10, step = 0.01, value = 2),
+                                                      p(tags$b("Nitrogen")),
+                                                      sliderInput("nut_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
+                                                                                           div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
+                                                                  min = 0.01, max = 10, step = 0.01, value = 3)
+                                               ),
+                                               column(8,
+                                                      wellPanel(
+                                                        conditionalPanel("input.type2 == 'Data table'",
+                                                                         DTOutput("viz_output2")
+                                                        ),
+                                                        conditionalPanel("input.type2 == 'Line' | input.type2 == 'Distribution'",
+                                                                         plotlyOutput("plot_ecof2"),
+                                                                         tags$style(type="text/css", "#save_comm_plot {background-color:#9ECBB5;color: black}"),
+                                                                         actionButton("save_comm_plot", "Save plot", icon = icon("save"))
+                                                        )
+                                                      ),
+                                                      actionButton('run_fc2', label = div("Run Forecast", icon("running"))),
+                                                      h4("Model settings"),
+                                                      p("Explore how the forecast looks using the different model settings you saved in Objective 5."),
+                                                      # DTOutput("cal_pars1", width = "50%")
+                                                      DTOutput("modsett", width = "50%"),
+                                                      p("Save your model plot when you are happy with your forecast.")
+                                               )
+                                             ),
+                                             hr(),
+                                             fluidRow(
+                                               column(10, align = "left",
+                                                      box(id = "box11", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(10, offset = 1,
+                                                                   h3("Questions"),
+                                                                   h4(quest["q18", 1]),
+                                                                   textAreaInput2(inputId = "q18", label = "", width = "90%"),
+                                                                   h4(quest["q19", 1]),
+                                                                   textAreaInput2(inputId = "q19", label = "", width = "90%"),
+                                                                   br()
+                                                            )
+                                                          )
+                                                      )
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(5, offset = 1,
+                                                      h3("Next step"),
+                                                      p("Now we have generated an ecological forecast, we must think of potential ways in which this forecast could be communicated."))
+                                             )
+                                             # hr(),
+                                    ),
+                                    #* Objective 9 - Communicate Forecast ====
+                                    tabPanel(title = "Objective 9 - Communicate forecast",  value = "obj9",
+                                             fluidRow(
+                                               column(12,
+                                                      wellPanel(style = paste0("background: ", obj_bg),
+                                                                h3("Objective 9 - Communicate an Ecological Forecast"),
+                                                                p(id = "txt_j", module_text["obj_09", ])
+                                                      )
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(6,
+                                                      wellPanel(
+                                                        imageOutput("comm_fc")
+                                                      ),
+                                                      # h3("Communicate Forecast"),
+                                                      # p(id = "txt_j", module_text["comm_forecast", ]),
+                                               ),
+                                               column(6, align = "center",
+                                                      img(src = "05-communicate-forecast.png",
+                                                          height = "70%", 
+                                                          width = "70%")
+                                               )
+                                             ),
+                                             hr(),
+                                             fluidRow(
+                                               column(10, align = "left",
+                                                      box(id = "box12", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(10, offset = 1,
+                                                                   h3("Questions"),
+                                                                   h4(quest["q20", 1]),
+                                                                   textAreaInput2(inputId = "q20", label = "", width = "90%"),
+                                                                   br()
+                                                            )
+                                                          )
+                                                      )
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(5, offset = 1,
+                                                      h3("Next step"),
+                                                      p("Communicating a forecast is an important part of forecasting but it can be highly variable depending on who the target audience is e.g. general public, natural resource manager, farmer etc. Next a week will have past since the forecast so we will compare our forecast to actual observations."))
+                                             )
+                                             # hr(),
+                                    ),
+                                    tabPanel(title = "Objective 10 -  Assess forecast",  value = "obj10",
+                                             fluidRow(
+                                               column(12,
+                                                      wellPanel(style = paste0("background: ", obj_bg),
+                                                                h3("Objective 10 - Assess an Ecological Forecast"),
+                                                                p(id = "txt_j", module_text["obj_10", ])
+                                                      )
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(5,
+                                                      h3("One week later..."),
+                                                      p(id = "txt_j", "A week has passed since the forecast, and you have collected a new week of data. Now you are curious to see how well your forecast performed. We can run an actual comparison to see how the forecast predictions compare to actual observed data."),
+                                               ),
+                                               column(6, align = "center",
+                                                      img(src = "06-assess-forecast.png",
+                                                          height = "70%", 
+                                                          width = "70%")
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(3,
+                                                      br(), br(), br(),
+                                                      wellPanel(
+                                                        h4("Assess forecast performance"),
+                                                        p(id = "txt_j", "Comparing forecast results to actual measurements gives us an indication of how accurately our model is forecasting."),
+                                                        p(id = "txt_j", "This is an important step as it indicates how well our model represents the system we are forecasting, as well as gives us an opportunity to improve the model for future forecasts."),
+                                                        checkboxInput("add_newobs", label = "Add new observations", FALSE),
+                                                        conditionalPanel("input.add_newobs",
+                                                                         actionButton('assess_fc3', label = div("Assess forecast",
+                                                                                                                icon("clipboard-check"))))
+                                                        
+                                                      )
+                                               ),
+                                               column(5,
+                                                      h3(tags$b("Add in new observations")),
+                                                      wellPanel(
+                                                        plotlyOutput("plot_ecof3")
+                                                      )
+                                               ),
+                                               column(4,
+                                                      h3(tags$b("Plot forecast vs observed")),
+                                                      wellPanel(
+                                                        plotlyOutput("assess_plot")
+                                                      ),
+                                                      tags$style(type="text/css", "#save_assess_plot {background-color:#9ECBB5;color: black}"),
+                                                      actionButton("save_assess_plot", "Save plot", icon = icon("save"))
+                                               ),
+                                             ),
+                                             hr(),
+                                             fluidRow(
+                                               column(10, align = "left",
+                                                      box(id = "box13", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(10, offset = 1,
+                                                                   h3("Questions"),
+                                                                   h4(quest["q21", 1]),
+                                                                   textAreaInput2(inputId = "q21", label = "", width = "90%"),
+                                                            ),
+                                                            column(5, offset = 3, align = "center",
+                                                                   imageOutput("assess_plot_img")
+                                                            )
+                                                          )
+                                                      )
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(5, offset = 1,
+                                                      h3("Next step"),
+                                                      p("When assessing your forecast, you might notice your forecast does not match the observations. One of the reasons could be because the parameters in your model do not represent the conditions at this time. Next we will update the model by making adjustments to the parameters to try and improve the model forecast."))
+                                             )
+                                             # hr(),
+                                    ),
+                                    tabPanel(title = "Objective 11 - Update model",  value = "obj11",
+                                             #*
+                                             fluidRow(
+                                               column(12,
+                                                      wellPanel(style = paste0("background: ", obj_bg),
+                                                                h3("Objective 11 - Update Model"),
+                                                                p(id = "txt_j", module_text["obj_11", ])
+                                                      )
+                                               )
+                                             ), 
+                                             #* Objective 11 - Update Model ====
+                                             fluidRow(
+                                               column(6,
+                                                      h3("Update Model"),
+                                                      p(id = "txt_j", "How did your forecast perform compared to observations?"),
+                                                      p(id = "txt_j", "What does this tell you about the model?"),
+                                                      p(id = "txt_j", "One of the best things about ecological forecasting is that it allows us to test our hypotheses about how the world works (as described by our model). If there is a poor fit between our forecast and observed data, our model may not be accurately capturing environmental processes."),
+                                                      p(id = "txt_j", "One of the mechanisms causing a poor fit could be the parameter values. To update the model, adjust the parameters to see if you can improve the forecast."),
+                                               ),
+                                               column(6, align = "center",
+                                                      img(src = "07-update-model.png",
+                                                          height = "70%", 
+                                                          width = "70%")
+                                               )
+                                             ), br(), hr(),
+                                             fluidRow(
+                                               column(4,
+                                                      h3(tags$b("Initial conditions")),
+                                                      p(tags$b("Phytoplankton")),
+                                                      sliderInput("phy_init3", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
+                                                                                           div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
+                                                                  min = 0.01, max = 10, step = 0.01, value = 2),
+                                                      h3("Parameters"),
+                                                      h4(tags$b("Phytoplankton parameters")),
+                                                      p("Use the buttons below to increase or decrease the value of your parameters. The updated parameter values are displayed in a table beneath the plot."), 
+                                                      radioButtons("upd_mort_rate", "Mortality Rate", choices = c("Decrease", "Keep the same", "Increase"),
+                                                                   selected = character(0), inline = TRUE),
+                                                      br(), 
+                                                      radioButtons("upd_nut_rate", "Nitrogen Uptake", choices = c("Decrease", "Keep the same", "Increase"),
+                                                                   selected = character(0), inline = TRUE),
+                                                      br(), 
+                                                      p("Re-run your forecast with the updated parameters."),
+                                                      box(width = 10, status = "warning",
+                                                          solidHeader = TRUE,
+                                                          p(tags$b("WARNING:"), "You only get one opportunity to update your model parameter so think carefully about what the parameter represents before updating your forecast. You can return to Activity A - Objective 5 to re-familiarise yourself with how the parameters affect model performance.")
+                                                      ),
+                                                      actionButton('update_fc2', label = div("Update forecast",
+                                                                                             icon("redo-alt"))),
+                                                      textOutput("warn_update"),
+                                                      conditionalPanel("input.update_fc2",
+                                                                       h3("Forecast updated!")
+                                                      )
+                                               ),
+                                               column(8,
+                                                      # h4("Schematic of Forecast uncertainty"),
+                                                      wellPanel(
+                                                        plotlyOutput("update_plot"),
+                                                        tags$style(type="text/css", "#save_update_fc_plot {background-color:#9ECBB5;color: black}"),
+                                                        actionButton("save_update_fc_plot", "Save plot", icon = icon("save"))
+                                                      ),
+                                                      h4("Table of parameters"),
+                                                      DTOutput("comp_pars", width = "50%")
+                                               )
+                                             ),
+                                             hr(),
+                                             fluidRow(
+                                               column(10, align = "left",
+                                                      box(id = "box14", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(10, offset = 1,
+                                                                   h3("Questions"),
+                                                                   h4(quest["q22", 1]),
+                                                                   textAreaInput2(inputId = "q22", label = "", width = "90%"),
+                                                                   br()
+                                                            ),
+                                                            column(5, offset = 3, align = "center",
+                                                                   imageOutput("update_plot_img")
+                                                            )
+                                                          )
+                                                      )
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(5, offset = 1,
+                                                      h3("Next step"),
+                                                      p("Updating the model is similar to updating your hypothesis and this is what makes forecasting so powerful is that it allows you to confront your hypothesis (model) with data and update if neccessary. Next we will generate the next forecast and complete the forecast cycle."))
+                                             )
+                                             # hr(),
+                                    ),
+                                    tabPanel(title = "Objective 12 - Next forecast",  value = "obj12",
+                                             fluidRow(
+                                               column(12,
+                                                      wellPanel(style = paste0("background: ", obj_bg),
+                                                                h3("Objective 12 - Next Forecast"),
+                                                                p(id = "txt_j", module_text["obj_12", ])
+                                                      )
+                                               )
+                                             ),
+                                             #* Objective 12 - New Forecast ====
+                                             fluidRow(
+                                               column(4,
+                                                      h2("Next Forecast"),
+                                                      p(id = "txt_j", "With an updated model, we can now generate the next forecast driven by a new weather forecast"),
+                                                      h3("Initial conditions"),
+                                                      p(id = "txt_j", "Don't forget to update the initial conditions based on the latest observed data which are shown in the plot."),
+                                                      p(tags$b("Phytoplankton")),
+                                                      # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
+                                                      sliderInput("phy_init4", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
+                                                                                           div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right"))),
+                                                                  min = 0.01, max = 10, step = 0.01, value = 2),
+                                                      p(tags$b("Nitrogen")),
+                                                      sliderInput("nut_init4", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px")),
+                                                                                           div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right"))),
+                                                                  min = 0.01, max = 10, step = 0.01, value = 3),
+                                                      wellPanel(
+                                                        actionButton('load_fc3', label = div("Load forecast inputs", icon("download")),
+                                                                     width = "70%"), br(),
+                                                        conditionalPanel("input.load_fc3",
+                                                                         actionButton('run_fc3', label = div("Run Forecast", icon("running")),
+                                                                                      width = "70%")
+                                                        ),
+                                                        
+                                                      )
+                                               ),
+                                               column(8,
+                                                      h3("New Forecast plot"),
+                                                      wellPanel(
+                                                        plotlyOutput("plot_ecof4"),
+                                                        tags$style(type="text/css", "#save_new_fc_plot {background-color:#9ECBB5;color: black}"),
+                                                        actionButton("save_new_fc_plot", "Save plot", icon = icon("save"))
+                                                      ),
+                                                      br(),
+                                                      DTOutput("fc_table", width = "80%")
+                                               )
+                                             ),
+                                             hr(),
+                                             fluidRow(
+                                               column(10, align = "left",
+                                                      box(id = "box15", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(10, offset = 1,
+                                                                   h3("Questions"),
+                                                                   h4(quest["q23", 1]),
+                                                                   textAreaInput2(inputId = "q23", label = "", width = "90%"),
+                                                                   h4(quest["q24", 1]),
+                                                                   textAreaInput2(inputId = "q24", label = "", width = "90%"),
+                                                            ),
+                                                            column(5, offset = 3, align = "center",
+                                                                   imageOutput("new_fc_plot_img")
+                                                            )
+                                                          )
+                                                      )
+                                               )
+                                             ),
+                                             hr(),
+                                             fluidRow(
+                                               column(4, offset = 1, 
+                                                      h2("The Forecast Cycle"),
+                                                      p(module_text["fc_cycle_end", ]),
+                                               ),
+                                               column(5, offset = 1,
+                                                      br(), br(), br(),
+                                                      img(src = "mod5_viz_v2.png", height = "80%", 
+                                                          width = "80%", align = "left")
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(12,
+                                                      h2("Completed Activity B!"),
+                                                      p("This is the end of Activity B. If you have been inputting your answers into the app, it is recommended to return to the 'Introduction' tab and generate the final report before completing Activity C. Otherwise you could lose your progress."),
+                                                      p("You can add your answers for Activity C into the downloaded Word document."),
+                                                      actionButton("return_intro", "Return to Introduction", icon = icon("home"))
+                                               )
+                                             )
+                                    )
                         ),
+               ),
                tabPanel(title = "Activity C", value = "mtab7",
                         img(src = "project-eddie-banner-2020_green.png", height = 100, 
                             width = 1544, top = 5),
@@ -1756,14 +1825,14 @@ border-color: #FFF;
                           )
                         ), 
                         fluidRow(
-                                 #** Site map2 ----
-                                 column(8, align = "center", offset = 2,
-                                        h2("Map of NEON sites"),
-                                        wellPanel(
-                                          leafletOutput("neonmap2")
-                                          )
-                                        )
-                                 ),
+                          #** Site map2 ----
+                          column(8, align = "center", offset = 2,
+                                 h2("Map of NEON sites"),
+                                 wellPanel(
+                                   leafletOutput("neonmap2")
+                                 )
+                          )
+                        ),
                         hr(),
                         fluidRow(
                           column(10, align = "left",
@@ -1792,45 +1861,77 @@ border-color: #FFF;
                         #          )
                         # ),
                         hr(),
-                        )
-               ),
+               )
+    ),
     # Tab navigation buttons ----
     br(), hr(),
     introBox(
-      h4("Use the buttons below to navigate through the tabs", align = "center"),
+      # h4("Use the buttons below to navigate through the tabs", align = "center"),
+      box(width = 12, status = "success",
+          solidHeader = TRUE,
       fluidRow(
-        column(6, align = "center", 
-               # wellPanel(
-                 style = paste0("background: ", nav_bg),
-                 br(),
-                 actionButton("prevBtn1", "< Module Overview", 
-                              style = paste0("color: ", nav_txt, "; background-color: ", nav_butt, "; border-color: #00664B; padding:15px; font-size:22px;")),
-               bsTooltip("prevBtn1", title = "Navigate to previous tab", placement = "left", trigger = "hover"),
-                 br(), br()
-               # )
-               
-        ),
-        column(6, align = "center",
-               # wellPanel(
-                 style = paste0("background: ", nav_bg),
-                 br(),
-                 actionButton("nextBtn1", "Introduction >",
-                              style = paste0("color: ", nav_txt, "; background-color: ", nav_butt, "; border-color: #00664B; padding:15px; font-size:22px;")),
-               bsTooltip("nextBtn1", title = "Navigate to next tab", placement = "right", trigger = "hover"),
-                 br(), br()
-               # )
+        
+            column(5, align = "center", 
+                   # wellPanel(
+                   # style = paste0("background: ", nav_bg),
+                   br(),
+                   # h5("Navigate to previous tab"),
+                   hover_action_button(
+                     inputId = "prevBtn1",
+                     label = "< Module Overview",
+                     button_animation = "glow", 
+                     style = paste0("color: ", nav_txt, "; background-color: ", nav_butt, "; border-color: #00664B; padding:15px; font-size:22px;")
+                   ),
+                   # actionButton("prevBtn1", "< Module Overview", 
+                   #              style = paste0("color: ", nav_txt, "; background-color: ", nav_butt, "; border-color: #00664B; padding:15px; font-size:22px;")),
+                   bsTooltip("prevBtn1", title = "Navigate to previous tab", placement = "left", trigger = "hover"),
+                   br(), br()
+                   # )
+                   
+            ),
+            column(2, align = "center",
+                   # style = paste0("background: ", nav_bg),
+                   br(),
+                   tags$style(type="text/css", paste0("#download_answers {background-color:#579277;color: white; padding:15px; font-size:18px;}")),
+                   hover_download_button(outputId = "download_answers",
+                                         label = "Download user input",
+                                         class = "butt1",
+                                         button_animation = "glow"),
+                   # downloadButton("download_answers", label = "Download user input", class = "butt1"),
+                   # bsTooltip("download_answers", title = "Download all inputs into the Shiny app", placement = "left", trigger = "hover"),
+                   br(), br()
+            ),
+            column(5, align = "center",
+                   # wellPanel(
+                   # style = paste0("background: ", nav_bg),
+                   br(),
+                   # h5("Navigate to next tab"),
+                   use_hover(popback = TRUE),
+                   hover_action_button(
+                     inputId = "nextBtn1",
+                     label = "Introduction >",
+                     button_animation = "glow", 
+                     style = paste0("color: ", nav_txt, "; background-color: ", nav_butt, "; border-color: #00664B; padding:15px; font-size:22px;")
+                   ),
+                   # actionButton("nextBtn1", "Introduction >",
+                   #              style = paste0("color: ", nav_txt, "; background-color: ", nav_butt, "; border-color: #00664B; padding:15px; font-size:22px;")),
+                   bsTooltip("nextBtn1", title = "Navigate to next tab", placement = "right", trigger = "hover"),
+                   br(), br()
+                   # )
+            )
         )
       ), data.step = 3, data.intro = help_text["tab_nav2", 1], data.position = "right"
     ),
     hr(), 
     fluidRow(
       column(8, offset = 1,
+             br(),
              p(module_text["acknowledgement", ], id = "ackn"),
              p(app_update_txt, id = "ackn")
-             ),
+      ),
     )
-    )
-  }
+  )
+}
 
 # Server ----
 server <- function(input, output, session) {#
@@ -1935,7 +2036,7 @@ server <- function(input, output, session) {#
     upd_parms <- as.vector(unlist(site_parms[site_parms$site == siteID, -1]))
     upd_yin <- site_yini[site_yini$site == siteID, -1]
     parms <<- upd_parms
-
+    
     if(siteID == "SUGG") {
       updateSliderInput(session, "phy_init", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.01)
       updateSliderInput(session, "phy_init2", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.01)
@@ -1947,7 +2048,7 @@ server <- function(input, output, session) {#
     }
     
   })
-
+  
   # Neon map ----
   output$neonmap <- renderLeaflet({
     leaflet() %>%
@@ -2130,29 +2231,29 @@ server <- function(input, output, session) {#
            message = "Please select a site in Objective 1.")
     )
     
-
+    
     read_var <- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
     units <- neon_vars$units[which(neon_vars$Short_name == input$view_var)][1]
     file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
     validate(
       need(file.exists(file), message = "This variable is not available at this site. Please select a different variable or site.")
     )
-
+    
     obj <- neon_DT()$sel
-
-      p <- ggplot() +
-        geom_point(data = neon_DT()$data, aes_string(names(neon_DT()$data)[1], names(neon_DT()$data)[2]), color = "black") +
-        ylab(paste0(input$view_var, " (", units, ")")) +
-        xlab("Time") +
-        theme_minimal(base_size = 12) 
+    
+    p <- ggplot() +
+      geom_point(data = neon_DT()$data, aes_string(names(neon_DT()$data)[1], names(neon_DT()$data)[2]), color = "black") +
+      ylab(paste0(input$view_var, " (", units, ")")) +
+      xlab("Time") +
+      theme_minimal(base_size = 12) 
+    
+    if(nrow(obj) != 0) {
+      p <- p + 
+        geom_point(data = obj, aes_string(names(obj)[1], names(obj)[2]), color = cols[2])
       
-      if(nrow(obj) != 0) {
-        p <- p + 
-          geom_point(data = obj, aes_string(names(obj)[1], names(obj)[2]), color = cols[2])
-          
-      }
+    }
     return(ggplotly(p, dynamicTicks = TRUE, source = "A"))
-
+    
   })
   
   selected <- reactiveValues(sel = NULL)
@@ -2182,7 +2283,7 @@ server <- function(input, output, session) {#
     }
   })
   
-
+  
   # Output stats ----
   output$out_stats <- renderText({
     
@@ -2202,19 +2303,53 @@ server <- function(input, output, session) {#
   })
   
   # Input table for q6
-  output$q6_tab <- DT::renderDT(
-    q6_table, selection = "none", 
-    options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"), 
-    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface water temperature", "Nitrate sensor", "Underwater PAR", "Chlorophyll-a"), colnames=c("Mean", "Minimum", "Maximum"), 
-    callback = JS("table.rows().every(function(i, tab, row) {
-                  var $this = $(this.node());
-                  $this.attr('id', this.data()[0]);
-                  $this.addClass('shiny-input-container');
-                  });
-                  Shiny.unbindAll(table.table().node());
-                  Shiny.bindAll(table.table().node());")
-  )
+  # output$q6_tab <- DT::renderDT(
+  #   q6_table, selection = "none", 
+  #   options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"), 
+  #   server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface water temperature", "Nitrogen", "Underwater PAR", "Chlorophyll-a"), colnames=c("Mean", "Minimum", "Maximum"), 
+  #   callback = JS("table.rows().every(function(i, tab, row) {
+  #                 var $this = $(this.node());
+  #                 $this.attr('id', this.data()[0]);
+  #                 $this.addClass('shiny-input-container');
+  #                 });
+  #                 Shiny.unbindAll(table.table().node());
+  #                 Shiny.bindAll(table.table().node());")
+  # )
+  
+  q6_ans <- reactiveValues(dt = q6_table)
 
+  output$q6_tab <- DT::renderDT(
+    q6_ans$dt, selection = "none", 
+    options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"), 
+    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface water temperature", "Nitrogen", "Underwater PAR", "Chlorophyll-a"), colnames=c("Mean", "Minimum", "Maximum"), editable = TRUE
+  )
+  
+  q6_proxy <- dataTableProxy("q6_tab")
+  observeEvent(input$q6_tab_cell_edit, {
+    info = input$q6_tab_cell_edit
+    i = info$row
+    j = info$col
+    v = info$value
+    q6_ans$dt[i, j] <<- DT::coerceValue(v, q6_ans$dt[i, j])
+    # replaceData(q6_proxy, q6_ans$dt, resetPaging = FALSE)  # important
+  })
+  
+  # Add nutrient table for running the model
+  nutri_tab <- reactiveValues(df = data.frame(Mean = 0,
+                                              Min = 0,
+                                              Max = 0, row.names = "Nitrogen"))
+  observe({
+      nutri_tab$df[1, 1] <- q6_ans$dt[3, 1]
+      nutri_tab$df[1, 2] <- q6_ans$dt[3, 2]
+      nutri_tab$df[1, 3] <- q6_ans$dt[3, 3]
+  })
+  
+  output$nutri_table <- DT::renderDT(
+    nutri_tab$df, selection = "none", 
+    options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"), 
+    server = FALSE, escape = FALSE,
+  ) 
+  
   #** Save air and water temp ----
   selected2 <- reactiveValues(sel = NULL)
   observeEvent(input$clear_sel2, {
@@ -2333,7 +2468,7 @@ server <- function(input, output, session) {#
     )
     
     obj <- wtemp_airtemp()$sel
-
+    
     p <- ggplot() +
       geom_point(data = wtemp_airtemp()$data, aes_string(names(wtemp_airtemp()$data)[2], names(wtemp_airtemp()$data)[3]), color = "black") +
       ylab("Surface water temperature (\u00B0C)") +
@@ -2590,7 +2725,7 @@ server <- function(input, output, session) {#
     mlt1 <- reshape::melt(l1, id.vars = idvars)
     # colnames(mlt1)[2:3] <- c("Water temperature", "Underwater PAR")
     mlt2 <- reshape2::melt(mlt1, id.vars = c("date", "fc_date", "L1"))
-
+    
     p <- ggplot()
     p <- p +
       geom_line(data = mlt2, aes(date, value, group = L1, color = fc_date)) +
@@ -2748,7 +2883,7 @@ server <- function(input, output, session) {#
         
         # sel_mem <- 1:input$members
         # fils <- fils[sel_mem]
-
+        
         for( i in seq_len(length(fils))) {
           
           fid <- ncdf4::nc_open(file.path("data", "NOAAGEFS_1hr", siteID, dat,
@@ -2832,8 +2967,8 @@ server <- function(input, output, session) {#
                  min = 1, max = membs, step = 1)
   })
   
-    
-    
+  
+  
   #########
   #* datatable of NOAA forecast ----
   output$viz_output <- renderDT({
@@ -2850,7 +2985,7 @@ server <- function(input, output, session) {#
     )
     validate(
       need(input$members >= 1 & input$members <= membs, paste0("Please select a number of members between 1 and ", membs))
-      )
+    )
     
     l1 <- fc_data()[input$fc_date] #Subset by date
     
@@ -2868,7 +3003,7 @@ server <- function(input, output, session) {#
     if(input$fc_var == "Air temperature") {
       mlt1[, -c(1, 2)] <- mlt1[, -c(1, 2)] - 273.15
     }
-      
+    
     
     mlt1[, 1] <- as.character(mlt1[, 1])
     mlt1 <- mlt1[, -2]
@@ -2891,7 +3026,7 @@ server <- function(input, output, session) {#
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site on the 'Activity A' tab")
-      )
+    )
     validate(
       need(input$load_fc > 0, "Click 'Load Forecast'")
     )
@@ -2914,7 +3049,7 @@ server <- function(input, output, session) {#
     p <- ggplot() +
       geom_hline(yintercept = 0, color = "gray")
     
-
+    
     l1 <- fc_data()[input$fc_date] #Subset by date
     
     var_idx <- which(noaa_dic$display_name == input$fc_var)
@@ -3100,7 +3235,7 @@ server <- function(input, output, session) {#
     ggsave(img_file, p,  dpi = png_dpi, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
     # show("main_content")
-    }, ignoreNULL = FALSE
+  }, ignoreNULL = FALSE
   )
   
   # Render image for NOAA plot
@@ -3172,7 +3307,7 @@ server <- function(input, output, session) {#
     # if(input$ans_btn %% 2 != 1 |){
     #   hide(id = "ans_vars")
     # }else{
-      show(id = "ans_vars")
+    show(id = "ans_vars")
     # }
     # toggle("ans_vars")
   })
@@ -3219,7 +3354,7 @@ server <- function(input, output, session) {#
     par_file <- file.path("data", paste0(siteID, "_uPAR_micromolesPerSquareMeterPerSecond.csv"))
     wtemp_file <- file.path("data", paste0(siteID, "_wtemp_celsius.csv"))
     # if(file.exists(par_file))
-
+    
     par <- read.csv(par_file)
     par[, 1] <- as.POSIXct(par[, 1], tz = "UTC")
     yr <- lubridate::year(par[, 1])
@@ -3255,9 +3390,9 @@ server <- function(input, output, session) {#
     # Updated parameters
     parms[1] <- as.numeric(input$nut_uptake)
     parms[7] <- as.numeric(input$mort_rate)
-
+    
     npz_inputs <- create_npz_inputs(time = npz_inp[, 1], PAR = npz_inp[, 2], temp = npz_inp[, 3])
-
+    
     # Alter Initial conditions
     yini[1] <- input$phy_init * 0.016129 # Convert from ug/L to mmolN/m3
     yini[2] <- input$nut_init * 16.129 # Convert from mg/L to mmolN/m3
@@ -3266,7 +3401,7 @@ server <- function(input, output, session) {#
     colnames(res) <- c("time", "Phytoplankton", "Nutrients")
     res[, 1] <- times
     res[1, -1] <- c(yini)
-
+    
     for(i in 2:length(times)) {
       
       if(all(c("Surface water temperature (SWT)", "Underwater light (uPAR)") %in% input$mod_sens)) {
@@ -3297,7 +3432,7 @@ server <- function(input, output, session) {#
   # Add popover
   observe({
     if(input$run_mod_ann >= 1) {
-      addTooltip(session, "mod_phyto_plot", title = "Plot of simulated nutrient concentrations", trigger = "hover", placement = "top")
+      addTooltip(session, "mod_phyto_plot", title = "Plot of simulated nitrogen concentrations", trigger = "hover", placement = "top")
     }
     if(input$run_mod_ann == 20) {
       showModal(modalDialog(
@@ -3346,7 +3481,7 @@ server <- function(input, output, session) {#
     
     xlims <- range(mod_run1()[, 1])
     # ylims <- range(chla[, 2], na.rm = TRUE)
-
+    
     validate(
       need(input$run_mod_ann > 0, "Please run the model")
     )
@@ -3360,7 +3495,7 @@ server <- function(input, output, session) {#
       scale_color_manual(values = cols[1:2]) +
       theme_minimal(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
-      
+    
     p_mod_run$plot <- p +
       theme_classic(base_size = 34) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
@@ -3394,7 +3529,7 @@ server <- function(input, output, session) {#
       din <- read.csv(file)
       din[, 1] <- as.POSIXct(din[, 1], tz = "UTC")
       din <- din[(din[, 1] >= mod_run1()[1, 1] &
-                      din[, 1] <= mod_run1()[nrow(mod_run1()), 1]), ]
+                    din[, 1] <= mod_run1()[nrow(mod_run1()), 1]), ]
       din$variable <- "Nutrients"
     }
     
@@ -3487,7 +3622,7 @@ server <- function(input, output, session) {#
   output$save_par <- renderDT(par_save$value, selection = "single",
                               options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t", autoWidth = TRUE,
                                              columnDefs = list(list(width = '10%', targets = "_all"))
-                                             ),
+                              ),
                               server = FALSE, escape = FALSE)
   
   # output$save_par <- renderTable(par_save())
@@ -3501,13 +3636,13 @@ server <- function(input, output, session) {#
   #                                                          input$nut_init,
   #                                                  input$mort_rate, input$nut_uptake)
   #   }
-    # if(input$save_params == 0) {
-    #   par_save$value[1, ] <<- c(input$phy_init, 
-    #                             # input$zoo_init, 
-    #                             input$nut_init, #input$graz_rate,
-    #                     input$mort_rate, input$nut_uptake)
-    # }
-    # }, ignoreNULL = FALSE)
+  # if(input$save_params == 0) {
+  #   par_save$value[1, ] <<- c(input$phy_init, 
+  #                             # input$zoo_init, 
+  #                             input$nut_init, #input$graz_rate,
+  #                     input$mort_rate, input$nut_uptake)
+  # }
+  # }, ignoreNULL = FALSE)
   
   # Forecast Plots  ----
   #* Input Uncertainty ====
@@ -3529,7 +3664,7 @@ server <- function(input, output, session) {#
       shinyjs::hide("save_comm_plot")
     }
   })
-
+  
   
   
   
@@ -3613,8 +3748,8 @@ server <- function(input, output, session) {#
       final_parms$df[1, 1] <- par_save$value$SWT[input$modsett_rows_selected]
       final_parms$df[1, 2] <- par_save$value$uPAR[input$modsett_rows_selected]
       final_parms$df[1, 3:6] <- c(input$phy_init2, input$nut_init2,
-                               par_save$value$Mortality[input$modsett_rows_selected],
-                               par_save$value$Uptake[input$modsett_rows_selected])
+                                  par_save$value$Mortality[input$modsett_rows_selected],
+                                  par_save$value$Uptake[input$modsett_rows_selected])
       
       par_chk <- par_save$value$uPAR[input$modsett_rows_selected]
       wtemp_chk <- par_save$value$SWT[input$modsett_rows_selected]
@@ -3682,8 +3817,8 @@ server <- function(input, output, session) {#
       
       fc_out1$df <- mlt
     }
-
-    })
+    
+  })
   
   
   output$viz_output2 <- renderDT({
@@ -3711,7 +3846,7 @@ server <- function(input, output, session) {#
     validate(
       need(!is.na(fc_out1$df), "Click 'Run Forecast'")
     )
-
+    
     df2 <- fc_out1$df
     df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
     df2[, 3] <- round(df2[, 3], 2)
@@ -3745,7 +3880,7 @@ server <- function(input, output, session) {#
            message = paste0("The number of members must be between 1 and 30"))
     )
     
-   
+    
     # validate(
     #   need(input$run_fc2 > 0, "Click 'Run Forecast'")
     # )
@@ -3822,8 +3957,8 @@ server <- function(input, output, session) {#
     
     txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 4), (chla_obs[nrow(chla_obs), 1] + 4)),
                       y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("Past", "Future"))
-
-
+    
+    
     p <- p + 
       geom_hline(yintercept = 0, color = "gray") +
       geom_vline(xintercept = vlin, linetype = "dashed") +
@@ -3835,7 +3970,7 @@ server <- function(input, output, session) {#
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "")
     
-
+    
     gp <- ggplotly(p, dynamicTicks = TRUE)
     for (i in 1:length(gp$x$data)){
       if (!is.null(gp$x$data[[i]]$name)){
@@ -3888,44 +4023,44 @@ server <- function(input, output, session) {#
     
     sub <- fc_out1$df[as.numeric(fc_out1$df$L1) <= input$members2, ]
     # if(input$type2 == "Distribution") {
-      
-      df3 <- plyr::ddply(sub, "time", function(x) {
-        quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
-      })
-      # df3 <- as.data.frame(t(df3))
-      colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
-      colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
-      # df3$hours <- df2$hours
-      df2 <- df3
+    
+    df3 <- plyr::ddply(sub, "time", function(x) {
+      quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+    })
+    # df3 <- as.data.frame(t(df3))
+    colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
+    colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
+    # df3$hours <- df2$hours
+    df2 <- df3
     # }
     
     sub <- fc_out1$df[as.numeric(fc_out1$df$L1) <= input$members2, ]
     # if(input$type2 == "Distribution") {
-      
-      df3 <- plyr::ddply(sub, "time", function(x) {
-        quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
-      })
-      # df3 <- as.data.frame(t(df3))
-      colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
-      colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
-      # df3$hours <- df2$hours
-      df2 <- df3
+    
+    df3 <- plyr::ddply(sub, "time", function(x) {
+      quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+    })
+    # df3 <- as.data.frame(t(df3))
+    colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
+    colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
+    # df3$hours <- df2$hours
+    df2 <- df3
     # }
     
-      txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 4), (chla_obs[nrow(chla_obs), 1] + 4)),
-                        y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("Past", "Future"))    
+    txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 4), (chla_obs[nrow(chla_obs), 1] + 4)),
+                      y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("Past", "Future"))    
     p <- ggplot()
     
     # if(input$type2 == "Distribution") {
-      p <- p +
+    p <- p +
       geom_hline(yintercept = 0, color = "gray") +
       geom_vline(xintercept = df2[1, 1], linetype = "dashed") +
-        geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
-                    alpha = 0.8) +
-        geom_line(data = df2, aes(time, p50, color = "Median - original")) +
-        scale_fill_manual(values = pair.cols[3]) +
-        guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
-        scale_color_manual(values = c("Median - original" = pair.cols[4], "Obs" = cols[1]))
+      geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
+                  alpha = 0.8) +
+      geom_line(data = df2, aes(time, p50, color = "Median - original")) +
+      scale_fill_manual(values = pair.cols[3]) +
+      guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
+      scale_color_manual(values = c("Median - original" = pair.cols[4], "Obs" = cols[1]))
     # }
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs")),
@@ -3944,7 +4079,7 @@ server <- function(input, output, session) {#
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
-
+    
     # show("main_content")
   }, ignoreNULL = FALSE)
   
@@ -3980,6 +4115,9 @@ server <- function(input, output, session) {#
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
+    validate(
+      need(!is.na(fc_out1$df), "Run forecast in Objective 8")
+    )
     
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -3992,22 +4130,22 @@ server <- function(input, output, session) {#
     chla_obs <- chla[(chla[, 1] >= as.Date((fc_out1$df[1, 1] - (7)))) &
                        chla[, 1] <= as.Date(fc_out1$df[1, 1]), ]
     new_obs <- chla[chla[, 1] > as.Date((fc_out1$df[1, 1])) &
-                              chla[, 1] <= (as.Date(fc_out1$df[1, 1]) + 7), ]
+                      chla[, 1] <= (as.Date(fc_out1$df[1, 1]) + 7), ]
     
     
     
     sub <- fc_out1$df[as.numeric(fc_out1$df$L1) <= input$members2, ]
     # if(input$type2 == "Distribution") {
-      
-      df3 <- plyr::ddply(sub, "time", function(x) {
-        quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
-      })
-      # df3 <- as.data.frame(t(df3))
-      colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
-      colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
-      # df3$hours <- df2$hours
-      df2 <- df3
-
+    
+    df3 <- plyr::ddply(sub, "time", function(x) {
+      quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+    })
+    # df3 <- as.data.frame(t(df3))
+    colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
+    colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
+    # df3$hours <- df2$hours
+    df2 <- df3
+    
     
     txt <- data.frame(x = (new_obs[nrow(new_obs), 1] + 5.5), y = (max(new_obs[, 2], na.rm = TRUE) + 6), label = "One week later")
     
@@ -4022,7 +4160,7 @@ server <- function(input, output, session) {#
       geom_line(data = df2, aes(time, p50, color = "Median")) +
       scale_fill_manual(values = pair.cols[3]) +
       guides(fill = guide_legend(override.aes = list(alpha = c(0.8))))
-        
+    
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
       {if(input$add_newobs) geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs")))} +
@@ -4065,7 +4203,7 @@ server <- function(input, output, session) {#
   })
   
   as_plot <- eventReactive(input$assess_fc3, {
-
+    
     sub <- fc_out1$df[as.numeric(fc_out1$df$L1) <= input$members2, ]
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -4097,7 +4235,7 @@ server <- function(input, output, session) {#
     r2_txt <- paste0("R2 = ", r2)# bquote(r^2 ~ "=" ~ .(r2))    
     
     txt <- data.frame(x = 2, y = (max(df[, 2], na.rm = TRUE) - 1))
-
+    
     txt2 <- data.frame(y = 0, x = 1, label = "1:1 line")
     
     
@@ -4124,7 +4262,7 @@ server <- function(input, output, session) {#
     
     return(gp)
     
-    })
+  })
   
   #* Save plot for assessment plot ====
   observeEvent(input$save_assess_plot, {
@@ -4200,7 +4338,7 @@ server <- function(input, output, session) {#
       theme_classic(base_size = 34) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "")
-
+    
     df <- as_plot()
     origin <- data.frame(x = 0, y = 0) # included to ensure 0,0 is in the plot
     
@@ -4209,7 +4347,7 @@ server <- function(input, output, session) {#
     r2_txt <- paste0("R2 = ", r2)# bquote(r^2 ~ "=" ~ .(r2))    
     
     txt <- data.frame(x = 2, y = (max(df[, 2], na.rm = TRUE) - 1))
-
+    
     txt2 <- data.frame(y = 0, x = 1, label = "1:1 line")
     
     
@@ -4231,7 +4369,7 @@ server <- function(input, output, session) {#
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
-    }, ignoreNULL = FALSE
+  }, ignoreNULL = FALSE
   )
   
   # Preview assess plot
@@ -4254,7 +4392,7 @@ server <- function(input, output, session) {#
   
   # Plus minus for rates
   pars_react <- reactiveValues(mort_rate = NA, nut_uptake = NA)
-
+  
   # Nutrient uptake
   observe({
     
@@ -4345,7 +4483,7 @@ server <- function(input, output, session) {#
       need(!is.null(input$upd_mort_rate), message = "Select an option for Mortality Rate.")
     )
     validate(
-      need(!is.null(input$upd_nut_rate), message = "Select an option for Nutrient Uptake.")
+      need(!is.null(input$upd_nut_rate), message = "Select an option for Nitrogen Uptake.")
     )
   })
   
@@ -4393,10 +4531,10 @@ server <- function(input, output, session) {#
            message = paste0("The number of members must be between 1 and 30"))
     )
     validate(
-      need(!is.null(input$upd_nut_rate), message = paste0("Select an option for Nutrient uptake"))
+      need(!is.null(input$upd_nut_rate), message = paste0("Select an option for Nitrogen uptake"))
     )
     validate(
-      need(!is.null(input$upd_mort_rate), message = paste0("Select an option for Nutrient uptake"))
+      need(!is.null(input$upd_mort_rate), message = paste0("Select an option for Nitrogen uptake"))
     )
     
     shinyjs::disable("update_fc2")
@@ -4433,7 +4571,7 @@ server <- function(input, output, session) {#
     final_parms$df[2, 1] <- final_parms$df[1, 1]
     final_parms$df[2, 2] <- final_parms$df[1, 2]
     final_parms$df[2, 3:6] <- c(input$phy_init3, input$nut_init2, as.numeric(pars_react$mort_rate),
-                             as.numeric(pars_react$nut_uptake))
+                                as.numeric(pars_react$nut_uptake))
     
     
     # Parameters from 'Build model'
@@ -4522,13 +4660,13 @@ server <- function(input, output, session) {#
                       chla[, 1] <= (as.Date(fc_out1$df[1, 1]) + 7), ]
     
     sub <- fc_out1$df #[as.numeric(fc_out1$df$L1) <= input$members2, ]
-
+    
     df3 <- plyr::ddply(sub, "time", function(x) {
       quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
     })
     colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
     colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
-
+    
     
     p <- ggplot()
     p <- p +
@@ -4537,9 +4675,9 @@ server <- function(input, output, session) {#
       geom_vline(xintercept = (fc_out1$df[1, 1] + 7), linetype = "dotted") +
       geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = "Original"),
                   alpha = 0.8) #+
-      geom_line(data = df3, aes(time, p50, color = "Median - original")) #+
-      # scale_fill_manual(values = l.cols[2]) +
-      # guides(fill = guide_legend(override.aes = list(alpha = c(0.8))))
+    geom_line(data = df3, aes(time, p50, color = "Median - original")) #+
+    # scale_fill_manual(values = l.cols[2]) +
+    # guides(fill = guide_legend(override.aes = list(alpha = c(0.8))))
     
     if(!is.na(fc_update$df)) {
       # Updated model
@@ -4561,10 +4699,10 @@ server <- function(input, output, session) {#
         scale_fill_manual(values = c("Original" = pair.cols[3]))
     }
     
-      txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 4), (chla_obs[nrow(chla_obs), 1] + 10)),
-                        y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("7 Days ago", "Today"))
-      if(input$update_fc2 > 0) txt$y <- max(df4$p97.5, na.rm = TRUE)
-
+    txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 4), (chla_obs[nrow(chla_obs), 1] + 10)),
+                      y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("7 Days ago", "Today"))
+    if(input$update_fc2 > 0) txt$y <- max(df4$p97.5, na.rm = TRUE)
+    
     p <- p + 
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
       geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs"))) +
@@ -4702,7 +4840,7 @@ server <- function(input, output, session) {#
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
-    }, ignoreNULL = FALSE
+  }, ignoreNULL = FALSE
   )
   
   # Preview assess plot
@@ -4899,7 +5037,7 @@ server <- function(input, output, session) {#
   })
   
   output$plot_ecof4 <- renderPlotly({
-
+    
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
@@ -4917,7 +5055,7 @@ server <- function(input, output, session) {#
     }
     chla_obs <- chla[(chla[, 1] >= as.Date((fc_out1$df[1, 1] - (7)))) &
                        chla[, 1] <= as.Date((fc_out1$df[1, 1] + 7)), ]
-
+    
     
     # Make old forecast 
     sub <- fc_out1$df #[as.numeric(fc_out1$df$L1) <= input$members2, ]
@@ -4952,7 +5090,7 @@ server <- function(input, output, session) {#
       colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
       df3$fc_date <- as.character(df3[1, 1])
       df2 <- df3
-
+      
       p <- p +
         geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date),
                     alpha = 0.8) +
@@ -5092,7 +5230,7 @@ server <- function(input, output, session) {#
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
-    }, ignoreNULL = FALSE
+  }, ignoreNULL = FALSE
   )
   
   # Preview new forecast plot
@@ -5112,7 +5250,7 @@ server <- function(input, output, session) {#
          alt = "Image failed to render. Please click 'Save plot' again.",
          width = "100%")
   }, deleteFile = FALSE)
-
+  
   
   #** Render Report ----
   report <- reactiveValues(filepath = NULL) #This creates a short-term storage location for a filepath
@@ -5132,7 +5270,7 @@ server <- function(input, output, session) {#
     
     # Prepare regression equations
     
-   
+    
     # Set up parameters to pass to Rmd document
     params <- list(name = input$name,
                    id_number = input$id_number,
@@ -5149,21 +5287,21 @@ server <- function(input, output, session) {#
                    a5d = input$q5d,
                    a5e = input$q5e,
                    a5f = input$q5f,
-                   a6a_mean = input$q6a_mean,
-                   a6a_min = input$q6a_min,
-                   a6a_max = input$q6a_max,
-                   a6b_mean = input$q6b_mean,
-                   a6b_min = input$q6b_min,
-                   a6b_max = input$q6b_max,
-                   a6c_mean = input$q6c_mean,
-                   a6c_min = input$q6c_min,
-                   a6c_max = input$q6c_max,
-                   a6d_mean = input$q6d_mean,
-                   a6d_min = input$q6d_min,
-                   a6d_max = input$q6d_max,
-                   a6e_mean = input$q6e_mean,
-                   a6e_min = input$q6e_min,
-                   a6e_max = input$q6e_max,
+                   a6a_mean = q6_ans$dt[1, 1],
+                   a6a_min = q6_ans$dt[1, 2],
+                   a6a_max = q6_ans$dt[1, 3],
+                   a6b_mean = q6_ans$dt[2, 1],
+                   a6b_min = q6_ans$dt[2, 2],
+                   a6b_max = q6_ans$dt[2, 3],
+                   a6c_mean = q6_ans$dt[3, 1],
+                   a6c_min = q6_ans$dt[3, 2],
+                   a6c_max = q6_ans$dt[3, 3],
+                   a6d_mean = q6_ans$dt[4, 1],
+                   a6d_min = q6_ans$dt[4, 2],
+                   a6d_max = q6_ans$dt[4, 3],
+                   a6e_mean = q6_ans$dt[5, 1],
+                   a6e_min = q6_ans$dt[5, 2],
+                   a6e_max = q6_ans$dt[5, 3],
                    a7a = input$q7a,
                    a7b = input$q7b,
                    a7c = input$q7c,
@@ -5214,15 +5352,15 @@ server <- function(input, output, session) {#
                    upar_r2 = lmfit3$r2,
                    mod_summ = summ_file
     )
-
+    
     
     tmp_file <- paste0(tempfile(), ".docx") #Creating the temp where the .pdf is going to be stored
     
     rmarkdown::render("report.Rmd", 
-           output_format = "all", 
-           output_file = tmp_file,
-           params = params, 
-           envir = new.env(parent = globalenv()))
+                      output_format = "all", 
+                      output_file = tmp_file,
+                      params = params, 
+                      envir = new.env(parent = globalenv()))
     progress$set(value = 1)
     report$filepath <- tmp_file #Assigning in the temp file where the .pdf is located to the reactive file created above
     
@@ -5329,7 +5467,7 @@ server <- function(input, output, session) {#
     idx <- which(tab_names$tab_id == curr_tab1)
     if (curr_tab1 == "mtab5" & rv1a$nxt < 6) {
       curr_obj <- input$tabseries1
-
+      
       updateTabsetPanel(session, "tabseries1",
                         selected = paste0("obj", rv1a$nxt))
       
@@ -5434,7 +5572,7 @@ server <- function(input, output, session) {#
       file.copy("report.docx", file)
     }
   )
-
+  
   # Updating sliders from first inputs ----
   observeEvent(input$run_mod_ann, {
     # Initial conditions
@@ -5465,7 +5603,7 @@ server <- function(input, output, session) {#
   })
   
   
-
+  
   
   
   observe({
@@ -5498,7 +5636,7 @@ server <- function(input, output, session) {#
     updateSelectizeInput(session, "row_num", selected = state$values$sel_row)
     
   })
-
+  
   # Checklist for user inputs
   output$check_list <- renderUI({
     chk_list()
@@ -5513,7 +5651,7 @@ server <- function(input, output, session) {#
       if(input$q3 == "") "Introduction: Q. 3",
       if(input$q4a == "" | input$q4b == "" | input$q4c == "" |input$q4d == "") "Exploration: Q. 4",
       if(input$q5a == "" | input$q5b == "" | input$q5c == "" | input$q5d == "" | input$q5e == "" | input$q5f == "") "Activity A: Objective 1 - Q. 5",
-      if(is.null(input$q6a_mean) | is.null(input$q6a_max) | is.null(input$q6b_mean) | is.null(input$q6b_max) | is.null(input$q6c_mean) | is.null(input$q6c_max) | is.null(input$q6d_mean) | is.null(input$q6d_max) | is.null(input$q6e_mean) | is.null(input$q6e_max)) "Activity A: Objective 2 - Q. 6",
+      if(all(q6_ans$dt[, 1] == 0) | all(q6_ans$dt[, 2] == 0) | all(q6_ans$dt[, 3] == 0)) "Activity A: Objective 2 - Q. 6",
       if(is.null(input$q7a) | is.null(input$q7b) | is.null(input$q7c) | is.null(input$q7d)) "Activity A: Objective 3 - Q. 7",
       if(input$q8 == "") "Activity A: Objective 3 - Q. 8",
       if(is.null(input$q9a) & is.null(input$q9b) & is.null(input$q9c)) "Activity A: Objective 4 - Q. 9",
@@ -5553,10 +5691,10 @@ server <- function(input, output, session) {#
       )
     )
     
-
+    
   })
   
-  # Save answers in .rds file
+  # Save answers in .eddie file
   ans_list <- reactiveValues()
   observe({
     ans_list <<- list(
@@ -5575,21 +5713,22 @@ server <- function(input, output, session) {#
       a5d = input$q5d,
       a5e = input$q5e,
       a5f = input$q5f,
-      a6a_mean = input$q6a_mean,
-      a6a_min = input$q6a_min,
-      a6a_max = input$q6a_max,
-      a6b_mean = input$q6b_mean,
-      a6b_min = input$q6b_min,
-      a6b_max = input$q6b_max,
-      a6c_mean = input$q6c_mean,
-      a6c_min = input$q6c_min,
-      a6c_max = input$q6c_max,
-      a6d_mean = input$q6d_mean,
-      a6d_min = input$q6d_min,
-      a6d_max = input$q6d_max,
-      a6e_mean = input$q6e_mean,
-      a6e_min = input$q6e_min,
-      a6e_max = input$q6e_max,
+      a6 = q6_ans$dt,
+      # a6a_mean = input$q6a_mean,
+      # a6a_min = input$q6a_min,
+      # a6a_max = input$q6a_max,
+      # a6b_mean = input$q6b_mean,
+      # a6b_min = input$q6b_min,
+      # a6b_max = input$q6b_max,
+      # a6c_mean = input$q6c_mean,
+      # a6c_min = input$q6c_min,
+      # a6c_max = input$q6c_max,
+      # a6d_mean = input$q6d_mean,
+      # a6d_min = input$q6d_min,
+      # a6d_max = input$q6d_max,
+      # a6e_mean = input$q6e_mean,
+      # a6e_min = input$q6e_min,
+      # a6e_max = input$q6e_max,
       a7a = input$q7a,
       a7b = input$q7b,
       a7c = input$q7c,
@@ -5638,14 +5777,14 @@ server <- function(input, output, session) {#
   })
   
   output$download_answers <- downloadHandler(
-
+    
     # This function returns a string which tells the client
     # browser what name to use when saving the file.
     filename = function() {
-      paste0("module5_answers_", input$id_number, ".rds") %>%
+      paste0("module5_answers_", input$id_number, ".eddie") %>%
         gsub(" ", "_", .)
     },
-
+    
     # This function should write data to a file given to it by
     # the argument 'file'.
     content = function(file) {
@@ -5655,7 +5794,7 @@ server <- function(input, output, session) {#
   )
   
   observeEvent(input$upload_answers, {
-
+    
     up_answers <<- readRDS(input$upload_answers$datapath)
     updateTextAreaInput(session, "name", value = up_answers$name)
     updateTextAreaInput(session, "id_number", value = up_answers$id_number)
@@ -5704,12 +5843,13 @@ server <- function(input, output, session) {#
     idx <- nrow(up_answers$param_df)
     updateCheckboxGroupInput(session, "mod_sens", selected = up_answers$mod_input)
     updateSliderInput(session, "phy_init", value = up_answers$param_df$Phytos[idx])
-    updateSliderInput(session, "nut_init", value = up_answers$param_df$Nutrients[idx])
+    updateSliderInput(session, "nut_init", value = up_answers$param_df$Nitrogen[idx])
     updateSliderInput(session, "mort_rate", value = up_answers$param_df$Mortality[idx])
     updateSliderInput(session, "nut_uptake", value = up_answers$param_df$Uptake[idx])
     
     # Update reactive values
     par_save$value <- up_answers$param_df
+    q6_ans$dt <- up_answers$a6
     lmfit2$m <- up_answers$wt_m
     lmfit2$b <- up_answers$wt_b
     lmfit2$r2 <- up_answers$wt_r2
