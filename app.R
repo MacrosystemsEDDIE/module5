@@ -833,6 +833,11 @@ border-color: #FFF;
                                                       # )
                                                       # )
                                                )
+                                             ),
+                                             fluidRow(
+                                               column(5, offset = 1,
+                                                      h3("Next step"),
+                                                      p("We will plot each of the variables against chlorophyll-a to see if there are any relationships."))
                                              )
                                     ),
                                     tabPanel(title = "Objective 3 - Explore variable relationships", value = "obj3",
@@ -1015,6 +1020,11 @@ border-color: #FFF;
                                                           )
                                                       )
                                                )
+                                             ),
+                                             fluidRow(
+                                               column(5, offset = 1,
+                                                      h3("Next step"),
+                                                      p("Now we will use this information about the model to build a model to forecast primary productivity in our chosen site."))
                                              )
                                     ),
                                     tabPanel(title = "Objective 5 - Build model", value = "obj5",
@@ -1043,7 +1053,7 @@ border-color: #FFF;
                                              fluidRow(
                                                column(6,
                                                       h3("Build Model"),
-                                                      p(id = "txt_j", "You will use observed data from the selected site on the 'Activity A' tab to drive the NP model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs."),
+                                                      p(id = "txt_j", "We will use observed data from the selected site on the 'Activity A' tab to drive the NP model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs."),
                                                ),
                                                column(6,
                                                       h4("Calibration tips"),
