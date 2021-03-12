@@ -17,13 +17,13 @@ q5f,f. Elevation (m):
 q6,Q6. Fill out the table below with the description of site variables:
 q6a,Air temperature
 q6b,Surface water temperature
-q6c,Nitrate sensor
+q6c,Nitrogen
 q6d,Underwater PAR
 q6e,Chlorophyll-a
 q7,Q7. Describe the effect of each of the following variables on chlorophyll-a. Chlorophyll-a is used as a proxy measurement for phytoplankton concentration and primary productivity in aquatic environments.
 q7a,Air temperature
 q7b,Surface water temperature
-q7c,Nitrate sensor
+q7c,Nitrogen
 q7d,Underwater PAR
 q8,"Q8. Were there any other relationships you found at your site? If so, please describe below."
 q9,"Q9. What is the relationship between each of these driving variables and productivity? For example, if the driving variable increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)."
