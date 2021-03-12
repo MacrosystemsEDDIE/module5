@@ -2851,7 +2851,7 @@ server <- function(input, output, session) {#
   output$q7_tab <- DT::renderDT(
     q7_table, selection = "none", 
     options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"), 
-    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface water temperature", "Nitrate sensor", "Underwater PAR"), colnames=c("Relationship"), 
+    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface water temperature", "Nitrogen", "Underwater PAR"), colnames=c("Relationship"), 
     callback = JS("table.rows().every(function(i, tab, row) {
                   var $this = $(this.node());
                   $this.attr('id', this.data()[0]);
