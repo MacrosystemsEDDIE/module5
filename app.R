@@ -215,6 +215,25 @@ ui <- function(req) {
   
   tagList( # Added functionality for not losing your settings
     # shinythemes::themeSelector(), # user-defined theme
+    # Java to prompt the students to click a button
+    # Java script https://community.rstudio.com/t/keeping-track-of-idle-time-during-app-usage/1735
+    tags$script("
+              (function() {
+  var timeoutWarningMsecs = 12 * 60 * 1000;
+  var idleTimer;
+  
+  function onTimeout() {
+    alert('Warning: Session is about to time out! Please click a button to prevent losing progress.');
+  }
+  
+  function startIdleTimer() {
+    if (idleTimer) clearTimeout(idleTimer);
+    idleTimer = setTimeout(onTimeout, timeoutWarningMsecs);
+  }
+  
+  $(document).on('shiny:message shiny:inputchanged', startIdleTimer);
+  
+})();"),
     tags$style(type = "text/css", "text-align: justify"),
     tags$head(tags$link(rel = "shortcut icon", href = "macroeddi_ico_green.ico")), # Add icon for web bookmarks
     fluidPage(
@@ -266,7 +285,6 @@ ui <- function(req) {
   border-color: ", slider_col, ";
 }")),
                includeCSS("www/slider_cols.css"),
-               includeCSS("www/button_animations.css"),
                tags$style(HTML("
                .irs-bar {
                         border-color: transparent;
@@ -5910,25 +5928,6 @@ server <- function(input, output, session) {#
       removeTooltip(session, "prevBtn1")
     }
   })
-  
-  # Memory tables
-  # env <- environment()  # can use globalenv(), parent.frame(), etc
-  # output$loc_env <- renderTable({
-  #   data.frame(
-  #     object = ls(environment()),
-  #     size = unlist(lapply(ls(environment()), function(x) {
-  #       object.size(get(x, envir = environment(), inherits = FALSE))
-  #     }))
-  #   )
-  # })
-  # output$glob_env <- renderTable({
-  #   data.frame(
-  #     object = ls(globalenv()),
-  #     size = unlist(lapply(ls(globalenv()), function(x) {
-  #       object.size(get(x, envir = globalenv(), inherits = FALSE))
-  #     }))
-  #   )
-  # })
   
 }
 shinyApp(ui, server, enableBookmarking = "url")
