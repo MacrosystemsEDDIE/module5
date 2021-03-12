@@ -335,7 +335,7 @@ if (!pheno_chk) {cat("-->")}
 | --- | --- | --- | --- |
 | Air temperature | `r params$a6a_mean` | `r params$a6a_min` | `r params$a6a_max` |
 | Water temperature profile | `r params$a6b_mean` | `r params$a6b_min` | `r params$a6b_max` |
-| Nitrate sensor | `r params$a6c_mean` | `r params$a6c_min` | `r params$a6c_max` |
+| Nitrogen | `r params$a6c_mean` | `r params$a6c_min` | `r params$a6c_max` |
 | Underwater PAR | `r params$a6d_mean` | `r params$a6d_min` | `r params$a6d_max` |
 | Chlorophyll-a | `r params$a6e_mean` | `r params$a6e_min` | `r params$a6e_max` |
 
@@ -357,7 +357,7 @@ if (!pheno_chk) {cat("-->")}
 | --- | --- |
 | Air temperature | `r params$a7a` |
 | Water temperature profile | `r params$a7b` |
-| Nitrate sensor | `r params$a7c` |
+| Nitrogen | `r params$a7c` |
 | Underwater PAR | `r params$a7d` |
 \
 8. `r substr(quest["q8", ], 4, nchar(quest["q8", ]))`  
