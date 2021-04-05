@@ -245,7 +245,7 @@ The questions you must answer are embedded in the Shiny interface. You can answe
 
 # Think about it!
 \
-With a partner, read through the table below, and answer the following questions:
+Answer the following questions:
 
 1. `r substr(quest["q1", ], 4, nchar(quest["q1", ]))`  
 \

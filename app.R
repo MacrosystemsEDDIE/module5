@@ -542,7 +542,7 @@ ui <- function(req) {
                                               textInput("name", "Name:"),
                                               textInput("id_number", "ID number:"),
                                               introBox(
-                                                h3(tags$b("Questions")),
+                                                h3(tags$b("Think about it!")),
                                                 p("Note: The size of these text boxes can be adjusted by clicking and dragging the bottom right of the text box."),
                                                 textAreaInput2(inputId = "q1", label = quest["q1", 1]),
                                                 data.step = 5, data.intro = help_text["questions", 1]
