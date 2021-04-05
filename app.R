@@ -2,7 +2,7 @@
 suppressPackageStartupMessages(library(shiny, quietly = TRUE)); library(shinycssloaders)
 suppressPackageStartupMessages(library(shinyjs, quietly = TRUE, warn.conflicts = FALSE))
 library(shinydashboard, quietly = TRUE, warn.conflicts = FALSE)
-library(leaflet); library(htmltools)
+library(leaflet); library(htmltools); library(xml2)
 suppressPackageStartupMessages(library(sf, quietly = TRUE, warn.conflicts = FALSE))
 suppressPackageStartupMessages(library(ggplot2, quietly = TRUE)); library(plotly, quietly = TRUE, warn.conflicts = FALSE)
 library(ncdf4); library(reshape, quietly = TRUE, warn.conflicts = FALSE)
@@ -168,9 +168,9 @@ wid_pct <- "80%"
 #           as.character(numericInput("q6e_max", "", 0, width = wid_pct)))
 # )
 q6_table <- data.frame(
-  Mean = rep(0, 5),
-  Min = rep(0, 5),
-  Max = rep(0, 5), row.names = c("Air temperature", "Surface water temperature", "Nitrogen", "Underwater PAR", "Chlorophyll-a")
+  Mean = rep(NA, 5),
+  Min = rep(NA, 5),
+  Max = rep(NA, 5), row.names = c("Air temperature", "Surface water temperature", "Nitrogen", "Underwater PAR", "Chlorophyll-a")
 )
 
 wid_pct2 <- "100%"
@@ -332,6 +332,9 @@ ui <- function(req) {
 }
                         #wh_link a {
                         color: #FFFFFF
+                        }
+                        #q6_tab {
+                        'border':'1px solid #ddd'
                         }
                         .box.box-solid.box-primary>.box-header {
 
@@ -2330,24 +2333,13 @@ server <- function(input, output, session) {#
     return(out_stat)
   })
   
-  # Input table for q6
-  # output$q6_tab <- DT::renderDT(
-  #   q6_table, selection = "none", 
-  #   options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"), 
-  #   server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface water temperature", "Nitrogen", "Underwater PAR", "Chlorophyll-a"), colnames=c("Mean", "Minimum", "Maximum"), 
-  #   callback = JS("table.rows().every(function(i, tab, row) {
-  #                 var $this = $(this.node());
-  #                 $this.attr('id', this.data()[0]);
-  #                 $this.addClass('shiny-input-container');
-  #                 });
-  #                 Shiny.unbindAll(table.table().node());
-  #                 Shiny.bindAll(table.table().node());")
   # )
   
-  q6_ans <- reactiveValues(dt = q6_table)
+  q6_ans <- reactiveValues(dt = q6_table) # %>% formatStyle(c(1:3), border = '1px solid #ddd'))
 
   output$q6_tab <- DT::renderDT(
-    q6_ans$dt, selection = "none", 
+    q6_ans$dt, #%>% formatStyle(c(1:dim(q6_ans$dt)[2]), border = '1px solid #ddd'),
+    selection = "none", class = "cell-border stripe",
     options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"), 
     server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface water temperature", "Nitrogen", "Underwater PAR", "Chlorophyll-a"), colnames=c("Mean", "Minimum", "Maximum"), editable = TRUE
   )
@@ -2363,9 +2355,9 @@ server <- function(input, output, session) {#
   })
   
   # Add nutrient table for running the model
-  nutri_tab <- reactiveValues(df = data.frame(Mean = 0,
-                                              Min = 0,
-                                              Max = 0, row.names = "Nitrogen"))
+  nutri_tab <- reactiveValues(df = data.frame(Mean = NA,
+                                              Min = NA,
+                                              Max = NA, row.names = "Nitrogen"))
   observe({
       nutri_tab$df[1, 1] <- q6_ans$dt[3, 1]
       nutri_tab$df[1, 2] <- q6_ans$dt[3, 2]
@@ -5679,7 +5671,7 @@ server <- function(input, output, session) {#
       if(input$q3 == "") "Introduction: Q. 3",
       if(input$q4a == "" | input$q4b == "" | input$q4c == "" |input$q4d == "") "Exploration: Q. 4",
       if(input$q5a == "" | input$q5b == "" | input$q5c == "" | input$q5d == "" | input$q5e == "" | input$q5f == "") "Activity A: Objective 1 - Q. 5",
-      if(all(q6_ans$dt[, 1] == 0) | all(q6_ans$dt[, 2] == 0) | all(q6_ans$dt[, 3] == 0)) "Activity A: Objective 2 - Q. 6",
+      if(any(is.na(q6_ans$dt[, 1])) | any(is.na(q6_ans$dt[, 2])) | any(is.na(q6_ans$dt[, 1]))) "Activity A: Objective 2 - Q. 6",
       if(is.null(input$q7a) | is.null(input$q7b) | is.null(input$q7c) | is.null(input$q7d)) "Activity A: Objective 3 - Q. 7",
       if(input$q8 == "") "Activity A: Objective 3 - Q. 8",
       if(is.null(input$q9a) & is.null(input$q9b) & is.null(input$q9c)) "Activity A: Objective 4 - Q. 9",
