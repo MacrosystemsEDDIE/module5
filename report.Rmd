@@ -123,6 +123,8 @@ if(!is.null(params$upar_m)) {
 quest <- read.csv("data/handout_questions.csv", row.names = 1)
 module_text <- read.csv("data/module_text.csv", row.names = 1, header = FALSE)
 # quest["q1", ] <- substr(quest["q1", ], 2, nchar(quest["q1", ]))
+ef_links <- read.csv("data/eco_forecast_examples.csv")
+
 
 if(file.exists(params$save_pars)) {
   par_tab <- read.csv(params$save_pars, row.names = 1)
@@ -262,6 +264,16 @@ Answer the following questions:
 Now navigate to the [Shiny interface](https://macrosystemseddie.shinyapps.io/module5) to answer the rest of the questions.
 
 # Exploration\
+Examples of ecological forecasts:
+\
+
+- [`r ef_links$Forecast[1]`](`r ef_links$webpage[1]`) - `r ef_links$About[1]`
+- [`r ef_links$Forecast[2]`](`r ef_links$webpage[2]`) - `r ef_links$About[2]`
+- [`r ef_links$Forecast[3]`](`r ef_links$webpage[3]`) - `r ef_links$About[3]`
+- [`r ef_links$Forecast[4]`](`r ef_links$webpage[4]`) - `r ef_links$About[4]`
+- [`r ef_links$Forecast[5]`](`r ef_links$webpage[5]`) - `r ef_links$About[5]`
+- [`r ef_links$Forecast[6]`](`r ef_links$webpage[6]`) - `r ef_links$About[6]`
+\
 
 4. `r substr(quest["q4", ], 4, nchar(quest["q4", ]))` 
 \
