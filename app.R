@@ -1110,7 +1110,8 @@ border-color: #FFF;
                                                       p(id = "txt_j", "To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates below."),
                                                       p(id = "txt_j", "Inital conditions can also be adjusted to measured values from ", actionLink("obj_2", "Objective 2")," but you can also adjust the initial values to see how the model responds."),
                                                       p(id = "txt_j", "The NP model simulates phytoplankton biomass which we convert to chlorophyll-a to allow comparison between the simulations and field observations."),
-                                                      br(), br(),
+                                                      br(), 
+                                                      p(id = "txt_j", "Answer questions 12-15 using this model."),
                                                       actionButton("run_mod_ann",
                                                                    label = div("Run Model",
                                                                                icon("running")),
@@ -3004,6 +3005,10 @@ server <- function(input, output, session) {#
            message = "Please select a site on the 'Activity A' tab")
     )
     validate(
+      need(!is.na(par_save$value[5, c(5)]),
+           message = "Please save a parameter set in 'Activity A - Objective 5 - Q 15'")
+    )
+    validate(
       need(input$load_fc > 0, "Click 'Load Forecast'")
     )
     validate(
@@ -3048,10 +3053,13 @@ server <- function(input, output, session) {#
   #* plot NOAA forecast ----
   output$fc_plot <- renderPlotly({
     
-    
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site on the 'Activity A' tab")
+    )
+    validate(
+      need(!is.na(par_save$value[5, c(5)]),
+           message = "Please save a parameter set in 'Activity A - Objective 5 - Q 15'")
     )
     validate(
       need(input$load_fc > 0, "Click 'Load Forecast'")
