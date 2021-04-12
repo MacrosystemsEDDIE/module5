@@ -812,14 +812,17 @@ border-color: #FFF;
                                                       p("All plots in this Shiny app are generated using Plotly. This allows you to hover your mouse over the plot to get information from each of the plots. You can inspect the data closely by clicking and zooming into particular areas. There is a tool box at the top of the plot which has the selection function required for Q6."),
                                                       plotlyOutput("var_plot"),
                                                       useShinyjs(),  # Set up shinyjs
-                                                      selectizeInput("view_var", "Select variable",
-                                                                     choices = unique(neon_vars$Short_name),
-                                                                     options = list(
-                                                                       placeholder = 'Please select a variable',
-                                                                       onInitialize = I('function() { this.setValue(""); }')),
+                                                      splitLayout(cellWidths = c("75%", "25%"),
+                                                        selectizeInput("view_var", "Select variable",
+                                                                       choices = unique(neon_vars$Short_name),
+                                                                       options = list(
+                                                                         placeholder = 'Please select a variable',
+                                                                         onInitialize = I('function() { this.setValue(""); }')),
+                                                        ),
+                                                        actionButton("clear_sel1", "Clear Selection")
                                                       ),
                                                       wellPanel(
-                                                        br(),
+                                                        # br(),
                                                         # conditionalPanel("input.table01_rows_selected > 1",
                                                         h4("Variable Description"),
                                                         textOutput("txt_out")
@@ -2288,6 +2291,9 @@ server <- function(input, output, session) {#
   })
   
   selected <- reactiveValues(sel = NULL)
+  observeEvent(input$clear_sel1, {
+    selected$sel <- NULL
+  })
   
   
   
