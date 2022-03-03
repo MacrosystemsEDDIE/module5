@@ -21,7 +21,10 @@ RUN /rocker_scripts/install_shiny_server.sh
 
 USER ${NB_USER}
 
-
-
 ## Run an install.R script, if it exists.
 RUN if [ -f install.R ]; then R --quiet -f install.R; fi
+
+COPY ./module5/* /srv/shiny-server/
+USER shiny
+EXPOSE 3838
+CMD ["/usr/bin/shiny-server"]
