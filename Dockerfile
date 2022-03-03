@@ -1,8 +1,12 @@
 #FROM rocker/binder:4.1.2
 FROM rocker/shiny-verse
 
-ENV NB_USER rstudio
-ENV NB_UID 1000
+## Declares build arguments
+ARG NB_USER 
+ARG NB_UID
+
+USER ${NB_USER}
+#ENV NB_UID 1000
 ENV VENV_DIR /srv/venv
 
 # Set ENV for all programs...
@@ -28,7 +32,7 @@ RUN apt-get update && \
 # This allows non-root to install python libraries if required
 RUN mkdir -p ${VENV_DIR} && chown -R ${NB_USER} ${VENV_DIR}
 
-USER ${NB_USER}
+
 RUN python3 -m venv ${VENV_DIR} && \
     # Explicitly install a new enough version of pip
     pip3 install pip==9.0.1 && \
@@ -40,9 +44,7 @@ RUN R --quiet -e "devtools::install_github('IRkernel/IRkernel')" && \
 
 CMD jupyter notebook --ip 0.0.0.0
 
-## Declares build arguments
-ARG NB_USER 
-ARG NB_UID
+
 
 COPY --chown=${NB_USER} . ${HOME}
 
