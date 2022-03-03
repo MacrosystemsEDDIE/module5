@@ -17,7 +17,7 @@ RUN echo "Checking for 'apt.txt'..." \
         && rm -rf /var/lib/apt/lists/* \
         ; fi
         
-RUN /rocker_scripts/install_shiny.sh
+RUN /rocker_scripts/install_shiny_server.sh
 
 USER ${NB_USER}
 
