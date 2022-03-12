@@ -45,7 +45,7 @@ source("https://raw.githubusercontent.com/MacrosystemsEDDIE/module5/main/install
 shiny::runGitHub("module5", "MacrosystemsEDDIE", ref = "main", subdir = "app")
 ```
 
-## Quick start option 2
+## Quickstart option 2
 
 You can click on the link below to launch the Shiny app.  It may take a while to launch because it is being created on a remote server (i.e., not on your computer). This option prevents issues with installing R and packages. It only requires an internet browser and a connection to the internet.
 
