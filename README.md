@@ -35,18 +35,19 @@ There are two options:
 ![](www/launch_app.png)<!-- -->	
 
 ## Quickstart option 1
+
 Here is an alternative way to quickly launch the Shiny app in less than a minute, but can be prone to package installation errors if your packages have not been updated recently.
 ```
 # Step 1. Install required R packages
 source("https://raw.githubusercontent.com/MacrosystemsEDDIE/module5/main/install.R")
 
 # Step 2. Launch Shiny app
-shiny::runGitHub("module5", "MacrosystemsEDDIE", ref = "main")
+shiny::runGitHub("module5", "MacrosystemsEDDIE", ref = "main", subdir = "app")
 ```
 
 ## Quick start option 2
 
-[NEED TO ADD INFO ON BINDER]
+You can click on the link below to launch the Shiny app.  It may take a while to launch because it is being created on a remote server (i.e., not on your computer). This option prevents issues with installing R and packages. It only requires an internet browser and a connection to the internet.
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/rqthomas/module5/main?urlpath=shiny/app/)
 
