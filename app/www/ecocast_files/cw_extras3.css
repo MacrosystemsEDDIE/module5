@@ -1,0 +1,301 @@
+@charset "UTF-8";
+/* CSS Document */
+
+.noaaLogo {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	z-index: 10;
+	vertical-align: bottom;
+	text-align: right;
+}
+.nooaHeader {
+	background-repeat: repeat-y;
+	background-position: center;
+	background-color: #FFFFFF;
+}
+.noaaHeaderText{
+	font-family: inherit;
+	font-size: 2em;
+	text-align: center;
+	vertical-align: middle;
+	color: #dbf0f5;
+	background-color: transparent;
+	line-height: 70px;
+	font-weight: bolder;
+}
+
+@media screen and (max-width: 970px) {
+    .noaaHeaderText {
+        font-size:1.7em;
+    }
+	.subcolumn_rt {
+		padding-left:0px;
+		padding-right:0px;
+	}
+	.subcolumn_lt {
+		padding-left:0px;
+		padding-right:0px;
+	}
+}
+
+@media screen and (max-width: 768px) {
+    .noaaHeaderText {
+        font-size:1.7em;
+    }
+}
+ 
+@media screen and (max-width: 568px) {
+    .noaaHeaderText {
+        font-size:1.7em;
+    }
+}
+.satImage {
+	width:33.3333%;
+}
+.satHP {
+	position: relative;
+	top: -100px;
+}
+#satHP {
+	position: relative;
+	left: 10px;
+	width: 90%;
+	bottom: 3pc;
+}
+.main_nav {
+	padding-top: -5px;
+	padding-bottom: -5px;
+}
+.cwNavTop {
+	background-color: #0058A6;
+}
+
+ul.cwNavTopLinks li {
+	padding-left: 10px;
+	padding-right: 10px;
+	font-weight: bold;
+}
+ul.cwNavTopLinks li a:link, ul.cwNavTopLinks li a:visited {
+	color: #fff;	
+}
+
+ul.cwNavTopLinks li a:hover {
+	color: #333333;
+}
+
+ul.cwNavTopLinks li a:active {
+	color: #fff;
+}
+
+
+
+.topNavBrand {
+	font-size: 16px;
+	color: #FFFFFF;
+	padding-right: 15px;
+	font-weight: bold;
+	line-height: 37px;
+}
+
+a.topNavBrand link, a.topNavBrand visited {
+	color: #3366990;	
+}
+
+.topNavBrand a:hover {
+	color: #FFFFFF;	
+}
+
+.topNavSpan {
+	padding-top: 5px;
+	
+}
+
+@media (max-width: 767px) {
+  .localNav {
+	padding-top:45px;
+  }
+  #satImg {
+	  max-width:400px; 
+  }  
+  .smLogo {
+	  width:287px;
+	  height:35px;
+	  visibility:visible;
+  }  
+  .lgLogo {
+	width:1px; 
+	height:35px; 
+	visibility:hidden;
+  }
+ #homeBoxText {
+	width:100%; 
+	display: table-cell; 
+	float:right;
+}
+
+#homeBoxImg {
+	width:100%; 
+	display: table-cell; 
+	float:left;
+} 
+ 
+#loggerTitle {
+	style=width: 100%; 
+}
+
+}
+
+@media (min-width: 768px) {
+  .localNav {
+	padding-top:0px;
+  }
+  .smLogo {
+	  width:5px;
+	  height:35px;
+	  visibility:hidden;
+  }
+#homeBoxText {
+	width:50%; 
+	display: table-cell; 
+	float:right;
+}
+
+#homeBoxImg {
+	width:50%; 
+	display: table-cell; 
+	float:left;
+}
+
+#loggerTitle {
+	style=width: 80%; 
+	margin: 0 auto
+}
+}
+
+#pageTitle {
+	font-size:22px;
+	margin-top:10px;
+	margin-bottom:0px;
+	padding-left:10px;
+}
+.h2_headers {
+
+	margin-top:10px;
+}
+.h2_home {
+
+	margin-bottom: 10px;
+	font-size:22px;
+	font-weight:500;
+}
+#browserImg {
+	  max-width:600px
+}
+.rt_btn {
+	margin-left:30px
+}
+.pad5px_tb {
+	padding-top:5px;
+	padding-bottom:5px;
+}
+.padL {
+	padding-left:15px;
+}
+.padR {
+	padding-right:25px;
+}
+
+.menu_adjust {
+	margin-left: 9px;
+	color: #666666;
+	background-color:#999999;
+}
+.fb_tbl_td_lb {
+	padding-bottom:10px;
+	padding-right:5px;
+}
+
+.fb_tbl_td_rb {
+	padding-bottom:10px;
+	padding-left:5px;
+}
+.align_rt {
+	position:relative;
+	float:right
+}
+.subcolumn_rt {
+
+		padding-right:0px;
+}
+.subcolumn_lt {
+		padding-left:0px;
+
+}
+muted {
+  color: #336699;
+}
+.dropdown:hover .dropdown-menu {
+display: block;
+}
+.plus_size {
+	font-size:1.2em;
+	font-weight:900
+}
+.video-container {
+	position: relative;
+	padding-bottom: 56.25%;
+	padding-top: 30px;
+	height: 0;
+	overflow: hidden;
+}
+
+.video-container iframe,  
+.video-container object,  
+.video-container embed {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+.fileBtns {
+	width:100%;
+}
+.imgTest {
+	position: absolute;
+    clip: rect(20%,20%,20%,20%);
+}
+.inset {
+	position: absolute;
+	height: 5%;
+	width: 11%;
+	top: 52%;
+	border: thin solid #000000;
+	right: 22%;
+}
+.tn:hover {
+    position:relative;
+    top:-25px;
+    left:-35px;
+    width:500px;
+    height:auto;
+    display:block;
+    z-index:999;
+}
+#headDOC {
+	display: inline;
+	position: absolute;
+	bottom: 6px;
+	right: 0px;
+	padding: 0px;
+	margin: 0px;
+	width: 50px;
+	height: 50px;
+}
+.bodyCW {
+	line-height: 1.5em;
+	font-family:Open Sans;
+	font-size:14px;
+}
+

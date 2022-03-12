@@ -1,0 +1,61 @@
+q_no,Question
+q1,"Q1. How have you used forecasts (ecological, political, sports, any kind!) before in your day-to-day life?"
+q2,Q2. How can ecological forecasts improve both natural resource management and ecological understanding?
+q3,Q3. How do you think forecasts of freshwater primary productivity will differ between warmer lakes and colder lakes?
+q4,Q4. Choose one of the ecological forecasts above and use the website to answer the questions below.
+q4a,a. Which ecological forecast did you select?
+q4b,b. What ecological variable(s) are being forecasted?
+q4c,c. How can this forecast help the public and/or managers?
+q4d,d. Describe the way(s) in which the forecast is visualized
+q5,Q5. Fill out information about your selected NEON site:
+q5a,a. Name of selected site:
+q5b,b. Four letter site identifier:
+q5c,c. Latitude:
+q5d,d. Longitude:
+q5e,e. Lake area (km2):
+q5f,f. Elevation (m):
+q6,Q6. Fill out the table below with the description of site variables:
+q6a,Air temperature
+q6b,Surface water temperature
+q6c,Nitrogen
+q6d,Underwater PAR
+q6e,Chlorophyll-a
+q7,Q7. Describe the effect of each of the following variables on chlorophyll-a. Chlorophyll-a is used as a proxy measurement for phytoplankton concentration and primary productivity in aquatic environments.
+q7a,Air temperature
+q7b,Surface water temperature
+q7c,Nitrogen
+q7d,Underwater PAR
+q8,"Q8. Were there any other relationships you found at your site? If so, please describe below."
+q9,"Q9. What is the relationship between each of these driving variables and productivity? For example, if the driving variable increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)."
+q9a,a. Surface water temperature
+q9b,b. Incoming light
+q9c,c. Available nutrients
+q10,Q10. Classify the following as either a state variable or a parameter by dragging it into the corresponding bin.
+q11,Q11. We are using chlorophyll-a as a proxy of aquatic primary productivity. Select how you envision each parameter to affect chlorophyll-a concentrations:
+q11a,a. Nutrient uptake by phytoplankton
+q11b,b. Phytoplankton mortality
+q12,"Q12. Without using surface water temperature or underwater light (uPAR) as inputs into your model, adjust the initial conditions and parameters of your model to best replicate the observations. Make sure you select the 'Q12' row in the parameter table to save your setup. Describe how the model simulation compares to the observations."
+q13,Q13. Explore the model's sensitivity to SWT and uPAR:
+q13a,"a. Switch on surface water temperature by checking the box. Adjust initial conditions and parameters to replicate observations.  Is the model sensitive to SWT? Did it help improve the model fit? (Select the ""Q13a"" row in the Parameter Table to store your model setup there)."
+q13b,"b. Switch on uPAR and switch off surface water temperature. Adjust initial conditions and parameters to replicate observations.  Is the model sensitive to uPAR? Did it help improve the model fit? (Select the ""Q13b"" row in the Parameter Table to store your model setup there)."
+q14,"Q14. Develop a scenario (e.g. uPAR is on, low initial conditions of phytoplankton, high nutrients, phytoplankton mortality is high, low uptake, etc.) and hypothesize how you think chlorophyll-a concentrations will respond prior to running the simulation. Switch off observations prior to running the model."
+q14a,a. Write your hypothesis of how chlorophyll-a will respond to your scenario here:
+q14b,"b. Run your model scenario. Select the ""Q14"" row in the Parameter Table to store your model setup there. Was your hypothesis supported or refuted? Describe what you observed:"
+q15,"Q15. Add the observations to the plot. Calibrate your model by selecting sensitive variables and adjusting the parameters until they best fit the observed data. Save the plot and the parameters (Select the ""Q15"" row in the Parameter Table to store your model setup there), these are what will be used for the forecast."
+q16,Q16. What is forecast uncertainty? How is forecast uncertainty quantified?
+q17,Q17. Inspect the weather forecast data for the site you have chosen:
+q17a,a. How does increasing the number of ensemble members in the weather forecast affect the size of the uncertainty in future weather?
+q17b,b. Which type of plot (line or distribution) do you think visualizes the forecast uncertainty best?
+q17c,"c. Using the interactivity of the weather forecast plot, compare the air temperature forecasts for the first week (Sep 25 - Oct 1) to the second week (Oct 2 - 8). How does the forecast uncertainty change between the two periods? "
+q18,"Q18. How does driver uncertainty affect the forecast, specifically, does an increase in the number of members increase or decrease the range of uncertainty in the forecasts? How does that change over time?"
+q19,Q19. What do you think are the main sources of uncertainty in your ecological forecast?
+q20,Q20. How would you describe your forecast of primary productivity at your NEON site so it could be understood by a fellow classmate?
+q21,Q21. How well did your forecast do compared to observations? (include R2 value) Why do you think it is important to assess the forecast?
+q22,Q22. Did your forecast improve when you updated your model parameters? Why do you think it is important to update the model?
+q23,Q23. Describe the new forecast of primary productivity.
+q24,Q24. Why is the forecast cycle described as 'iterative' (i.e. repetition of a process)?
+q25,Q25. Repeat Activity A and B with a different NEON site (ideally from a different region).
+q25a,a. Apply the same model scenario (with the same model structure and parameters) which you developed in Q14 to this new site. How do you expect chlorophyll-a concentrations will respond prior to running the simulation?
+q25b,b. Was your hypothesis supported or refuted? Why?
+q25c,"c. Revisit your hypothesis from Q3, what did you find out about the different productivity forecasts in warmer vs colder sites?"
+q26,Q26. Does forecast uncertainty differ at this site compared to the first selected site? Why do you think that is?

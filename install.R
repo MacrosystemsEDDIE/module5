@@ -34,4 +34,4 @@ install.packages("rmarkdown")
 install.packages("remotes")
 remotes::install_github('yonicd/slickR') # removed from CRAN - now only on GitHub
 
-# end
+

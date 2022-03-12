@@ -1,0 +1,8 @@
+﻿site,phy_init,nut_init
+default,2,0.1
+CRAM,1.5,0.1
+SUGG,15.5,1.14
+BARC,0.1,0.02
+PRPO,6.7,0.11
+LIRO,5.6,0.06
+PRLA,7.8,0.45
