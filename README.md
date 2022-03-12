@@ -48,7 +48,7 @@ shiny::runGitHub("module5", "MacrosystemsEDDIE", ref = "main")
 
 [NEED TO ADD INFO ON BINDER]
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/rqthomas/module5/master?urlpath=shiny/app/)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/rqthomas/module5/main?urlpath=shiny/app/)
 
 
 ## Questions & Feedback
