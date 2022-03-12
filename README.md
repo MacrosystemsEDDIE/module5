@@ -24,12 +24,12 @@ There are two options:
 		g. You will then have a project with all the files from this repository.  
 		
 ### Step 2: Install required R packages
-1. The list of required of packages is detailed in the "install_packages.R" script in this repository. Open and run this script to install the necessary packages.  
+1. The list of required of packages is detailed in the `install.R` script in this repository. Open and run this script to install the necessary packages.  
   Watch out for errors in package installation. Most can be avoided using the most up-to-date version of R (4.0.3 as of 2021-01-22).  
   Updating of current R packages on your system is recommended.
 
 ### Step 3: Launch Shiny App
-1. Open the script "app.R" in your console.  
+1. Open the script `app.R` in your console.  It is found in the `app` directory
 2. Click the "Run App" button in the Script (indicated below).  
 3. This will launch the Shiny App in your default web browser or in a new RStudio window. The Shiny App is run from RStudio so you will need to keep RStudio running in the background.  
 ![](www/launch_app.png)<!-- -->	
@@ -38,7 +38,7 @@ There are two options:
 Here is an alternative way to quickly launch the Shiny app in less than a minute, but can be prone to package installation errors if your packages have not been updated recently.
 ```
 # Step 1. Install required R packages
-source("https://raw.githubusercontent.com/MacrosystemsEDDIE/module5/main/install_packages.R")
+source("https://raw.githubusercontent.com/MacrosystemsEDDIE/module5/main/install.R")
 
 # Step 2. Launch Shiny app
 shiny::runGitHub("module5", "MacrosystemsEDDIE", ref = "main")
