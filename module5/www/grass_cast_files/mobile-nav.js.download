@@ -1,6 +1,0 @@
-﻿$(function () {
-
-    $('#mobilenav').click(function () {
-        $('#navmenu').toggleClass('shown');
-    });
-});

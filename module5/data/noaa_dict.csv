@@ -1,9 +1,0 @@
-noaa_name,display_name,units
-air_pressure,Air pressure,Pa
-air_temperature,Air temperature,u00B0C
-cloud_are_fraction,Cloud cover,fraction
-precipitation_flux,Precipitation,m/hour
-relative_humidity,Relative humidity,%
-surface_downwelling_shortwave_flux_in_air,Shortwave radiation,W/m2
-surface_downwelling_longwave_flux_in_air,Longwave radiation,W/m2
-wind_speed,Wind speed,m/s
