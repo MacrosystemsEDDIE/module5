@@ -9,7 +9,7 @@ library(ncdf4); library(reshape, quietly = TRUE, warn.conflicts = FALSE)
 library(sortable)
 # remotes::install_github('yonicd/slickR') # removed from CRAN - now only on GitHub
 library(slickR); library(tinytex); library(rvest, quietly = TRUE, warn.conflicts = FALSE)
-library(rLakeAnalyzer); library(LakeMetabolizer); 
+library(rLakeAnalyzer); library(LakeMetabolizer);
 library(DT, quietly = TRUE, warn.conflicts = FALSE); library(rintrojs); library(hover)
 library(stringr); library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
 library(RColorBrewer); library(ggpubr); library(readr); library(shinyBS); library(httr)
@@ -89,7 +89,7 @@ slider_col <- "#2CB572"
 # Load text input
 module_text <- read.csv("data/module_text.csv", row.names = 1, header = FALSE)
 
-# Load EF and check if available if not use saved html 
+# Load EF and check if available if not use saved html
 EF_links <- read.csv("data/eco_forecast_examples.csv")
 EF_links$use_html <- NA
 for(i in seq_len(nrow(EF_links))) {
@@ -129,11 +129,8 @@ parms <- c(
   mineralizationRate=0.1, #day-1
   Chl_Nratio = 1, #mg chl (mmolN)-1
   Q10 = 2,  #unitless
-  addTEMP = 0, # added to temperature
-  scaleNLOAD = 1, # multiplier for N loading
   refTEMP = 20 # Reference temperature for q10
-  
-)  
+)
 
 calib_model_png <- gsub("www/", "", list.files("www/calib_model/", full.names = TRUE))
 
@@ -151,17 +148,17 @@ upd_parms <- read.csv("data/upd_params_site.csv", fileEncoding = "UTF-8-BOM")
 # code from https://stackoverflow.com/questions/46707434/how-to-have-table-in-shiny-filled-by-user
 wid_pct <- "80%"
 # q6_table <- data.frame(
-#   mean = c(as.character(numericInput("q6a_mean", "", 0, width = wid_pct)), 
+#   mean = c(as.character(numericInput("q6a_mean", "", 0, width = wid_pct)),
 #            as.character(numericInput("q6b_mean", "", 0, width = wid_pct)),
 #            as.character(numericInput("q6c_mean", "", 0, width = wid_pct)),
 #            as.character(numericInput("q6d_mean", "", 0, width = wid_pct)),
 #            as.character(numericInput("q6e_mean", "", 0, width = wid_pct))),
-#   min = c(as.character(numericInput("q6a_min", "", 0, width = wid_pct)), 
+#   min = c(as.character(numericInput("q6a_min", "", 0, width = wid_pct)),
 #           as.character(numericInput("q6b_min", "", 0, width = wid_pct)),
 #           as.character(numericInput("q6c_min", "", 0, width = wid_pct)),
 #           as.character(numericInput("q6d_min", "", 0, width = wid_pct)),
 #           as.character(numericInput("q6e_min", "", 0, width = wid_pct))),
-#   max = c(as.character(numericInput("q6a_max", "", 0, width = wid_pct)), 
+#   max = c(as.character(numericInput("q6a_max", "", 0, width = wid_pct)),
 #           as.character(numericInput("q6b_max", "", 0, width = wid_pct)),
 #           as.character(numericInput("q6c_max", "", 0, width = wid_pct)),
 #           as.character(numericInput("q6d_max", "", 0, width = wid_pct)),
@@ -176,8 +173,8 @@ q6_table <- data.frame(
 wid_pct2 <- "100%"
 q7_table <- data.frame(
   relationship = c(as.character(textAreaInput(inputId = "q7a", "" , width = wid_pct2)),
-                   as.character(textAreaInput(inputId = "q7b", "" , width = wid_pct2)), 
-                   as.character(textAreaInput(inputId = "q7c", "" , width = wid_pct2)), 
+                   as.character(textAreaInput(inputId = "q7b", "" , width = wid_pct2)),
+                   as.character(textAreaInput(inputId = "q7c", "" , width = wid_pct2)),
                    as.character(textAreaInput(inputId = "q7d", "" , width = wid_pct2)))
 )
 
@@ -212,7 +209,7 @@ web_cache_txt <- paste0("(If the links to the websites are broken it will take y
 png_dpi <- 300
 
 ui <- function(req) {
-  
+
   tagList( # Added functionality for not losing your settings
     # shinythemes::themeSelector(), # user-defined theme
     # Java to prompt the students to click a button
@@ -221,18 +218,18 @@ ui <- function(req) {
               (function() {
   var timeoutWarningMsecs = 12 * 60 * 1000;
   var idleTimer;
-  
+
   function onTimeout() {
     alert('Warning: Session is about to time out! Please click a button to prevent losing progress.');
   }
-  
+
   function startIdleTimer() {
     if (idleTimer) clearTimeout(idleTimer);
     idleTimer = setTimeout(onTimeout, timeoutWarningMsecs);
   }
-  
+
   $(document).on('shiny:message shiny:inputchanged', startIdleTimer);
-  
+
 })();"),
     tags$style(type = "text/css", "text-align: justify"),
     tags$head(tags$link(rel = "shortcut icon", href = "macroeddi_ico_green.ico")), # Add icon for web bookmarks
@@ -243,16 +240,16 @@ ui <- function(req) {
              )
       )
     ),
-    navbarPage(title = "Module 5: Introduction to Ecological Forecasting", 
+    navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                position = "static-top", id = "maintab",
                # HTML('<p style="text-align:justify">'),
                # tags$style(type="text/css", "body {padding-top: 65px;}"),
-               # img(src = "project-eddie-banner-2020_green.png", height = 100, 
+               # img(src = "project-eddie-banner-2020_green.png", height = 100,
                #     width = 1544, top = 5),
-               
-               
-               
-               
+
+
+
+
                # 1. Module Overview ----
                tabPanel(introBox("Module Overview",
                                  data.step = 2,
@@ -261,15 +258,15 @@ ui <- function(req) {
                value = "mtab1",
                introjsUI(), # must include in UI
                introBox(
-                 img(src = "project-eddie-banner-2020_green.png", height = 100, 
+                 img(src = "project-eddie-banner-2020_green.png", height = 100,
                      width = 1544, top = 5),
                  data.step = 1,
                  data.intro = help_text["welcome", 1]
                ),
-               
-               tags$style(".btn-file {  
-             background-color:#98CAB2; 
-             border-color: #579277; 
+
+               tags$style(".btn-file {
+             background-color:#98CAB2;
+             border-color: #579277;
              }
 
              .progress-bar {
@@ -373,10 +370,10 @@ ui <- function(req) {
                           h3("Summary"),
                           p(id = "txt_j", module_text["intro_eco_forecast", ]),
                           p(id = "txt_j", module_text["this_module", ])
-                   ), 
+                   ),
                    column(5, offset = 1,
                           br(), br(), br(),
-                          img(src = "mod5_viz_v2.png", height = "80%", 
+                          img(src = "mod5_viz_v2.png", height = "80%",
                               width = "80%", align = "left")
                    )
                  ), data.step = 8, data.intro = help_text["start", 1]
@@ -392,7 +389,7 @@ ui <- function(req) {
                           tags$li(id = "txt_j", module_text["act_B", ]),
                           tags$li(id = "txt_j", module_text["act_C", ])
                         )
-                        
+
                  ),
                  column(6, offset = 2,
                         h3("Learning Outcomes"),
@@ -418,17 +415,17 @@ ui <- function(req) {
                         p(id = "txt_j", module_text["privacy_policy", ], HTML(paste0("For information regarding assessment data, please visit our website ", a(href = "https://serc.carleton.edu/eddie/macrosystems/assessment", "here", target = "_blank"), "."))),
                         p()
                  ),
-                 column(5, offset = 1, 
+                 column(5, offset = 1,
                         # id = "second", # Add border
-                        br(), br(), 
-                        img(src = "MacroEDDIE Logo.png", height = "70%", 
+                        br(), br(),
+                        img(src = "MacroEDDIE Logo.png", height = "70%",
                             width = "70%", align = "center")
                  )
                )
                ),
                # 2. Presentation recap ----
                tabPanel(title = "Presentation", value = "mtab2",
-                        img(src = "project-eddie-banner-2020_green.png", height = 100, 
+                        img(src = "project-eddie-banner-2020_green.png", height = 100,
                             width = 1544, top = 5),
                         fluidRow(
                           hr(),
@@ -449,7 +446,7 @@ ui <- function(req) {
                                  p("Click through the slides to recap some of the main points from the lecture.")
                           ),
                           column(8, offset = 0, align = "center",
-                                 h3("Key Slides", 
+                                 h3("Key Slides",
                                     align = "center"),
                                  h5("Click the arrows to navigate through the slides", align = "center"),
                                  wellPanel(
@@ -461,7 +458,7 @@ ui <- function(req) {
                # 3. Introduction ----
                tabPanel(title = "Introduction", value = "mtab3",
                         # tags$style(type="text/css", "body {padding-top: 65px;}"),
-                        img(src = "project-eddie-banner-2020_green.png", height = 100, 
+                        img(src = "project-eddie-banner-2020_green.png", height = 100,
                             width = 1544, top = 5),
                         fluidRow(
                           column(5,
@@ -479,7 +476,7 @@ ui <- function(req) {
                                  br(), br(),
                                  img(src = "activity_outline.png", height = "80%", id = "bla_border",
                                      width = "80%", tags$style("border: solid 2px black;"))
-                                 
+
                           )
                         ), hr(),
                         fluidRow(
@@ -496,7 +493,7 @@ ui <- function(req) {
                                  conditionalPanel("output.handoutbuilt",
                                                   downloadButton(outputId = "stud_dl", label = "Download Student Handout"),
                                  )
-                          ), 
+                          ),
                         ), hr(),
                         #* Generate report buttons ====
                         fluidRow(
@@ -530,7 +527,7 @@ ui <- function(req) {
                                  wellPanel(
                                    htmlOutput("check_list")
                                  )
-                                 
+
                           )
                         ),
                         fluidRow(
@@ -554,7 +551,7 @@ ui <- function(req) {
                                               textAreaInput2(inputId = "q3", label = quest["q3", 1], width = "90%")
                                        )
                                      ),
-                                     
+
                                  ),
                           )
                         ),
@@ -575,7 +572,7 @@ ui <- function(req) {
                # 4. Exploration ----
                tabPanel(title = "Exploration", value = "mtab4",
                         # tags$style(type="text/css", "body {padding-top: 65px;}"),
-                        img(src = "project-eddie-banner-2020_green.png", height = 100, 
+                        img(src = "project-eddie-banner-2020_green.png", height = 100,
                             width = 1544, top = 5),
                         fluidRow(
                           column(12,
@@ -589,19 +586,19 @@ ui <- function(req) {
                                  tags$ul(
                                    tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[1], "' target='_blank' >", EF_links$Forecast[1], "</a>")),
                                            br(), p(EF_links$About[1])),
-                                   
+
                                    HTML(paste0("<a href='", EF_links$use_html[1], "' target='_blank'>
                                                  <img src='fc_examples/", EF_links$img[1], "' height='50%' width='50%' id='bla_border2'/>
                                                  </a>")),
                                    br(), hr(),
-                                   
+
                                    tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[2], "' target='_blank' >", EF_links$Forecast[2], "</a>")),
                                            br(), p(EF_links$About[2])),
                                    HTML(paste0("<a href='", EF_links$use_html[2], "' target='_blank'>
                                                  <img src='fc_examples/", EF_links$img[2], "' height='50%' width='50%' id='bla_border2'/>
                                                  </a>")),
                                    br(), hr(),
-                                   
+
                                    tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[3], "' target='_blank' >", EF_links$Forecast[3], "</a>")),
                                            br(), p(EF_links$About[3])),
                                    HTML(paste0("<a href='", EF_links$use_html[3], "' target='_blank'>
@@ -610,7 +607,7 @@ ui <- function(req) {
                                    br(), hr(),
                                  ),
                           ),
-                          column(4, offset = 2, 
+                          column(4, offset = 2,
                                  tags$ul(
                                    tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[5], "' target='_blank' >", EF_links$Forecast[5], "</a>")),
                                            br(), p(EF_links$About[5])),
@@ -618,10 +615,10 @@ ui <- function(req) {
                                                  <img src='fc_examples/", EF_links$img[5], "' height='50%' width='50%' id='bla_border2'/>
                                                  </a>")),
                                    br(), hr(),
-                                   
+
                                    tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[6], "' target='_blank' >", EF_links$Forecast[6], "</a>")),
                                            br(), p(EF_links$About[6])),
-                                   
+
                                    HTML(paste0("<a href='", EF_links$use_html[6], "' target='_blank'>
                                                  <img src='fc_examples/", EF_links$img[6], "' height='50%' width='50%' id='bla_border2'/>
                                                  </a>")),
@@ -647,13 +644,13 @@ ui <- function(req) {
                           ),
                         )
                ),
-               
+
                # 5. Activity A ----
                tabPanel(title = "Activity A", value = "mtab5",
                         tags$style(".nav-tabs {
   background-color: #DDE4E1;
   border-color: #FFF;
-  
+
 }
 
 .nav-tabs-custom .nav-tabs li.active:hover a, .nav-tabs-custom .nav-tabs li.active a {
@@ -677,9 +674,9 @@ border-color: #FFF;
                         ),
                         tabsetPanel(id = "tabseries1",
                                     tabPanel(title = "Objective 1 - Select and view site",
-                                             
+
                                              value = "obj1", id = "wh_link",
-                                             
+
                                              tags$style("outline: 5px dotted green;"),
                                              #* Objective 1 ====
                                              introBox(
@@ -701,7 +698,7 @@ border-color: #FFF;
                                                       p("Select a site in the table to highlight on the map"),
                                                       conditionalPanel("input.row_num > 25",
                                                                        selectizeInput("row_num", "Select row",
-                                                                                      choices = 1:nrow(neon_sites_df), 
+                                                                                      choices = 1:nrow(neon_sites_df),
                                                                                       options = list(
                                                                                         placeholder = 'Please select a row',
                                                                                         onInitialize = I('function() { this.setValue(""); }')),
@@ -719,7 +716,7 @@ border-color: #FFF;
                                                         leafletOutput("neonmap")
                                                       )
                                                )
-                                               
+
                                                ,
                                                #** Site photo ----
                                                column(4,
@@ -795,7 +792,7 @@ border-color: #FFF;
                                              ),
                                              # fluidRow(
                                              #   column(12,
-                                             #          
+                                             #
                                              #          )
                                              #   ),
                                              hr(),
@@ -827,7 +824,7 @@ border-color: #FFF;
                                                         h4("Variable Description"),
                                                         textOutput("txt_out")
                                                         # )
-                                                        
+
                                                       )
                                                )
                                              ), hr(),
@@ -876,7 +873,7 @@ border-color: #FFF;
                                              ),
                                              fluidRow(
                                                column(12, align = "center",
-                                                      img(src = "01-hypothesis.png", height = "30%", 
+                                                      img(src = "01-hypothesis.png", height = "30%",
                                                           width = "30%")
                                                )
                                              ),
@@ -885,9 +882,9 @@ border-color: #FFF;
                                                #** Data Table ----
                                                column(4,
                                                       h3("Investigate variable relationships"),
-                                                      p("For Q. 7 you will keep 'Chlorophyll-a' as the y-variable and explore its relationship with the other variables at this site."), 
+                                                      p("For Q. 7 you will keep 'Chlorophyll-a' as the y-variable and explore its relationship with the other variables at this site."),
                                                       selectizeInput("y_var", "Select Y variable",
-                                                                     choices = unique(neon_vars$Short_name), 
+                                                                     choices = unique(neon_vars$Short_name),
                                                                      options = list(
                                                                        placeholder = 'Please select a variable',
                                                                        onInitialize = I('function() { this.setValue("Chlorophyll-a"); }'))),
@@ -902,7 +899,7 @@ border-color: #FFF;
                                                column(6,
                                                       h3("Comparison Plot"),
                                                       wellPanel(
-                                                        # conditionalPanel("input.var_plot", 
+                                                        # conditionalPanel("input.var_plot",
                                                         plotlyOutput("xy_plot")
                                                         # )
                                                       )
@@ -947,7 +944,7 @@ border-color: #FFF;
                                              ),
                                              fluidRow(
                                                column(12, align = "center",
-                                                      img(src = "02-build-model.png", height = "30%", 
+                                                      img(src = "02-build-model.png", height = "30%",
                                                           width = "30%")
                                                )
                                              ), br(), br(), hr(),
@@ -965,9 +962,9 @@ border-color: #FFF;
                                                       p(id = "txt_j", module_text["phyto_chla", ]),
                                                       p("Click through the images to see how we can go from a conceptual food web model to a mathematical representation of the interaction of Nitrogen (N) and Phytoplankton (P).", id = "txt_j")
                                                ),
-                                               column(8, 
+                                               column(8,
                                                       br(), br(), br(),
-                                                      h5("Click on the arrows to navigate through the slides", align = "center"), 
+                                                      h5("Click on the arrows to navigate through the slides", align = "center"),
                                                       wellPanel(
                                                         slickROutput("slck_model", width = "600px", height = "450px")
                                                       )
@@ -992,13 +989,13 @@ border-color: #FFF;
                                                )
                                              ),
                                              hr(),
-                                             
+
                                              #** Sort state and process variables ====
                                              h2(tags$b("Exercise")),
                                              p(id = "txt_j", "When working with ecological models, the terms 'state variable' and 'parameter' are used. Using the model diagram above, can you identify which are state variables or parameters?"),
                                              p(id = "txt_j", module_text["state_var", 1]),
                                              p(id = "txt_j", module_text["parameter", 1]),
-                                             
+
                                              fluidRow(
                                                column(12, align = "left",
                                                       box(id = "box7", width = 12, status = "primary",
@@ -1070,7 +1067,7 @@ border-color: #FFF;
                                                       p("Here we are going to use the NP model to simulate primary productivity. We will be comparing our model output to chlorophyll-a sensor data and adjusting the models parameters to try and replicate the sensor measurements.")
                                                       ),
                                                column(6, align = "center",
-                                                      img(src = "02-build-model.png", height = "75%", 
+                                                      img(src = "02-build-model.png", height = "75%",
                                                           width = "75%")
                                                )
                                              ), br(), hr(),
@@ -1110,12 +1107,12 @@ border-color: #FFF;
                                                       p(id = "txt_j", "To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates below."),
                                                       p(id = "txt_j", "Inital conditions can also be adjusted to measured values from ", actionLink("obj_2", "Objective 2")," but you can also adjust the initial values to see how the model responds."),
                                                       p(id = "txt_j", "The NP model simulates phytoplankton biomass which we convert to chlorophyll-a to allow comparison between the simulations and field observations."),
-                                                      br(), 
+                                                      br(),
                                                       p(id = "txt_j", "Answer questions 12-15 using this model."),
                                                       actionButton("run_mod_ann",
                                                                    label = div("Run Model",
                                                                                icon("running")),
-                                                                   width = "60%"), 
+                                                                   width = "60%"),
                                                ),
                                                # column(5,
                                                #        h3("Model States"),
@@ -1137,7 +1134,7 @@ border-color: #FFF;
                                                ),
                                              ), hr(),
                                              fluidRow(
-                                               
+
                                                column(2,
                                                       # wellPanel(
                                                       h3("Inputs"),
@@ -1167,16 +1164,16 @@ border-color: #FFF;
                                                       p("These are the key parameters that control phytoplankton biomass. Change these to adjust the rate at which phytoplankton die (Mortality) or reproduce by taking up available nutrient (Uptake),"),
                                                       # h4(tags$b("Phytoplankton parameters")),
                                                       p(tags$em("Mortality")),
-                                                      sliderInput("mort_rate", label = div(style='width:300px;', 
-                                                                                           div(style='float:left;', 'Lower death'), 
+                                                      sliderInput("mort_rate", label = div(style='width:300px;',
+                                                                                           div(style='float:left;', 'Lower death'),
                                                                                            div(style='float:right;', 'Higher death')),
                                                                   min = 0, max = 1, value = 0.5, step = 0.01),
                                                       p(tags$em("Uptake")),
-                                                      sliderInput("nut_uptake", label = div(style='width:300px;', 
-                                                                                            div(style='float:left;', 'Low uptake'), 
+                                                      sliderInput("nut_uptake", label = div(style='width:300px;',
+                                                                                            div(style='float:left;', 'Low uptake'),
                                                                                             div(style='float:right;', 'High uptake')),
                                                                   min = 0, max = 1, value = 0.5, step = 0.01)
-                                                      
+
                                                ),
                                                column(4,
                                                       h3("Model Settings"),
@@ -1220,15 +1217,15 @@ border-color: #FFF;
                                                       p("Now we have built and calibrated our model using observations from 2019. We are going to use this to forecast short-term primary productivity!"))
                                              )
                                     )
-                                    
+
                         ),
                ),
-               
-               
+
+
                # 5. Activity B ----
                tabPanel(title = "Activity B", value = "mtab6",
                         # tags$style(type="text/css", "body {padding-top: 65px;}"),
-                        img(src = "project-eddie-banner-2020_green.png", height = 100, 
+                        img(src = "project-eddie-banner-2020_green.png", height = 100,
                             width = 1544, top = 5),
                         fluidRow(
                           column(12,
@@ -1259,7 +1256,7 @@ border-color: #FFF;
                                                column(6, align = "center",
                                                       br(), br(),
                                                       img(src = "03-quantify-uncertainty.png",
-                                                          height = "70%", 
+                                                          height = "70%",
                                                           width = "70%")
                                                       # HTML('<center><img src="What_is_EF.png"></center>'),
                                                )
@@ -1275,7 +1272,7 @@ border-color: #FFF;
                                                       p(id = "txt_j", "One source of uncertainty is the data used to drive the model. For your forecast, you will be using actual NOAA weather forecast to drive your model. Load and examine these data below.")
                                                ),
                                                column(8, align = "center",
-                                                      img(src = "What_is_uncert.png", height = "60%", 
+                                                      img(src = "What_is_uncert.png", height = "60%",
                                                           width = "60%")
                                                )
                                              ),
@@ -1295,7 +1292,7 @@ border-color: #FFF;
                                                ),
                                                column(6,
                                                       # br(), br(),
-                                                      
+
                                                )
                                              ),
                                              hr(),
@@ -1370,7 +1367,7 @@ border-color: #FFF;
                                                       p("Now we have loaded in weather forecast data, we will need to convert it into inputs that are used by our model which are surface water temperature and underwater PAR."))
                                              )
                                              # hr(),
-                                             
+
                                     ),
                                     tabPanel(title = "Objective 7 - Prepare inputs", value = "obj7",
                                              #* Objective 7 - Prepare inputs ====
@@ -1388,12 +1385,12 @@ border-color: #FFF;
                                                       p(withMathJax("$$y = mx + b $$"), style = "font-size: 20px;"),
                                                ),
                                                column(6, align = "center",
-                                                      img(src = "linear_regression_example.png", 
-                                                          height = "50%", 
+                                                      img(src = "linear_regression_example.png",
+                                                          height = "50%",
                                                           width = "50%"),
                                                       p(tags$em("An example plot showing surface water temperature vs. air temperature with a regression line added (orange dashed) with the corresponding equation."))
                                                )
-                                               
+
                                              ),
                                              hr(),
                                              fluidRow(
@@ -1445,8 +1442,8 @@ border-color: #FFF;
                                                       h3("Next step"),
                                                       p("Now we have converted the weather forecast data into inputs that are used by our model (surface water temperature and underwater PAR), we will use them to generate a forecast of primary productivity with the model we built in Objective 5."))
                                              )
-                                             
-                                             
+
+
                                     ),
                                     tabPanel(title = "Objective 8 - Forecast", value = "obj8",
                                              #* Objective 8 - Run Forecast ====
@@ -1469,7 +1466,7 @@ border-color: #FFF;
                                                ),
                                                column(6, align = "center",
                                                       img(src = "04-generate-forecast.png",
-                                                          height = "70%", 
+                                                          height = "70%",
                                                           width = "70%"), br()
                                                ),
                                              ),
@@ -1569,7 +1566,7 @@ border-color: #FFF;
                                                ),
                                                column(6, align = "center",
                                                       img(src = "05-communicate-forecast.png",
-                                                          height = "70%", 
+                                                          height = "70%",
                                                           width = "70%")
                                                )
                                              ),
@@ -1612,7 +1609,7 @@ border-color: #FFF;
                                                ),
                                                column(6, align = "center",
                                                       img(src = "06-assess-forecast.png",
-                                                          height = "70%", 
+                                                          height = "70%",
                                                           width = "70%")
                                                )
                                              ),
@@ -1627,7 +1624,7 @@ border-color: #FFF;
                                                         conditionalPanel("input.add_newobs",
                                                                          actionButton('assess_fc3', label = div("Assess forecast",
                                                                                                                 icon("clipboard-check"))))
-                                                        
+
                                                       )
                                                ),
                                                column(5,
@@ -1679,7 +1676,7 @@ border-color: #FFF;
                                                                 p(id = "txt_j", module_text["obj_11", ])
                                                       )
                                                )
-                                             ), 
+                                             ),
                                              #* Objective 11 - Update Model ====
                                              fluidRow(
                                                column(6,
@@ -1691,7 +1688,7 @@ border-color: #FFF;
                                                ),
                                                column(6, align = "center",
                                                       img(src = "07-update-model.png",
-                                                          height = "70%", 
+                                                          height = "70%",
                                                           width = "70%")
                                                )
                                              ), br(), hr(),
@@ -1704,13 +1701,13 @@ border-color: #FFF;
                                                                   min = 0.01, max = 10, step = 0.01, value = 2),
                                                       h3("Parameters"),
                                                       h4(tags$b("Phytoplankton parameters")),
-                                                      p("Use the buttons below to increase or decrease the value of your parameters. The updated parameter values are displayed in a table beneath the plot."), 
+                                                      p("Use the buttons below to increase or decrease the value of your parameters. The updated parameter values are displayed in a table beneath the plot."),
                                                       radioButtons("upd_mort_rate", "Mortality Rate", choices = c("Decrease", "Keep the same", "Increase"),
                                                                    selected = character(0), inline = TRUE),
-                                                      br(), 
+                                                      br(),
                                                       radioButtons("upd_nut_rate", "Nitrogen Uptake", choices = c("Decrease", "Keep the same", "Increase"),
                                                                    selected = character(0), inline = TRUE),
-                                                      br(), 
+                                                      br(),
                                                       p("Re-run your forecast with the updated parameters."),
                                                       box(width = 10, status = "warning",
                                                           solidHeader = TRUE,
@@ -1792,7 +1789,7 @@ border-color: #FFF;
                                                                          actionButton('run_fc3', label = div("Run Forecast", icon("running")),
                                                                                       width = "70%")
                                                         ),
-                                                        
+
                                                       )
                                                ),
                                                column(8,
@@ -1828,13 +1825,13 @@ border-color: #FFF;
                                              ),
                                              hr(),
                                              fluidRow(
-                                               column(4, offset = 1, 
+                                               column(4, offset = 1,
                                                       h2("The Forecast Cycle"),
                                                       p(module_text["fc_cycle_end", ]),
                                                ),
                                                column(5, offset = 1,
                                                       br(), br(), br(),
-                                                      img(src = "mod5_viz_v2.png", height = "80%", 
+                                                      img(src = "mod5_viz_v2.png", height = "80%",
                                                           width = "80%", align = "left")
                                                )
                                              ),
@@ -1849,16 +1846,17 @@ border-color: #FFF;
                                     )
                         ),
                ),
+               # 6. Activity C ----
                tabPanel(title = "Activity C", value = "mtab7",
-                        img(src = "project-eddie-banner-2020_green.png", height = 100, 
+                        img(src = "project-eddie-banner-2020_green.png", height = 100,
                             width = 1544, top = 5),
                         br(),
                         fluidRow(
-                          column(12, 
+                          column(12,
                                  h2("Activity C - Scale your model to a new site and generate ecological forecasts"),
                                  p("For Activity C, we want you to make a hypothesis about how you expect your model to work forecasting dynamics at a different NEON site.")
                           )
-                        ), 
+                        ),
                         fluidRow(
                           #** Site map2 ----
                           column(8, align = "center", offset = 2,
@@ -1896,6 +1894,23 @@ border-color: #FFF;
                         #          )
                         # ),
                         hr(),
+               ),
+               # 7. Activity D ----
+               tabPanel(title = "Activity D", value = "mtab8",
+                        img(src = "project-eddie-banner-2020_green.png", height = 100,
+                            width = 1544, top = 5),
+                        br(),
+                        fluidRow(
+                          column(12,
+                                 h2("Activity D - "),
+                                 p("For Activity D ...")
+                          )
+                        ),
+                        fluidRow(
+                          column(10, offset = 1,
+                                 htmlOutput("frame")
+                                 )
+                        )
                )
     ),
     # Tab navigation buttons ----
@@ -1905,8 +1920,8 @@ border-color: #FFF;
       box(width = 12, status = "success",
           solidHeader = TRUE,
       fluidRow(
-        
-            column(5, align = "center", 
+
+            column(5, align = "center",
                    # wellPanel(
                    # style = paste0("background: ", nav_bg),
                    br(),
@@ -1914,15 +1929,15 @@ border-color: #FFF;
                    hover_action_button(
                      inputId = "prevBtn1",
                      label = "< Module Overview",
-                     button_animation = "glow", 
+                     button_animation = "glow",
                      style = paste0("color: ", nav_txt, "; background-color: ", nav_butt, "; border-color: #00664B; padding:15px; font-size:22px;")
                    ),
-                   # actionButton("prevBtn1", "< Module Overview", 
+                   # actionButton("prevBtn1", "< Module Overview",
                    #              style = paste0("color: ", nav_txt, "; background-color: ", nav_butt, "; border-color: #00664B; padding:15px; font-size:22px;")),
                    bsTooltip("prevBtn1", title = "Navigate to previous tab", placement = "left", trigger = "hover"),
                    br(), br()
                    # )
-                   
+
             ),
             column(2, align = "center",
                    # style = paste0("background: ", nav_bg),
@@ -1945,7 +1960,7 @@ border-color: #FFF;
                    hover_action_button(
                      inputId = "nextBtn1",
                      label = "Introduction >",
-                     button_animation = "glow", 
+                     button_animation = "glow",
                      style = paste0("color: ", nav_txt, "; background-color: ", nav_butt, "; border-color: #00664B; padding:15px; font-size:22px;")
                    ),
                    # actionButton("nextBtn1", "Introduction >",
@@ -1957,7 +1972,7 @@ border-color: #FFF;
         )
       ), data.step = 3, data.intro = help_text["tab_nav2", 1], data.position = "right"
     ),
-    hr(), 
+    hr(),
     fluidRow(
       column(8, offset = 1,
              br(),
@@ -1970,17 +1985,17 @@ border-color: #FFF;
 
 # Server ----
 server <- function(input, output, session) {#
-  
+
   # Help button ----
   observeEvent(input$help, {
     introjs(session, events = list(onbeforechange = readCallback("switchTabs")))
   })
   # hintjs(session, options = list("hintButtonLabel"="That was a hint"))
-  
-  
+
+
   ## observe the Hide button being pressed
   observeEvent(input$show_q1, {
-    
+
     if(input$show_q1){
       shinyjs::show(id = "box1")
       shinyjs::show(id = "box2")
@@ -2017,19 +2032,19 @@ server <- function(input, output, session) {#
       shinyjs::hide(id = "box16")
     }
   })
-  
+
   output$table01 <- DT::renderDT(
     neon_sites_df[, c(1:2)], selection = "single", options = list(stateSave = TRUE, dom = 't'), server = FALSE
   )
-  
+
   # to keep track of previously selected row
   prev_row <- reactiveVal()
   siteID <- reactiveVal()
-  
+
   # new icon style
   my_icon = makeAwesomeIcon(icon = 'flag', markerColor = 'red', iconColor = 'white')
-  
-  
+
+
   # Select DT rows ----
   observeEvent(input$table01_rows_selected, {
     row_selected = neon_sites[input$table01_rows_selected, ]
@@ -2040,10 +2055,10 @@ server <- function(input, output, session) {#
     proxy <- leafletProxy('neonmap')
     proxy %>%
       addAwesomeMarkers(layerId = as.character(row_selected$uid),
-                        lng=row_selected$long, 
+                        lng=row_selected$long,
                         lat=row_selected$lat,
                         icon = my_icon)
-    
+
     # Reset previously selected marker
     if(!is.null(prev_row()))
     {
@@ -2051,9 +2066,9 @@ server <- function(input, output, session) {#
         addMarkers(data = prev_row(),
                    layerId = as.character(prev_row()$uid))
     }
-    # set new value to reactiveVal 
+    # set new value to reactiveVal
     prev_row(row_selected)
-    
+
     fpath <- file.path("data", "NOAAGEFS_1hr", siteID)
     fc_date <<- list.files(fpath)
     fpath2 <- file.path(fpath, fc_date[1], "00")
@@ -2066,12 +2081,12 @@ server <- function(input, output, session) {#
     vars <- fid$var # Extract variable names for selection
     fc_vars <<- names(vars)
     membs <<- length(fils)
-    
+
     # Update parameters & initial conditions
     upd_parms <- as.vector(unlist(site_parms[site_parms$site == siteID, -1]))
     upd_yin <- site_yini[site_yini$site == siteID, -1]
     parms <<- upd_parms
-    
+
     if(siteID == "SUGG") {
       updateSliderInput(session, "phy_init", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.01)
       updateSliderInput(session, "phy_init2", value = (upd_yin + round(rnorm(1, 0, 3), 1)), min = 0.1, max = 40, step = 0.01)
@@ -2081,9 +2096,9 @@ server <- function(input, output, session) {#
       updateSliderInput(session, "nut_init2", min = 0.01, max = 2, step = 0.01)
       updateSliderInput(session, "nut_init4", min = 0.01, max = 2, step = 0.01)
     }
-    
+
   })
-  
+
   # Neon map ----
   output$neonmap <- renderLeaflet({
     leaflet() %>%
@@ -2093,7 +2108,7 @@ server <- function(input, output, session) {#
       addMarkers(data = neon_sites,
                  layerId = ~uid, clusterOptions = markerClusterOptions(),
                  label = ~locationDescription, icon = ~neonIcons[type])
-    
+
   })
   output$neonmap2 <- renderLeaflet({
     leaflet() %>%
@@ -2103,23 +2118,23 @@ server <- function(input, output, session) {#
       addMarkers(data = neon_sites,
                  layerId = ~uid, clusterOptions = markerClusterOptions(),
                  label = ~locationDescription, icon = ~neonIcons[type])
-    
+
   })
-  
-  
-  
-  
+
+
+
+
   # Download phenocam ----
   pheno_file <- reactiveValues(img = NULL)
   observeEvent(input$view_webcam, {
-    
+
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
-    progress$set(message = "Accessing and downloading phenocam image", 
-                 detail = "This may take a while. This window will disappear  
+    progress$set(message = "Accessing and downloading phenocam image",
+                 detail = "This may take a while. This window will disappear
                      when it is downloaded.", value = 0.5)
-    
+
     p <- input$neonmap_marker_click  # typo was on this line
     idx <- which(neon_sites_df$siteID == siteID)
     # output$site_name <- neon_sites$description[idx]
@@ -2128,9 +2143,9 @@ server <- function(input, output, session) {#
     progress$set(value = 1)
     # show("main_content")
   })
-  
+
   output$pheno <- renderImage({
-    
+
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site in the table.")
@@ -2140,16 +2155,16 @@ server <- function(input, output, session) {#
     )
     list(src = pheno_file$img,
          alt = "Image failed to render. Please click 'Save plot' again.",
-         height = 320, 
+         height = 320,
          width = 350)
   }, deleteFile = FALSE)
-  
+
   observeEvent(input$view_webcam, {
     output$prompt1 <- renderText({
       "Hover your cursor above the image to enlarge."
     })
   })
-  
+
   # Download html ----
   observeEvent(input$table01_rows_selected, {
     p <- input$neonmap_marker_click  # typo was on this line
@@ -2164,7 +2179,7 @@ server <- function(input, output, session) {#
   observeEvent(input$table01_rows_selected, {
     sid <- neon_sites$siteID[input$table01_rows_selected]
     url <- paste0("https://www.neonscience.org/field-sites/field-sites-map/", sid)
-    
+
     output$site_link <- renderUI({
       tags$a(href = url, "Click here for more site info", target = "_blank")
     })
@@ -2175,32 +2190,32 @@ server <- function(input, output, session) {#
       "Click on the link below to find out more information about your site."
     })
   })
-  
+
   #** Reset variables ----
   observeEvent(input$table01_rows_selected, {
     shinyjs::reset("view_var")
   })
-  
-  
-  output$site_name1 <- eventReactive(input$table01_rows_selected, { 
-    
-    # p <- input$neonmap_marker_click  
+
+
+  output$site_name1 <- eventReactive(input$table01_rows_selected, {
+
+    # p <- input$neonmap_marker_click
     idx <- input$table01_rows_selected
     return(neon_sites_df$location[idx])
   })
-  output$site_name2 <- eventReactive(input$neonmap_marker_click, { 
-    p <- input$neonmap_marker_click  
+  output$site_name2 <- eventReactive(input$neonmap_marker_click, {
+    p <- input$neonmap_marker_click
     idx <- which(neon_sites_df$uid == input$neonmap_marker_click$id)
     return(neon_sites_df$location[idx])
   })
-  
+
   # Read in site data ----
   neon_DT <- reactive({ # view_var
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site in Objective 1.")
     )
-    
+
     read_var <- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
     units <- neon_vars$units[which(neon_vars$Short_name == input$view_var)][1]
     file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
@@ -2211,18 +2226,18 @@ server <- function(input, output, session) {#
     df[, 1] <- as.POSIXct(df[, 1], tz = "UTC")
     df[, -1] <- signif(df[, -1], 4)
     names(df)[ncol(df)] <- read_var
-    
+
     if(input$view_var == "Surface water temperature") {
       df <- df[df[, 2] == min(df[, 2], na.rm = TRUE), c(1, 3)] # subset to surface temperature
     }
-    
+
     sel <- tryCatch(df[(selected$sel$pointNumber+1),,drop=FALSE] , error=function(e){NULL})
-    
-    
+
+
     return(list(data = df, sel = sel))
   })
-  
-  
+
+
   output$var_desc <- renderDT({
     var_desc <- neon_vars[!duplicated(neon_vars$Short_name), c("Short_name", "description")]
     colnames(var_desc) <- c("Name", "Description")
@@ -2233,7 +2248,7 @@ server <- function(input, output, session) {#
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site in Objective 1.")
-    ) 
+    )
     read_var <- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
     df <- neon_DT()$data
     df[, -1] <- signif(df[, -1], 4)
@@ -2241,94 +2256,94 @@ server <- function(input, output, session) {#
     names(df)[ncol(df)] <- read_var
     return(df)
   })
-  
+
   # Variable description ----
   output$txt_out <- renderText({
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site in Objective 1.")
-    ) 
+    )
     out_txt <- neon_vars$description[which(neon_vars$Short_name == input$view_var)][1]
     return(out_txt)
   })
-  
+
   # Get NOAA forecast ----
   output$sel_obs_vars <- renderUI({
     selectInput("fc_var", "Choose variable", choices = fc_vars)
   })
-  
-  
+
+
   # Site data plot ----
   output$var_plot <- renderPlotly({
-    
+
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site in Objective 1.")
     )
-    
-    
+
+
     read_var <- neon_vars$id[which(neon_vars$Short_name == input$view_var)][1]
     units <- neon_vars$units[which(neon_vars$Short_name == input$view_var)][1]
     file <- file.path("data", paste0(siteID, "_", read_var, "_", units, ".csv"))
     validate(
       need(file.exists(file), message = "This variable is not available at this site. Please select a different variable or site.")
     )
-    
+
     obj <- neon_DT()$sel
-    
+
     p <- ggplot() +
       geom_point(data = neon_DT()$data, aes_string(names(neon_DT()$data)[1], names(neon_DT()$data)[2]), color = "black") +
       ylab(paste0(input$view_var, " (", units, ")")) +
       xlab("Time") +
-      theme_minimal(base_size = 12) 
-    
+      theme_minimal(base_size = 12)
+
     if(nrow(obj) != 0) {
-      p <- p + 
+      p <- p +
         geom_point(data = obj, aes_string(names(obj)[1], names(obj)[2]), color = cols[2])
-      
+
     }
     return(ggplotly(p, dynamicTicks = TRUE, source = "A"))
-    
+
   })
-  
+
   selected <- reactiveValues(sel = NULL)
   observeEvent(input$clear_sel1, {
     selected$sel <- NULL
   })
-  
-  
-  
+
+
+
   #selected
   observe({
-    # suppress warnings  
+    # suppress warnings
     storeWarn<- getOption("warn")
-    options(warn = -1) 
+    options(warn = -1)
     selected$sel <- event_data(event = "plotly_selected", source = "A")
-    
+
     #restore warnings, delayed so plot is completed
-    shinyjs::delay(expr =({ 
-      options(warn = storeWarn) 
-    }) ,ms = 100) 
+    shinyjs::delay(expr =({
+      options(warn = storeWarn)
+    }) ,ms = 100)
   })
-  
+
   # Reset selected point when changing variables - https://stackoverflow.com/questions/42996303/removing-plotly-click-event-data
   observeEvent(input$view_var, {
     if(input$view_var > 1) {
       if(!is.null(selected$sel)) {
         selected$sel <- NULL
       }
-      
+
     }
   })
-  
-  
+
+
   # Output stats ----
   output$out_stats <- renderText({
-    
+
     validate(
       need(nrow(neon_DT()$sel) > 0, "Select points in the plot using the 'Box Select' or 'Lasso Select' option in the top right corner of the plot.")
     )
-    
+
     if(input$stat_calc == "sd") {
       out_stat <- sd(neon_DT()$sel[, ncol(neon_DT()$sel)], na.rm = TRUE)
       out_stat <- paste0("Std. Dev.: ", signif(out_stat, 5))
@@ -2339,18 +2354,18 @@ server <- function(input, output, session) {#
     }
     return(out_stat)
   })
-  
+
   # )
-  
+
   q6_ans <- reactiveValues(dt = q6_table) # %>% formatStyle(c(1:3), border = '1px solid #ddd'))
 
   output$q6_tab <- DT::renderDT(
     q6_ans$dt, #%>% formatStyle(c(1:dim(q6_ans$dt)[2]), border = '1px solid #ddd'),
     selection = "none", class = "cell-border stripe",
-    options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"), 
+    options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"),
     server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface water temperature", "Nitrogen", "Underwater PAR", "Chlorophyll-a"), colnames=c("Mean", "Minimum", "Maximum"), editable = TRUE
   )
-  
+
   q6_proxy <- dataTableProxy("q6_tab")
   observeEvent(input$q6_tab_cell_edit, {
     info = input$q6_tab_cell_edit
@@ -2360,7 +2375,7 @@ server <- function(input, output, session) {#
     q6_ans$dt[i, j] <<- DT::coerceValue(v, q6_ans$dt[i, j])
     # replaceData(q6_proxy, q6_ans$dt, resetPaging = FALSE)  # important
   })
-  
+
   # Add nutrient table for running the model
   nutri_tab <- reactiveValues(df = data.frame(Mean = NA,
                                               Min = NA,
@@ -2370,13 +2385,13 @@ server <- function(input, output, session) {#
       nutri_tab$df[1, 2] <- q6_ans$dt[3, 2]
       nutri_tab$df[1, 3] <- q6_ans$dt[3, 3]
   })
-  
+
   output$nutri_table <- DT::renderDT(
-    nutri_tab$df, selection = "none", 
-    options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"), 
+    nutri_tab$df, selection = "none",
+    options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"),
     server = FALSE, escape = FALSE,
-  ) 
-  
+  )
+
   #** Save air and water temp ----
   selected2 <- reactiveValues(sel = NULL)
   observeEvent(input$clear_sel2, {
@@ -2385,26 +2400,26 @@ server <- function(input, output, session) {#
     lmfit2$b <- NULL
     lmfit2$r2 <- NULL
   })
-  
+
   #selected
   observe({
-    # suppress warnings  
+    # suppress warnings
     storeWarn<- getOption("warn")
-    options(warn = -1) 
+    options(warn = -1)
     selected2$sel <- event_data(event = "plotly_selected", source = "B")
-    
+
     #restore warnings, delayed so plot is completed
-    shinyjs::delay(expr =({ 
-      options(warn = storeWarn) 
-    }) ,ms = 100) 
+    shinyjs::delay(expr =({
+      options(warn = storeWarn)
+    }) ,ms = 100)
   })
-  
+
   wtemp_airtemp <- reactive({ # view_var
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site in Objective 1.")
     )
-    
+
     ref <- "Air temperature"
     x_var <- neon_vars$id[which(neon_vars$Short_name == ref)][1]
     x_units <- neon_vars$units[which(neon_vars$Short_name == ref)][1]
@@ -2416,8 +2431,8 @@ server <- function(input, output, session) {#
     xvar[, 1] <- as.POSIXct(xvar[, 1], tz = "UTC")
     xvar$Date <- as.Date(xvar[, 1])
     xvar <- plyr::ddply(xvar, c("Date"), function(x) mean(x[, 2], na.rm = TRUE)) # Daily average - also puts everything on same timestamp
-    
-    
+
+
     ref2 <- "Surface water temperature"
     y_var <- neon_vars$id[which(neon_vars$Short_name == ref2)][1]
     y_units <- neon_vars$units[which(neon_vars$Short_name == ref2)][1]
@@ -2432,24 +2447,24 @@ server <- function(input, output, session) {#
       yvar <- yvar[yvar[, 2] == min(yvar[, 2], na.rm = TRUE), c(1, 3)] # subset to Surface water temperature
     }
     yvar <- plyr::ddply(yvar, c("Date"), function(y) mean(y[, 2], na.rm = TRUE)) # Daily average - also puts everything on same timestamp
-    
+
     df <- merge(xvar, yvar, by = "Date")
-    
+
     validate(
       need(nrow(df) > 0, message = "No variables at matching timesteps.")
     )
     colnames(df)[-1] <- c("X", "Y")
-    
-    
-    
+
+
+
     sel <- tryCatch(df[(selected2$sel$pointNumber+1),,drop=FALSE] , error=function(e){NULL})
-    
-    
+
+
     return(list(data = df, sel = sel))
   })
-  
+
   lmfit2 <- reactiveValues(m = NULL, b = NULL, r2 = NULL)
-  
+
   observeEvent(input$add_lm2, {
     if(is.null(selected2$sel)) {
       df <- wtemp_airtemp()$data
@@ -2462,7 +2477,7 @@ server <- function(input, output, session) {#
     lmfit2$b <- round(coeffs[1], 2)
     lmfit2$r2 <- round(summary(fit)$r.squared, 2)
   })
-  
+
   output$lm2_r2 <- renderText({
     validate(
       need(!is.null(lmfit2$r2),
@@ -2474,7 +2489,7 @@ server <- function(input, output, session) {#
       "R2 = NULL"
     }
   })
-  
+
   output$lm2_eqn <- renderUI({
     validate(
       need(!is.null(lmfit2$m),
@@ -2482,39 +2497,39 @@ server <- function(input, output, session) {#
     )
     formula <- "$$ wtemp = %s * airtemp + %s   ;   r^2 = %s $$"
     text <- sprintf(formula, lmfit2$m, lmfit2$b, lmfit2$r2)
-    withMathJax(  
+    withMathJax(
       tags$p(text)
     )
   })
-  
+
   # Air temp vs Water temp plot ----
   output$at_wt <- renderPlotly({
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site in Objective 1.")
     )
-    
+
     obj <- wtemp_airtemp()$sel
-    
+
     p <- ggplot() +
       geom_point(data = wtemp_airtemp()$data, aes_string(names(wtemp_airtemp()$data)[2], names(wtemp_airtemp()$data)[3]), color = "black") +
       ylab("Surface water temperature (\u00B0C)") +
       xlab("Air temperature (\u00B0C)") +
-      theme_minimal(base_size = 12) 
-    
+      theme_minimal(base_size = 12)
+
     if(nrow(obj) != 0) {
-      p <- p + 
+      p <- p +
         geom_point(data = obj, aes_string(names(obj)[2], names(obj)[3]), color = cols[2])
     }
     if(!is.null(lmfit2$m)) {
-      p <- p + 
+      p <- p +
         geom_abline(slope = lmfit2$m, intercept = lmfit2$b, color = cols[2], linetype = "dashed")
     }
-    
+
     return(ggplotly(p, dynamicTicks = TRUE, source = "B"))
-    
+
   })
-  
+
   #** Save SWR and uPAR ----
   selected3 <- reactiveValues(sel = NULL)
   observeEvent(input$clear_sel3, {
@@ -2523,26 +2538,26 @@ server <- function(input, output, session) {#
     lmfit3$b <- NULL
     lmfit3$r2 <- NULL
   })
-  
+
   #selected
   observe({
-    # suppress warnings  
+    # suppress warnings
     storeWarn<- getOption("warn")
-    options(warn = -1) 
+    options(warn = -1)
     selected3$sel <- event_data(event = "plotly_selected", source = "C")
-    
+
     #restore warnings, delayed so plot is completed
-    shinyjs::delay(expr =({ 
-      options(warn = storeWarn) 
-    }) ,ms = 100) 
+    shinyjs::delay(expr =({
+      options(warn = storeWarn)
+    }) ,ms = 100)
   })
-  
+
   swr_upar <- reactive({ # view_var
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site in Objective 1.")
     )
-    
+
     ref <- "Shortwave radiation"
     x_var <- neon_vars$id[which(neon_vars$Short_name == ref)][1]
     x_units <- neon_vars$units[which(neon_vars$Short_name == ref)][1]
@@ -2554,8 +2569,8 @@ server <- function(input, output, session) {#
     xvar[, 1] <- as.POSIXct(xvar[, 1], tz = "UTC")
     xvar$Date <- as.Date(xvar[, 1])
     xvar <- plyr::ddply(xvar, c("Date"), function(x) mean(x[, 2], na.rm = TRUE)) # Daily average - also puts everything on same timestamp
-    
-    
+
+
     ref2 <- "Underwater PAR"
     y_var <- neon_vars$id[which(neon_vars$Short_name == ref2)][1]
     y_units <- neon_vars$units[which(neon_vars$Short_name == ref2)][1]
@@ -2567,24 +2582,24 @@ server <- function(input, output, session) {#
     yvar[, 1] <- as.POSIXct(yvar[, 1], tz = "UTC")
     yvar$Date <- as.Date(yvar[, 1])
     yvar <- plyr::ddply(yvar, c("Date"), function(y) mean(y[, 2], na.rm = TRUE)) # Daily average - also puts everything on same timestamp
-    
+
     df <- merge(xvar, yvar, by = "Date")
-    
+
     validate(
       need(nrow(df) > 0, message = "No variables at matching timesteps.")
     )
     colnames(df)[-1] <- c("X", "Y")
-    
-    
-    
+
+
+
     sel <- tryCatch(df[(selected3$sel$pointNumber+1),,drop=FALSE] , error=function(e){NULL})
-    
-    
+
+
     return(list(data = df, sel = sel))
   })
-  
+
   lmfit3 <- reactiveValues(m = NULL, b = NULL, r2 = NULL)
-  
+
   observeEvent(input$add_lm3, {
     if(is.null(selected3$sel)) {
       df <- swr_upar()$data
@@ -2597,7 +2612,7 @@ server <- function(input, output, session) {#
     lmfit3$b <- round(coeffs[1], 2)
     lmfit3$r2 <- round(summary(fit)$r.squared, 2)
   })
-  
+
   output$lm3_r2 <- renderText({
     validate(
       need(!is.null(lmfit3$r2),
@@ -2610,7 +2625,7 @@ server <- function(input, output, session) {#
       "R2 = NULL"
     }
   })
-  
+
   output$lm3_eqn <- renderUI({
     validate(
       need(!is.null(lmfit3$m),
@@ -2622,42 +2637,42 @@ server <- function(input, output, session) {#
       formula <- "$$ uPAR = %s * SWR + %s   ;   r^2 = %s $$"
     }
     text <- sprintf(formula, lmfit3$m, lmfit3$b, lmfit3$r2)
-    withMathJax(  
+    withMathJax(
       tags$p(text)
     )
   })
-  
+
   # SWR vs uPAR plot ----
   output$sw_upar <- renderPlotly({
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site in Objective 1.")
     )
-    
+
     obj <- swr_upar()$sel
-    
+
     p <- ggplot() +
       geom_point(data = swr_upar()$data, aes_string(names(swr_upar()$data)[2], names(swr_upar()$data)[3]), color = "black") +
       ylab("Underwater PAR (micromolesPerSquareMeterPerSecond)") +
       xlab("Shortwave radiation (wattsPerSquareMeter)") +
-      theme_minimal(base_size = 12) 
-    
+      theme_minimal(base_size = 12)
+
     if(nrow(obj) != 0) {
-      p <- p + 
+      p <- p +
         geom_point(data = obj, aes_string(names(obj)[2], names(obj)[3]), color = cols[2])
     }
     if(!is.null(lmfit3$m)) {
-      p <- p + 
+      p <- p +
         geom_abline(slope = lmfit3$m, intercept = lmfit3$b, color = cols[2], linetype = "dashed")
     }
-    
+
     return(ggplotly(p, dynamicTicks = TRUE, source = "C"))
-    
+
   })
-  
+
   #** Convert NOAA forecast data ----
   fc_conv <- reactiveValues(lst = NA)
-  
+
   observeEvent(input$conv_fc, {
     validate(
       need(input$table01_rows_selected != "",
@@ -2674,15 +2689,15 @@ server <- function(input, output, session) {#
       need(!is.null(lmfit3$m),
            message = "Please add a regression line for the SWR vs. uPAR.")
     )
-    
+
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
-    progress$set(message = paste0("Converting NOAA data."), 
+    progress$set(message = paste0("Converting NOAA data."),
                  detail = "This window will disappear when it is finished converting.", value = 0.01)
-    
+
     fc_idx <- which(names(fc_data()) == "2020-09-25")
-    
+
     fc_conv_list <- lapply(1:30, function(x) {
       df <- fc_data()[[fc_idx]]
       sub <- df[(df[, 2] %in% c("air_temperature",
@@ -2699,16 +2714,16 @@ server <- function(input, output, session) {#
       fc_out_dates <<- df3$date
       df3$wtemp <- lmfit2$m * df3$air_temperature + lmfit2$b
       df3$upar <- lmfit3$m * df3$surface_downwelling_shortwave_flux_in_air + lmfit3$b
-      
+
       df3 <- df3[, c("date", "wtemp", "upar")]
       df3$fc_date <- "2020-09-25"
       progress$set(value = x/30)
       return(df3)
     })
-    
+
     progress$close()
     fc_conv$lst <- fc_conv_list
-    
+
     l1 <- fc_conv$lst
     idvars <- colnames(l1[[1]])
     mlt1 <- reshape::melt(l1, id.vars = idvars)
@@ -2719,9 +2734,9 @@ server <- function(input, output, session) {#
         Adjust your linear regression and convert the forecast again."
       ))
     }
-    
+
   })
-  
+
   #** Plot of converted data
   output$conv_plot <- renderPlotly({
     validate(
@@ -2746,19 +2761,19 @@ server <- function(input, output, session) {#
     validate(
       need(input$conv_fc > 0, "Click 'Convert forecast'.")
     )
-    
+
     l1 <- fc_conv$lst
     idvars <- colnames(l1[[1]])
     mlt1 <- reshape::melt(l1, id.vars = idvars)
     # colnames(mlt1)[2:3] <- c("Water temperature", "Underwater PAR")
     mlt2 <- reshape2::melt(mlt1, id.vars = c("date", "fc_date", "L1"))
-    
+
     p <- ggplot()
     p <- p +
       geom_line(data = mlt2, aes(date, value, group = L1, color = fc_date)) +
       scale_color_manual(values = pair.cols[2]) +
       facet_wrap(~variable, scales = "free_y", nrow = 2,
-                 strip.position = "left", 
+                 strip.position = "left",
                  labeller = as_labeller(c(wtemp = "Water temperature (\u00B0C)", upar = "Underwater PAR (µmol m-2 s-1)") )) +
       labs(color = "Forecast date") +
       xlab("Time") +
@@ -2766,21 +2781,21 @@ server <- function(input, output, session) {#
       ylab(NULL) +
       theme(strip.background = element_blank(),
             strip.placement = "outside")
-    
+
     gp <- ggplotly(p, dynamicTicks = TRUE)
     return(gp)
-    
+
   })
-  
-  
+
+
   # Comparison plot ----
   output$xy_plot <- renderPlotly({
-    
+
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site in Objective 1.")
     )
-    
+
     validate(
       need(input$x_var != "",
            message = "Please select a X variable.")
@@ -2789,13 +2804,13 @@ server <- function(input, output, session) {#
       need(input$y_var != "",
            message = "Please select a Y variable.")
     )
-    
+
     # if(input$x_var == "Surface water temperature") {
     #   ref <- "Water temperature profile"
     # } else {
     ref <- input$x_var
     # }
-    
+
     x_var <- neon_vars$id[which(neon_vars$Short_name == ref)][1]
     x_units <- neon_vars$units[which(neon_vars$Short_name == ref)][1]
     x_file <- file.path("data", paste0(siteID, "_", x_var, "_", x_units, ".csv"))
@@ -2809,9 +2824,9 @@ server <- function(input, output, session) {#
       xvar <- xvar[xvar[, 2] == min(xvar[, 2], na.rm = TRUE), c(1, 3)] # subset to Surface water temperature
     }
     xvar <- plyr::ddply(xvar, c("Date"), function(x) mean(x[, 2], na.rm = TRUE)) # Daily average - also puts everything on same timestamp
-    
+
     # y-variable
-    
+
     # if(input$y_var == "Surface water temperature") {
     #   ref2 <- "Water temperature profile"
     # } else {
@@ -2830,9 +2845,9 @@ server <- function(input, output, session) {#
       yvar <- yvar[yvar[, 2] == min(yvar[, 2], na.rm = TRUE), c(1, 3)] # subset to Surface water temperature
     }
     yvar <- plyr::ddply(yvar, c("Date"), function(y) mean(y[, 2], na.rm = TRUE)) # Daily average - also puts everything on same timestamp
-    
+
     df <- merge(xvar, yvar, by = "Date")
-    
+
     validate(
       need(nrow(df) > 0, message = "No variables at matching timesteps. Please select different  X-Y variables.")
     )
@@ -2843,14 +2858,14 @@ server <- function(input, output, session) {#
       ylab(paste0(input$y_var, " (", y_units, ")")) +
       theme_minimal(base_size = 12)
     return(ggplotly(p, dynamicTicks = TRUE))
-    
+
   })
-  
+
   # Input table for q7 ----
   output$q7_tab <- DT::renderDT(
-    q7_table, selection = "none", 
-    options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"), 
-    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface water temperature", "Nitrogen", "Underwater PAR"), colnames=c("Relationship"), 
+    q7_table, selection = "none",
+    options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"),
+    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface water temperature", "Nitrogen", "Underwater PAR"), colnames=c("Relationship"),
     callback = JS("table.rows().every(function(i, tab, row) {
                   var $this = $(this.node());
                   $this.attr('id', this.data()[0]);
@@ -2859,9 +2874,9 @@ server <- function(input, output, session) {#
                   Shiny.unbindAll(table.table().node());
                   Shiny.bindAll(table.table().node());")
   )
-  
-  
-  #* Load NOAA forecast data 
+
+
+  #* Load NOAA forecast data
   # Disable button if no row selected
   observe({
     if(!is.na(par_save$value[5, c(5)])) {
@@ -2870,18 +2885,18 @@ server <- function(input, output, session) {#
       shinyjs::disable("load_fc")
     }
   })
-  
+
   fc_data <- reactive({
-    
+
     if(input$load_fc) {
-      
+
       progress <- shiny::Progress$new()
       # Make sure it closes when we exit this reactive, even if there's an error
       on.exit(progress$close())
-      progress$set(message = paste0("Loading all NOAA forecast data"), 
-                   detail = "This may take a while. This window will disappear  
+      progress$set(message = paste0("Loading all NOAA forecast data"),
+                   detail = "This may take a while. This window will disappear
                      when it is finished loading.", value = 0.1)
-      
+
       validate(
         need(exists("siteID"), "Please select a site from the table")
       )
@@ -2897,22 +2912,22 @@ server <- function(input, output, session) {#
       vars <- fid$var # Extract variable names for selection
       fc_vars <<- names(vars)
       membs <<- length(fils)
-      
-      
+
+
       fpath <- file.path("data", "NOAAGEFS_1hr", siteID)
-      
+
       out <- lapply(fc_date, function(dat) {
         idx <- which(fc_date == dat)
-        
+
         fpath2 <- file.path(fpath, dat, "00")
         fils <- list.files(fpath2)
         fils <- fils[-c(grep("ens00", fils))]
-        
+
         # sel_mem <- 1:input$members
         # fils <- fils[sel_mem]
-        
+
         for( i in seq_len(length(fils))) {
-          
+
           fid <- ncdf4::nc_open(file.path("data", "NOAAGEFS_1hr", siteID, dat,
                                           "00", fils[i]))
           tim = ncvar_get(fid, "time")
@@ -2927,8 +2942,8 @@ server <- function(input, output, session) {#
           tdstr <- strsplit(unlist(tustr)[4], ":")
           thour <- as.integer(unlist(tdstr)[1])
           tmin <- as.integer(unlist(tdstr)[2])
-          origin <- as.POSIXct(paste0(tyear, "-", tmonth, 
-                                      "-", tday, " ", thour, ":", tmin), 
+          origin <- as.POSIXct(paste0(tyear, "-", tmonth,
+                                      "-", tday, " ", thour, ":", tmin),
                                format = "%Y-%m-%d %H:%M", tz = "UTC")
           if (step == "hours") {
             tim <- tim * 60 * 60
@@ -2939,15 +2954,15 @@ server <- function(input, output, session) {#
           time = as.POSIXct(tim, origin = origin, tz = "UTC")
           var_list <- lapply(fc_vars, function(x) {
             data.frame(time = time, value = ncdf4::ncvar_get(fid, x))
-          }) 
-          
-          
+          })
+
+
           ncdf4::nc_close(fid)
           names(var_list) <- fc_vars
-          
+
           mlt1 <- reshape::melt(var_list, id.vars = "time")
           mlt1 <- mlt1[, c("time", "L1", "value")]
-          
+
           # df <- get_vari(file.path("data", fils[i]), input$fc_var, print = F)
           cnam <- paste0("ens", formatC(i, width = 2, format = "d", flag = "0"))
           if(i == 1) {
@@ -2957,26 +2972,26 @@ server <- function(input, output, session) {#
             df2 <- merge(df2, mlt1, by = c(1,2))
             colnames(df2)[ncol(df2)] <- cnam
           }
-          
+
         }
         progress$set(value = idx/length(fc_date))
         return(df2)
       })
-      
+
       progress$close()
       names(out) <- fc_date
       return(out)
-      
-      
+
+
     }
-  }) 
-  
-  
-  
-  
-  
+  })
+
+
+
+
+
   # eventReactive(input$load_fc, )
-  
+
   # Get NOAA forecast variables ----
   output$sel_fc_vars <- renderUI({
     fc_idx <- c(2, 6) # which(noaa_dic$noaa_name %in% fc_vars)
@@ -2987,19 +3002,19 @@ server <- function(input, output, session) {#
     checkboxGroupInput("fc_date", "Select date of Forecast", choices = fc_date[1],
                        selected = fc_date[1])
   })
-  
+
   # Get NOAA forecast members ----
   output$sel_fc_members <- renderUI({
     numericInput('members', 'No. of members (1-30)', 2,
                  min = 1, max = membs, step = 1)
   })
-  
-  
-  
+
+
+
   #########
   #* datatable of NOAA forecast ----
   output$viz_output <- renderDT({
-    
+
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site on the 'Activity A' tab")
@@ -3017,42 +3032,42 @@ server <- function(input, output, session) {#
     validate(
       need(input$members >= 1 & input$members <= membs, paste0("Please select a number of members between 1 and ", membs))
     )
-    
+
     l1 <- fc_data()[input$fc_date] #Subset by date
-    
+
     var_idx <- which(noaa_dic$display_name == input$fc_var)
     # Subset by members
     l2 <- lapply(l1, function(x) {
       x[x$L1 == noaa_dic$noaa_name[var_idx], 1:(2 + input$members)]
-      
+
     })
-    
+
     idvars <- colnames(l2[[1]])
     mlt1 <- reshape::melt(l2, id.vars = idvars)
     colnames(mlt1)[2] <- "fc_date"
-    
+
     if(input$fc_var == "Air temperature") {
       mlt1[, -c(1, 2)] <- mlt1[, -c(1, 2)] - 273.15
     }
-    
-    
+
+
     mlt1[, 1] <- as.character(mlt1[, 1])
     mlt1 <- mlt1[, -2]
     mlt1[, -1] <- round(mlt1[, -1], 1)
     # df_wid <- pivot_wider(mlt1, 1, 2, values_from = 3)
-    
+
     # mlt2 <- reshape2::melt(mlt1, id.vars = c("time", "fc_date"))
-    
-    
+
+
     return(mlt1)
-    
+
   })
-  
-  
-  
+
+
+
   #* plot NOAA forecast ----
   output$fc_plot <- renderPlotly({
-    
+
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site on the 'Activity A' tab")
@@ -3070,33 +3085,33 @@ server <- function(input, output, session) {#
     if(input$type == "Distribution") {
       validate(
         need(input$members > 1 & input$members <= 30, paste0("Please select a number of members between 2 and 30."))
-        
+
       )
     } else {
       validate(
         need(input$members >= 1 & input$members <= 30, paste0("Please select a number of members between 1 and 30."))
-        
+
       )
     }
-    
-    
+
+
     p <- ggplot() +
       geom_hline(yintercept = 0, color = "gray")
-    
-    
+
+
     l1 <- fc_data()[input$fc_date] #Subset by date
-    
+
     var_idx <- which(noaa_dic$display_name == input$fc_var)
     # Subset by members
     l2 <- lapply(l1, function(x) {
       x[x$L1 == noaa_dic$noaa_name[var_idx], 1:(2 + input$members)]
-      
+
     })
-    
+
     idvars <- colnames(l2[[1]])
     mlt1 <- reshape::melt(l2, id.vars = idvars)
     colnames(mlt1)[2] <- "fc_date"
-    
+
     if(input$fc_var == "Air temperature") {
       mlt1[, -c(1, 2)] <- mlt1[, -c(1, 2)] - 273.15
       ylab <- "Air temperature (\u00B0C)"
@@ -3106,13 +3121,13 @@ server <- function(input, output, session) {#
     if(input$fc_var == "Relative humidity") {
       mlt1[, -c(1, 2)] <- mlt1[, -c(1, 2)] * 100
     }
-    
+
     # if(input$type == "line") {
     # df2$days <- as.numeric(difftime(df2$time, df2$time[1], units = "day"))
     # mlt <- reshape::melt(df2, id.vars = "time")
     # }
     if(input$type == "Distribution") {
-      
+
       df3 <- apply(mlt1[, -c(1, 2)], 1, function(x){
         quantile(x, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
       })
@@ -3122,20 +3137,20 @@ server <- function(input, output, session) {#
       df3$time <- mlt1$time
       df3$fc_date <- mlt1$fc_date
     }
-    
-    
+
+
     if(input$type == "Line"){
-      
+
       mlt2 <- reshape2::melt(mlt1, id.vars = c("time", "fc_date"))
       p <- p +
         geom_line(data = mlt2, aes(time, value, group = variable, color = fc_date)) +
         scale_color_manual(values = pair.cols[2]) +
         labs(color = "Forecast date")
-    } 
+    }
     if(input$type == "Distribution") {
-      
+
       p <- p +
-        geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date), alpha = 0.8) + 
+        geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date), alpha = 0.8) +
         geom_line(data = df3, aes(time, p50, color = "Median")) +
         scale_fill_manual(values = pair.cols[1]) +
         guides(fill = guide_legend(override.aes = list(alpha = c(0.9))),
@@ -3143,16 +3158,16 @@ server <- function(input, output, session) {#
         labs(fill = "Forecast date", color = "") +
         scale_color_manual(values = pair.cols[2])
     }
-    
-    
+
+
     ##########
-    
-    p <- p + 
+
+    p <- p +
       ylab(ylab) +
       xlab("Time") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
-    
+
     gp <- ggplotly(p, dynamicTicks = TRUE)
     # Code to remove parentheses in plotly
     for (i in 1:length(gp$x$data)){
@@ -3160,18 +3175,18 @@ server <- function(input, output, session) {#
         gp$x$data[[i]]$name =  gsub("\\(","",str_split(gp$x$data[[i]]$name,",")[[1]][1])
       }
     }
-    
+
     return(gp)
   })
-  
+
   #* Save plot for annual ====
   observeEvent(input$save_noaa_plot, {
-    
+
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site on the 'Activity A' tab")
     )
-    
+
     validate(
       need(!is.na(par_save$value[5, c(5)]), "Add parameters to row 'Q15' in the Model Settings table in Objective 5")
     )
@@ -3180,32 +3195,32 @@ server <- function(input, output, session) {#
     )
     validate(
       need(input$members >= 1 & input$members <= membs, paste0("Please select a number of members between 1 and ", membs))
-      
+
     )
-    
+
     # Progress bar
     progress <- shiny::Progress$new()
     on.exit(progress$close())
-    progress$set(message = "Saving plot as image file for the report.", 
-                 detail = "This may take a while. This window will disappear  
+    progress$set(message = "Saving plot as image file for the report.",
+                 detail = "This may take a while. This window will disappear
                      when it is downloaded.", value = 0.5)
-    
+
     p <- ggplot()
-    
-    
+
+
     l1 <- fc_data()[input$fc_date] #Subset by date
-    
+
     var_idx <- which(noaa_dic$display_name == input$fc_var)
     # Subset by members
     l2 <- lapply(l1, function(x) {
       x[x$L1 == noaa_dic$noaa_name[var_idx], 1:(2 + input$members)]
-      
+
     })
-    
+
     idvars <- colnames(l2[[1]])
     mlt1 <- reshape::melt(l2, id.vars = idvars)
     colnames(mlt1)[2] <- "fc_date"
-    
+
     if(input$fc_var == "Air temperature") {
       mlt1[, -c(1, 2)] <- mlt1[, -c(1, 2)] - 273.15
       ylab <- "Air temperature (\u00B0C)"
@@ -3215,13 +3230,13 @@ server <- function(input, output, session) {#
     if(input$fc_var == "Relative humidity") {
       mlt1[, -c(1, 2)] <- mlt1[, -c(1, 2)] * 100
     }
-    
+
     # if(input$type == "line") {
     # df2$days <- as.numeric(difftime(df2$time, df2$time[1], units = "day"))
     # mlt <- reshape::melt(df2, id.vars = "time")
     # }
     if(input$type == "Distribution") {
-      
+
       df3 <- apply(mlt1[, -c(1, 2)], 1, function(x){
         quantile(x, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
       })
@@ -3231,20 +3246,20 @@ server <- function(input, output, session) {#
       df3$time <- mlt1$time
       df3$fc_date <- mlt1$fc_date
     }
-    
-    
+
+
     if(input$type == "Line"){
-      
+
       mlt2 <- reshape2::melt(mlt1, id.vars = c("time", "fc_date"))
       p <- p +
         geom_line(data = mlt2, aes(time, value, group = variable, color = fc_date)) +
         scale_color_manual(values = pair.cols[2]) +
         labs(color = "Forecast date")
-    } 
+    }
     if(input$type == "Distribution") {
-      
+
       p <- p +
-        geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date), alpha = 0.8) + 
+        geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date), alpha = 0.8) +
         geom_line(data = df3, aes(time, p50, color = fc_date)) +
         scale_fill_manual(values = pair.cols[1]) +
         guides(fill = guide_legend(override.aes = list(alpha = c(0.9))),
@@ -3252,29 +3267,29 @@ server <- function(input, output, session) {#
         labs(fill = "Forecast date", color = "") +
         scale_color_manual(values = pair.cols[2])
     }
-    
-    
+
+
     ##########
-    
-    p <- p + 
+
+    p <- p +
       ylab(ylab) +
       xlab("Time") +
       theme_classic(base_size = 34) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
-    
-    
+
+
     img_file <- "www/noaa_fc.png"
-    
+
     # Save as a png file
     ggsave(img_file, p,  dpi = png_dpi, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
     # show("main_content")
   }, ignoreNULL = FALSE
   )
-  
+
   # Render image for NOAA plot
   output$noaa_fc_img <- renderImage({
-    
+
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site on the 'Activity A' tab")
@@ -3285,18 +3300,18 @@ server <- function(input, output, session) {#
     validate(
       need(input$save_noaa_plot > 0, "If plot is missing please click 'Save Plot' under the weather forecast plot above.")
     )
-    
+
     list(src = "www/noaa_fc.png",
          alt = "Image failed to render. Please click 'Save plot' again.",
          width = "100%")
   }, deleteFile = FALSE)
-  
+
   # Input table for q13 ----
   output$q13a_tab <- DT::renderDT(
-    q13a_table, selection = "none", 
+    q13a_table, selection = "none",
     options = list(searching = FALSE, paging = FALSE, ordering = FALSE, dom = "t",
-                   height = 500, scrollY = TRUE, autoWidth=TRUE, scrollX = TRUE), 
-    server = FALSE, escape = FALSE, rownames= c("Grazing", "Mortality", "Uptake"), colnames = c("Value"), 
+                   height = 500, scrollY = TRUE, autoWidth=TRUE, scrollX = TRUE),
+    server = FALSE, escape = FALSE, rownames= c("Grazing", "Mortality", "Uptake"), colnames = c("Value"),
     callback = JS("table.rows().every(function(i, tab, row) {
                   var $this = $(this.node());
                   $this.attr('id', this.data()[0]);
@@ -3305,11 +3320,11 @@ server <- function(input, output, session) {#
                   Shiny.unbindAll(table.table().node());
                   Shiny.bindAll(table.table().node());")
   )
-  
+
   output$q13b_tab <- DT::renderDT(
-    q13b_table, selection = "none", 
-    options = list(searching = FALSE, paging = FALSE, ordering = FALSE, dom = "t"), 
-    server = FALSE, escape = FALSE, rownames= c("Grazing", "Mortality", "Uptake"), colnames = c("Value"), 
+    q13b_table, selection = "none",
+    options = list(searching = FALSE, paging = FALSE, ordering = FALSE, dom = "t"),
+    server = FALSE, escape = FALSE, rownames= c("Grazing", "Mortality", "Uptake"), colnames = c("Value"),
     callback = JS("table.rows().every(function(i, tab, row) {
                   var $this = $(this.node());
                   $this.attr('id', this.data()[0]);
@@ -3318,24 +3333,24 @@ server <- function(input, output, session) {#
                   Shiny.unbindAll(table.table().node());
                   Shiny.bindAll(table.table().node());")
   )
-  
-  
+
+
   # Slickr model output
   output$slck_model <- renderSlickR({
     slickR(model_slides)
   })
-  
+
   # Slickr model output
   output$slides <- renderSlickR({
     slickR(recap_slides)
   })
-  
+
   #* Variables answer table ----
   output$ans_vars <- renderTable({
     data.frame("State variables" = state_vars,
                "Interactions" = process_vars)
-  }) 
-  
+  })
+
   #* Toggle for dataframe answers
   observeEvent(input$ans_btn, {
     # if(input$ans_btn %% 2 != 1 |){
@@ -3345,7 +3360,7 @@ server <- function(input, output, session) {#
     # }
     # toggle("ans_vars")
   })
-  
+
   observeEvent(input$ans_btn, {
     if(length(input$rank_list_2) == 0) {
       res <- "Drag answers into State box!"
@@ -3354,7 +3369,7 @@ server <- function(input, output, session) {#
     } else {
       res <- "Incorrect answer in State box"
     }
-    
+
     if(length(input$rank_list_3) == 0) {
       res2 <- "Drag answers into Parameter box!"
     } else if(all(input$rank_list_3 %in% process_vars)) {
@@ -3362,33 +3377,33 @@ server <- function(input, output, session) {#
     } else {
       res2 <- "Incorrect answer in Parameter box"
     }
-    
+
     output$state_ans <- renderText({
       res
     })
     output$proc_ans <- renderText({
       res2
     })
-  }) 
-  
+  })
+
   #* Run eco-model ----
   mod_run1 <- eventReactive(input$run_mod_ann, {
-    
+
     # siteID <- eventReactive(input$table01_rows_selected, {
     #   neon_sites$siteID[input$table01_rows_selected]
     # })
-    
+
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
-    progress$set(message = paste0("Running NP model"), 
-                 detail = "This may take a while. This window will disappear  
+    progress$set(message = paste0("Running NP model"),
+                 detail = "This may take a while. This window will disappear
                      when it is finished running.", value = 1)
-    
+
     par_file <- file.path("data", paste0(siteID, "_uPAR_micromolesPerSquareMeterPerSecond.csv"))
     wtemp_file <- file.path("data", paste0(siteID, "_wtemp_celsius.csv"))
     # if(file.exists(par_file))
-    
+
     par <- read.csv(par_file)
     par[, 1] <- as.POSIXct(par[, 1], tz = "UTC")
     yr <- lubridate::year(par[, 1])
@@ -3402,7 +3417,7 @@ server <- function(input, output, session) {#
       par[stp:nrow(par), 2] <- par[stp, 2]
     }
     par[(par[, 2] < 0), 2] <- 0
-    
+
     wtemp <- read.csv(wtemp_file)
     stemp <- wtemp[wtemp[, 2] == min(wtemp[, 2]), c(1, 3)]
     stemp[, 1] <- as.POSIXct(stemp[, 1], tz = "UTC")
@@ -3416,28 +3431,28 @@ server <- function(input, output, session) {#
       stemp[1:sta, 2] <- stemp[sta, 2]
       stemp[stp:nrow(stemp), 2] <- stemp[stp, 2]
     }
-    
+
     npz_inp <- merge(par, stemp, by = 1)
     npz_inp[, 1] <- as.POSIXct(npz_inp[, 1], tz = "UTC")
     times <- 1:nrow(npz_inp)
-    
+
     # Updated parameters
     parms[1] <- as.numeric(input$nut_uptake)
     parms[7] <- as.numeric(input$mort_rate)
-    
+
     npz_inputs <- create_npz_inputs(time = npz_inp[, 1], PAR = npz_inp[, 2], temp = npz_inp[, 3])
-    
+
     # Alter Initial conditions
     yini[1] <- input$phy_init * 0.016129 # Convert from ug/L to mmolN/m3
     yini[2] <- input$nut_init * 16.129 # Convert from mg/L to mmolN/m3
-    
+
     res <- matrix(NA, nrow = length(times), ncol = 3)
     colnames(res) <- c("time", "Phytoplankton", "Nutrients")
     res[, 1] <- times
     res[1, -1] <- c(yini)
-    
+
     for(i in 2:length(times)) {
-      
+
       if(all(c("Surface water temperature (SWT)", "Underwater light (uPAR)") %in% input$mod_sens)) {
         out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                       parms = parms, method = "ode45", inputs = npz_inputs))
@@ -3453,7 +3468,7 @@ server <- function(input, output, session) {#
       }
       res[i, -1] <- out[2, c(2, 3)]
       yini <- out[2, c(2:3)]
-      
+
     }
     res <- as.data.frame(res)
     res$time <- npz_inp$Date
@@ -3462,7 +3477,7 @@ server <- function(input, output, session) {#
     res <- res[, c("time", "Chla", "Nutrients")]
     return(res)
   })
-  
+
   # Add popover
   observe({
     if(input$run_mod_ann >= 1) {
@@ -3475,25 +3490,25 @@ server <- function(input, output, session) {#
         Remember this is a simplified model so it will not match the patterns in your data. Aim to get the chlorophyll-a in a similar range to the observed values for Q15 and then proceed with Activity B."
       ))
     }
-    
+
   })
-  
+
   #* Model annual output data ----
   output$mod_ann_datatable <- DT::renderDT({
     mod_run1()
   })
-  
+
   #* Model annual output plot ----
   p_mod_run <- reactiveValues(plot = NULL)
   output$mod_ann_plot <- renderPlotly({
-    
+
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
       need(input$run_mod_ann > 0, "Click 'Run Model'")
     )
-    
+
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
     units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -3504,7 +3519,7 @@ server <- function(input, output, session) {#
       chla <- chla[(chla[, 1] >= mod_run1()[1, 1] &
                       chla[, 1] <= mod_run1()[nrow(mod_run1()), 1]), ]
     }
-    
+
     # Remove extreme values
     if(siteID == "PRLA") {
       chla <- chla[(chla[, 1] > as.POSIXct("2019-07-06")), ]
@@ -3512,10 +3527,10 @@ server <- function(input, output, session) {#
     if(siteID == "PRPO") {
       chla <- chla[(chla[, 2] < 40), ]
     }
-    
+
     xlims <- range(mod_run1()[, 1])
     # ylims <- range(chla[, 2], na.rm = TRUE)
-    
+
     validate(
       need(input$run_mod_ann > 0, "Please run the model")
     )
@@ -3529,29 +3544,29 @@ server <- function(input, output, session) {#
       scale_color_manual(values = cols[1:2]) +
       theme_minimal(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
-    
+
     p_mod_run$plot <- p +
       theme_classic(base_size = 34) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
-    
+
     return(ggplotly(p, dynamicTicks = TRUE))
-    
+
   })
-  
+
   #* Model annual phyto-zoo plot ----
   output$mod_phyto_plot <- renderPlotly({
-    
+
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
       need(input$run_mod_ann > 0, "Click 'Run Model'")
     )
-    
+
     xlims <- range(mod_run1()[, 1])
     mlt <- reshape2::melt(mod_run1()[, -c(2)], id.vars = 1)
     ylims <- c(0, max(mlt[, 3]))
-    
+
     validate(
       need(input$run_mod_ann > 0, "Please run the model")
     )
@@ -3566,9 +3581,9 @@ server <- function(input, output, session) {#
                     din[, 1] <= mod_run1()[nrow(mod_run1()), 1]), ]
       din$variable <- "Nutrients"
     }
-    
-    
-    
+
+
+
     p <- ggplot() +
       geom_hline(yintercept = 0, color = "gray") +
       geom_line(data = mlt, aes_string(names(mlt)[1], names(mlt)[3], color = shQuote("Model"))) +
@@ -3580,26 +3595,26 @@ server <- function(input, output, session) {#
       theme(panel.background = element_rect(fill = NA, color = 'black'))+
       scale_color_manual(values = cols[3:8])
     return(ggplotly(p, dynamicTicks = TRUE))
-    
+
   })
-  
+
   #* Save plot for annual ====
   observeEvent(input$save_mod_run, {
-    
+
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
       need(input$run_mod_ann > 0, "Click 'Run Model'")
     )
-    
+
     # Progress bar
     progress <- shiny::Progress$new()
     on.exit(progress$close())
-    progress$set(message = "Saving plot as image file for the report.", 
-                 detail = "This may take a while. This window will disappear  
+    progress$set(message = "Saving plot as image file for the report.",
+                 detail = "This may take a while. This window will disappear
                      when it is downloaded.", value = 0.5)
-    
+
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
     units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -3610,10 +3625,10 @@ server <- function(input, output, session) {#
       chla <- chla[(chla[, 1] >= mod_run1()[1, 1] &
                       chla[, 1] <= mod_run1()[nrow(mod_run1()), 1]), ]
     }
-    
+
     xlims <- range(mod_run1()[, 1])
     # ylims <- range(chla[, 2], na.rm = TRUE)
-    
+
     validate(
       need(input$run_mod_ann > 0, "Please run the model")
     )
@@ -3626,58 +3641,58 @@ server <- function(input, output, session) {#
       scale_color_manual(values = cols[1:2]) +
       theme_classic(base_size = 34) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
-    
+
     img_file <- "www/mod_run_2019.png"
-    
+
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
     # show("main_content")
   }, ignoreInit = TRUE
   )
-  
+
   # Render image for q15
   output$mod_run_img <- renderImage({
-    
+
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
       need(input$save_mod_run > 0, "If plot is missing please click 'Save Plot' under the Primary Productivity plot above.")
     )
-    
+
     list(src = "www/mod_run_2019.png",
          alt = "Image failed to render. Please click 'Save plot' again.",
-         # height = "100%", 
+         # height = "100%",
          width = "100%")
   }, deleteFile = FALSE)
-  
+
   #** Save parameters for each scenario
   output$save_par <- renderDT(par_save$value, selection = "single",
                               options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t", autoWidth = TRUE,
                                              columnDefs = list(list(width = '10%', targets = "_all"))
                               ),
                               server = FALSE, escape = FALSE)
-  
+
   # output$save_par <- renderTable(par_save())
   par_save <- reactiveValues(value = par_df)
   # observeEvent(input$save_params, {
-  #   
+  #
   #   if(input$save_params > 0) {
   #     par_save$value[input$save_par_rows_selected, 1] <- "Surface water temperature (SWT)" %in% input$mod_sens
   #     par_save$value[input$save_par_rows_selected, 2] <- "Underwater light (uPAR)" %in% input$mod_sens
-  #     par_save$value[input$save_par_rows_selected, 3:6] <<- c(input$phy_init, 
+  #     par_save$value[input$save_par_rows_selected, 3:6] <<- c(input$phy_init,
   #                                                          input$nut_init,
   #                                                  input$mort_rate, input$nut_uptake)
   #   }
   # if(input$save_params == 0) {
-  #   par_save$value[1, ] <<- c(input$phy_init, 
-  #                             # input$zoo_init, 
+  #   par_save$value[1, ] <<- c(input$phy_init,
+  #                             # input$zoo_init,
   #                             input$nut_init, #input$graz_rate,
   #                     input$mort_rate, input$nut_uptake)
   # }
   # }, ignoreNULL = FALSE)
-  
+
   # Forecast Plots  ----
   #* Input Uncertainty ====
   # switch off load forecast button
@@ -3698,18 +3713,18 @@ server <- function(input, output, session) {#
       shinyjs::hide("save_comm_plot")
     }
   })
-  
-  
-  
-  
+
+
+
+
   npz_fc_data <- reactive({
     if(input$load_fc2) {
-      
+
       fpath <- file.path("data", "NOAAGEFS_1hr", siteID)
       fold <- list.files(fpath)
       fc_date <- as.character(as.Date(fold[1]))
       fc_idx <- which(names(fc_data()) == "2020-09-25") # fc_date
-      
+
       npz_inp_list <- lapply(1:30, function(x) {
         df <- fc_data()[[fc_idx]]
         sub <- df[(df[, 2] %in% c("air_temperature",
@@ -3725,18 +3740,18 @@ server <- function(input, output, session) {#
         # df3 <- df3[2:16, ]
         fc_out_dates <<- df3$date
         df3$wtemp <- 5 + 0.75 * df3$air_temperature
-        
+
         create_npz_inputs(time = df3$date, swr = df3$surface_downwelling_shortwave_flux_in_air,
                           temp = df3$wtemp)
       })
-      
+
       return(npz_inp_list)
     }
   })
-  
+
   fc_out1 <- reactiveValues(df = NA)
   observeEvent(input$run_fc2, {
-    
+
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
@@ -3757,7 +3772,7 @@ server <- function(input, output, session) {#
       need(input$members2 >= 1 & input$members2 <= 30,
            message = paste0("The number of members must be between 1 and 30"))
     )
-    
+
     if(is.null(input$modsett_rows_selected)) {
       showModal(modalDialog(
         title = "Important Message",
@@ -3770,50 +3785,50 @@ server <- function(input, output, session) {#
       shinyjs::enable("upd_nut_rate")
       shinyjs::enable("phy_init3")
       # fc_update$df <- NA # Remove updated forecast
-      
+
       progress <- shiny::Progress$new()
       # Make sure it closes when we exit this reactive, even if there's an error
       on.exit(progress$close())
-      progress$set(message = paste0("Running NP model with ", input$members2, " forecasts"), 
-                   detail = "This may take a while. This window will disappear  
+      progress$set(message = paste0("Running NP model with ", input$members2, " forecasts"),
+                   detail = "This may take a while. This window will disappear
                      when it is finished running.", value = 0.01)
-      
+
       # Add parameters to final data table
       final_parms$df[1, 1] <- par_save$value$SWT[input$modsett_rows_selected]
       final_parms$df[1, 2] <- par_save$value$uPAR[input$modsett_rows_selected]
       final_parms$df[1, 3:6] <- c(input$phy_init2, input$nut_init2,
                                   par_save$value$Mortality[input$modsett_rows_selected],
                                   par_save$value$Uptake[input$modsett_rows_selected])
-      
+
       par_chk <- par_save$value$uPAR[input$modsett_rows_selected]
       wtemp_chk <- par_save$value$SWT[input$modsett_rows_selected]
-      
+
       # Parameters from 'Build model'
       parms[1] <- par_save$value$Uptake[input$modsett_rows_selected] # as.numeric(input$nut_uptake)
       parms[7] <- par_save$value$Mortality[input$modsett_rows_selected] # as.numeric(input$mort_rate)
-      
+
       # Alter Initial conditions
       yini[1] <- input$phy_init2 * 0.016129 # Convert from ug/L to mmolN/m3
       yini[2] <- input$nut_init2 * 16.129 # Convert from mg/L to mmolN/m3
-      
+
       # progress$inc(0.33, detail = "Running the model")
       fc_length <- input$members2 # length(npz_fc_data())
-      
+
       fc_res <- lapply(1:fc_length, function(x) {
-        
+
         noaa_fc <- fc_conv$lst[[x]]
         npz_inputs <- create_npz_inputs(time = noaa_fc$date, PAR = noaa_fc$upar, temp = noaa_fc$wtemp)
         # npz_inputs <- npz_fc_data()[[x]]
-        
+
         times <- 1:nrow(npz_inputs)
-        
+
         res <- matrix(NA, nrow = length(times), ncol = 3)
         colnames(res) <- c("time", "Phytoplankton", "Nutrients")
         res[, 1] <- times
         res[1, -1] <- c(yini)
-        
+
         for(i in 2:length(times)) {
-          
+
           if(all(c(par_chk, wtemp_chk))) {
             out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                           parms = parms, method = "ode45", inputs = npz_inputs))
@@ -3829,34 +3844,34 @@ server <- function(input, output, session) {#
           }
           res[i, -1] <- out[2, c(2, 3)]
           yini <- out[2, c(2:3)]
-          
+
         }
-        
+
         res <- as.data.frame(res)
         res$Chla <- (res$Phytoplankton * 62) # Convert from mmol/m3 to ug/L # * 4.97 + 1.58
         res <- res[, c("time", "Chla")]
         res$time <- fc_out_dates
-        
-        
-        
-        
+
+
+
+
         # out$time <- npz_inp$Date
         out <- res[, c("time", "Chla")] #, "PHYTO", "ZOO")]
         progress$set(value = x/fc_length)
         return(out)
-        
+
       })
-      
+
       mlt <- reshape2::melt(fc_res, id.vars = "time")
-      
+
       fc_out1$df <- mlt
     }
-    
+
   })
-  
-  
+
+
   output$viz_output2 <- renderDT({
-    
+
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
@@ -3880,19 +3895,19 @@ server <- function(input, output, session) {#
     validate(
       need(!is.na(fc_out1$df), "Click 'Run Forecast'")
     )
-    
+
     df2 <- fc_out1$df
     df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
     df2[, 3] <- round(df2[, 3], 2)
-    
+
     df_wid <- pivot_wider(df2, 1, 4, values_from = 3)
-    
+
     return(df_wid)
-    
+
   })
-  
+
   output$plot_ecof2 <- renderPlotly({
-    
+
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
@@ -3913,12 +3928,12 @@ server <- function(input, output, session) {#
       need(input$members2 >= 1 & input$members2 <= 30,
            message = paste0("The number of members must be between 1 and 30"))
     )
-    
-    
+
+
     # validate(
     #   need(input$run_fc2 > 0, "Click 'Run Forecast'")
     # )
-    
+
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
     units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -3927,18 +3942,18 @@ server <- function(input, output, session) {#
       chla <- read.csv(file)
       chla[, 1] <- as.Date(chla[, 1], tz = "UTC")
     }
-    
+
     vlin <- as.Date(fc_data()[[1]][1, 1])
     chla_obs <- chla[(chla[, 1] >= ((vlin - (7)))) &
                        chla[, 1] <= vlin, ]
-    
+
     p <- ggplot()
-    
+
     # If forecast is stored then plot - otherwise just plot observations
     if(!is.na(fc_out1$df)) {
       sub <- fc_out1$df[as.numeric(fc_out1$df$L1) <= input$members2, ]
       if(input$type2 == "Distribution") {
-        
+
         df3 <- plyr::ddply(sub, "time", function(x) {
           quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
         })
@@ -3951,10 +3966,10 @@ server <- function(input, output, session) {#
         df2 <- sub
         df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
       }
-      
+
       sub <- fc_out1$df[as.numeric(fc_out1$df$L1) <= input$members2, ]
       if(input$type2 == "Distribution") {
-        
+
         df3 <- plyr::ddply(sub, "time", function(x) {
           quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
         })
@@ -3967,13 +3982,13 @@ server <- function(input, output, session) {#
         df2 <- sub
         df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
       }
-      
+
       if(input$type2 == "Line"){
         p <- p +
           geom_line(data = df2, aes(time, value, color = L1)) +
           scale_color_manual(values = c(rep(pair.cols[4], input$members2), cols[1])) +
           guides(color = FALSE)
-      } 
+      }
       if(input$type2 == "Distribution") {
         p <- p +
           geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
@@ -3983,17 +3998,17 @@ server <- function(input, output, session) {#
           guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
           scale_color_manual(values = c("Median - original" = pair.cols[4], "Obs" = cols[1]))
       }
-      
-      
+
+
     }
-    
-    
-    
+
+
+
     txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 4), (chla_obs[nrow(chla_obs), 1] + 4)),
                       y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("Past", "Future"))
-    
-    
-    p <- p + 
+
+
+    p <- p +
       geom_hline(yintercept = 0, color = "gray") +
       geom_vline(xintercept = vlin, linetype = "dashed") +
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
@@ -4003,23 +4018,23 @@ server <- function(input, output, session) {#
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "")
-    
-    
+
+
     gp <- ggplotly(p, dynamicTicks = TRUE)
     for (i in 1:length(gp$x$data)){
       if (!is.null(gp$x$data[[i]]$name)){
         gp$x$data[[i]]$name =  gsub("\\(","",str_split(gp$x$data[[i]]$name,",")[[1]][1])
       }
     }
-    
+
     return(gp)
-    
+
   })
-  
+
   #* Save plot for communication ====
   observeEvent(input$save_comm_plot, {
-    
-    
+
+
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
@@ -4036,14 +4051,14 @@ server <- function(input, output, session) {#
     validate(
       need(input$run_fc2 > 0, "Click 'Run Forecast'")
     )
-    
+
     # Progress bar
     progress <- shiny::Progress$new()
     on.exit(progress$close())
-    progress$set(message = "Saving plot as image file for the report.", 
-                 detail = "This may take a while. This window will disappear  
+    progress$set(message = "Saving plot as image file for the report.",
+                 detail = "This may take a while. This window will disappear
                      when it is downloaded.", value = 0.5)
-    
+
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
     units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -4054,10 +4069,10 @@ server <- function(input, output, session) {#
     }
     chla_obs <- chla[(chla[, 1] >= as.Date((fc_out1$df[1, 1] - (7)))) &
                        chla[, 1] <= as.Date(fc_out1$df[1, 1]), ]
-    
+
     sub <- fc_out1$df[as.numeric(fc_out1$df$L1) <= input$members2, ]
     # if(input$type2 == "Distribution") {
-    
+
     df3 <- plyr::ddply(sub, "time", function(x) {
       quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
     })
@@ -4067,10 +4082,10 @@ server <- function(input, output, session) {#
     # df3$hours <- df2$hours
     df2 <- df3
     # }
-    
+
     sub <- fc_out1$df[as.numeric(fc_out1$df$L1) <= input$members2, ]
     # if(input$type2 == "Distribution") {
-    
+
     df3 <- plyr::ddply(sub, "time", function(x) {
       quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
     })
@@ -4080,11 +4095,11 @@ server <- function(input, output, session) {#
     # df3$hours <- df2$hours
     df2 <- df3
     # }
-    
+
     txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 4), (chla_obs[nrow(chla_obs), 1] + 4)),
-                      y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("Past", "Future"))    
+                      y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("Past", "Future"))
     p <- ggplot()
-    
+
     # if(input$type2 == "Distribution") {
     p <- p +
       geom_hline(yintercept = 0, color = "gray") +
@@ -4096,7 +4111,7 @@ server <- function(input, output, session) {#
       guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
       scale_color_manual(values = c("Median - original" = pair.cols[4], "Obs" = cols[1]))
     # }
-    p <- p + 
+    p <- p +
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs")),
                  size = 3) +
       geom_text(data = txt, aes(x, y, label = label), size = 12) +
@@ -4105,20 +4120,20 @@ server <- function(input, output, session) {#
       theme_classic(base_size = 38) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "")
-    
-    
-    
+
+
+
     img_file <- "www/comm_fc_plot.png"
-    
+
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
-    
+
     # show("main_content")
   }, ignoreNULL = FALSE)
-  
+
   output$comm_fc <- renderImage({
-    
+
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
@@ -4131,17 +4146,17 @@ server <- function(input, output, session) {#
     validate(
       need(input$save_comm_plot > 0, "If plot is missing please return to Objective 8 and click 'Save Plot'")
     )
-    
+
     list(src = "www/comm_fc_plot.png",
          alt = "Image failed to render. Please click 'Save plot' again.",
-         # height = "100%", 
+         # height = "100%",
          width = "100%")
   }, deleteFile = FALSE)
-  
-  
+
+
   #* Plot for Assessing Forecast ====
   output$plot_ecof3 <- renderPlotly({
-    
+
     validate(
       need(input$members2 >= 1 & input$members2 <= 30,
            message = paste0("The number of members must be between 1 and 30"))
@@ -4152,7 +4167,7 @@ server <- function(input, output, session) {#
     validate(
       need(!is.na(fc_out1$df), "Run forecast in Objective 8")
     )
-    
+
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
     units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -4165,12 +4180,12 @@ server <- function(input, output, session) {#
                        chla[, 1] <= as.Date(fc_out1$df[1, 1]), ]
     new_obs <- chla[chla[, 1] > as.Date((fc_out1$df[1, 1])) &
                       chla[, 1] <= (as.Date(fc_out1$df[1, 1]) + 7), ]
-    
-    
-    
+
+
+
     sub <- fc_out1$df[as.numeric(fc_out1$df$L1) <= input$members2, ]
     # if(input$type2 == "Distribution") {
-    
+
     df3 <- plyr::ddply(sub, "time", function(x) {
       quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
     })
@@ -4179,12 +4194,12 @@ server <- function(input, output, session) {#
     colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
     # df3$hours <- df2$hours
     df2 <- df3
-    
-    
+
+
     txt <- data.frame(x = (new_obs[nrow(new_obs), 1] + 5.5), y = (max(new_obs[, 2], na.rm = TRUE) + 6), label = "One week later")
-    
+
     p <- ggplot()
-    
+
     p <- p +
       geom_hline(yintercept = 0, color = "gray") +
       geom_vline(xintercept = (df2[1, 1]), linetype = "dashed") +
@@ -4194,8 +4209,8 @@ server <- function(input, output, session) {#
       geom_line(data = df2, aes(time, p50, color = "Median")) +
       scale_fill_manual(values = pair.cols[3]) +
       guides(fill = guide_legend(override.aes = list(alpha = c(0.8))))
-    
-    p <- p + 
+
+    p <- p +
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
       {if(input$add_newobs) geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs")))} +
       {if(input$add_newobs) scale_color_manual(values = c("Median" = pair.cols[4], "Obs" = cols[1], "New obs" = cols[2]))} +
@@ -4206,7 +4221,7 @@ server <- function(input, output, session) {#
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "")
-    
+
     # Remove brackets for plotly
     gp <- ggplotly(p, dynamicTicks = TRUE)
     for (i in 1:length(gp$x$data)){
@@ -4214,11 +4229,11 @@ server <- function(input, output, session) {#
         gp$x$data[[i]]$name =  gsub("\\(","",str_split(gp$x$data[[i]]$name,",")[[1]][1])
       }
     }
-    
+
     return(gp)
-    
+
   })
-  
+
   #* Assessment plot ====
   # as_plot <- reactiveVal(NULL)
   # Switch off button until forecast is generated
@@ -4235,9 +4250,9 @@ server <- function(input, output, session) {#
       shinyjs::hide("save_assess_plot")
     }
   })
-  
+
   as_plot <- eventReactive(input$assess_fc3, {
-    
+
     sub <- fc_out1$df[as.numeric(fc_out1$df$L1) <= input$members2, ]
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -4251,9 +4266,9 @@ server <- function(input, output, session) {#
                       chla[, 1] <= (as.Date(sub[1, 1]) + 7), ]
     df <- merge(new_obs, sub[, c(1, 3)], by = 1)
     return(df)
-    
+
   })
-  
+
   output$assess_plot <- renderPlotly({
     validate(
       need(input$add_newobs, message = paste0("Check 'Add new observations'"))
@@ -4263,16 +4278,16 @@ server <- function(input, output, session) {#
     )
     df <- as_plot()
     origin <- data.frame(x = 0, y = 0) # included to ensure 0,0 is in the plot
-    
+
     lm1 <- lm(df[, 3] ~ df[, 2])
     r2 <- round(summary(lm1)$r.squared, 2)
-    r2_txt <- paste0("R2 = ", r2)# bquote(r^2 ~ "=" ~ .(r2))    
-    
+    r2_txt <- paste0("R2 = ", r2)# bquote(r^2 ~ "=" ~ .(r2))
+
     txt <- data.frame(x = 2, y = (max(df[, 2], na.rm = TRUE) - 1))
-    
+
     txt2 <- data.frame(y = 0, x = 1, label = "1:1 line")
-    
-    
+
+
     p <- ggplot(df, aes_string(names(df)[2], names(df)[3])) +
       geom_abline(intercept = 0, slope = 1) +
       geom_point(data = origin, aes(x, y), alpha = 0) +
@@ -4286,21 +4301,21 @@ server <- function(input, output, session) {#
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "")
-    
+
     gp <- ggplotly(p, dynamicTicks = TRUE)
     for (i in 1:length(gp$x$data)){
       if (!is.null(gp$x$data[[i]]$name)){
         gp$x$data[[i]]$name =  gsub("\\(","",str_split(gp$x$data[[i]]$name,",")[[1]][1])
       }
     }
-    
+
     return(gp)
-    
+
   })
-  
+
   #* Save plot for assessment plot ====
   observeEvent(input$save_assess_plot, {
-    
+
     validate(
       need(input$assess_fc3 > 0, message = paste0("Click 'Assess forecast'"))
     )
@@ -4311,14 +4326,14 @@ server <- function(input, output, session) {#
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
-    
+
     # Progress bar
     progress <- shiny::Progress$new()
     on.exit(progress$close())
-    progress$set(message = "Saving plot as image file for the report.", 
-                 detail = "This may take a while. This window will disappear  
+    progress$set(message = "Saving plot as image file for the report.",
+                 detail = "This may take a while. This window will disappear
                      when it is downloaded.", value = 0.5)
-    
+
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
     units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -4331,12 +4346,12 @@ server <- function(input, output, session) {#
                        chla[, 1] <= as.Date(fc_out1$df[1, 1]), ]
     new_obs <- chla[chla[, 1] > as.Date((fc_out1$df[1, 1])) &
                       chla[, 1] <= (as.Date(fc_out1$df[1, 1]) + 7), ]
-    
-    
-    
+
+
+
     sub <- fc_out1$df[as.numeric(fc_out1$df$L1) <= input$members2, ]
     # if(input$type2 == "Distribution") {
-    
+
     df3 <- plyr::ddply(sub, "time", function(x) {
       quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
     })
@@ -4345,12 +4360,12 @@ server <- function(input, output, session) {#
     colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
     # df3$hours <- df2$hours
     df2 <- df3
-    
-    
+
+
     txt <- data.frame(x = (new_obs[nrow(new_obs), 1] + 7), y = (max(new_obs[, 2], na.rm = TRUE) + 3), label = "One week later")
-    
+
     p1 <- ggplot()
-    
+
     p1 <- p1 +
       geom_hline(yintercept = 0, color = "gray") +
       geom_vline(xintercept = (df2[1, 1]), linetype = "dashed") +
@@ -4360,8 +4375,8 @@ server <- function(input, output, session) {#
       geom_line(data = df2, aes(time, p50, color = "Median")) +
       scale_fill_manual(values = pair.cols[3]) +
       guides(fill = guide_legend(override.aes = list(alpha = c(0.8))))
-    
-    p1 <- p1 + 
+
+    p1 <- p1 +
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs")), size = 4) +
       {if(input$add_newobs) geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs")), size = 4)} +
       {if(input$add_newobs) scale_color_manual(values = c("Median" = pair.cols[4], "Obs" = cols[1], "New obs" = cols[2]))} +
@@ -4372,19 +4387,19 @@ server <- function(input, output, session) {#
       theme_classic(base_size = 34) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "")
-    
+
     df <- as_plot()
     origin <- data.frame(x = 0, y = 0) # included to ensure 0,0 is in the plot
-    
+
     lm1 <- lm(df[, 3] ~ df[, 2])
     r2 <- round(summary(lm1)$r.squared, 2)
-    r2_txt <- paste0("R2 = ", r2)# bquote(r^2 ~ "=" ~ .(r2))    
-    
+    r2_txt <- paste0("R2 = ", r2)# bquote(r^2 ~ "=" ~ .(r2))
+
     txt <- data.frame(x = 2, y = (max(df[, 2], na.rm = TRUE) - 1))
-    
+
     txt2 <- data.frame(y = 0, x = 1, label = "1:1 line")
-    
-    
+
+
     p2 <- ggplot(df, aes_string(names(df)[2], names(df)[3])) +
       geom_abline(intercept = 0, slope = 1) +
       geom_point(data = origin, aes(x, y), alpha = 0) +
@@ -4396,19 +4411,19 @@ server <- function(input, output, session) {#
       theme_classic(base_size = 34) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "")
-    
+
     p <- ggpubr::ggarrange(p1, p2, nrow = 1)
     img_file <- "www/assess_fc.png"
-    
+
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
   }, ignoreNULL = FALSE
   )
-  
+
   # Preview assess plot
   output$assess_plot_img <- renderImage({
-    
+
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
@@ -4418,29 +4433,29 @@ server <- function(input, output, session) {#
     validate(
       need(input$save_assess_plot > 0, "If plot is missing please click 'Save Plot' under the Plot forecast vs observed plot above.")
     )
-    
+
     list(src = "www/assess_fc.png",
          alt = "Image failed to render. Please click 'Save plot' again.",
          width = "100%")
   }, deleteFile = FALSE)
-  
+
   # Plus minus for rates
   pars_react <- reactiveValues(mort_rate = NA, nut_uptake = NA)
-  
+
   # Nutrient uptake
   observe({
-    
+
     req(!is.null(input$upd_nut_rate))
     req(!is.na(par_save$value[5, c(6)]))
-    
+
     ridx <- which(upd_parms$site == siteID)
     upd <- upd_parms$maxUptake[ridx]
-    
-    # Add random noise to parameter 
+
+    # Add random noise to parameter
     rand1 <- round(rnorm(1, 0.08, 0.03), 2)
     rand2 <- round(rnorm(1, 0.04, 0.01), 2)
     rand3 <- round(rnorm(1, 0, 0.01), 2)
-    
+
     if(input$upd_nut_rate == "Keep the same") {
       pars_react$nut_uptake <- par_save$value[5, c(6)]
     } else if(input$upd_nut_rate == "Increase") {
@@ -4463,23 +4478,23 @@ server <- function(input, output, session) {#
         new_val <- par_save$value[5, c(6)] - rand2
         pars_react$nut_uptake <- ifelse(new_val < 0.01, 0.01, new_val)
       }
-    } 
+    }
   })
-  
+
   # mortality rate
   observe({
-    
+
     req(!is.null(input$upd_mort_rate))
     req(!is.na(par_save$value[5, c(5)]))
-    
+
     ridx <- which(upd_parms$site == siteID)
     upd <- upd_parms$mortalityRate[ridx]
-    
-    # Add random noise to parameter 
+
+    # Add random noise to parameter
     rand1 <- round(rnorm(1, 0.08, 0.03), 2)
     rand2 <- round(rnorm(1, 0.04, 0.01), 2)
     rand3 <- round(rnorm(1, 0, 0.01), 2)
-    
+
     if(input$upd_mort_rate == "Keep the same") {
       pars_react$mort_rate <- par_save$value[5, c(5)]
     } else if(input$upd_mort_rate == "Increase") {
@@ -4502,9 +4517,9 @@ server <- function(input, output, session) {#
         new_val <- par_save$value[5, c(5)] - rand2
         pars_react$mort_rate <- ifelse(new_val < 0.01, 0.01, new_val)
       }
-    } 
+    }
   })
-  
+
   #* Update model ====
   output$warn_update <- renderText({
     validate(
@@ -4520,7 +4535,7 @@ server <- function(input, output, session) {#
       need(!is.null(input$upd_nut_rate), message = "Select an option for Nitrogen Uptake.")
     )
   })
-  
+
   # Switch off radiobuttons until forecast is ran and assessed
   observe({
     if(input$run_fc2 == 0 | input$assess_fc3 == 0) {
@@ -4533,7 +4548,7 @@ server <- function(input, output, session) {#
       shinyjs::enable("phy_init3")
     }
   })
-  
+
   observe({
     if(is.null(input$upd_nut_rate) | is.null(input$upd_mort_rate) | input$run_fc2 == 0 | input$assess_fc3 == 0) {
       shinyjs::disable("update_fc2")
@@ -4541,7 +4556,7 @@ server <- function(input, output, session) {#
       shinyjs::enable("update_fc2")
     }
   })
-  
+
   fc_update <- reactiveValues(df = NA)
   observeEvent(input$update_fc2,{
     validate(
@@ -4570,20 +4585,20 @@ server <- function(input, output, session) {#
     validate(
       need(!is.null(input$upd_mort_rate), message = paste0("Select an option for Nitrogen uptake"))
     )
-    
+
     shinyjs::disable("update_fc2")
     shinyjs::disable("upd_mort_rate")
     shinyjs::disable("upd_nut_rate")
     shinyjs::disable("phy_init3")
-    
+
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
-    progress$set(message = paste0("Running NP model with ", input$members2, " forecasts"), 
-                 detail = "This may take a while. This window will disappear  
+    progress$set(message = paste0("Running NP model with ", input$members2, " forecasts"),
+                 detail = "This may take a while. This window will disappear
                      when it is finished running.", value = 0.01)
-    
-    
+
+
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
     units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -4596,44 +4611,44 @@ server <- function(input, output, session) {#
                        chla[, 1] < as.Date(fc_out1$df[1, 1]), ]
     new_obs <- chla[chla[, 1] >= as.Date((fc_out1$df[1, 1])) &
                       chla[, 1] <= (as.Date(fc_out1$df[1, 1]) + 7), ]
-    
+
     # Checks for PAR and temp
     par_chk <- final_parms$df[1, 1]
     wtemp_chk <- final_parms$df[1, 2]
-    
+
     # Add parameters to final data table
     final_parms$df[2, 1] <- final_parms$df[1, 1]
     final_parms$df[2, 2] <- final_parms$df[1, 2]
     final_parms$df[2, 3:6] <- c(input$phy_init3, input$nut_init2, as.numeric(pars_react$mort_rate),
                                 as.numeric(pars_react$nut_uptake))
-    
-    
+
+
     # Parameters from 'Build model'
     parms[1] <- as.numeric(pars_react$nut_uptake)
     parms[7] <- as.numeric(pars_react$mort_rate)
-    
+
     # Alter Initial conditions
     yini[1] <- input$phy_init3 * 0.016129 # Convert from ug/L to mmolN/m3
     yini[2] <- input$nut_init2 * 16.129 # Convert from mg/L to mmolN/m3
-    
+
     # progress$inc(0.33, detail = "Running the model")
     fc_length <- input$members2 # length(npz_fc_data())
-    
+
     fc_res <- lapply(1:fc_length, function(x) {
-      
+
       noaa_fc <- fc_conv$lst[[x]]
       npz_inputs <- create_npz_inputs(time = noaa_fc$date, PAR = noaa_fc$upar, temp = noaa_fc$wtemp)
       # npz_inputs <- npz_fc_data()[[x]]
-      
+
       times <- 1:nrow(npz_inputs)
-      
+
       res <- matrix(NA, nrow = length(times), ncol = 3)
       colnames(res) <- c("time", "Phytoplankton", "Nutrients")
       res[, 1] <- times
       res[1, -1] <- c(yini)
-      
+
       for(i in 2:length(times)) {
-        
+
         if(all(c(par_chk, wtemp_chk))) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
@@ -4649,29 +4664,29 @@ server <- function(input, output, session) {#
         }
         res[i, -1] <- out[2, c(2, 3)]
         yini <- out[2, c(2:3)]
-        
+
       }
-      
+
       res <- as.data.frame(res)
       res$Chla <- (res$Phytoplankton * 62) # Convert from mmol/m3 to ug/L # * 4.97 + 1.58
       res <- res[, c("time", "Chla")]
       res$time <- fc_out_dates
-      
+
       # out$time <- npz_inp$Date
       out <- res[, c("time", "Chla")] #, "PHYTO", "ZOO")]
       progress$set(value = x/fc_length)
       return(out)
-      
+
     })
-    
+
     fc_update$df <- reshape2::melt(fc_res, id.vars = "time")
   })
-  
+
   plots <- list(main = NULL, l1 = NULL)
-  
+
   #* Updated forecast plot ====
   output$update_plot <- renderPlotly({
-    
+
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site in Objective 1.")
@@ -4679,7 +4694,7 @@ server <- function(input, output, session) {#
     validate(
       need(input$run_fc2 > 0, message = paste0("Run Forecast in Objective 8"))
     )
-    
+
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
     units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -4692,16 +4707,16 @@ server <- function(input, output, session) {#
                        chla[, 1] <= as.Date(fc_out1$df[1, 1]), ]
     new_obs <- chla[chla[, 1] > as.Date((fc_out1$df[1, 1])) &
                       chla[, 1] <= (as.Date(fc_out1$df[1, 1]) + 7), ]
-    
+
     sub <- fc_out1$df #[as.numeric(fc_out1$df$L1) <= input$members2, ]
-    
+
     df3 <- plyr::ddply(sub, "time", function(x) {
       quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
     })
     colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
     colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
-    
-    
+
+
     p <- ggplot()
     p <- p +
       geom_hline(yintercept = 0, color = "gray") +
@@ -4712,7 +4727,7 @@ server <- function(input, output, session) {#
     geom_line(data = df3, aes(time, p50, color = "Median - original")) #+
     # scale_fill_manual(values = l.cols[2]) +
     # guides(fill = guide_legend(override.aes = list(alpha = c(0.8))))
-    
+
     if(!is.na(fc_update$df)) {
       # Updated model
       sub <- fc_update$df
@@ -4721,7 +4736,7 @@ server <- function(input, output, session) {#
       })
       colnames(df4)[-1] <- gsub("%", "", colnames(df4)[-1])
       colnames(df4)[-1] <- paste0('p', colnames(df4)[-1])
-      
+
       p <- p +
         geom_ribbon(data = df4, aes(time, ymin = p2.5, ymax = p97.5, fill = "Updated"),
                     alpha = 0.8) +
@@ -4732,12 +4747,12 @@ server <- function(input, output, session) {#
       p <- p +
         scale_fill_manual(values = c("Original" = pair.cols[3]))
     }
-    
+
     txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 4), (chla_obs[nrow(chla_obs), 1] + 10)),
                       y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("7 Days ago", "Today"))
     if(input$update_fc2 > 0) txt$y <- max(df4$p97.5, na.rm = TRUE)
-    
-    p <- p + 
+
+    p <- p +
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
       geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs"))) +
       geom_text(data = txt, aes(x, y, label = label)) +
@@ -4747,39 +4762,39 @@ server <- function(input, output, session) {#
       {if(input$update_fc2 == 0)         scale_color_manual(values = c("Obs" = cols[1], "New obs" = cols[2], "Median - original" = pair.cols[4]))} +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
-      labs(color = "", fill = "") 
-    
+      labs(color = "", fill = "")
+
     gp <- ggplotly(p, dynamicTicks = TRUE)
     for (i in 1:length(gp$x$data)){
       if (!is.null(gp$x$data[[i]]$name)){
         gp$x$data[[i]]$name =  gsub("\\(","",str_split(gp$x$data[[i]]$name,",")[[1]][1])
       }
     }
-    
+
     return(gp)
   })
-  
+
   # Data table of parameters
   output$comp_pars <- renderDT({
     validate(
       need(!is.na(par_save$value[5, c(5)]),
            message = "Save calibrated parameters in Activity A - Objective 5 - Q15")
-    ) 
+    )
     df <- data.frame("Mortality" = rep(NA, 2), "Uptake" = rep(NA, 2), row.names = c("Calibrated", "Updated"))
     df[1, ] <- c(par_save$value[5, c(5)], par_save$value[5, c(6)])
     df[2, ] <- c(pars_react$mort_rate, pars_react$nut_uptake)
-    
+
     datatable(df, rownames = TRUE, options = list(dom = 't'))
   })
-  
+
   # data table of cal_pars1
   # Data table of parameters
   output$modsett <- DT::renderDT(
     par_save$value[, -c(3:4)], selection = "single", options = list(stateSave = TRUE, dom = 't'), server = FALSE
   )
-  
+
   final_parms <- reactiveValues(df = fc_par_df)
-  
+
   #* Save plot for updated forecast ====
   observe({
     # Switch off save button until update is complete
@@ -4789,21 +4804,21 @@ server <- function(input, output, session) {#
       shinyjs::hide("save_update_fc_plot")
     }
   })
-  
-  observeEvent(input$save_update_fc_plot, { 
-    
+
+  observeEvent(input$save_update_fc_plot, {
+
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site in Objective 1.")
-    ) 
-    
+    )
+
     # Progress bar
     progress <- shiny::Progress$new()
     on.exit(progress$close())
-    progress$set(message = "Saving plot as image file for the report.", 
-                 detail = "This may take a while. This window will disappear  
+    progress$set(message = "Saving plot as image file for the report.",
+                 detail = "This may take a while. This window will disappear
                      when it is downloaded.", value = 0.5)
-    
+
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
     units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -4816,16 +4831,16 @@ server <- function(input, output, session) {#
                        chla[, 1] < as.Date(fc_out1$df[1, 1]), ]
     new_obs <- chla[chla[, 1] >= as.Date((fc_out1$df[1, 1])) &
                       chla[, 1] <= (as.Date(fc_out1$df[1, 1]) + 7), ]
-    
+
     sub <- fc_out1$df #[as.numeric(fc_out1$df$L1) <= input$members2, ]
-    
+
     df3 <- plyr::ddply(sub, "time", function(x) {
       quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
     })
     colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
     colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
-    
-    
+
+
     p <- ggplot()
     p <- p +
       geom_hline(yintercept = 0, color = "gray") +
@@ -4835,7 +4850,7 @@ server <- function(input, output, session) {#
     geom_line(data = df3, aes(time, p50, color = "Median - original")) #+
     # scale_fill_manual(values = l.cols[2]) +
     # guides(fill = guide_legend(override.aes = list(alpha = c(0.8))))
-    
+
     if(!is.na(fc_update$df)) {
       # Updated model
       sub <- fc_update$df
@@ -4844,7 +4859,7 @@ server <- function(input, output, session) {#
       })
       colnames(df4)[-1] <- gsub("%", "", colnames(df4)[-1])
       colnames(df4)[-1] <- paste0('p', colnames(df4)[-1])
-      
+
       p <- p +
         geom_ribbon(data = df4, aes(time, ymin = p2.5, ymax = p97.5, fill = "Updated"),
                     alpha = 0.8) +
@@ -4855,10 +4870,10 @@ server <- function(input, output, session) {#
       p <- p +
         scale_fill_manual(values = c("Original" = pair.cols[3]))
     }
-    
-    
-    
-    p <- p + 
+
+
+
+    p <- p +
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs")), size = 4) +
       geom_point(data = new_obs, aes_string(names(new_obs)[1], names(new_obs)[2], color = shQuote("New obs")), size = 4) +
       ylab("Chlorophyll-a") +
@@ -4867,19 +4882,19 @@ server <- function(input, output, session) {#
       {if(input$update_fc2 == 0)         scale_color_manual(values = c("Obs" = cols[1], "New obs" = cols[2], "Median - original" = pair.cols[4]))} +
       theme_classic(base_size = 34) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
-      labs(color = "", fill = "") 
-    
+      labs(color = "", fill = "")
+
     img_file <- "www/fc_update.png"
-    
+
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
   }, ignoreNULL = FALSE
   )
-  
+
   # Preview assess plot
   output$update_plot_img <- renderImage({
-    
+
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
@@ -4889,15 +4904,15 @@ server <- function(input, output, session) {#
     validate(
       need(input$save_update_fc_plot > 0, "If plot is missing please click 'Save plot' under the plot above.")
     )
-    
+
     list(src = "www/fc_update.png",
          alt = "Image failed to render. Please click 'Save plot' again.",
          width = "100%")
   }, deleteFile = FALSE)
-  
+
   #** Convert NOAA forecast data 2 ----
   fc_conv2 <- reactiveValues(lst = NULL)
-  
+
   observeEvent(input$load_fc3, {
     validate(
       need(input$table01_rows_selected != "",
@@ -4914,9 +4929,9 @@ server <- function(input, output, session) {#
       need(!is.null(lmfit3$m),
            message = "Please add a regression line for the SWR vs. uPAR.")
     )
-    
+
     fc_idx <- which(names(fc_data()) == "2020-10-02")
-    
+
     fc_conv_list <- lapply(1:30, function(x) {
       df <- fc_data()[[fc_idx]]
       sub <- df[(df[, 2] %in% c("air_temperature",
@@ -4933,20 +4948,20 @@ server <- function(input, output, session) {#
       fc_out_dates2 <<- df3$date
       df3$wtemp <- lmfit2$m * df3$air_temperature + lmfit2$b
       df3$upar <- lmfit3$m * df3$surface_downwelling_shortwave_flux_in_air + lmfit3$b
-      
+
       df3 <- df3[, c("date", "wtemp", "upar")]
       df3$fc_date <- "2020-10-02"
       return(df3)
     })
-    
+
     fc_conv2$lst <- fc_conv_list
   })
-  
-  
+
+
   #* New Forecast ====
   npz_fc_data2 <- reactive({
     if(input$load_fc3) {
-      
+
       fpath <- file.path("data", "NOAAGEFS_1hr", siteID)
       fold <- list.files(fpath)
       fc_date <- as.character(as.Date(fold[1]) + 7)
@@ -4966,62 +4981,62 @@ server <- function(input, output, session) {#
         # df3 <- df3[2:16, ]
         fc_out_dates2 <<- df3$date
         df3$wtemp <- 5 + 0.75 * df3$air_temperature
-        
+
         create_npz_inputs(time = df3$date, swr = df3$surface_downwelling_shortwave_flux_in_air,
                           temp = df3$wtemp)
       })
-      
+
       return(npz_inp_list)
     }
   })
-  
-  
+
+
   #** Generate New Forecast ----
   new_fc <- eventReactive(input$run_fc3, {
-    
+
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
-    progress$set(message = paste0("Running NP model with 30 forecasts"), 
-                 detail = "This may take a while. This window will disappear  
+    progress$set(message = paste0("Running NP model with 30 forecasts"),
+                 detail = "This may take a while. This window will disappear
                      when it is finished running.", value = 0.01)
-    
+
     # Checks for PAR and temp
     par_chk <- final_parms$df[1, 1]
     wtemp_chk <- final_parms$df[1, 2]
-    
+
     # Add parameters to final data table
     final_parms$df[3, 1:2] <- c(final_parms$df[1, 1], final_parms$df[1, 2])
     final_parms$df[3, 3:6] <- c(input$phy_init4, input$nut_init4,
                                 as.numeric(pars_react$mort_rate),
                                 as.numeric(pars_react$nut_uptake))
-    
+
     # Parameters from 'Build model'
     parms[1] <- as.numeric(pars_react$nut_uptake)
     parms[7] <- as.numeric(pars_react$mort_rate)
-    
+
     # Alter Initial conditions
     yini[1] <- input$phy_init4 * 0.016129 # Convert from ug/L to mmolN/m3
     yini[2] <- input$nut_init4 * 16.129 # Convert from mg/L to mmolN/m3
-    
+
     # progress$inc(0.33, detail = "Running the model")
     fc_length <- length(fc_conv2$lst)
-    
+
     fc_res <- lapply(1:fc_length, function(x) {
-      
+
       noaa_fc <- fc_conv2$lst[[x]]
       npz_inputs <- create_npz_inputs(time = noaa_fc$date, PAR = noaa_fc$upar, temp = noaa_fc$wtemp)
       # npz_inputs <- npz_fc_data2()[[x]]
-      
+
       times <- 1:nrow(npz_inputs)
-      
+
       res <- matrix(NA, nrow = length(times), ncol = 3)
       colnames(res) <- c("time", "Phytoplankton", "Nutrients")
       res[, 1] <- times
       res[1, -1] <- c(yini)
-      
+
       for(i in 2:length(times)) {
-        
+
         if(all(c(par_chk, wtemp_chk))) {
           out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                         parms = parms, method = "ode45", inputs = npz_inputs))
@@ -5037,31 +5052,31 @@ server <- function(input, output, session) {#
         }
         res[i, -1] <- out[2, c(2, 3)]
         yini <- out[2, c(2:3)]
-        
+
       }
-      
+
       res <- as.data.frame(res)
       res$Chla <- (res$Phytoplankton * 62) # Convert from mmol/m3 to ug/L # * 4.97 + 1.58
       res <- res[, c("time", "Chla")]
       res$time <- fc_out_dates2
-      
-      
-      
-      
+
+
+
+
       # out$time <- npz_inp$Date
       out <- res[, c("time", "Chla")] #, "PHYTO", "ZOO")]
       progress$set(value = x/fc_length)
       return(out)
-      
+
     })
-    
+
     mlt <- reshape2::melt(fc_res, id.vars = "time")
-    
+
     return(mlt)
   })
-  
-  
-  
+
+
+
   # Update initial conditions
   observeEvent(input$run_fc2, {
     phy_init2 <- input$phy_init2
@@ -5069,16 +5084,16 @@ server <- function(input, output, session) {#
     nut_init2 <- input$nut_init2
     updateSliderInput(session, "nut_init4", value = nut_init2)
   })
-  
+
   output$plot_ecof4 <- renderPlotly({
-    
+
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
       need(!is.na(fc_out1$df), "Need to complete Objective 6-11.")
     )
-    
+
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
     units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -5089,19 +5104,19 @@ server <- function(input, output, session) {#
     }
     chla_obs <- chla[(chla[, 1] >= as.Date((fc_out1$df[1, 1] - (7)))) &
                        chla[, 1] <= as.Date((fc_out1$df[1, 1] + 7)), ]
-    
-    
-    # Make old forecast 
+
+
+    # Make old forecast
     sub <- fc_out1$df #[as.numeric(fc_out1$df$L1) <= input$members2, ]
-    
+
     df3 <- plyr::ddply(sub, "time", function(x) {
       quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
     })
     colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
     colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
     df3$fc_date <- as.character(df3[1, 1])
-    
-    
+
+
     p <- ggplot()
     p <- p +
       geom_vline(xintercept = chla_obs[nrow(chla_obs), 1], linetype = "dashed") +
@@ -5109,13 +5124,13 @@ server <- function(input, output, session) {#
       geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date),
                   alpha = 0.8) +
       geom_line(data = df3, aes(time, p50, color = "Median"))
-    
-    
+
+
     if(input$run_fc3 > 0) {
       sub <- new_fc()[as.numeric(new_fc()$L1) <= input$members2, ]
-      
+
       # if(input$type3 == "Distribution") {
-      
+
       df3 <- plyr::ddply(sub, "time", function(x) {
         quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
       })
@@ -5124,7 +5139,7 @@ server <- function(input, output, session) {#
       colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
       df3$fc_date <- as.character(df3[1, 1])
       df2 <- df3
-      
+
       p <- p +
         geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date),
                     alpha = 0.8) +
@@ -5132,12 +5147,12 @@ server <- function(input, output, session) {#
         # alpha = 0.8) +
         geom_line(data = df2, aes(time, p50, color = "Median"))
     }
-    
+
     txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 8), (chla_obs[nrow(chla_obs), 1] + 8)),
                       y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("Past", "Future"))
-    
+
     # }
-    p <- p + 
+    p <- p +
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Time") +
@@ -5148,23 +5163,23 @@ server <- function(input, output, session) {#
       scale_fill_manual(values = c("2020-09-25" = pair.cols[3], "2020-10-02" = pair.cols[7])) +
       guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
       scale_color_manual(values = c("Median" = "black", cols[1:2]))
-    
+
     gp <- ggplotly(p, dynamicTicks = TRUE)
     for (i in 1:length(gp$x$data)){
       if (!is.null(gp$x$data[[i]]$name)){
         gp$x$data[[i]]$name =  gsub("\\(","",str_split(gp$x$data[[i]]$name,",")[[1]][1])
       }
     }
-    
+
     return(gp)
-    
+
   })
-  
+
   #* render datatable for FC params
   output$fc_table <- renderDT(
     final_parms$df, rownames = TRUE, options = list(dom = 't')
   )
-  
+
   #* Save plot for new  forecast ====
   observe({
     # Switch off save button until new forecast is generated
@@ -5174,21 +5189,21 @@ server <- function(input, output, session) {#
       shinyjs::hide("save_new_fc_plot")
     }
   })
-  
-  
-  observeEvent(input$save_new_fc_plot, { 
-    
+
+
+  observeEvent(input$save_new_fc_plot, {
+
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
-    
+
     # Progress bar
     progress <- shiny::Progress$new()
     on.exit(progress$close())
-    progress$set(message = "Saving plot as image file for the report.", 
-                 detail = "This may take a while. This window will disappear  
+    progress$set(message = "Saving plot as image file for the report.",
+                 detail = "This may take a while. This window will disappear
                      when it is downloaded.", value = 0.5)
-    
+
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
     units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -5199,32 +5214,32 @@ server <- function(input, output, session) {#
     }
     chla_obs <- chla[(chla[, 1] >= as.Date((fc_out1$df[1, 1] - (7)))) &
                        chla[, 1] <= as.Date((fc_out1$df[1, 1] + 7)), ]
-    
-    
-    # Make old forecast 
+
+
+    # Make old forecast
     sub <- fc_out1$df #[as.numeric(fc_out1$df$L1) <= input$members2, ]
-    
+
     df3 <- plyr::ddply(sub, "time", function(x) {
       quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
     })
     colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
     colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
     df3$fc_date <- as.character(df3[1, 1])
-    
-    
+
+
     p <- ggplot()
     p <- p +
       geom_hline(yintercept = 0, color = "gray") +
       geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date),
                   alpha = 0.8) +
       geom_line(data = df3, aes(time, p50, color = "Median"))
-    
-    
+
+
     if(input$run_fc3 > 0) {
       sub <- new_fc()[as.numeric(new_fc()$L1) <= input$members2, ]
-      
+
       # if(input$type3 == "Distribution") {
-      
+
       df3 <- plyr::ddply(sub, "time", function(x) {
         quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
       })
@@ -5233,7 +5248,7 @@ server <- function(input, output, session) {#
       colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
       df3$fc_date <- as.character(df3[1, 1])
       df2 <- df3
-      
+
       p <- p +
         geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date),
                     alpha = 0.8) +
@@ -5242,12 +5257,12 @@ server <- function(input, output, session) {#
         geom_line(data = df2, aes(time, p50, color = "Median")) +
         geom_vline(xintercept = (new_fc()[1, 1]), linetype = "dashed")
     }
-    
-    
+
+
     txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 8), (chla_obs[nrow(chla_obs), 1] + 8)),
                       y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("Past", "Future"))
     # }
-    p <- p + 
+    p <- p +
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs")), size = 4) +
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Time") +
@@ -5258,18 +5273,18 @@ server <- function(input, output, session) {#
       scale_fill_manual(values = c("2020-09-25" = pair.cols[3], "2020-10-02" = pair.cols[7])) +
       guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
       scale_color_manual(values = c("Median" = "black", cols[1:2]))
-    
+
     img_file <- "www/new_fc.png"
-    
+
     # Save as a png file
     ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
     progress$set(value = 1)
   }, ignoreNULL = FALSE
   )
-  
+
   # Preview new forecast plot
   output$new_fc_plot_img <- renderImage({
-    
+
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
@@ -5279,18 +5294,18 @@ server <- function(input, output, session) {#
     validate(
       need(input$save_new_fc_plot > 0, "If plot is missing please click 'Save plot' under the 'New Forecast plot' above.")
     )
-    
+
     list(src = "www/new_fc.png",
          alt = "Image failed to render. Please click 'Save plot' again.",
          width = "100%")
   }, deleteFile = FALSE)
-  
-  
+
+
   #** Render Report ----
   report <- reactiveValues(filepath = NULL) #This creates a short-term storage location for a filepath
-  
+
   observeEvent(input$generate, {
-    
+
     par_file <- "data/par_save.csv"
     write.csv(par_save$value, par_file, quote = FALSE, row.names = TRUE)
     summ_file <- "data/mod_setting_summary.csv"
@@ -5298,13 +5313,13 @@ server <- function(input, output, session) {#
     progress <- shiny::Progress$new()
     # Make sure it closes when we exit this reactive, even if there's an error
     on.exit(progress$close())
-    progress$set(message = "Gathering data and building report.", 
-                 detail = "This may take a while. This window will disappear  
+    progress$set(message = "Gathering data and building report.",
+                 detail = "This may take a while. This window will disappear
                      when the report is ready.", value = 1)
-    
+
     # Prepare regression equations
-    
-    
+
+
     # Set up parameters to pass to Rmd document
     params <- list(name = input$name,
                    id_number = input$id_number,
@@ -5386,45 +5401,45 @@ server <- function(input, output, session) {#
                    upar_r2 = lmfit3$r2,
                    mod_summ = summ_file
     )
-    
-    
+
+
     tmp_file <- paste0(tempfile(), ".docx") #Creating the temp where the .pdf is going to be stored
-    
-    rmarkdown::render("report.Rmd", 
-                      output_format = "all", 
+
+    rmarkdown::render("report.Rmd",
+                      output_format = "all",
                       output_file = tmp_file,
-                      params = params, 
+                      params = params,
                       envir = new.env(parent = globalenv()))
     progress$set(value = 1)
     report$filepath <- tmp_file #Assigning in the temp file where the .pdf is located to the reactive file created above
-    
+
   })
-  
+
   # Hide download button until report is generated
   output$reportbuilt <- reactive({
     return(!is.null(report$filepath))
   })
   outputOptions(output, 'reportbuilt', suspendWhenHidden= FALSE)
-  
-  
+
+
   #** Download Report ----
-  
-  #Download report  
+
+  #Download report
   output$download <- downloadHandler(
-    
+
     # This function returns a string which tells the client
     # browser what name to use when saving the file.
     filename = function() {
       paste0("report_", input$id_number, ".docx") %>%
         gsub(" ", "_", .)
     },
-    
+
     # This function should write data to a file given to it by
     # the argument 'file'.
     content = function(file) {
-      
+
       file.copy(report$filepath, file)
-      
+
     }
   )
   # Navigating Tabs ----
@@ -5435,15 +5450,15 @@ server <- function(input, output, session) {#
     rv1$prev <- readr::parse_number(curr_tab1) - 1
     rv1$nxt <- readr::parse_number(curr_tab1) + 1
   })
-  
+
   observe({
     toggleState(id = "prevBtn1", condition = rv1$prev > 0)
     toggleState(id = "nextBtn1", condition = rv1$nxt < 8)
     hide(selector = ".page")
     # show(paste0("mtab", rv1$nxt))
   })
-  
-  
+
+
   # Next button
   observe({
     curr_tab1 <- input$maintab
@@ -5458,7 +5473,7 @@ server <- function(input, output, session) {#
       curr_obj <- input$tabseries2
       idx2 <- which(tab_names$tab_id == curr_obj)
       new_nam <- tab_names$name[idx2 + 1]
-    } 
+    }
     if(curr_tab1 == "mtab7") {
       updateActionButton(session, inputId = "nextBtn1", label = paste("Next >"))
     } else {
@@ -5466,13 +5481,13 @@ server <- function(input, output, session) {#
       updateActionButton(session, inputId = "nextBtn1", label = paste(new_nam, ">"))
     }
   })
-  
+
   # Previous button
   observe({
     curr_tab1 <- input$maintab
     idx <- which(tab_names$tab_id == curr_tab1)
     new_nam <- tab_names$name[idx - 1]
-    
+
     if (curr_tab1 == "mtab5") {
       curr_obj <- input$tabseries1
       idx2 <- which(tab_names$tab_id == curr_obj)
@@ -5484,7 +5499,7 @@ server <- function(input, output, session) {#
       idx2 <- which(tab_names$tab_id == curr_obj)
       if(curr_obj == "obj6") idx2 <- idx2 - 1 # Move off Activty B label
       new_nam <- tab_names$name[idx2 - 1]
-    } 
+    }
     if(curr_tab1 == "mtab1") {
       updateActionButton(session, inputId = "prevBtn1", label = paste("< Previous"))
     } else {
@@ -5492,19 +5507,19 @@ server <- function(input, output, session) {#
       updateActionButton(session, inputId = "prevBtn1", label = paste("<", new_nam))
     }
   })
-  
-  
+
+
   # Advancing Tabs
   observeEvent(input$nextBtn1, {
-    
+
     curr_tab1 <- input$maintab
     idx <- which(tab_names$tab_id == curr_tab1)
     if (curr_tab1 == "mtab5" & rv1a$nxt < 6) {
       curr_obj <- input$tabseries1
-      
+
       updateTabsetPanel(session, "tabseries1",
                         selected = paste0("obj", rv1a$nxt))
-      
+
     } else if (curr_tab1 == "mtab6" & rv2a$nxt < 13) {
       curr_obj <- input$tabseries2
       updateTabsetPanel(session, "tabseries2",
@@ -5519,17 +5534,17 @@ server <- function(input, output, session) {#
     }
     shinyjs::runjs("window.scrollTo(0, 0)") # scroll to top of page
   })
-  
+
   # Moving back through tabs
   observeEvent(input$prevBtn1, {
     curr_tab1 <- input$maintab
     idx <- which(tab_names$tab_id == curr_tab1)
     if (curr_tab1 == "mtab5" & rv1a$prev > 0) {
       curr_obj <- input$tabseries1
-      
+
       updateTabsetPanel(session, "tabseries1",
                         selected = paste0("obj", rv1a$prev))
-      
+
     } else if (curr_tab1 == "mtab6" & rv2a$prev > 5) {
       curr_obj <- input$tabseries2
       updateTabsetPanel(session, "tabseries2",
@@ -5543,9 +5558,9 @@ server <- function(input, output, session) {#
                         selected = paste0("mtab", rv1$prev))
     }
     shinyjs::runjs("window.scrollTo(0, 0)")
-    
+
   })
-  
+
   #* Tab 1a ----
   rv1a <- reactiveValues(prev = 0, nxt = 2)
   observeEvent(input$tabseries1, {
@@ -5553,7 +5568,7 @@ server <- function(input, output, session) {#
     rv1a$prev <- readr::parse_number(curr_tab1) - 1
     rv1a$nxt <- readr::parse_number(curr_tab1) + 1
   })
-  
+
   #* Tab 2a ----
   rv2a <- reactiveValues(prev = 0, nxt = 2)
   observeEvent(input$tabseries2, {
@@ -5561,14 +5576,14 @@ server <- function(input, output, session) {#
     rv2a$prev <- readr::parse_number(curr_tab1) - 1
     rv2a$nxt <- readr::parse_number(curr_tab1) + 1
   })
-  
+
   # Return to Introduction tab
   observeEvent(input$return_intro, {
     updateTabsetPanel(session, "maintab",
                       selected = "mtab3")
     shinyjs::runjs("window.scrollTo(0, 600)") # scroll to top of page
   })
-  
+
   # Embedded Action links
   observeEvent(input$act_A_obj_5, {
     updateTabsetPanel(session, "maintab",
@@ -5577,27 +5592,27 @@ server <- function(input, output, session) {#
                       selected = "obj5")
     shinyjs::runjs("window.scrollTo(0, 0)")
   })
-  
+
   observeEvent(input$obj_2, {
     updateTabsetPanel(session, "tabseries1",
                       selected = "obj2")
     shinyjs::runjs("window.scrollTo(0, 620)")
   })
-  
+
   # Downloading Student Handout ----
-  
+
   # Hide download button until report is generated
   handout <- reactiveValues(filepath = NULL) #This creates a short-term storage location for a filepath
   output$handoutbuilt <- reactive({
     return(file.exists("report.docx"))
   })
   outputOptions(output, 'handoutbuilt', suspendWhenHidden= FALSE)
-  
+
   handout_file <- "Student_handout.docx"
   # tmp_file2 <- tempfile()
   # rmarkdown::render("report.Rmd",
   #                   output_format = "all")
-  
+
   output$stud_dl <-  downloadHandler(
     filename = function() {
       handout_file
@@ -5606,7 +5621,7 @@ server <- function(input, output, session) {#
       file.copy("report.docx", file)
     }
   )
-  
+
   # Updating sliders from first inputs ----
   observeEvent(input$run_mod_ann, {
     # Initial conditions
@@ -5614,50 +5629,50 @@ server <- function(input, output, session) {#
     updateSliderInput(session, "phy_init2", value = phy_init1)
     nut_init1 <- input$nut_init
     updateSliderInput(session, "nut_init2", value = nut_init1)
-    
+
     # Parameters
     # mort_rate1 <- input$mort_rate
     # updateSliderInput(session, "mort_rate2", value = mort_rate1)
     # nut_uptake1 <- input$nut_uptake
     # updateSliderInput(session, "nut_uptake2", value = nut_uptake1)
-    
+
     # Update parameters in the table
     par_save$value[input$save_par_rows_selected, 1] <<- "Surface water temperature (SWT)" %in% input$mod_sens
     par_save$value[input$save_par_rows_selected, 2] <<- "Underwater light (uPAR)" %in% input$mod_sens
-    par_save$value[input$save_par_rows_selected, 3:6] <<- c(input$phy_init, 
+    par_save$value[input$save_par_rows_selected, 3:6] <<- c(input$phy_init,
                                                             input$nut_init,
                                                             input$mort_rate, input$nut_uptake)
-    
+
   })
-  
+
   observeEvent(input$update_fc2, {
     # Initial conditions
     phy_init4 <- input$phy_init3
     updateSliderInput(session, "phy_init4", value = phy_init4)
   })
-  
-  
-  
-  
-  
+
+
+
+
+
   observe({
     dt_proxy <- dataTableProxy("table01")
     selectRows(dt_proxy, input$row_num)
   })
-  
+
   # Need to exclude the buttons from themselves being bookmarked
   setBookmarkExclude(c("bookmark1"))
-  
+
   # Trigger bookmarking with either button
   observeEvent(input$bookmark1, {
     session$doBookmark()
   })
-  
+
   # Save extra values in state$values when we bookmark
   onBookmark(function(state) {
     state$values$sel_row <- input$table01_rows_selected
   })
-  
+
   # Read values from state$values when we restore
   onRestore(function(state) {
     updateTabsetPanel(session, "maintab",
@@ -5665,17 +5680,17 @@ server <- function(input, output, session) {#
     updateTabsetPanel(session, "tabseries1",
                       selected = "obj1")
   })
-  
+
   onRestored(function(state) {
     updateSelectizeInput(session, "row_num", selected = state$values$sel_row)
-    
+
   })
-  
+
   # Checklist for user inputs
   output$check_list <- renderUI({
     chk_list()
   })
-  
+
   chk_list <- reactive({
     out_chk <- c(
       if(input$name == "") {"Introduction: Name"},
@@ -5713,21 +5728,21 @@ server <- function(input, output, session) {#
       if(input$q25a == "" | input$q25b == "" | input$q25c == "") "Activity C: Q. 25",
       if(input$q26 == "") "Activity C: Q. 26"
     )
-    
+
     if(length(out_chk) == 0) {
       out_chk <- "Finished! All answers have been input into the app."
     }
-    
+
     HTML(
       paste(
         out_chk,
         collapse = "<br/>"
       )
     )
-    
-    
+
+
   })
-  
+
   # Save answers in .eddie file
   ans_list <- reactiveValues()
   observe({
@@ -5797,7 +5812,7 @@ server <- function(input, output, session) {#
       a25c = input$q25c,
       a26 = input$q26,
       param_df = par_save$value,
-      site_row = input$table01_rows_selected ,
+      site_row = input$table01_rows_selected,
       mod_input = input$mod_sens,
       wt_m = lmfit2$m,
       wt_b = lmfit2$b,
@@ -5809,16 +5824,16 @@ server <- function(input, output, session) {#
     # ans_list <- data.frame(matrix(unlist(ans_list), nrow=length(ans_list), byrow = TRUE))
     # print(ans_list)
   })
-  
+
   output$download_answers <- downloadHandler(
-    
+
     # This function returns a string which tells the client
     # browser what name to use when saving the file.
     filename = function() {
       paste0("module5_answers_", input$id_number, ".eddie") %>%
         gsub(" ", "_", .)
     },
-    
+
     # This function should write data to a file given to it by
     # the argument 'file'.
     content = function(file) {
@@ -5826,9 +5841,9 @@ server <- function(input, output, session) {#
       saveRDS(ans_list, file = file)
     }
   )
-  
+
   observeEvent(input$upload_answers, {
-    
+
     up_answers <<- readRDS(input$upload_answers$datapath)
     updateTextAreaInput(session, "name", value = up_answers$name)
     updateTextAreaInput(session, "id_number", value = up_answers$id_number)
@@ -5872,7 +5887,7 @@ server <- function(input, output, session) {#
     updateTextAreaInput(session, "q25b", value = up_answers$a25b)
     updateTextAreaInput(session, "q25c", value = up_answers$a25c)
     updateTextAreaInput(session, "q26", value = up_answers$a26)
-    
+
     # Check box
     idx <- nrow(up_answers$param_df)
     updateCheckboxGroupInput(session, "mod_sens", selected = up_answers$mod_input)
@@ -5880,7 +5895,7 @@ server <- function(input, output, session) {#
     updateSliderInput(session, "nut_init", value = up_answers$param_df$Nitrogen[idx])
     updateSliderInput(session, "mort_rate", value = up_answers$param_df$Mortality[idx])
     updateSliderInput(session, "nut_uptake", value = up_answers$param_df$Uptake[idx])
-    
+
     # Update reactive values
     par_save$value <- up_answers$param_df
     q6_ans$dt <- up_answers$a6
@@ -5891,13 +5906,13 @@ server <- function(input, output, session) {#
     lmfit3$b <- up_answers$upar_b
     lmfit3$r2 <- up_answers$upar_r2
   })
-  
+
   observe({
     req(input$maintab == "mtab5" & exists("up_answers") & input$tabseries1 == "obj1")
     req(!is.null(up_answers$site_row))
     tryCatch(updateSelectizeInput(session, "row_num", selected = up_answers$site_row), error = function(e) {NA})
   })
-  
+
   observe({
     req(input$maintab == "mtab5" & exists("up_answers") & input$tabseries1 == "obj2")
     updateNumericInput(session, "q6a_mean", value = up_answers$a6a_mean)
@@ -5916,7 +5931,7 @@ server <- function(input, output, session) {#
     updateNumericInput(session, "q6e_max", value = up_answers$a6e_max)
     updateNumericInput(session, "q6e_min", value = up_answers$a6e_min)
   })
-  
+
   observe({
     req(input$maintab == "mtab5" & exists("up_answers") & input$tabseries1 == "obj3")
     updateTextAreaInput(session, "q7a", value = up_answers$a7a)
@@ -5924,7 +5939,7 @@ server <- function(input, output, session) {#
     updateTextAreaInput(session, "q7c", value = up_answers$a7c)
     updateTextAreaInput(session, "q7d", value = up_answers$a7d)
   })
-  
+
   # Remove tool tip from forward and back buttons
   observe({
     if(input$nextBtn1 > 2) {
@@ -5934,9 +5949,16 @@ server <- function(input, output, session) {#
       removeTooltip(session, "prevBtn1")
     }
   })
-  
+
+  #** Add embedded learnr tutorial
+  output$frame <- renderUI({
+    tags$iframe(
+      src="https://tadhg-moore.shinyapps.io/mod5_coding_exercise/", width=1280, height=720
+    )
+  })
+
 }
-shinyApp(ui, server, enableBookmarking = "url")
+shinyApp(ui, server)
 # rsconnect::deployApp(account = "macrosystemseddie")
 # rsconnect::deployApp(account = "tadhg-moore")
 
