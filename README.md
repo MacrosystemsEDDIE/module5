@@ -2,13 +2,13 @@
 # [Macrosystems EDDIE](https://serc.carleton.edu/eddie/macrosystems/index.html)
 ## Module 5: Introduction to Ecological Forecasting
 [![](https://img.shields.io/badge/Shiny-shinyapps.io-blue?style=flat&labelColor=white&logo=RStudio&logoColor=blue)](https://macrosystemseddie.shinyapps.io/module5/)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/MacrosystemsEDDIE/module5/main?urlpath=shiny/app/)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/zenodo/10.5281/zenodo.6363500/?urlpath=shiny/app/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6363500.svg)](https://doi.org/10.5281/zenodo.6363500)
 ### Summary
 Here is the code for running the Macrosystems EDDIE Module 5: _Introduction to Ecological Forecasting_. Below are instructions on how to access the Shiny app *via* a web browser and also a detailed guide below for launching the R Shiny App locally on your own computer. For more details about teaching this module please visit our [website](https://serc.carleton.edu/eddie/teaching_materials/modules/module5.html).
 
 ## Accessing the Shiny App _via_ a web browser
-The Shiny app for this module can be accessed through any internet browser either on [shinyapps.io](https://macrosystemseddie.shinyapps.io/module5/) or [mybinder.org](https://mybinder.org/v2/gh/MacrosystemsEDDIE/module5/main?urlpath=shiny/app/).
+The Shiny app for this module can be accessed through any internet browser either on [shinyapps.io](https://macrosystemseddie.shinyapps.io/module5/) or [mybinder.org](https://mybinder.org/v2/zenodo/10.5281/zenodo.6363500/?urlpath=shiny/app/).
 When launching first it will take a while for the Shiny app to boot up. If you are using this in a large class (>20 users at the same time), we would recommend splitting the group into two and using **both** [shinyapps.io](https://macrosystemseddie.shinyapps.io/module5/) and [mybinder.org](https://mybinder.org/v2/gh/MacrosystemsEDDIE/module5/main?urlpath=shiny/app/).
 
 ##  Running the Shiny App on your computer
