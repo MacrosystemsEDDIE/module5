@@ -1,4 +1,4 @@
-![](www/project-eddie-banner-2020_green.png)<!-- -->
+![](app/www/project-eddie-banner-2020_green.png)<!-- -->
 # Module 5: Introduction to Ecological Forecasting
 ## [Macrosystems EDDIE](https://serc.carleton.edu/eddie/macrosystems/index.html)
 ### Summary
@@ -32,9 +32,15 @@ There are two options:
 1. Open the script `app.R` in your console.  It is found in the `app` directory
 2. Click the "Run App" button in the Script (indicated below).  
 3. This will launch the Shiny App in your default web browser or in a new RStudio window. The Shiny App is run from RStudio so you will need to keep RStudio running in the background.  
-![](www/launch_app.png)<!-- -->	
+![](app/www/launch_app.png)<!-- -->	
 
 ## Quickstart option 1
+
+You can click on the link below to launch the Shiny app.  It may take a while to launch because it is being created on a remote server (i.e., not on your computer). This option prevents issues with installing R and packages. It only requires an internet browser and a connection to the internet.
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/MacrosystemsEDDIE/module5/main?urlpath=shiny/app/)
+
+## Quickstart option 2
 
 Here is an alternative way to quickly launch the Shiny app in less than a minute, but can be prone to package installation errors if your packages have not been updated recently.
 ```
@@ -44,13 +50,6 @@ source("https://raw.githubusercontent.com/MacrosystemsEDDIE/module5/main/install
 # Step 2. Launch Shiny app
 shiny::runGitHub("module5", "MacrosystemsEDDIE", ref = "main", subdir = "app")
 ```
-
-## Quickstart option 2
-
-You can click on the link below to launch the Shiny app.  It may take a while to launch because it is being created on a remote server (i.e., not on your computer). This option prevents issues with installing R and packages. It only requires an internet browser and a connection to the internet.
-
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/rqthomas/module5/main?urlpath=shiny/app/)
-
 
 ## Questions & Feedback
 If you have any questions, comments or feedback related to these materials you can send an email to [macrosystemseddie@gmail.com]().
