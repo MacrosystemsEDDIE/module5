@@ -4,7 +4,12 @@
 ### Summary
 Here is the code for running the Macrosystems EDDIE Module 5: _Introduction to Ecological Forecasting_. There is a detailed guide below for launching the R Shiny App locally on your own machine. For more details about teaching this module please visit our [website](http://module5.macrosystemseddie.org/).
 
-##  Setting up the Shiny App
+## Accessing the Shiny App _via_ a web browser
+The Shiny app for this module can be accessed through any internet browser either on [shinyapps.io](https://shinyapps.io/) or [mybinder.org/](https://mybinder.org/).
+[![](https://img.shields.io/badge/Shiny-shinyapps.io-blue?style=flat&labelColor=white&logo=RStudio&logoColor=blue)](https://macrosystemseddie.shinyapps.io/module5/)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/MacrosystemsEDDIE/module5/main?urlpath=shiny/app/)
+
+##  Running the Shiny App on your computer
 ### Pre-requisites
 1. Latest version of [R](https://cran.r-project.org/) installed (currently R 4.0.3 as of 2021-01-22).  
 2. [RStudio](https://rstudio.com/products/rstudio/download/) installed (preferably >1.3).  
@@ -34,14 +39,7 @@ There are two options:
 3. This will launch the Shiny App in your default web browser or in a new RStudio window. The Shiny App is run from RStudio so you will need to keep RStudio running in the background.  
 ![](app/www/launch_app.png)<!-- -->	
 
-## Quickstart option 1
-
-You can click on the link below to launch the Shiny app.  It may take a while to launch because it is being created on a remote server (i.e., not on your computer). This option prevents issues with installing R and packages. It only requires an internet browser and a connection to the internet.
-
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/MacrosystemsEDDIE/module5/main?urlpath=shiny/app/)
-
-## Quickstart option 2
-
+## Quickstart option
 Here is an alternative way to quickly launch the Shiny app in less than a minute, but can be prone to package installation errors if your packages have not been updated recently.
 ```
 # Step 1. Install required R packages
