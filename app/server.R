@@ -3597,6 +3597,11 @@ server <- function(input, output, session) {#
                       selected = "mtab3")
     shinyjs::runjs("window.scrollTo(0, 600)") # scroll to top of page
   })
+  observeEvent(input$return_intro2, {
+    updateTabsetPanel(session, "maintab",
+                      selected = "mtab3")
+    shinyjs::runjs("window.scrollTo(0, 600)") # scroll to top of page
+  })
 
   # Embedded Action links
   observeEvent(input$act_A_obj_5, {

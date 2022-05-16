@@ -1597,7 +1597,7 @@ border-color: #FFF;
                           column(12,
                                  h2("Completed Module!"),
                                  p("This is the end of the module. If you have been inputting your answers into the app you will need to return to the 'Introduction' tab and generate the final report"),
-                                 actionButton("return_intro", "Return to Introduction", icon = icon("home"))
+                                 actionButton("return_intro2", "Return to Introduction", icon = icon("home"))
                                  )
                         ),
                         hr(),
