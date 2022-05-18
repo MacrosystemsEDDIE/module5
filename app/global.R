@@ -1,7 +1,7 @@
 # Load required libraries
 suppressPackageStartupMessages(library(shiny, quietly = TRUE)); library(shinycssloaders)
 suppressPackageStartupMessages(library(shinyjs, quietly = TRUE, warn.conflicts = FALSE))
-library(shinydashboard, quietly = TRUE, warn.conflicts = FALSE)
+library(shinydashboard, quietly = TRUE, warn.conflicts = FALSE); library(shinyalert, quietly = TRUE, warn.conflicts = FALSE)
 library(leaflet); library(htmltools); library(xml2)
 suppressPackageStartupMessages(library(sf, quietly = TRUE, warn.conflicts = FALSE))
 suppressPackageStartupMessages(library(ggplot2, quietly = TRUE)); library(plotly, quietly = TRUE, warn.conflicts = FALSE)
