@@ -1,7 +1,6 @@
 ui <- function(req) {
 
   tagList( # Added functionality for not losing your settings
-    # shinythemes::themeSelector(), # user-defined theme
     # Java to prompt the students to click a button
     # Java script https://community.rstudio.com/t/keeping-track-of-idle-time-during-app-usage/1735
     tags$script("
@@ -27,11 +26,21 @@ ui <- function(req) {
       column(1, offset = 11, align = "right",
              introBox(
                actionButton("help", label = "", icon = icon("question-circle")), data.step = 7, data.intro = help_text["help", 1]
+               )
              )
-      )
     ),
     navbarPage(title = "Module 5: Introduction to Ecological Forecasting",
                position = "static-top", id = "maintab",
+               tags$header(
+                 fluidRow(
+                   column(2,
+                          fileInput("upload_answers", "Resume Progress", accept = c(".eddie", ".rds"))
+                          ),
+                   column(2,
+                          actionButton("help2", label = "", icon = icon("question-circle")), data.step = 7, data.intro = help_text["help", 1]
+                          )
+                   )
+                 ),
                # 1. Module Overview ----
                tabPanel(introBox("Module Overview",
                                  data.step = 2,
@@ -239,17 +248,14 @@ ui <- function(req) {
                                    tags$li(id = "txt_j", module_text["workflow2", ]),
                                    tags$li(id = "txt_j", module_text["workflow3", ]),
                                    tags$li(id = "txt_j", module_text["workflow4", ])
-                                   # tags$li(id = "txt_j", module_text["workflow5", ]),
-                                   # tags$li(id = "txt_j", module_text["workflow6", ])
-                                 )
-                          ),
+                                   )
+                                 ),
                           column(6, align = "center", offset = 1,
                                  br(), br(),
                                  img(src = "activity_outline.png", height = "80%", id = "bla_border",
                                      width = "80%", tags$style("border: solid 2px black;"))
-
-                          )
-                        ),
+                                 )
+                          ),
                         hr(),
                         fluidRow(
                           column(7, offset = 1,
@@ -263,31 +269,35 @@ ui <- function(req) {
                                  checkboxInput("show_q1", "Show questions", value = TRUE),
                                  tags$style(type="text/css", "#stud_dl {background-color:#579277;color: white}"),
                                  conditionalPanel("output.handoutbuilt",
-                                                  downloadButton(outputId = "stud_dl", label = "Download Student Handout"),
+                                                  downloadButton(outputId = "stud_dl", label = "Download Student Handout")
+                                                  )
                                  )
                           ),
-                        ),
                         hr(),
                         #* Generate report buttons ----
                         fluidRow(
-                          column(4,offset = 1,
-                                 h3("Save your progress"),
+                          column(4, offset = 1,
+                                 h3("Saving your progress"),
                                  p(id = "txt_j", "If you run out of time to finish all the activities you can save your progress and return to it at a later date. Click the 'Download user input' button at the bottom of the page and a file 'module5_answers_ID_number.eddie' will download. Store this file in a safe place locally on your computer."),
+                                 img(src = "save_button.png", height = "100%", id = "bla_border",
+                                     width = "100%", tags$style("border: solid 2px black;")),
                                  br(),
-                                 h3("Resume your progress"),
-                                 p(id = "txt_j", "To reload the app input you can upload the downloaded '.eddie' file below and it will populate your answers into the Shiny app."),
-                                 fileInput("upload_answers", "Upload data", accept = c(".eddie", ".rds")), # B77C2C
+                                 hr(),
+                                 h3("Resuming your progress"),
+                                 img(src = "resume_button.png", height = "100%", id = "bla_border",
+                                     width = "100%", tags$style("border: solid 2px black;")),
+                                 br(),
+                                 p(id = "txt_j", "To reload the app input you can upload the downloaded '.eddie' file at the top of this pae and it will populate your answers into the Shiny app."),
                                  p(id = "txt_j", HTML(paste0(tags$b("Note:"), " You will need to navigate to tabs Objective 1, 2 and 3 in Activity A after uploading your file for the inputs to load there. You will also need to load the NOAA data in Objective 6."))),
                                  p(id = "txt_j", "Currently the plots do not save to the file.  If you generated plots during your last session, you will need to reload the data and reproduce the plots before generating your report.  Additionally, the answers for Q.10 will need to be re-submitted.")
-                          ),
+                                 ),
                           column(4, offset = 1,
                                  introBox(
                                    h3("Generate Report"),
-                                   p("This will take the answers you have input into this app and generate a Microsoft Word document (.docx) document with your answers which you can download and make further edits before submitting. Return here when you have completed the module."),
-                                   actionButton("generate", "Generate Report (.docx)", icon = icon("file"), width = "190px", class = "btn-primary"
-                                                # id = "dl_btn", # This is the only button that shows up when the app is loaded
-                                                # style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"
-                                   ), br(), br(),
+                                   p(id = "txt_j", "This will take the answers you have input into this app and generate a Microsoft Word document (.docx) document with your answers which you can download and make further edits before submitting. Return here when you have completed the module."),
+                                   actionButton("generate", "Generate Report (.docx)", icon = icon("file"),
+                                                width = "190px", class = "btn-primary"),
+                                   br(), br(),
                                    data.step = 6, data.intro = help_text["finish", 1]
                                  ),
                                  tags$style(type="text/css", "#download {background-color:#579277;color: white}"),
@@ -353,6 +363,7 @@ ui <- function(req) {
                         fluidRow(
                           column(4, offset = 1,
                                  tags$ul(
+                                   # USA NPN Pheno Forecast
                                    tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[1], "' target='_blank' >", EF_links$Forecast[1], "</a>")),
                                            br(), p(EF_links$About[1])),
 
@@ -361,13 +372,15 @@ ui <- function(req) {
                                                  </a>")),
                                    br(), hr(),
 
-                                   tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[2], "' target='_blank' >", EF_links$Forecast[2], "</a>")),
-                                           br(), p(EF_links$About[2])),
-                                   HTML(paste0("<a href='", EF_links$use_html[2], "' target='_blank'>
-                                                 <img src='fc_examples/", EF_links$img[2], "' height='50%' width='50%' id='bla_border2'/>
-                                                 </a>")),
-                                   br(), hr(),
+                                   # FLARE
+                                   # tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[2], "' target='_blank' >", EF_links$Forecast[2], "</a>")),
+                                   #         br(), p(EF_links$About[2])),
+                                   # HTML(paste0("<a href='", EF_links$use_html[2], "' target='_blank'>
+                                   #               <img src='fc_examples/", EF_links$img[2], "' height='50%' width='50%' id='bla_border2'/>
+                                   #               </a>")),
+                                   # br(), hr(),
 
+                                   # EcoCast
                                    tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[3], "' target='_blank' >", EF_links$Forecast[3], "</a>")),
                                            br(), p(EF_links$About[3])),
                                    HTML(paste0("<a href='", EF_links$use_html[3], "' target='_blank'>
@@ -378,6 +391,7 @@ ui <- function(req) {
                           ),
                           column(4, offset = 2,
                                  tags$ul(
+                                   # Grassland Production Forecast
                                    tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[5], "' target='_blank' >", EF_links$Forecast[5], "</a>")),
                                            br(), p(EF_links$About[5])),
                                    HTML(paste0("<a href='", EF_links$use_html[5], "' target='_blank'>
@@ -385,6 +399,7 @@ ui <- function(req) {
                                                  </a>")),
                                    br(), hr(),
 
+                                   # Rodent Abundances
                                    tags$li(id = "txt_j", HTML(paste0("<a href='", EF_links$use_html[6], "' target='_blank' >", EF_links$Forecast[6], "</a>")),
                                            br(), p(EF_links$About[6])),
 
@@ -805,28 +820,24 @@ border-color: #FFF;
                                                ),
                                              fluidRow(
                                                column(6,
-                                                      p("Here we are going to use the NP model to simulate primary productivity. We will be comparing our model output to chlorophyll-a sensor data and adjusting the models parameters to try and replicate the sensor measurements.")
-                                               ),
-                                               column(6, align = "center",
-                                                      img(src = "02-build-model.png", height = "75%",
-                                                          width = "75%")
-                                               )
-                                             ), br(), hr(),
-                                             fluidRow(
-                                               column(6,
+                                                      p("Here we are going to use the NP model to simulate primary productivity. We will be comparing our model output to chlorophyll-a sensor data and adjusting the models parameters to try and replicate the sensor measurements."),
                                                       h3("Build Model"),
                                                       p(id = "txt_j", "We will use observed data from the selected site on the 'Activity A' tab to drive the NP model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs."),
-                                               ),
-                                               column(6,
                                                       h4("Calibration tips"),
                                                       p(id = "txt_j", "How does the model output compare to in-lake observations? Here are some things you should look out for:"),
                                                       tags$ol(
                                                         tags$li("Is the model in the same range as the observations?"),
                                                         tags$li("Does it capture the seasonal patterns?"),
                                                         tags$li("Does the model simulate events seen as spikes?")
+                                                        )
                                                       ),
-                                               ),
-                                               hr(),
+                                               column(6, align = "center",
+                                                      img(src = "02-build-model.png", height = "75%",
+                                                          width = "75%")
+                                               )
+                                             ),
+                                             hr(),
+                                             fluidRow(
                                                column(12,
                                                       h3("Calibration target"),
                                                       p("Below are some example images of what a 'calibrated' model output looks like. Remember this is a simplified model so do not expect it to simulate chorophyll-a concentrations exactly."),
@@ -839,32 +850,67 @@ border-color: #FFF;
                                                column(6, align = "center",
                                                       img(src = calib_model_png[2], height = "75%", width = "75%", id = "bla_border"),
                                                       p(tags$em("Calibrated model ", tags$b("with"), " surface water temperature and underwater PAR as inputs to the model."))
+                                                      )
                                                ),
-                                             ),
+                                             hr(),
                                              fluidRow(
-                                               column(3,
-                                                      br(), br(), br(),# br(), br(),
+                                               column(4,
                                                       h3("Run Model"),
                                                       p(id = "txt_j", "To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates below."),
                                                       p(id = "txt_j", "Inital conditions can also be adjusted to measured values from ", actionLink("obj_2", "Objective 2")," but you can also adjust the initial values to see how the model responds."),
-                                                      p(id = "txt_j", "The NP model simulates phytoplankton biomass which we convert to chlorophyll-a to allow comparison between the simulations and field observations."),
+                                                      p(id = "txt_j", "The NP model simulates phytoplankton biomass which we convert to chlorophyll-a to allow comparison between the simulations and field observations. Spend some time running the model with differing inputs, initial conditions and parameters before answering the questions below."),
                                                       br(),
                                                       p(id = "txt_j", "Answer questions 12-15 using this model."),
+                                                      box(id = "box8", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(12,
+                                                                   h3("Questions"),
+                                                                   conditionalPanel("input.submit_ques == 0",
+                                                                                    textAreaInput2(inputId = "q12", label = quest["q12", 1] , width = "100%"),
+                                                                                    ),
+                                                                   conditionalPanel("input.submit_ques == 1",
+                                                                                    p(tags$b(quest["q13", 1])),
+                                                                                    textAreaInput2(inputId = "q13a", label = quest["q13a", 1] , width = "100%"),
+                                                                   ),
+                                                                   conditionalPanel("input.submit_ques == 2",
+                                                                                    p(tags$b(quest["q13", 1])),
+                                                                                    textAreaInput2(inputId = "q13b", label = quest["q13b", 1] , width = "100%"),
+                                                                   ),
+                                                                   conditionalPanel("input.submit_ques == 3",
+                                                                                    p(tags$b(quest["q14", 1])),
+                                                                                    textAreaInput2(inputId = "q14a", label = quest["q14a", 1] , width = "100%"),
+                                                                   ),
+                                                                   conditionalPanel("input.submit_ques == 4",
+                                                                                    p(tags$b(quest["q14", 1])),
+                                                                                    textAreaInput2(inputId = "q14b", label = quest["q14b", 1] , width = "100%"),
+                                                                   ),
+                                                                   conditionalPanel("input.submit_ques == 5",
+                                                                                    textAreaInput2(inputId = "q15", label = quest["q15", 1] , width = "100%"),
+                                                                                    )
+
+                                                                   )
+                                                            )
+                                                          ),
+                                                      br(),
                                                       actionButton("run_mod_ann",
                                                                    label = div("Run Model",
                                                                                icon("running")),
                                                                    width = "60%"),
-                                               ),
-                                               column(9,
+                                                      actionButton("submit_ques", "Submit answer")
+                                                      ),
+                                               column(8,
                                                       h3("Primary Productivity"),
                                                       wellPanel(
                                                         plotlyOutput("mod_ann_plot")
                                                       ),
-                                                      p(tags$b("Add observations")),
-                                                      checkboxInput("add_obs", "Add observations to the plots"),
-                                                      tags$style(type="text/css", "#save_mod_run {background-color:#9ECBB5;color: black}"),
-                                                      actionButton("save_mod_run", "Save plot", icon = icon("save")), br()
-                                               ),
+                                                      conditionalPanel("input.submit_ques == 5",
+                                                                       p(tags$b("Add observations")),
+                                                                       checkboxInput("add_obs", "Add observations to the plots"),
+                                                                       tags$style(type="text/css", "#save_mod_run {background-color:#9ECBB5;color: black}"),
+                                                                       actionButton("save_mod_run", "Save plot", icon = icon("save")), br()
+                                                                       )
+                                                      ),
                                              ), hr(),
                                              fluidRow(
 
@@ -911,38 +957,50 @@ border-color: #FFF;
                                                       DTOutput("save_par", width = "10%"),
                                                       br(),
                                                       p("Add your parameters by clicking on the target row in the table", tags$b("BEFORE") ," you run the model.")
+                                                      ),
+                                               column(6,
+                                                      box(id = "box8b", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(10, offset = 1,
+                                                                   h3("Questions & answers"),
+                                                                   p("Your answers will be input below when you submit them above. You can edit your answers further by double clicking on the cell."),
+                                                                   DTOutput("tab_mod_ans")
+                                                                   )
+                                                            )
+                                                          )
                                                       )
                                                ),
                                              hr(),
                                              br(),
-                                             fluidRow(
-                                               column(12,
-                                                      box(id = "box8", width = 12, status = "primary",
-                                                          solidHeader = TRUE,
-                                                          fluidRow(
-                                                            column(12, offset = 1,
-                                                                   h3("Questions")
-                                                            ),
-                                                            column(5, offset = 1,
-                                                                   textAreaInput2(inputId = "q12", label = quest["q12", 1] , width = "90%"),
-                                                                   br(),
-                                                                   p(tags$b(quest["q13", 1])),
-                                                                   textAreaInput2(inputId = "q13a", label = quest["q13a", 1] , width = "90%"),
-                                                                   textAreaInput2(inputId = "q13b", label = quest["q13b", 1] , width = "90%"),
-                                                                   br()
-                                                            ), column(5,
-                                                                      p(tags$b(quest["q14", 1])),
-                                                                      textAreaInput2(inputId = "q14a", label = quest["q14a", 1] , width = "90%"),
-                                                                      textAreaInput2(inputId = "q14b", label = quest["q14b", 1] , width = "90%"),
-                                                                      br(),
-                                                                      p(tags$b(quest["q15", 1])),
-                                                                      p(tags$b("Note:"), "The model you are using is a very simplified model. Do not spend greater than 5-10 minutes trying to calibrate the model. The main aim is to get it simulating concentrations in the same ranges as observations and not identically matching the observations."),
-                                                                      imageOutput("mod_run_img")
-                                                            )
-                                                          )
-                                                      )
-                                               )
-                                             ),
+                                             # fluidRow(
+                                             #   column(12,
+                                             #          box(id = "box8", width = 12, status = "primary",
+                                             #              solidHeader = TRUE,
+                                             #              fluidRow(
+                                             #                column(12, offset = 1,
+                                             #                       h3("Questions")
+                                             #                ),
+                                             #                column(5, offset = 1,
+                                             #                       textAreaInput2(inputId = "q12", label = quest["q12", 1] , width = "90%"),
+                                             #                       br(),
+                                             #                       p(tags$b(quest["q13", 1])),
+                                             #                       textAreaInput2(inputId = "q13a", label = quest["q13a", 1] , width = "90%"),
+                                             #                       textAreaInput2(inputId = "q13b", label = quest["q13b", 1] , width = "90%"),
+                                             #                       br()
+                                             #                ), column(5,
+                                             #                          p(tags$b(quest["q14", 1])),
+                                             #                          textAreaInput2(inputId = "q14a", label = quest["q14a", 1] , width = "90%"),
+                                             #                          textAreaInput2(inputId = "q14b", label = quest["q14b", 1] , width = "90%"),
+                                             #                          br(),
+                                             #                          p(tags$b(quest["q15", 1])),
+                                             #                          p(tags$b("Note:"), "The model you are using is a very simplified model. Do not spend greater than 5-10 minutes trying to calibrate the model. The main aim is to get it simulating concentrations in the same ranges as observations and not identically matching the observations."),
+                                             #                          imageOutput("mod_run_img")
+                                             #                )
+                                             #              )
+                                             #          )
+                                             #   )
+                                             # ),
                                              fluidRow(
                                                column(5, offset = 1,
                                                       h3("Next step"),
@@ -1634,7 +1692,7 @@ border-color: #FFF;
                    br(),
                    tags$style(type="text/css", paste0("#download_answers {background-color:#579277;color: white; padding:15px; font-size:18px;}")),
                    hover_download_button(outputId = "download_answers",
-                                         label = "Download user input",
+                                         label = "Save Progress",
                                          class = "butt1",
                                          button_animation = "glow"),
                    # downloadButton("download_answers", label = "Download user input", class = "butt1"),

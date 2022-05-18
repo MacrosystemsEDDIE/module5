@@ -3642,27 +3642,76 @@ server <- function(input, output, session) {#
   )
 
   # Updating sliders from first inputs ----
-  observeEvent(input$run_mod_ann, {
+  mod_ans_tab <- reactiveValues(df = data.frame(Answer = c(quest["q12", 1], "[input answer]", paste0("Q13", quest["q13a", 1]), "[input answer]",
+                                                           paste0("Q13", quest["q13b", 1]), "[input answer]", paste0("Q14", quest["q14a", 1]), "[input answer]", paste0("Q14", quest["q14b", 1]), "[input answer]", quest["q15", 1], "[input answer]")))
+  observeEvent(input$submit_ques, {
     # Initial conditions
     phy_init1 <- input$phy_init
     updateSliderInput(session, "phy_init2", value = phy_init1)
     nut_init1 <- input$nut_init
     updateSliderInput(session, "nut_init2", value = nut_init1)
 
-    # Parameters
-    # mort_rate1 <- input$mort_rate
-    # updateSliderInput(session, "mort_rate2", value = mort_rate1)
-    # nut_uptake1 <- input$nut_uptake
-    # updateSliderInput(session, "nut_uptake2", value = nut_uptake1)
-
     # Update parameters in the table
-    par_save$value[input$save_par_rows_selected, 1] <<- "Surface water temperature (SWT)" %in% input$mod_sens
-    par_save$value[input$save_par_rows_selected, 2] <<- "Underwater light (uPAR)" %in% input$mod_sens
-    par_save$value[input$save_par_rows_selected, 3:6] <<- c(input$phy_init,
-                                                            input$nut_init,
-                                                            input$mort_rate, input$nut_uptake)
+    if(input$submit_ques <= 3) {
+      par_save$value[input$submit_ques, 1] <<- "Surface water temperature (SWT)" %in% input$mod_sens
+      par_save$value[input$submit_ques, 2] <<- "Underwater light (uPAR)" %in% input$mod_sens
+      par_save$value[input$submit_ques, 3:6] <<- c(input$phy_init,
+                                                   input$nut_init,
+                                                   input$mort_rate, input$nut_uptake)
+    } else {
+      par_save$value[input$submit_ques - 1, 1] <<- "Surface water temperature (SWT)" %in% input$mod_sens
+      par_save$value[input$submit_ques - 1, 2] <<- "Underwater light (uPAR)" %in% input$mod_sens
+      par_save$value[input$submit_ques - 1, 3:6] <<- c(input$phy_init,
+                                                   input$nut_init,
+                                                   input$mort_rate, input$nut_uptake)
 
+    }
+
+    if(input$submit_ques == 1) {
+      mod_ans_tab$df[2, 1] <- input$q12
+    } else if(input$submit_ques == 2) {
+      mod_ans_tab$df[4, 1] <- input$q13a
+    } else if(input$submit_ques == 3) {
+      mod_ans_tab$df[6, 1] <- input$q13b
+    } else if(input$submit_ques == 4) {
+      mod_ans_tab$df[8, 1] <- input$q14a
+    } else if(input$submit_ques == 5) {
+      mod_ans_tab$df[10, 1] <- input$q14b
+    } else if(input$submit_ques == 6) {
+      mod_ans_tab$df[12, 1] <- input$q15
+    }
+
+    if(input$submit_ques == 5) {
+      shinyalert("Answer submitted!", "You have completed your questions you can review your answers below.", type = "success",
+                 closeOnClickOutside = TRUE)
+    } else if(input$submit_ques == 4) {
+      shinyalert("Answer submitted!", "Your hypothesis has been submitted. Now run the model situation and answer the next question.",
+                 type = "success", closeOnClickOutside = TRUE)
+    } else {
+      shinyalert("Answer submitted!", "Your parameters have been saved in the table below. Now answer the next question.",
+                 type = "success", closeOnClickOutside = TRUE)
+    }
   })
+  observe({
+    if(input$submit_ques > 5) {
+      disable("submit_ques")
+    }
+    if(input$submit_ques  == 4) {
+      disable("run_mod_ann")
+    } else {
+      enable("run_mod_ann")
+    }
+  })
+
+  output$tab_mod_ans <- DT::renderDT(
+    mod_ans_tab$df,
+    selection = "none", class = "cell-border stripe",
+    options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"),
+    server = FALSE, escape = FALSE, rownames= FALSE, colnames = NULL, editable = TRUE
+  )
+
+
+
 
   observeEvent(input$update_fc2, {
     # Initial conditions
@@ -3924,6 +3973,9 @@ server <- function(input, output, session) {#
     lmfit3$m <- up_answers$upar_m
     lmfit3$b <- up_answers$upar_b
     lmfit3$r2 <- up_answers$upar_r2
+
+    shinyalert(title = "Upload Successful", text = "You will need to navigate to tabs Objective 1, 2 and 3 in Activity A after uploading your file for the inputs to load there. You will also need to load the NOAA data in Objective 6.", type = "success")
+
   })
 
   observe({
