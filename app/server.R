@@ -48,7 +48,7 @@ server <- function(input, output, session) {#
   })
 
   output$table01 <- DT::renderDT(
-    neon_sites_df[, c(1:2)], selection = "single", options = list(stateSave = TRUE, dom = 't'), server = FALSE
+    neon_sites_df[, c(1:2)], selection = "single", options = list(stateSave = TRUE, dom = 't'), rownames = FALSE, server = FALSE
   )
 
   # to keep track of previously selected row
@@ -667,8 +667,8 @@ server <- function(input, output, session) {#
 
     p <- ggplot() +
       geom_point(data = swr_upar()$data, aes_string(names(swr_upar()$data)[2], names(swr_upar()$data)[3]), color = "black") +
-      ylab("Underwater PAR (micromolesPerSquareMeterPerSecond)") +
-      xlab("Shortwave radiation (wattsPerSquareMeter)") +
+      ylab(expression(Underwater~PAR~(mu*M~m^{-2}~s^{-1})))+
+      xlab(expression(Shortwave~radiation ~(W~m^{-2}))) +
       theme_minimal(base_size = 12)
 
     if(nrow(obj) != 0) {
@@ -3316,7 +3316,7 @@ server <- function(input, output, session) {#
 
 
   #** Render Report ----
-  report <- reactiveValues(filepath = NULL) #This creates a short-term storage location for a filepath
+  report <- reactiveValues(filepath = NULL, filepath2 = NULL) #This creates a short-term storage location for a filepath
 
   observeEvent(input$generate, {
 
@@ -3377,12 +3377,12 @@ server <- function(input, output, session) {#
                    a10_pars = input$rank_list_3,
                    a11a = input$q11a,
                    a11b = input$q11b,
-                   a12 = input$q12,
-                   a13a = input$q13a,
-                   a13b = input$q13b,
-                   a14a = input$q14a,
-                   a14b = input$q14b,
-                   a15 = input$q15,
+                   a12 = mod_ans_tab$df[2, 1],
+                   a13a = mod_ans_tab$df[4, 1],
+                   a13b = mod_ans_tab$df[6, 1],
+                   a14a = mod_ans_tab$df[8, 1],
+                   a14b = mod_ans_tab$df[10, 1],
+                   a15 = mod_ans_tab$df[12, 1],
                    a16 = input$q16,
                    a17a = input$q17a,
                    a17b = input$q17b,
@@ -3428,12 +3428,126 @@ server <- function(input, output, session) {#
     report$filepath <- tmp_file #Assigning in the temp file where the .pdf is located to the reactive file created above
 
   })
+  observeEvent(input$generate2, {
+
+    par_file <- "data/par_save.csv"
+    write.csv(par_save$value, par_file, quote = FALSE, row.names = TRUE)
+    summ_file <- "data/mod_setting_summary.csv"
+    write.csv(final_parms$df, summ_file, quote = FALSE, row.names = TRUE)
+    progress <- shiny::Progress$new()
+    # Make sure it closes when we exit this reactive, even if there's an error
+    on.exit(progress$close())
+    progress$set(message = "Gathering data and building report.",
+                 detail = "This may take a while. This window will disappear
+                     when the report is ready.", value = 1)
+
+    # Prepare regression equations
+
+
+    # Set up parameters to pass to Rmd document
+    params <- list(name = input$name,
+                   id_number = input$id_number,
+                   a1 = input$q1,
+                   a2 = input$q2,
+                   a3 = input$q3,
+                   a4a = input$q4a,
+                   a4b = input$q4b,
+                   a4c = input$q4c,
+                   a4d = input$q4d,
+                   a5a = input$q5a,
+                   a5b = input$q5b,
+                   a5c = input$q5c,
+                   a5d = input$q5d,
+                   a5e = input$q5e,
+                   a5f = input$q5f,
+                   a6a_mean = q6_ans$dt[1, 1],
+                   a6a_min = q6_ans$dt[1, 2],
+                   a6a_max = q6_ans$dt[1, 3],
+                   a6b_mean = q6_ans$dt[2, 1],
+                   a6b_min = q6_ans$dt[2, 2],
+                   a6b_max = q6_ans$dt[2, 3],
+                   a6c_mean = q6_ans$dt[3, 1],
+                   a6c_min = q6_ans$dt[3, 2],
+                   a6c_max = q6_ans$dt[3, 3],
+                   a6d_mean = q6_ans$dt[4, 1],
+                   a6d_min = q6_ans$dt[4, 2],
+                   a6d_max = q6_ans$dt[4, 3],
+                   a6e_mean = q6_ans$dt[5, 1],
+                   a6e_min = q6_ans$dt[5, 2],
+                   a6e_max = q6_ans$dt[5, 3],
+                   a7a = input$q7a,
+                   a7b = input$q7b,
+                   a7c = input$q7c,
+                   a7d = input$q7d,
+                   a8 = input$q8,
+                   a9a = input$q9a,
+                   a9b = input$q9b,
+                   a9c = input$q9c,
+                   a10_states = input$rank_list_2,
+                   a10_pars = input$rank_list_3,
+                   a11a = input$q11a,
+                   a11b = input$q11b,
+                   a12 = mod_ans_tab$df[2, 1],
+                   a13a = mod_ans_tab$df[4, 1],
+                   a13b = mod_ans_tab$df[6, 1],
+                   a14a = mod_ans_tab$df[8, 1],
+                   a14b = mod_ans_tab$df[10, 1],
+                   a15 = mod_ans_tab$df[12, 1],
+                   a16 = input$q16,
+                   a17a = input$q17a,
+                   a17b = input$q17b,
+                   a17c = input$q17c,
+                   a18 = input$q18,
+                   a19 = input$q19,
+                   a20 = input$q20,
+                   a21 = input$q21,
+                   a22 = input$q22,
+                   a23 = input$q23,
+                   a24 = input$q24,
+                   a25a = input$q25a,
+                   a25b = input$q25b,
+                   a25c = input$q25c,
+                   a26 = input$q26,
+                   save_pars = par_file,
+                   pheno_file = pheno_file$img,
+                   site_html = "data/site.html",
+                   mod_2019_png = "www/mod_run_2019.png",
+                   noaa_plot = "www/noaa_fc.png",
+                   comm_plot = "www/comm_fc_plot.png",
+                   assess_plot = "www/assess_fc.png",
+                   update_plot = "www/fc_update.png",
+                   next_fc_plot = "www/new_fc.png",
+                   wt_m = lmfit2$m,
+                   wt_b = lmfit2$b,
+                   wt_r2 = lmfit2$r2,
+                   upar_m = lmfit3$m,
+                   upar_b = lmfit3$b,
+                   upar_r2 = lmfit3$r2,
+                   mod_summ = summ_file
+    )
+
+
+    tmp_file <- paste0(tempfile(), ".docx") #Creating the temp where the .pdf is going to be stored
+
+    rmarkdown::render("report.Rmd",
+                      output_format = "all",
+                      output_file = tmp_file,
+                      params = params,
+                      envir = new.env(parent = globalenv()))
+    progress$set(value = 1)
+    report$filepath2 <- tmp_file #Assigning in the temp file where the .pdf is located to the reactive file created above
+
+  })
 
   # Hide download button until report is generated
   output$reportbuilt <- reactive({
     return(!is.null(report$filepath))
   })
   outputOptions(output, 'reportbuilt', suspendWhenHidden= FALSE)
+  output$reportbuilt2 <- reactive({
+    return(!is.null(report$filepath2))
+  })
+  outputOptions(output, 'reportbuilt2', suspendWhenHidden= FALSE)
 
 
   #** Download Report ----
@@ -3456,6 +3570,25 @@ server <- function(input, output, session) {#
 
     }
   )
+  output$download2 <- downloadHandler(
+
+    # This function returns a string which tells the client
+    # browser what name to use when saving the file.
+    filename = function() {
+      paste0("report_", input$id_number, ".docx") %>%
+        gsub(" ", "_", .)
+    },
+
+    # This function should write data to a file given to it by
+    # the argument 'file'.
+    content = function(file) {
+
+      file.copy(report$filepath2, file)
+
+    }
+  )
+
+
   # Navigating Tabs ----
   #* Main Tab ====
   rv1 <- reactiveValues(prev = 0, nxt = 2)
@@ -3758,6 +3891,9 @@ server <- function(input, output, session) {#
   output$check_list <- renderUI({
     chk_list()
   })
+  output$check_list2 <- renderUI({
+    chk_list()
+  })
 
   chk_list <- reactive({
     out_chk <- c(
@@ -3831,21 +3967,6 @@ server <- function(input, output, session) {#
       a5e = input$q5e,
       a5f = input$q5f,
       a6 = q6_ans$dt,
-      # a6a_mean = input$q6a_mean,
-      # a6a_min = input$q6a_min,
-      # a6a_max = input$q6a_max,
-      # a6b_mean = input$q6b_mean,
-      # a6b_min = input$q6b_min,
-      # a6b_max = input$q6b_max,
-      # a6c_mean = input$q6c_mean,
-      # a6c_min = input$q6c_min,
-      # a6c_max = input$q6c_max,
-      # a6d_mean = input$q6d_mean,
-      # a6d_min = input$q6d_min,
-      # a6d_max = input$q6d_max,
-      # a6e_mean = input$q6e_mean,
-      # a6e_min = input$q6e_min,
-      # a6e_max = input$q6e_max,
       a7a = input$q7a,
       a7b = input$q7b,
       a7c = input$q7c,
@@ -3858,12 +3979,12 @@ server <- function(input, output, session) {#
       a10_pars = input$rank_list_3,
       a11a = input$q11a,
       a11b = input$q11b,
-      a12 = input$q12,
-      a13a = input$q13a,
-      a13b = input$q13b,
-      a14a = input$q14a,
-      a14b = input$q14b,
-      a15 = input$q15,
+      a12 = mod_ans_tab$df[2, 1],
+      a13a = mod_ans_tab$df[4, 1],
+      a13b = mod_ans_tab$df[6, 1],
+      a14a = mod_ans_tab$df[8, 1],
+      a14b = mod_ans_tab$df[10, 1],
+      a15 = mod_ans_tab$df[12, 1],
       a16 = input$q16,
       a17a = input$q17a,
       a17b = input$q17b,
@@ -3889,8 +4010,6 @@ server <- function(input, output, session) {#
       upar_b = lmfit3$b,
       upar_r2 = lmfit3$r2
     )
-    # ans_list <- data.frame(matrix(unlist(ans_list), nrow=length(ans_list), byrow = TRUE))
-    # print(ans_list)
   })
 
   output$download_answers <- downloadHandler(
@@ -3973,6 +4092,14 @@ server <- function(input, output, session) {#
     lmfit3$m <- up_answers$upar_m
     lmfit3$b <- up_answers$upar_b
     lmfit3$r2 <- up_answers$upar_r2
+
+    mod_ans_tab$df[2, 1] <- up_answers$a12
+    mod_ans_tab$df[4, 1] <- up_answers$a13a
+    mod_ans_tab$df[6, 1] <- up_answers$a13b
+    mod_ans_tab$df[8, 1] <- up_answers$a14a
+    mod_ans_tab$df[10, 1] <- up_answers$a14b
+    mod_ans_tab$df[12, 1] <- up_answers$a15
+
 
     shinyalert(title = "Upload Successful", text = "You will need to navigate to tabs Objective 1, 2 and 3 in Activity A after uploading your file for the inputs to load there. You will also need to load the NOAA data in Objective 6.", type = "success")
 

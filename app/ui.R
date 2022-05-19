@@ -212,7 +212,7 @@ ui <- function(req) {
                           hr(),
                           column(4,
                                  h3("Presentation"),
-                                 p("The presentation accompanying this module covers the introduction to forecasting, the nutrient-phytoplankton model (NP) and the importance and relevance of ecological forecasts."),
+                                 p("The presentation accompanying this module covers the introduction to forecasting, the nutrient-phytoplankton model (NP) used in this module, and the importance and relevance of ecological forecasts."),
                                  p("What is a forecast?"),
                                  tags$ul(
                                    tags$li(module_text["what_forecast", ])
@@ -278,7 +278,7 @@ ui <- function(req) {
                         fluidRow(
                           column(4, offset = 1,
                                  h3("Saving your progress"),
-                                 p(id = "txt_j", "If you run out of time to finish all the activities you can save your progress and return to it at a later date. Click the 'Download user input' button at the bottom of the page and a file 'module5_answers_ID_number.eddie' will download. Store this file in a safe place locally on your computer."),
+                                 p(id = "txt_j", "If you run out of time to finish all the activities you can save your progress and return to it at a later date. Click the 'Save Progress' button at the bottom of the page and a file 'module5_answers_ID_number.eddie' will download. Store this file in a safe place locally on your computer."),
                                  img(src = "save_button.png", height = "100%", id = "bla_border",
                                      width = "100%", tags$style("border: solid 2px black;")),
                                  br(),
@@ -904,9 +904,9 @@ border-color: #FFF;
                                                       wellPanel(
                                                         plotlyOutput("mod_ann_plot")
                                                       ),
+                                                      p(tags$b("Add observations")),
+                                                      checkboxInput("add_obs", "Add observations to the plots"),
                                                       conditionalPanel("input.submit_ques == 5",
-                                                                       p(tags$b("Add observations")),
-                                                                       checkboxInput("add_obs", "Add observations to the plots"),
                                                                        tags$style(type="text/css", "#save_mod_run {background-color:#9ECBB5;color: black}"),
                                                                        actionButton("save_mod_run", "Save plot", icon = icon("save")), br()
                                                                        )
@@ -1260,7 +1260,7 @@ border-color: #FFF;
                                                                        radioButtons("type2", "Type of Visualization", choices = c("Data table", plot_types), selected = "Line")
                                                                        ),
                                                       h3(tags$b("Initial conditions")),
-                                                      p(id = "txt_j", "Use the plot here, which shows measurements of  Chorophyll-a, to select and update your initial conditions before running your forecast. There is no up-to-date nutrient data so you will need to estimate this from the measurements in Activity A - Objective 5. Adjust this value to explore the sensitivity of the forecast to this value."),
+                                                      p(id = "txt_j", "Use the plot here, which shows measurements of  Chorophyll-a, to select and update your initial conditions before running your forecast. There is no up-to-date nutrient data available so you will need to estimate this from the measurements in Activity A - Objective 5. Adjust this value to explore the sensitivity of the forecast to this value."),
                                                       p(tags$b("Phytoplankton")),
                                                       # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
                                                       sliderInput("phy_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px")),
@@ -1356,7 +1356,8 @@ border-color: #FFF;
                                              fluidRow(
                                                column(5, offset = 1,
                                                       h3("Next step"),
-                                                      p("Communicating a forecast is an important part of forecasting but it can be highly variable depending on who the target audience is e.g. general public, natural resource manager, farmer etc. Next a week will have past since the forecast so we will compare our forecast to actual observations.")
+                                                      p("Communicating a forecast is an important part of forecasting and needs to be tailored to your target audience (e.g. general public, natural resource manager, farmer etc)"),
+                                                      p("Next, a week will have past since your forecast was generated so we will compare our forecast to actual observations.")
                                                       )
                                                )
                                              ),
@@ -1654,8 +1655,32 @@ border-color: #FFF;
                         fluidRow(
                           column(12,
                                  h2("Completed Module!"),
-                                 p("This is the end of the module. If you have been inputting your answers into the app you will need to return to the 'Introduction' tab and generate the final report"),
+                                 p("This is the end of the module. If you have been inputting your answers into the app you will need to return to the 'Introduction' tab and generate the final report."),
                                  actionButton("return_intro2", "Return to Introduction", icon = icon("home"))
+                                 )
+                        ),
+                        fluidRow(
+                          column(4,
+                                 h3("Completed Module!"),
+                                 p("This is the end of the module. Now you can generate your final report which will input all your answers and figures into a Microsoft Word document which you can download and submit to your instructor.")
+                          ),
+                          column(4,
+                                 h3("Generate Report"),
+                                 p("This will take the answers you have input into this app and generate a Microsoft Word document (.docx) document with your answers which you can download and make further edits before submitting."),
+                                 actionButton("generate2", "Generate Report (.docx)", icon = icon("file"),
+                                              width = "190px", class = "btn-primary"),
+                                 br(), br(),
+                                 tags$style(type="text/css", "#download2 {background-color:#579277;color: white}"),
+                                 conditionalPanel(condition = "output.reportbuilt2", # This button appears after the report has been generated and is ready for download.
+                                                  downloadButton("download2", "Download Report", width = "60px", style = "width:190px;"
+                                                                 )
+                                                  )
+                                 ),
+                          column(4,
+                                 h3(tags$b("Questions to be completed:")),
+                                 wellPanel(
+                                   htmlOutput("check_list2")
+                                   )
                                  )
                         ),
                         hr(),
