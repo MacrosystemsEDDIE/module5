@@ -4,7 +4,9 @@ server <- function(input, output, session) {#
   observeEvent(input$help, {
     introjs(session, events = list(onbeforechange = readCallback("switchTabs")))
   })
-  # hintjs(session, options = list("hintButtonLabel"="That was a hint"))
+  observeEvent(input$help2, {
+    shinyalert(title = "Resume Progress", text = "Use this field to upload your '.eddie' file to resume your progress.", type = "info")
+  })
 
 
   ## observe the Hide button being pressed
@@ -667,8 +669,8 @@ server <- function(input, output, session) {#
 
     p <- ggplot() +
       geom_point(data = swr_upar()$data, aes_string(names(swr_upar()$data)[2], names(swr_upar()$data)[3]), color = "black") +
-      ylab(expression(Underwater~PAR~(mu*M~m^{-2}~s^{-1})))+
-      xlab(expression(Shortwave~radiation ~(W~m^{-2}))) +
+      ylab("Underwater PAR (\u03BC M m-2 s-1)") +
+      xlab("Shortwave radiation (W m-2)") +
       theme_minimal(base_size = 12)
 
     if(nrow(obj) != 0) {
