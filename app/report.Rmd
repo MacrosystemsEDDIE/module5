@@ -87,6 +87,7 @@ params:
 ---
 
 ```{r setup, include=FALSE}
+options(kableExtra.auto_format = FALSE)
 knitr::opts_chunk$set(echo = FALSE)
 ```
 ```{r}
@@ -396,8 +397,7 @@ if (!pheno_chk) {cat("-->")}
 10. `r module_text["state_var", 1]` `r module_text["parameter", 1]` `r substr(quest["q10", ], 6, nchar(quest["q10", ]))` 
 \
 ```{r echo = FALSE, results = "asis"}
-library(knitr)
-kable(state_par, caption = "Table 4. Sorted parameters and state variabes.", row.names = FALSE)
+kableExtra::kable(state_par, caption = "Table 4. Sorted parameters and state variabes.", row.names = FALSE)
 
 ```
  
@@ -417,8 +417,7 @@ kable(state_par, caption = "Table 4. Sorted parameters and state variabes.", row
 ***
 
 ```{r echo = FALSE, results = "asis"}
-library(knitr)
-kable(par_tab, caption = "Table 5. Parameters used in Q12-15", row.names = TRUE)
+kableExtra::kable(par_tab, caption = "Table 5. Parameters used in Q12-15", row.names = TRUE)
 
 ```
 \
@@ -661,8 +660,7 @@ if (!next_fc_plot_chk) {cat("-->")}
 **Answer:** `r params$a24`\
 
 ```{r echo = FALSE, results = "asis"}
-library(knitr)
-kable(mod_sett, caption = "Table 6. Model settings used in the first forecast, updated forecast and the second forecast.", row.names = TRUE)
+kableExtra::kable(mod_sett, caption = "Table 6. Model settings used in the first forecast, updated forecast and the second forecast.", row.names = TRUE)
 
 ```
 \
