@@ -600,8 +600,16 @@ border-color: #FFF;
                                                column(4,
                                                       h3("Calculate statistics"),
                                                       selectInput("stat_calc", label = "Select calculation:", choices = stats),
-                                                      textOutput("out_stats")
-                                               ),
+                                                      wellPanel(
+                                                        textOutput("out_stats")
+                                                        ),
+                                                      p("See image below to see location of the 'Box select' and 'Lasso select'."),
+                                                      fluidRow(
+                                                        column(12, align = "center",
+                                                               img(src = "box_select.png", height = "75%", width = "75%", id = "bla_border")
+                                                               )
+                                                        )
+                                                      ),
                                                column(8,
                                                       box(id = "box4", width = 12, status = "primary",
                                                           solidHeader = TRUE,
@@ -619,6 +627,7 @@ border-color: #FFF;
                                                           )
                                                       )
                                                ),
+                                             hr(),
                                              fluidRow(
                                                column(5, offset = 1,
                                                       h3("Next step"),
