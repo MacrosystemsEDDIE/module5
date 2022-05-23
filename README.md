@@ -8,6 +8,21 @@
 ### Summary
 Here is the code for running the Macrosystems EDDIE Module 5: _Introduction to Ecological Forecasting_. Below are instructions on how to access the Shiny app *via* a web browser and also a detailed guide below for launching the R Shiny App locally on your own computer. For more details about teaching this module please visit our [website](https://serc.carleton.edu/eddie/teaching_materials/modules/module5.html).
 
+## Module Workflow
+1. Using [shinyapps.io](https://macrosystemseddie.shinyapps.io/module5/)
+- This option works well if there are not too many simultaneous users (<20) 
+- The app generally does not take a long time to load but requires consistent internet access
+- It is important to remind students that they need to save their work as they go, because this webpage will time-out after 15 idle minutes. It is frustrating for students to lose their progress, so a good rule of thumb is to get them to save their progress after completing each objective
+2. The most stable option for large classes is downloading the app and running locally, see instructions [below](#Running the Shiny App on your computer)
+- Once the app is downloaded and installed (which requires an internet connection), the app can be run offline locally on students’ computers
+- This step requires R and RStudio to be downloaded on a student’s computer, which may be challenging if a student does not have much R experience (but this could be done prior to instruction by an instructor on a shared computer lab)
+- If you are teaching the module to a large class and/or have unstable internet, this is the best option
+3. As a last option, the app is accessible in any internet browser via Binder hosting: https://mybinder.org/v2/zenodo/10.5281/zenodo.6363500/?urlpath=shiny/app/
+- Prior to class, the instructor should go to the Binder webpage and make sure that it loads (because Binder is provided as a free platform, it occasionally needs to be loaded more than once the first time)
+- It takes ~5-10 minutes to load, so it’s helpful for students to start loading this webpage prior to instruction
+- During instruction, this webpage occasionally times out if there are many users (even if on good internet), so this is a less stable alternative than options 1 or 2
+
+
 ## Accessing the Shiny App _via_ a web browser
 The Shiny app for this module can be accessed through any internet browser either on [shinyapps.io](https://macrosystemseddie.shinyapps.io/module5/) or [mybinder.org](https://mybinder.org/v2/zenodo/10.5281/zenodo.6363500/?urlpath=shiny/app/).
 When launching first it will take a while for the Shiny app to boot up. If you are using this in a large class (>20 users at the same time), we would recommend splitting the group into two and using **both** [shinyapps.io](https://macrosystemseddie.shinyapps.io/module5/) and [mybinder.org](https://mybinder.org/v2/gh/MacrosystemsEDDIE/module5/main?urlpath=shiny/app/).
