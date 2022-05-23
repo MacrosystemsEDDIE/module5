@@ -13,7 +13,7 @@ Here is the code for running the Macrosystems EDDIE Module 5: _Introduction to E
 - This option works well if there are not too many simultaneous users (<20) 
 - The app generally does not take a long time to load but requires consistent internet access
 - It is important to remind students that they need to save their work as they go, because this webpage will time-out after 15 idle minutes. It is frustrating for students to lose their progress, so a good rule of thumb is to get them to save their progress after completing each objective
-2. The most stable option for large classes is downloading the app and running locally, see instructions [below](##Running the Shiny App on your computer)
+2. The most stable option for large classes is downloading the app and running locally, see instructions [below](#running-the-shiny-app-on-your-computer)
 - Once the app is downloaded and installed (which requires an internet connection), the app can be run offline locally on students’ computers
 - This step requires R and RStudio to be downloaded on a student’s computer, which may be challenging if a student does not have much R experience (but this could be done prior to instruction by an instructor on a shared computer lab)
 - If you are teaching the module to a large class and/or have unstable internet, this is the best option
