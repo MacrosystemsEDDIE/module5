@@ -37,7 +37,7 @@ There are two options:
   Updating of current R packages on your system is recommended.
 
 ### Step 3: Launch Shiny App
-1. Open the script `app.R` in your console.  It is found in the `app` directory
+1. Open either of the scripts `app/global.R`, `app/server.R` or `app/ui.R` in your console.
 2. Click the "Run App" button in the Script (indicated below).  
 3. This will launch the Shiny App in your default web browser or in a new RStudio window. The Shiny App is run from RStudio so you will need to keep RStudio running in the background.  
 ![](app/www/launch_app.png)<!-- -->	
