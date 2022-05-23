@@ -287,7 +287,7 @@ ui <- function(req) {
                                  img(src = "resume_button.png", height = "100%", id = "bla_border",
                                      width = "100%", tags$style("border: solid 2px black;")),
                                  br(),
-                                 p(id = "txt_j", "To reload the app input you can upload the downloaded '.eddie' file at the top of this pae and it will populate your answers into the Shiny app."),
+                                 p(id = "txt_j", "To reload the app input you can upload the downloaded '.eddie' file at the top of this page and it will populate your answers into the Shiny app."),
                                  p(id = "txt_j", HTML(paste0(tags$b("Note:"), " You will need to navigate to tabs Objective 1, 2 and 3 in Activity A after uploading your file for the inputs to load there. You will also need to load the NOAA data in Objective 6."))),
                                  p(id = "txt_j", "Currently the plots do not save to the file.  If you generated plots during your last session, you will need to reload the data and reproduce the plots before generating your report.  Additionally, the answers for Q.10 will need to be re-submitted.")
                                  ),
@@ -451,7 +451,7 @@ border-color: #FFF;
                           column(12,
                                  h3("Activity A: Visualize data from a selected NEON site"),
                                  h4("Get Data & Build Model"),
-                                 p("Complete objectives 1-3 to gather the information you will need for your model. Followed by objectives 4-5 to build and calibrate the model you will use to generate the forecast.")
+                                 p("Complete objectives 1-3 to gather the information you will need for your model. Then, complete objectives 4-5 to build and calibrate the model you will use to generate the forecast.")
                           )
                         ),
                         tabsetPanel(id = "tabseries1",
