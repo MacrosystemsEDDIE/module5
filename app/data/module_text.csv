@@ -34,7 +34,7 @@ obj_11,Update our model/hypothesis to improve our forecasts based on the recent 
 obj_12,"The forecast cycle is an iterative process. Now after communicating and assessing our forecast and updating our model, we will generate the next forecast. Ecological forecasters call this data assimilation because data are ""assimilated"" to update the initial conditions."
 obj_13, Make a hypothesis about how you expect your model to forecast primary productivitiy at a different NEON site. Then test your hypothesis by repeating Activity A Objectives 1 & 5 and Activity B with the other NEON site.
 weather_forecast1,A weather forecast is probably the most widely used and applied forecast. Here we will examine the output from a weather forecast model from NOAA.
-weather_forecast2,"Weather forecasts use multiple simulations from the same model, but alters the initial conditions of the model to generate different potential futures."
+weather_forecast2,"Weather forecasts use multiple simulations from the same model, but alter the initial conditions of the model to generate different potential futures."
 model1,"A model is a representation (physical, conceptual or mathematical) of a real phenomenon that is difficult to observe directly."
 model2,"Models can be as simple as a verbal statement about a subject or two boxes connected by an arrow to represent some relationship such as, ""warmer air temperature causes warmer lake surface temperature"" or ""a higher number of wolves leads to a lower population of deer""."
 model3,"Alternatively, models can be extremely complex and detailed, such as a mathematical description of the pathways of nitrogen transformations within ecosystems."

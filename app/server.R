@@ -170,7 +170,7 @@ server <- function(input, output, session) {#
       need(!is.null(pheno_file$img), "Click 'View latest photo' to download the image.")
     )
     list(src = pheno_file$img,
-         alt = "Image failed to render. Please click 'Save plot' again.",
+         alt = "Lake with a buoy surrounded by trees.",
          height = 320,
          width = 350)
   }, deleteFile = FALSE)
