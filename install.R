@@ -1,4 +1,5 @@
 install.packages("shiny")
+install.packages("shinyalert")
 install.packages("shinycssloaders")
 install.packages("shinyjs")
 install.packages("shinydashboard")
