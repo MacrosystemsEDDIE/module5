@@ -2,8 +2,8 @@
 # [Macrosystems EDDIE](https://serc.carleton.edu/eddie/macrosystems/index.html)
 ## Module 5: Introduction to Ecological Forecasting
 [![](https://img.shields.io/badge/Shiny-shinyapps.io-blue?style=flat&labelColor=white&logo=RStudio&logoColor=blue)](https://macrosystemseddie.shinyapps.io/module5/)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/zenodo/10.5281/zenodo.6363500/?urlpath=shiny/app/)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6581279.svg)](https://doi.org/10.5281/zenodo.6581279)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/zenodo/10.5281/zenodo.6587161/?urlpath=shiny/app/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6587161.svg)](https://doi.org/10.5281/zenodo.6587161)
 <a href="url"><img src="app/www/mod5_viz_v2.png" align="right" height="220" width="269" ></a>
 ### Summary
 Here is the code for running the Macrosystems EDDIE Module 5: _Introduction to Ecological Forecasting_. Below are instructions on how to access the Shiny app *via* a web browser and also a detailed guide below for launching the R Shiny App locally on your own computer. For more details about teaching this module please visit our [website](https://serc.carleton.edu/eddie/teaching_materials/modules/module5.html).
