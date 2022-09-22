@@ -1,17 +1,19 @@
 download_phenocam <- function(url) {
   require(rvest)
   web <- "https://phenocam.sr.unh.edu"
-
-  imgsrc <- read_html(url) %>%
+  
+  imgsrc <- url %>% 
+    httr::GET(config = httr::config(ssl_verifypeer = FALSE)) %>% 
+    read_html() %>%
     html_node(xpath = '//*/img') %>%
     html_attr('src')
-  # imgsrc
-  
+
   destfile <- file.path("www",basename(imgsrc))
   
   # 
-  download.file(paste0(web, imgsrc), 
-                destfile = destfile, mode = "wb", quiet = TRUE)
+  img_url <- paste0(web, imgsrc)
+  options(download.file.method="curl", download.file.extra="-k -L") # ignore SSL certificates
+  download.file(img_url, destfile = destfile, mode = "wb", quiet = TRUE)
   
   if(file.exists(destfile)) {
     message("Phenocam downloaded!")
