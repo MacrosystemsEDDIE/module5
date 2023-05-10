@@ -832,13 +832,13 @@ color: black;
                                                ),
                                                column(6, align = "center",
                                                       img(src = calib_model_png[1], height = "75%", width = "75%", style = "border: 2px solid black;",
-                                                          alt = "A plot showing good fit of modeld to observed chlorophyll-a data."),
-                                                      p(tags$em("Calibrated model ", tags$b("without"), " surface water temperature or underwater PAR as inputs to the model."))
+                                                          alt = "A plot showing good fit of modeled to observed chlorophyll-a data."),
+                                                      p(tags$em("Calibrated model example 1"))
                                                ),
                                                column(6, align = "center",
                                                       img(src = calib_model_png[2], height = "75%", width = "75%", style = "border: 2px solid black;",
                                                           alt = "A plot showing good fit of modeld to observed chlorophyll-a data."),
-                                                      p(tags$em("Calibrated model ", tags$b("with"), " surface water temperature and underwater PAR as inputs to the model."))
+                                                      p(tags$em("Calibrated model example 2"))
                                                       )
                                                ),
                                              hr(),
@@ -880,10 +880,10 @@ color: black;
                                                column(4, align = "left",
                                                       h3("Explore Parameters"),
                                                       p("Mortality is one of the key parameters controlling phytoplankton biomass. Adjust the slider to change the rate at which phytoplankton die (Mortality)."),
-                                                      p(tags$em("Mortality")),
+                                                      p(tags$b("Mortality")),
                                                       sliderInput("parm_mort_rate", label = div(style='width:300px;',
-                                                                                           div(style='float:left;', 'Lower death'),
-                                                                                           div(style='float:right;', 'Higher death')),
+                                                                                           div(style='float:left;', tags$em('Lower death')),
+                                                                                           div(style='float:right;', tags$em('Higher death'))),
                                                                   min = 0, max = 1, value = 0.5, step = 0.01),
                                                       actionButton("run_mod_parm",
                                                                    label = div("Run Model",
@@ -895,7 +895,7 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Question"),
-                                                                   p(tags$b(quest["qX", 1]))
+                                                                   p(tags$b(quest["q12", 1]))
                                                             )
                                                           )
                                                       ),
@@ -915,45 +915,28 @@ color: black;
                                                       h3("Calibrate Model"),
                                                       p(style="text-align: justify;", "Now that we have explored the effects of initial conditions and parameters on your model, use the sliders below to obtain as good a calibration as possible to sensor observations."),
                                                       p(style="text-align: justify;", "When you have achieved an acceptable model fit, click 'Save model fit' to save your initial conditions and parameters for use in generating a forecast. Then, click 'Download plot' to download a plot of your best-fitting model for inclusion in your final report."),
-                                                      br(),
-                                                      p(style="text-align: justify;", "Answer questions 12-15 using this model."),
-                                                      box(id = "box8", width = 12, status = "primary",
-                                                          solidHeader = TRUE,
-                                                          fluidRow(
-                                                            column(12,
-                                                                   h3("Questions"),
-                                                                   conditionalPanel("input.submit_ques == 0",
-                                                                                    textAreaInput2(inputId = "q12", label = quest["q12", 1] , width = "100%"),
-                                                                                    ),
-                                                                   conditionalPanel("input.submit_ques == 1",
-                                                                                    p(tags$b(quest["q13", 1])),
-                                                                                    textAreaInput2(inputId = "q13a", label = quest["q13a", 1] , width = "100%"),
-                                                                   ),
-                                                                   conditionalPanel("input.submit_ques == 2",
-                                                                                    p(tags$b(quest["q13", 1])),
-                                                                                    textAreaInput2(inputId = "q13b", label = quest["q13b", 1] , width = "100%"),
-                                                                   ),
-                                                                   conditionalPanel("input.submit_ques == 3",
-                                                                                    p(tags$b(quest["q14", 1])),
-                                                                                    textAreaInput2(inputId = "q14a", label = quest["q14a", 1] , width = "100%"),
-                                                                   ),
-                                                                   conditionalPanel("input.submit_ques == 4",
-                                                                                    p(tags$b(quest["q14", 1])),
-                                                                                    textAreaInput2(inputId = "q14b", label = quest["q14b", 1] , width = "100%"),
-                                                                   ),
-                                                                   conditionalPanel("input.submit_ques == 5",
-                                                                                    textAreaInput2(inputId = "q15", label = quest["q15", 1] , width = "100%"),
-                                                                                    )
-
-                                                                   )
-                                                            )
-                                                          ),
+                                                      h4("Initial conditions"),
+                                                      p(tags$b("Phytoplankton")),
+                                                      # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
+                                                      sliderInput("phy_init", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px", alt = "A phytoplankton icon.")),
+                                                                                          div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right", alt = "A phytoplankton icon."))),
+                                                                  min = 0.01, max = 10, step = 0.01, value = 2),
+                                                      h4("Parameters"),
+                                                      p(tags$b("Mortality")),
+                                                      sliderInput("mort_rate", label = div(style='width:300px;',
+                                                                                           div(style='float:left;', tags$em('Lower death')),
+                                                                                           div(style='float:right;', tags$em('Higher death'))),
+                                                                  min = 0, max = 1, value = 0.5, step = 0.01),
+                                                      p(tags$b("Nutrient uptake (causes growth)")),
+                                                      sliderInput("nut_uptake", label = div(style='width:300px;',
+                                                                                            div(style='float:left;', tags$em('Low uptake')),
+                                                                                            div(style='float:right;', tags$em('High uptake'))),
+                                                                  min = 0, max = 1, value = 0.5, step = 0.01),
                                                       br(),
                                                       actionButton("run_mod_ann",
                                                                    label = div("Run Model",
                                                                                icon("running")),
-                                                                   width = "60%"),
-                                                      actionButton("submit_ques", "Submit answer")
+                                                                   width = "60%")
                                                       ),
                                                column(8,
                                                       h3("Primary Productivity"),
@@ -962,59 +945,32 @@ color: black;
                                                       ),
                                                       p(tags$b("Add observations")),
                                                       checkboxInput("add_obs", "Add observations to the plots"),
-                                                      conditionalPanel("input.submit_ques == 5",
-                                                                       tags$style(type="text/css", "#save_mod_run {background-color:#9ECBB5;color: black}"),
-                                                                       actionButton("save_mod_run", "Save plot", icon = icon("save")), br()
-                                                                       )
+                                                      column(12,
+                                                      downloadButton("save_mod_run", "Save plot", icon = icon("download")),
+                                                      align = "right"
                                                       ),
-                                             ), hr(),
-                                             fluidRow(
-                                               column(3,
-                                                      h3("Initial conditions"),
-                                                      p("Adjust these to values that are within reasonable ranges as seen in the 'Objective 2 - Explore data' tab. Phytoplankton corresponds to chlorophyll-a concentrations or use hover your mouse over the plot."),
-                                                      p(tags$b("Phytoplankton")),
-                                                      # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
-                                                      sliderInput("phy_init", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px", alt = "A phytoplankton icon.")),
-                                                                                          div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right", alt = "A phytoplankton icon."))),
-                                                                  min = 0.01, max = 10, step = 0.01, value = 2),
-                                                      p(tags$b("Nitrogen")),
-                                                      sliderInput("nut_init", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px", alt = "A nutrients icon.")),
-                                                                                          div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right", alt = "A nutrients icon."))),
-                                                                  min = 0.01, max = 0.5, step = 0.01, value = 0.25),
-                                                      p("Nitrogen ranges (from Objective 2)"),
-                                                      DTOutput("nutri_table"),
                                                       br(),
-                                                      p("Use these values to help you select a suitable value to begin with.")
-                                                      ),
-                                               column(3,
-                                                      h3("Parameters"),
-                                                      p("These are the key parameters that control phytoplankton biomass. Change these to adjust the rate at which phytoplankton die (Mortality) or reproduce by taking up available nutrient (Uptake),"),
-                                                      p(tags$em("Mortality")),
-                                                      sliderInput("mort_rate", label = div(style='width:300px;',
-                                                                                           div(style='float:left;', 'Lower death'),
-                                                                                           div(style='float:right;', 'Higher death')),
-                                                                  min = 0, max = 1, value = 0.5, step = 0.01),
-                                                      p(tags$em("Uptake")),
-                                                      sliderInput("nut_uptake", label = div(style='width:300px;',
-                                                                                            div(style='float:left;', 'Low uptake'),
-                                                                                            div(style='float:right;', 'High uptake')),
-                                                                  min = 0, max = 1, value = 0.5, step = 0.01)
-                                                      ),
-                                               column(4,
-                                                      h3("Model Settings"),
-                                                      p("For Q12-15 you are required to save your model setup which includes the initial conditions and parameters."),
+                                                      h4("Model Settings"),
+                                                      p("To generate forecasts in the next activity, you are required to save your calibrated model setup which includes the initial conditions and parameters."),
                                                       DTOutput("save_par", width = "10%"),
                                                       br(),
-                                                      p("Add your parameters by clicking on the target row in the table", tags$b("BEFORE") ," you run the model.")
+                                                      column(12,
+                                                      actionButton("submit_ques", "Save model settings", icon = icon("save")),
+                                                      align = "right"
                                                       ),
-                                               column(6,
+                                                      br()
+                                                      ),
+                                             ), 
+                                             hr(),
+                                             fluidRow(
+                                               column(10,
                                                       box(id = "box8b", width = 12, status = "primary",
                                                           solidHeader = TRUE,
                                                           fluidRow(
                                                             column(10, offset = 1,
-                                                                   h3("Questions & answers"),
-                                                                   p("Your answers will be input below when you submit them above. You can edit your answers further by double clicking on the cell."),
-                                                                   DTOutput("tab_mod_ans")
+                                                                   h3("Questions"),
+                                                                   p(tags$b(quest["q13", 1])),
+                                                                   p(tags$b(quest["q14", 1]))
                                                                    )
                                                             )
                                                           )

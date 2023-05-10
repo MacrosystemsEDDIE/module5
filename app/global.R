@@ -161,12 +161,10 @@ q7_table <- data.frame(
 wid_pct3 <- "80%"
 
 par_df <- data.frame(
-  "SWT" = rep(NA, 5),
-  "uPAR" = rep(NA, 5),
-  "Phytos" = rep(NA, 5),
-  "Nitrogen" = rep(NA, 5),
-  "Mortality" = rep(NA, 5),
-  "Uptake" = rep(NA, 5), row.names = c("Q12", "Q13a", "Q13b", "Q14", "Q15")
+  "Phytoplankton" = rep(NA, 1),
+  "Mortality" = rep(NA, 1),
+  "Uptake" = rep(NA, 1),
+  row.names = c("Current model settings")
 )
 
 fc_par_df <- data.frame(
