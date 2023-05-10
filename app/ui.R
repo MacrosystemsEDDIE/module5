@@ -725,10 +725,10 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q9", 1]),
-                                                                   p(tags$b(quest["q9a", 1])),
-                                                                   p(tags$b(quest["q9b", 1])),
-                                                                   p(tags$b(quest["q9c", 1])),
+                                                                   h4(quest["q8", 1]),
+                                                                   p(tags$b(quest["q8a", 1])),
+                                                                   p(tags$b(quest["q8b", 1])),
+                                                                   p(tags$b(quest["q8c", 1])),
                                                                    br()
                                                                    )
                                                             )
@@ -748,7 +748,7 @@ color: black;
                                                           fluidRow(
                                                             column(8, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q10", 1]),
+                                                                   h4(quest["q9", 1]),
                                                                    bucket_list(
                                                                      header = "",
                                                                      group_name = "bucket_list_group",
@@ -770,9 +770,9 @@ color: black;
                                                                      )
                                                                    ),
                                                                    br(),
-                                                                   h4(quest["q11", 1]),
-                                                                   p(tags$b(quest["q11a", 1])),
-                                                                   p(tags$b(quest["q11b", 1])),
+                                                                   h4(quest["q10", 1]),
+                                                                   p(tags$b(quest["q10a", 1])),
+                                                                   p(tags$b(quest["q10b", 1])),
                                                                    br()
                                                             ),
                                                             column(2,
@@ -807,7 +807,7 @@ color: black;
                                                ),
                                              fluidRow(
                                                column(6,
-                                                      p("Here we are going to use the NP model to simulate primary productivity. We will be comparing our model output to chlorophyll-a sensor data and adjusting the models parameters to try and replicate the sensor measurements."),
+                                                      p("Here we are going to use the NP model to simulate primary productivity. We will be comparing our model output to chlorophyll-a sensor data and adjusting the models parameters to try and replicate the sensor measurements. The NP model simulates phytoplankton biomass which we convert to chlorophyll-a to allow comparison between the simulations and field observations."),
                                                       h3("Build Model"),
                                                       p(style="text-align: justify;", "We will use observed data from the selected site on the 'Activity A' tab to drive the NP model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs."),
                                                       h4("Calibration tips"),
@@ -843,11 +843,78 @@ color: black;
                                                ),
                                              hr(),
                                              fluidRow(
+                                               column(4, align = "left",
+                                                      h3("Explore Initial Conditions"),
+                                                      p("Adjust the slider to values that are within reasonable ranges as seen in the 'Objective 2 - Explore data' tab. Phytoplankton correspond to chlorophyll-a concentrations."),
+                                                      p(tags$b("Phytoplankton")),
+                                                      # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
+                                                      sliderInput("phy_ic", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px", alt = "A phytoplankton icon.")),
+                                                                                          div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right", alt = "A phytoplankton icon."))),
+                                                                  min = 0.01, max = 10, step = 0.01, value = 2),
+                                                      actionButton("run_mod_ic",
+                                                                   label = div("Run Model",
+                                                                               icon("running")),
+                                                                   width = "60%"),
+                                                      hr(),
+                                                      box(id = "box7a", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                          column(10, offset = 1,
+                                                                 h3("Question"),
+                                                                 p(tags$b(quest["q11", 1]))
+                                                          )
+                                                        )
+                                                      ),
+                                                      br()
+                                                      ),
+                                               column(8,
+                                                      h3("Primary Productivity"),
+                                                      wellPanel(
+                                                        plotlyOutput("mod_ann_ic_plot")
+                                                      ),
+                                                      p(tags$b("Add observations")),
+                                                      checkboxInput("add_obs_ic", "Add observations to the plots"))
+                                             ),
+                                             hr(),
+                                             fluidRow(
+                                               column(4, align = "left",
+                                                      h3("Explore Parameters"),
+                                                      p("Mortality is one of the key parameters controlling phytoplankton biomass. Adjust the slider to change the rate at which phytoplankton die (Mortality)."),
+                                                      p(tags$em("Mortality")),
+                                                      sliderInput("parm_mort_rate", label = div(style='width:300px;',
+                                                                                           div(style='float:left;', 'Lower death'),
+                                                                                           div(style='float:right;', 'Higher death')),
+                                                                  min = 0, max = 1, value = 0.5, step = 0.01),
+                                                      actionButton("run_mod_parm",
+                                                                   label = div("Run Model",
+                                                                               icon("running")),
+                                                                   width = "60%"),
+                                                      hr(),
+                                                      box(id = "box7b", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(10, offset = 1,
+                                                                   h3("Question"),
+                                                                   p(tags$b(quest["qX", 1]))
+                                                            )
+                                                          )
+                                                      ),
+                                                      br()
+                                               ),
+                                               column(8,
+                                                      h3("Primary Productivity"),
+                                                      wellPanel(
+                                                        plotlyOutput("mod_ann_parm_plot")
+                                                      ),
+                                                      p(tags$b("Add observations")),
+                                                      checkboxInput("add_obs_parm", "Add observations to the plots"))
+                                             ),
+                                             hr(),
+                                             fluidRow(
                                                column(4,
-                                                      h3("Run Model"),
-                                                      p(style="text-align: justify;", "To build the model for your lake system, you can choose which variables the model is sensitive to and adjust some of the process rates below."),
-                                                      p(style="text-align: justify;", "Inital conditions can also be adjusted to measured values from ", actionLink("obj_2", "Objective 2")," but you can also adjust the initial values to see how the model responds."),
-                                                      p(style="text-align: justify;", "The NP model simulates phytoplankton biomass which we convert to chlorophyll-a to allow comparison between the simulations and field observations. Spend some time running the model with differing inputs, initial conditions and parameters before answering the questions below."),
+                                                      h3("Calibrate Model"),
+                                                      p(style="text-align: justify;", "Now that we have explored the effects of initial conditions and parameters on your model, use the sliders below to obtain as good a calibration as possible to sensor observations."),
+                                                      p(style="text-align: justify;", "When you have achieved an acceptable model fit, click 'Save model fit' to save your initial conditions and parameters for use in generating a forecast. Then, click 'Download plot' to download a plot of your best-fitting model for inclusion in your final report."),
                                                       br(),
                                                       p(style="text-align: justify;", "Answer questions 12-15 using this model."),
                                                       box(id = "box8", width = 12, status = "primary",
@@ -902,13 +969,6 @@ color: black;
                                                       ),
                                              ), hr(),
                                              fluidRow(
-
-                                               column(2,
-                                                      h3("Inputs"),
-                                                      p(style="text-align: justify;", "Select which variables the model will use as inputs. This means the model will use the variable measured on site as a driving variable in the model."),
-                                                      checkboxGroupInput("mod_sens", "Select model inputs:",
-                                                                         choices = list("Surface water temperature (SWT)", "Underwater light (uPAR)")),
-                                               ),
                                                column(3,
                                                       h3("Initial conditions"),
                                                       p("Adjust these to values that are within reasonable ranges as seen in the 'Objective 2 - Explore data' tab. Phytoplankton corresponds to chlorophyll-a concentrations or use hover your mouse over the plot."),

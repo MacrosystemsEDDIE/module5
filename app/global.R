@@ -132,8 +132,8 @@ calib_model_png <- gsub("www/", "", list.files("www/calib_model/", full.names = 
 
 # Initial conditions for NP
 yini <- c(
-  PHYTO = 2, #mmolN m-3
-  DIN = 9) #mmolN m-3
+  PHYTO = 0.032258, #mmolN m-3; these are derived from default values on sliders
+  DIN = 4.03225) #mmolN m-3
 
 # Load parameters and initial conditions
 site_parms <- read.csv("data/params_site_NP_model.csv", fileEncoding = "UTF-8-BOM")

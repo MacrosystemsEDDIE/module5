@@ -25,15 +25,16 @@ q7a,Air temperature
 q7b,Surface water temperature
 q7c,Nitrogen
 q7d,Underwater PAR
-q8,"Q8. Were there any other relationships you found at your site? If so, please describe below."
-q9,"Q9. In your final report, describe the relationship between each of these driving variables and productivity? For example, if the driving variable increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)."
-q9a,a. Surface water temperature
-q9b,b. Incoming light
-q9c,c. Available nutrients
-q10,"Q10. Classify the following as either a state variable or a parameter by dragging it into the corresponding bin. Once you have checked your answers, record the correct answers in the final report."
-q11,"Q11. We are using chlorophyll-a as a proxy of aquatic primary productivity. In your final report, describe how you envision each parameter to affect chlorophyll-a concentrations. For example, if the parameter increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)."
-q11a,a. Nutrient uptake by phytoplankton
-q11b,b. Phytoplankton mortality
+q8,"Q8. In your final report, describe the relationship between each of these driving variables and productivity? For example, if the driving variable increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)."
+q8a,a. Surface water temperature
+q8b,b. Incoming light
+q8c,c. Available nutrients
+q9,"Q9. Classify the following as either a state variable or a parameter by dragging it into the corresponding bin. Once you have checked your answers, record the correct answers in the final report."
+q10,"Q10. We are using chlorophyll-a as a proxy of aquatic primary productivity. In your final report, describe how you envision each parameter to affect chlorophyll-a concentrations. For example, if the parameter increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)."
+q10a,a. Nutrient uptake by phytoplankton
+q10b,b. Phytoplankton mortality
+q11,"Q11. Describe the effect of changing phytoplankton initial conditions on your model run. As you increase or decrease initial conditions, how does this affect modeled primary productivity?"
+qX,"QX. Describe the effect of changing the phytoplankton mortality parameter on your model run. As you increase or decrease mortality, how does this affect modeled primary productivity?"
 q12,"Q12. Without using surface water temperature or underwater light (uPAR) as inputs into your model, adjust the initial conditions and parameters of your model. Describe the model simulation."
 q13,Q13. Explore the model's sensitivity to SWT and uPAR:
 q13a,a. Switch on surface water temperature by checking the box. Adjust initial conditions and parameters to replicate observations.  Is the model sensitive to SWT?

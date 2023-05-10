@@ -1329,8 +1329,247 @@ server <- function(input, output, session) {#
       res2
     })
   })
+  
+  #* Run eco-model for initial conditions question ----
+  mod_run_ic <- eventReactive(input$run_mod_ic, {
+    
+    progress <- shiny::Progress$new()
+    # Make sure it closes when we exit this reactive, even if there's an error
+    on.exit(progress$close())
+    progress$set(message = paste0("Running NP model"),
+                 detail = "This may take a while. This window will disappear
+                     when it is finished running.", value = 1)
+    
+    par_file <- file.path("data", "neon", paste0(siteID, "_uPAR_micromolesPerSquareMeterPerSecond.csv"))
+    wtemp_file <- file.path("data", "neon", paste0(siteID, "_wtemp_celsius.csv"))
 
-  #* Run eco-model ----
+    par <- read.csv(par_file)
+    par[, 1] <- as.POSIXct(par[, 1], tz = "UTC")
+    yr <- lubridate::year(par[, 1])
+    par <- par[yr == 2019, ] # Subset data to 2019
+    if(sum(is.na(par[, 2])) > 0) {
+      idx <- which(!is.na(par[, 2]))
+      sta <- idx[1]
+      stp <- idx[length(idx)]
+      par[sta:stp, 2] <- zoo::na.approx(par[sta:stp, 2])
+      par[1:sta, 2] <- par[sta, 2]
+      par[stp:nrow(par), 2] <- par[stp, 2]
+    }
+    par[(par[, 2] < 0), 2] <- 0
+    
+    wtemp <- read.csv(wtemp_file)
+    stemp <- wtemp[wtemp[, 2] == min(wtemp[, 2]), c(1, 3)]
+    stemp[, 1] <- as.POSIXct(stemp[, 1], tz = "UTC")
+    yr <- lubridate::year(stemp[, 1])
+    stemp <- stemp[yr == 2019, ] # Subset data to 2019
+    if(sum(is.na(stemp[, 2])) > 0) {
+      idx <- which(!is.na(stemp[, 2]))
+      sta <- idx[1]
+      stp <- idx[length(idx)]
+      stemp[sta:stp, 2] <- zoo::na.approx(stemp[sta:stp, 2])
+      stemp[1:sta, 2] <- stemp[sta, 2]
+      stemp[stp:nrow(stemp), 2] <- stemp[stp, 2]
+    }
+    
+    npz_inp <- merge(par, stemp, by = 1)
+    npz_inp[, 1] <- as.POSIXct(npz_inp[, 1], tz = "UTC")
+    times <- 1:nrow(npz_inp)
+    
+    npz_inputs <- create_npz_inputs(time = npz_inp[, 1], PAR = npz_inp[, 2], temp = npz_inp[, 3])
+    
+    # Alter Initial conditions
+    yini[1] <- input$phy_ic * 0.016129 # Convert from ug/L to mmolN/m3
+
+    res <- matrix(NA, nrow = length(times), ncol = 3)
+    colnames(res) <- c("time", "Phytoplankton", "Nutrients")
+    res[, 1] <- times
+    res[1, -1] <- c(yini)
+    
+    for(i in 2:length(times)) {
+      out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
+                                    parms = parms, method = "ode45", inputs = npz_inputs))
+      res[i, -1] <- out[2, c(2, 3)]
+      yini <- out[2, c(2:3)]
+      
+    }
+    
+    res <- as.data.frame(res)
+    res$time <- npz_inp$Date
+    res$Chla <- (res$Phytoplankton * 62) # Convert from mmol/m3 to ug/L # * 4.97 + 1.58
+    res$Nutrients <- res$Nutrients * 0.062 # Convert from mmol/m3 to mg/L
+    res <- res[, c("time", "Chla", "Nutrients")]
+    return(res)
+  })
+  
+  #* Model annual output plot ----
+  output$mod_ann_ic_plot <- renderPlotly({
+    
+    validate(
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
+    )
+    validate(
+      need(input$run_mod_ic > 0, "Click 'Run Model'")
+    )
+    
+    # Load Chl-a observations
+    read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
+    units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
+    file <- file.path("data", "neon", paste0(siteID, "_", read_var, "_", units, ".csv"))
+    if(file.exists(file)) {
+      chla <- read.csv(file)
+      chla[, 1] <- as.POSIXct(chla[, 1], tz = "UTC")
+      chla <- chla[(chla[, 1] >= mod_run_ic()[1, 1] &
+                      chla[, 1] <= mod_run_ic()[nrow(mod_run_ic()), 1]), ]
+    }
+    
+    # Remove extreme values
+    if(siteID == "PRLA") {
+      chla <- chla[(chla[, 1] > as.POSIXct("2019-07-06")), ]
+    }
+    if(siteID == "PRPO") {
+      chla <- chla[(chla[, 2] < 40), ]
+    }
+    
+    xlims <- range(mod_run_ic()[, 1])
+
+    validate(
+      need(input$run_mod_ic > 0, "Please run the model")
+    )
+    p <- ggplot() +
+      geom_hline(yintercept = 0, color = "gray") +
+      geom_line(data = mod_run_ic(), aes_string(names(mod_run_ic())[1], names(mod_run_ic())[2], color = shQuote("Model"))) +
+      ylab("Chlorophyll-a (μg/L)") +
+      xlab("Time") +
+      {if(input$add_obs_ic) geom_point(data = chla, aes_string(names(chla)[1], names(chla)[2], color = shQuote("Obs")))} +
+      scale_color_manual(values = cols[1:2]) +
+      theme_minimal(base_size = 12) +
+      theme(panel.background = element_rect(fill = NA, color = 'black'))
+    
+    return(ggplotly(p, dynamicTicks = TRUE))
+    
+  })
+  
+  #* Run eco-model for parameters question ----
+  mod_run_parm <- eventReactive(input$run_mod_parm, {
+    
+    progress <- shiny::Progress$new()
+    # Make sure it closes when we exit this reactive, even if there's an error
+    on.exit(progress$close())
+    progress$set(message = paste0("Running NP model"),
+                 detail = "This may take a while. This window will disappear
+                     when it is finished running.", value = 1)
+    
+    par_file <- file.path("data", "neon", paste0(siteID, "_uPAR_micromolesPerSquareMeterPerSecond.csv"))
+    wtemp_file <- file.path("data", "neon", paste0(siteID, "_wtemp_celsius.csv"))
+
+    par <- read.csv(par_file)
+    par[, 1] <- as.POSIXct(par[, 1], tz = "UTC")
+    yr <- lubridate::year(par[, 1])
+    par <- par[yr == 2019, ] # Subset data to 2019
+    if(sum(is.na(par[, 2])) > 0) {
+      idx <- which(!is.na(par[, 2]))
+      sta <- idx[1]
+      stp <- idx[length(idx)]
+      par[sta:stp, 2] <- zoo::na.approx(par[sta:stp, 2])
+      par[1:sta, 2] <- par[sta, 2]
+      par[stp:nrow(par), 2] <- par[stp, 2]
+    }
+    par[(par[, 2] < 0), 2] <- 0
+    
+    wtemp <- read.csv(wtemp_file)
+    stemp <- wtemp[wtemp[, 2] == min(wtemp[, 2]), c(1, 3)]
+    stemp[, 1] <- as.POSIXct(stemp[, 1], tz = "UTC")
+    yr <- lubridate::year(stemp[, 1])
+    stemp <- stemp[yr == 2019, ] # Subset data to 2019
+    if(sum(is.na(stemp[, 2])) > 0) {
+      idx <- which(!is.na(stemp[, 2]))
+      sta <- idx[1]
+      stp <- idx[length(idx)]
+      stemp[sta:stp, 2] <- zoo::na.approx(stemp[sta:stp, 2])
+      stemp[1:sta, 2] <- stemp[sta, 2]
+      stemp[stp:nrow(stemp), 2] <- stemp[stp, 2]
+    }
+    
+    npz_inp <- merge(par, stemp, by = 1)
+    npz_inp[, 1] <- as.POSIXct(npz_inp[, 1], tz = "UTC")
+    times <- 1:nrow(npz_inp)
+    
+    npz_inputs <- create_npz_inputs(time = npz_inp[, 1], PAR = npz_inp[, 2], temp = npz_inp[, 3])
+    
+    # Alter parameters
+    parms[7] <- as.numeric(input$parm_mort_rate)
+
+    res <- matrix(NA, nrow = length(times), ncol = 3)
+    colnames(res) <- c("time", "Phytoplankton", "Nutrients")
+    res[, 1] <- times
+    res[1, -1] <- c(yini)
+    
+    for(i in 2:length(times)) {
+      out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
+                                    parms = parms, method = "ode45", inputs = npz_inputs))
+      res[i, -1] <- out[2, c(2, 3)]
+      yini <- out[2, c(2:3)]
+      
+    }
+    
+    res <- as.data.frame(res)
+    res$time <- npz_inp$Date
+    res$Chla <- (res$Phytoplankton * 62) # Convert from mmol/m3 to ug/L # * 4.97 + 1.58
+    res$Nutrients <- res$Nutrients * 0.062 # Convert from mmol/m3 to mg/L
+    res <- res[, c("time", "Chla", "Nutrients")]
+    return(res)
+  })
+  
+  #* Model annual output plot ----
+  output$mod_ann_parm_plot <- renderPlotly({
+    
+    validate(
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
+    )
+    validate(
+      need(input$run_mod_parm > 0, "Click 'Run Model'")
+    )
+    
+    # Load Chl-a observations
+    read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
+    units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
+    file <- file.path("data", "neon", paste0(siteID, "_", read_var, "_", units, ".csv"))
+    if(file.exists(file)) {
+      chla <- read.csv(file)
+      chla[, 1] <- as.POSIXct(chla[, 1], tz = "UTC")
+      chla <- chla[(chla[, 1] >= mod_run_parm()[1, 1] &
+                      chla[, 1] <= mod_run_parm()[nrow(mod_run_parm()), 1]), ]
+    }
+    
+    # Remove extreme values
+    if(siteID == "PRLA") {
+      chla <- chla[(chla[, 1] > as.POSIXct("2019-07-06")), ]
+    }
+    if(siteID == "PRPO") {
+      chla <- chla[(chla[, 2] < 40), ]
+    }
+    
+    xlims <- range(mod_run_parm()[, 1])
+
+    validate(
+      need(input$run_mod_ic > 0, "Please run the model")
+    )
+    p <- ggplot() +
+      geom_hline(yintercept = 0, color = "gray") +
+      geom_line(data = mod_run_parm(), aes_string(names(mod_run_parm())[1], names(mod_run_parm())[2], color = shQuote("Model"))) +
+      ylab("Chlorophyll-a (μg/L)") +
+      xlab("Time") +
+      {if(input$add_obs_parm) geom_point(data = chla, aes_string(names(chla)[1], names(chla)[2], color = shQuote("Obs")))} +
+      scale_color_manual(values = cols[1:2]) +
+      theme_minimal(base_size = 12) +
+      theme(panel.background = element_rect(fill = NA, color = 'black'))
+    
+    return(ggplotly(p, dynamicTicks = TRUE))
+    
+  })
+  
+
+  #* Run eco-model for calibration ----
   mod_run1 <- eventReactive(input$run_mod_ann, {
 
     # siteID <- eventReactive(input$table01_rows_selected, {
@@ -1396,24 +1635,13 @@ server <- function(input, output, session) {#
     res[1, -1] <- c(yini)
 
     for(i in 2:length(times)) {
-
-      if(all(c("Surface water temperature (SWT)", "Underwater light (uPAR)") %in% input$mod_sens)) {
-        out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
+      out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                       parms = parms, method = "ode45", inputs = npz_inputs))
-      } else if((c("Underwater light (uPAR)") %in% input$mod_sens)) {
-        out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
-                                      parms = parms, method = "ode45", inputs = npz_inputs))
-      } else if((c("Surface water temperature (SWT)") %in% input$mod_sens)) {
-        out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noPAR,
-                                      parms = parms, method = "ode45", inputs = npz_inputs))
-      } else {
-        out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noTPAR,
-                                      parms = parms, method = "ode45", inputs = npz_inputs))
-      }
       res[i, -1] <- out[2, c(2, 3)]
       yini <- out[2, c(2:3)]
 
     }
+    
     res <- as.data.frame(res)
     res$time <- npz_inp$Date
     res$Chla <- (res$Phytoplankton * 62) # Convert from mmol/m3 to ug/L # * 4.97 + 1.58
@@ -1424,9 +1652,6 @@ server <- function(input, output, session) {#
 
   # Add popover
   observe({
-    if(input$run_mod_ann >= 1) {
-      addTooltip(session, "mod_phyto_plot", title = "Plot of simulated nitrogen concentrations", trigger = "hover", placement = "top")
-    }
     if(input$run_mod_ann == 20) {
       showModal(modalDialog(
         title = "Hmmmmmmmmmmmmm...",
@@ -1434,7 +1659,6 @@ server <- function(input, output, session) {#
         Remember this is a simplified model so it will not match the patterns in your data. Aim to get the chlorophyll-a in a similar range to the observed values for Q15 and then proceed with Activity B."
       ))
     }
-
   })
 
   #* Model annual output data ----
@@ -1484,7 +1708,6 @@ server <- function(input, output, session) {#
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Time") +
       {if(input$add_obs) geom_point(data = chla, aes_string(names(chla)[1], names(chla)[2], color = shQuote("Obs")))} +
-      # coord_cartesian(xlim = xlims, ylim = ylims) +
       scale_color_manual(values = cols[1:2]) +
       theme_minimal(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
@@ -1493,51 +1716,6 @@ server <- function(input, output, session) {#
       theme_classic(base_size = 34) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
 
-    return(ggplotly(p, dynamicTicks = TRUE))
-
-  })
-
-  #* Model annual phyto-zoo plot ----
-  output$mod_phyto_plot <- renderPlotly({
-
-    validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
-    )
-    validate(
-      need(input$run_mod_ann > 0, "Click 'Run Model'")
-    )
-
-    xlims <- range(mod_run1()[, 1])
-    mlt <- reshape2::melt(mod_run1()[, -c(2)], id.vars = 1)
-    ylims <- c(0, max(mlt[, 3]))
-
-    validate(
-      need(input$run_mod_ann > 0, "Please run the model")
-    )
-    # Load DIN observations
-    read_var <- neon_vars$id[which(neon_vars$Short_name == "Dissolved Inorganic Nitrogen")]
-    units <- neon_vars$units[which(neon_vars$Short_name == "Dissolved Inorganic Nitrogen")]
-    file <- file.path("data", "neon", paste0(siteID, "_", read_var, "_", units, ".csv"))
-    if(file.exists(file)) {
-      din <- read.csv(file)
-      din[, 1] <- as.POSIXct(din[, 1], tz = "UTC")
-      din <- din[(din[, 1] >= mod_run1()[1, 1] &
-                    din[, 1] <= mod_run1()[nrow(mod_run1()), 1]), ]
-      din$variable <- "Nutrients"
-    }
-
-
-
-    p <- ggplot() +
-      geom_hline(yintercept = 0, color = "gray") +
-      geom_line(data = mlt, aes_string(names(mlt)[1], names(mlt)[3], color = shQuote("Model"))) +
-      ylab("N (mg/L)") +
-      xlab("Time") +
-      {if(input$add_obs) geom_point(data = din, aes_string(names(din)[1], names(din)[2], color = shQuote("Obs")))} +
-      coord_cartesian(xlim = xlims, ylim = ylims) +
-      theme_minimal(base_size = 12) +
-      theme(panel.background = element_rect(fill = NA, color = 'black'))+
-      scale_color_manual(values = cols[3:8])
     return(ggplotly(p, dynamicTicks = TRUE))
 
   })
