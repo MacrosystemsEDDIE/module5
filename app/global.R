@@ -9,7 +9,7 @@ library(ncdf4); library(reshape, quietly = TRUE, warn.conflicts = FALSE)
 library(sortable)
 # remotes::install_github('yonicd/slickR') # removed from CRAN - now only on GitHub
 library(slickR); library(tinytex); library(rvest, quietly = TRUE, warn.conflicts = FALSE)
-library(rLakeAnalyzer); library(LakeMetabolizer);
+library(rLakeAnalyzer)
 library(DT, quietly = TRUE, warn.conflicts = FALSE); library(rintrojs); library(hover)
 library(stringr); library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
 library(RColorBrewer); library(ggpubr); library(readr); library(shinyBS); library(httr)
@@ -110,7 +110,7 @@ state_vars <- c("Phytoplankton", "Nitrogen")
 process_vars <- c("Mortality", "Uptake")
 
 # Statistics
-stats <- list("Minimum" = "Min.", "1st Quartile" = "1st Qu.", "Median" = "Median", "Mean" = "Mean", "3rd Quartile" = "3rd Qu.", "Maximum" = "Max.", "Standard Deviation" = "sd")
+stats <- list("Minimum" = "Min.", "Maximum" = "Max.", "Mean" = "Mean")
 
 # Parameters for NP model
 parms <- c(
@@ -151,13 +151,12 @@ q6_table <- data.frame(
 
 wid_pct2 <- "100%"
 q7_table <- data.frame(
-  relationship = c(as.character(textAreaInput(inputId = "q7a", "" , width = wid_pct2)),
-                   as.character(textAreaInput(inputId = "q7b", "" , width = wid_pct2)),
-                   as.character(textAreaInput(inputId = "q7c", "" , width = wid_pct2)),
-                   as.character(textAreaInput(inputId = "q7d", "" , width = wid_pct2)))
+  relationship = c(as.character(p("" , width = wid_pct2)),
+                   as.character(p("" , width = wid_pct2)),
+                   as.character(p("" , width = wid_pct2)),
+                   as.character(p("" , width = wid_pct2)))
 )
 
-mod_choices <- c("Negative", "No change", "Positive")
 
 wid_pct3 <- "80%"
 

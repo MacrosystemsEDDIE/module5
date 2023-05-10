@@ -247,10 +247,7 @@ server <- function(input, output, session) {#
       df <- df[df[, 2] == min(df[, 2], na.rm = TRUE), c(1, 3)] # subset to surface temperature
     }
 
-    sel <- tryCatch(df[(selected$sel$pointNumber+1),,drop=FALSE] , error=function(e){NULL})
-
-
-    return(list(data = df, sel = sel))
+    return(list(data = df))
   })
 
 
@@ -305,69 +302,24 @@ server <- function(input, output, session) {#
       need(file.exists(file), message = "This variable is not available at this site. Please select a different variable or site.")
     )
 
-    obj <- neon_DT()$sel
-
     p <- ggplot() +
       geom_point(data = neon_DT()$data, aes_string(names(neon_DT()$data)[1], names(neon_DT()$data)[2]), color = "black") +
       ylab(paste0(input$view_var, " (", units, ")")) +
       xlab("Time") +
       theme_minimal(base_size = 12)
 
-    if(nrow(obj) != 0) {
-      p <- p +
-        geom_point(data = obj, aes_string(names(obj)[1], names(obj)[2]), color = cols[2])
-
-    }
     return(ggplotly(p, dynamicTicks = TRUE, source = "A"))
 
-  })
-
-  selected <- reactiveValues(sel = NULL)
-  observeEvent(input$clear_sel1, {
-    selected$sel <- NULL
-  })
-
-
-
-  #selected
-  observe({
-    # suppress warnings
-    storeWarn<- getOption("warn")
-    options(warn = -1)
-    selected$sel <- event_data(event = "plotly_selected", source = "A")
-
-    #restore warnings, delayed so plot is completed
-    shinyjs::delay(expr =({
-      options(warn = storeWarn)
-    }) ,ms = 100)
-  })
-
-  # Reset selected point when changing variables - https://stackoverflow.com/questions/42996303/removing-plotly-click-event-data
-  observeEvent(input$view_var, {
-    if(input$view_var > 1) {
-      if(!is.null(selected$sel)) {
-        selected$sel <- NULL
-      }
-
-    }
   })
 
 
   # Output stats ----
   output$out_stats <- renderText({
 
-    validate(
-      need(nrow(neon_DT()$sel) > 0, "Select points in the plot using the 'Box Select' or 'Lasso Select' option in the top right corner of the plot.")
-    )
-
-    if(input$stat_calc == "sd") {
-      out_stat <- sd(neon_DT()$sel[, ncol(neon_DT()$sel)], na.rm = TRUE)
-      out_stat <- paste0("Std. Dev.: ", signif(out_stat, 5))
-    } else {
-      sum_stat <- summary(neon_DT()$sel)
+      sum_stat <- summary(neon_DT()$data)
       ridx <- grep(input$stat_calc, sum_stat[, ncol(sum_stat)])
       out_stat <- sum_stat[ridx, ncol(sum_stat)]
-    }
+      
     return(out_stat)
   })
 
@@ -376,10 +328,10 @@ server <- function(input, output, session) {#
   q6_ans <- reactiveValues(dt = q6_table) # %>% formatStyle(c(1:3), border = '1px solid #ddd'))
 
   output$q6_tab <- DT::renderDT(
-    q6_ans$dt, #%>% formatStyle(c(1:dim(q6_ans$dt)[2]), border = '1px solid #ddd'),
+    q6_ans$dt, 
     selection = "none", class = "cell-border stripe",
     options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"),
-    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface water temperature", "Nitrogen", "Underwater PAR", "Chlorophyll-a"), colnames=c("Mean", "Minimum", "Maximum"), editable = TRUE
+    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface water temperature", "Nitrogen", "Underwater PAR", "Chlorophyll-a"), colnames=c("Mean", "Minimum", "Maximum"), editable = FALSE
   )
 
   q6_proxy <- dataTableProxy("q6_tab")
@@ -814,18 +766,10 @@ server <- function(input, output, session) {#
 
     validate(
       need(input$x_var != "",
-           message = "Please select a X variable.")
+           message = "Please select an X variable.")
     )
-    validate(
-      need(input$y_var != "",
-           message = "Please select a Y variable.")
-    )
-
-    # if(input$x_var == "Surface water temperature") {
-    #   ref <- "Water temperature profile"
-    # } else {
+    
     ref <- input$x_var
-    # }
 
     x_var <- neon_vars$id[which(neon_vars$Short_name == ref)][1]
     x_units <- neon_vars$units[which(neon_vars$Short_name == ref)][1]
@@ -841,25 +785,16 @@ server <- function(input, output, session) {#
     }
     xvar <- plyr::ddply(xvar, c("Date"), function(x) mean(x[, 2], na.rm = TRUE)) # Daily average - also puts everything on same timestamp
 
-    # y-variable
-
-    # if(input$y_var == "Surface water temperature") {
-    #   ref2 <- "Water temperature profile"
-    # } else {
-    ref2 <- input$y_var
-    # }
-    y_var <- neon_vars$id[which(neon_vars$Short_name == ref2)][1]
-    y_units <- neon_vars$units[which(neon_vars$Short_name == ref2)][1]
+    
+    y_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")][1]
+    y_units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")][1]
     y_file <- file.path("data", "neon", paste0(siteID, "_", y_var, "_", y_units, ".csv"))
     validate(
-      need(file.exists(y_file), message = paste0(ref2, " is not available at this site. Please select a different Y variable."))
+      need(file.exists(y_file), message = paste0("Chlorophyll-a", " is not available at this site. Please select a different Y variable."))
     )
     yvar <- read.csv(y_file)
     yvar[, 1] <- as.POSIXct(yvar[, 1], tz = "UTC")
     yvar$Date <- as.Date(yvar[, 1])
-    if(ref2 == "Surface water temperature") {
-      yvar <- yvar[yvar[, 2] == min(yvar[, 2], na.rm = TRUE), c(1, 3)] # subset to Surface water temperature
-    }
     yvar <- plyr::ddply(yvar, c("Date"), function(y) mean(y[, 2], na.rm = TRUE)) # Daily average - also puts everything on same timestamp
 
     df <- merge(xvar, yvar, by = "Date")
@@ -871,7 +806,7 @@ server <- function(input, output, session) {#
     p <- ggplot(df, aes_string(names(df)[2], names(df)[3])) +
       geom_point() +
       xlab(paste0(input$x_var, " (", x_units, ")")) +
-      ylab(paste0(input$y_var, " (", y_units, ")")) +
+      ylab(paste0("Chlorophyll-a", " (", y_units, ")")) +
       theme_minimal(base_size = 12)
     return(ggplotly(p, dynamicTicks = TRUE))
 
@@ -881,14 +816,7 @@ server <- function(input, output, session) {#
   output$q7_tab <- DT::renderDT(
     q7_table, selection = "none",
     options = list(searching = FALSE, paging = FALSE, ordering= FALSE, dom = "t"),
-    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface water temperature", "Nitrogen", "Underwater PAR"), colnames=c("Relationship"),
-    callback = JS("table.rows().every(function(i, tab, row) {
-                  var $this = $(this.node());
-                  $this.attr('id', this.data()[0]);
-                  $this.addClass('shiny-input-container');
-                  });
-                  Shiny.unbindAll(table.table().node());
-                  Shiny.bindAll(table.table().node());")
+    server = FALSE, escape = FALSE, rownames= c("Air temperature", "Surface water temperature", "Nitrogen", "Underwater PAR"), colnames=c("Relationship with chlorophyll-a"), editable = FALSE
   )
 
 
@@ -3889,119 +3817,18 @@ server <- function(input, output, session) {#
 
   })
 
-  # Checklist for user inputs
-  output$check_list <- renderUI({
-    chk_list()
-  })
-  output$check_list2 <- renderUI({
-    chk_list()
-  })
-
-  chk_list <- reactive({
-    out_chk <- c(
-      if(input$name == "") {"Introduction: Name"},
-      if(input$id_number == "") "Introduction: ID number",
-      if(input$q1 == "") "Introduction: Q. 1",
-      if(input$q2 == "") "Introduction: Q. 2",
-      if(input$q3 == "") "Introduction: Q. 3",
-      if(input$q4a == "" | input$q4b == "" | input$q4c == "" |input$q4d == "") "Exploration: Q. 4",
-      if(input$q5a == "" | input$q5b == "" | input$q5c == "" | input$q5d == "" | input$q5e == "" | input$q5f == "") "Activity A: Objective 1 - Q. 5",
-      if(any(is.na(q6_ans$dt[, 1])) | any(is.na(q6_ans$dt[, 2])) | any(is.na(q6_ans$dt[, 1]))) "Activity A: Objective 2 - Q. 6",
-      if(is.null(input$q7a) | is.null(input$q7b) | is.null(input$q7c) | is.null(input$q7d)) "Activity A: Objective 3 - Q. 7",
-      if(input$q8 == "") "Activity A: Objective 3 - Q. 8",
-      if(is.null(input$q9a) & is.null(input$q9b) & is.null(input$q9c)) "Activity A: Objective 4 - Q. 9",
-      if(length(input$rank_list_2) == 0 | length(input$rank_list_3) == 0) "Activity A: Objective 4 - Q. 10",
-      if(is.null(input$q11a) & is.null(input$q11b)) "Activity A: Objective 4 - Q. 11",
-      if(input$q12 == "") "Activity A: Objective 5 - Q. 12",
-      if(input$q13a == "" | input$q13b == "") "Activity A: Objective 5 - Q. 13",
-      if(input$q14a == "" | input$q14b == "") "Activity A: Objective 5 - Q. 14",
-      if(all(is.na(par_save$value$SWT))) "Activity A: Objective 5 - Q. 15 Table of parameters",
-      if(!file.exists("www/mod_run_2019.png")) "Activity A: Objective 5 - Q. 15 Save plot of model run",
-      if(input$q16 == "") "Activity B: Objective 6 - Q. 16",
-      if(input$save_noaa_plot == 0) "Activity B: Objective 6 - Q. 16 Save plot of NOAA weather forecast",
-      if(input$q17a == "" | input$q17b == "" | input$q17c == "") "Activity B: Objective 6 - Q. 17",
-      if(input$q18 == "") "Activity B: Objective 8 - Q. 18",
-      if(input$q19 == "") "Activity B: Objective 8 - Q. 19",
-      if(input$save_comm_plot == 0) "Activity B: Objective 8 - Q. 19 Save plot of ecological forecast",
-      if(input$q20 == "") "Activity B: Objective 9 - Q. 20",
-      if(input$q21 == "") "Activity B: Objective 10 - Q. 21",
-      if(input$save_assess_plot == 0) "Activity B: Objective 10 - Q. 21 Save plot of assessment of the ecological forecast",
-      if(input$q22 == "") "Activity B: Objective 11 - Q. 22",
-      if(input$save_update_fc_plot == 0) "Activity B: Objective 11 - Q. 22 Save plot of updated ecological forecast",
-      if(input$q23 == "") "Activity B: Objective 12 - Q. 23",
-      if(input$save_new_fc_plot == 0) "Activity B: Objective 12 - Q. 23 Save plot of new ecological forecast",
-      if(input$q24 == "") "Activity B: Objective 12 - Q. 24",
-      if(input$q25a == "" | input$q25b == "" | input$q25c == "") "Activity C: Q. 25",
-      if(input$q26 == "") "Activity C: Q. 26"
-    )
-
-    if(length(out_chk) == 0) {
-      out_chk <- "Finished! All answers have been input into the app."
-    }
-
-    HTML(
-      paste(
-        out_chk,
-        collapse = "<br/>"
-      )
-    )
-
-
-  })
 
   # Save answers in .eddie file
   ans_list <- reactiveValues()
   observe({
     ans_list <<- list(
       name = input$name,
-      id_number = input$id_number,
-      a1 = input$q1,
-      a2 = input$q2,
-      a3 = input$q3,
-      a4a = input$q4a,
-      a4b = input$q4b,
-      a4c = input$q4c,
-      a4d = input$q4d,
-      a5a = input$q5a,
-      a5b = input$q5b,
-      a5c = input$q5c,
-      a5d = input$q5d,
-      a5e = input$q5e,
-      a5f = input$q5f,
-      a6 = q6_ans$dt,
-      a7a = input$q7a,
-      a7b = input$q7b,
-      a7c = input$q7c,
-      a7d = input$q7d,
-      a8 = input$q8,
-      a9a = input$q9a,
-      a9b = input$q9b,
-      a9c = input$q9c,
-      a10_states = input$rank_list_2,
-      a10_pars = input$rank_list_3,
-      a11a = input$q11a,
-      a11b = input$q11b,
       a12 = mod_ans_tab$df[2, 1],
       a13a = mod_ans_tab$df[4, 1],
       a13b = mod_ans_tab$df[6, 1],
       a14a = mod_ans_tab$df[8, 1],
       a14b = mod_ans_tab$df[10, 1],
       a15 = mod_ans_tab$df[12, 1],
-      a16 = input$q16,
-      a17a = input$q17a,
-      a17b = input$q17b,
-      a17c = input$q17c,
-      a18 = input$q18,
-      a19 = input$q19,
-      a20 = input$q20,
-      a21 = input$q21,
-      a22 = input$q22,
-      a23 = input$q23,
-      a24 = input$q24,
-      a25a = input$q25a,
-      a25b = input$q25b,
-      a25c = input$q25c,
-      a26 = input$q26,
       param_df = par_save$value,
       site_row = input$table01_rows_selected,
       mod_input = input$mod_sens,
@@ -4034,48 +3861,12 @@ server <- function(input, output, session) {#
   observeEvent(input$upload_answers, {
 
     up_answers <<- readRDS(input$upload_answers$datapath)
-    updateTextAreaInput(session, "name", value = up_answers$name)
-    updateTextAreaInput(session, "id_number", value = up_answers$id_number)
-    updateTextAreaInput(session, "q1", value = up_answers$a1)
-    updateTextAreaInput(session, "q2", value = up_answers$a2)
-    updateTextAreaInput(session, "q3", value = up_answers$a3)
-    updateTextAreaInput(session, "q4a", value = up_answers$a4a)
-    updateTextAreaInput(session, "q4b", value = up_answers$a4b)
-    updateTextAreaInput(session, "q4c", value = up_answers$a4c)
-    updateTextAreaInput(session, "q4d", value = up_answers$a4d)
-    updateTextAreaInput(session, "q5a", value = up_answers$a5a)
-    updateTextAreaInput(session, "q5b", value = up_answers$a5b)
-    updateTextAreaInput(session, "q5c", value = up_answers$a5c)
-    updateTextAreaInput(session, "q5d", value = up_answers$a5d)
-    updateTextAreaInput(session, "q5e", value = up_answers$a5e)
-    updateTextAreaInput(session, "q5f", value = up_answers$a5f)
-    updateTextAreaInput(session, "q8", value = up_answers$a8)
-    updateRadioButtons(session, "q9a", selected = up_answers$a9a)
-    updateRadioButtons(session, "q9b", selected = up_answers$a9b)
-    updateRadioButtons(session, "q9c", selected = up_answers$a9c)
-    updateRadioButtons(session, "q11a", selected = up_answers$a11a)
-    updateRadioButtons(session, "q11b", selected = up_answers$a11b)
     updateTextAreaInput(session, "q12", value = up_answers$a12)
     updateTextAreaInput(session, "q13a", value = up_answers$a13a)
     updateTextAreaInput(session, "q13b", value = up_answers$a13b)
     updateTextAreaInput(session, "q14a", value = up_answers$a14a)
     updateTextAreaInput(session, "q14b", value = up_answers$a14b)
     updateTextAreaInput(session, "q15", value = up_answers$a15)
-    updateTextAreaInput(session, "q16", value = up_answers$a16)
-    updateTextAreaInput(session, "q17a", value = up_answers$a17a)
-    updateTextAreaInput(session, "q17b", value = up_answers$a17b)
-    updateTextAreaInput(session, "q17c", value = up_answers$a17c)
-    updateTextAreaInput(session, "q18", value = up_answers$a18)
-    updateTextAreaInput(session, "q19", value = up_answers$a19)
-    updateTextAreaInput(session, "q20", value = up_answers$a20)
-    updateTextAreaInput(session, "q21", value = up_answers$a21)
-    updateTextAreaInput(session, "q22", value = up_answers$a22)
-    updateTextAreaInput(session, "q23", value = up_answers$a23)
-    updateTextAreaInput(session, "q24", value = up_answers$a24)
-    updateTextAreaInput(session, "q25a", value = up_answers$a25a)
-    updateTextAreaInput(session, "q25b", value = up_answers$a25b)
-    updateTextAreaInput(session, "q25c", value = up_answers$a25c)
-    updateTextAreaInput(session, "q26", value = up_answers$a26)
 
     # Check box
     idx <- nrow(up_answers$param_df)
@@ -4111,33 +3902,6 @@ server <- function(input, output, session) {#
     req(input$maintab == "mtab5" & exists("up_answers") & input$tabseries1 == "obj1")
     req(!is.null(up_answers$site_row))
     tryCatch(updateSelectizeInput(session, "row_num", selected = up_answers$site_row), error = function(e) {NA})
-  })
-
-  observe({
-    req(input$maintab == "mtab5" & exists("up_answers") & input$tabseries1 == "obj2")
-    updateNumericInput(session, "q6a_mean", value = up_answers$a6a_mean)
-    updateNumericInput(session, "q6a_max", value = up_answers$a6a_max)
-    updateNumericInput(session, "q6a_min", value = up_answers$a6a_min)
-    updateNumericInput(session, "q6b_mean", value = up_answers$a6b_mean)
-    updateNumericInput(session, "q6b_max", value = up_answers$a6b_max)
-    updateNumericInput(session, "q6b_min", value = up_answers$a6b_min)
-    updateNumericInput(session, "q6c_mean", value = up_answers$a6c_mean)
-    updateNumericInput(session, "q6c_max", value = up_answers$a6c_max)
-    updateNumericInput(session, "q6c_min", value = up_answers$a6c_min)
-    updateNumericInput(session, "q6d_mean", value = up_answers$a6d_mean)
-    updateNumericInput(session, "q6d_max", value = up_answers$a6d_max)
-    updateNumericInput(session, "q6d_min", value = up_answers$a6d_min)
-    updateNumericInput(session, "q6e_mean", value = up_answers$a6e_mean)
-    updateNumericInput(session, "q6e_max", value = up_answers$a6e_max)
-    updateNumericInput(session, "q6e_min", value = up_answers$a6e_min)
-  })
-
-  observe({
-    req(input$maintab == "mtab5" & exists("up_answers") & input$tabseries1 == "obj3")
-    updateTextAreaInput(session, "q7a", value = up_answers$a7a)
-    updateTextAreaInput(session, "q7b", value = up_answers$a7b)
-    updateTextAreaInput(session, "q7c", value = up_answers$a7c)
-    updateTextAreaInput(session, "q7d", value = up_answers$a7d)
   })
 
   # Remove tool tip from forward and back buttons

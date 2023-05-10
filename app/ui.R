@@ -305,11 +305,7 @@ ui <- function(req) {
                                  conditionalPanel(condition = "output.reportbuilt", # This button appears after the report has been generated and is ready for download.
                                                   downloadButton("download", "Download Report", width = "60px", style = "width:190px;")
                                                   ),
-                                 br(),
-                                 h5(tags$b("Questions still to be completed:")),
-                                 wellPanel(
-                                   htmlOutput("check_list")
-                                   )
+                                 br()
                                  )
                           ),
                         hr(),
@@ -320,17 +316,14 @@ ui <- function(req) {
                                      fluidRow(
                                        column(8, offset = 1,
                                               h3("Before you start..."),
-                                              p("Input your name and Student ID and this will be added to your final report."),
-                                              textInput("name", "Name:"),
-                                              textInput("id_number", "ID number:"),
+                                              p("Input your name and Student ID into your final report (Word document). Then, answer the following questions in the final report"),
                                               introBox(
                                                 h3(tags$b("Think about it!")),
-                                                p("Note: The size of these text boxes can be adjusted by clicking and dragging the bottom right of the text box."),
-                                                textAreaInput2(inputId = "q1", label = quest["q1", 1]),
+                                                p(tags$b(quest["q1", 1])),
                                                 data.step = 5, data.intro = help_text["questions", 1]
                                               ),
-                                              textAreaInput2(inputId = "q2", label = quest["q2", 1], width = "90%"),
-                                              textAreaInput2(inputId = "q3", label = quest["q3", 1], width = "90%")
+                                              p(tags$b(quest["q2", 1], width = "90%")),
+                                              p(tags$b(quest["q3", 1], width = "90%"))
                                               )
                                        )
                                      )
@@ -372,15 +365,7 @@ ui <- function(req) {
                                                  <img src='fc_examples/", EF_links$img[1], "' height='50%' width='50%' style='border: 1px solid black;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);' alt='Screenshot of a webpage.' />
                                                  </a>")),
                                    br(), hr(),
-
-                                   # FLARE
-                                   # tags$li(style="text-align: justify;", HTML(paste0("<a href='", EF_links$use_html[2], "' target='_blank' >", EF_links$Forecast[2], "</a>")),
-                                   #         br(), p(EF_links$About[2])),
-                                   # HTML(paste0("<a href='", EF_links$use_html[2], "' target='_blank'>
-                                   #               <img src='fc_examples/", EF_links$img[2], "' height='50%' width='50%' style='border: 1px solid black;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); alt='Screenshot of a webpage.''/>
-                                   #               </a>")),
-                                   # br(), hr(),
-
+                                   
                                    # EcoCast
                                    tags$li(style="text-align: justify;", HTML(paste0("<a href='", EF_links$use_html[3], "' target='_blank' >", EF_links$Forecast[3], "</a>")),
                                            br(), p(EF_links$About[3])),
@@ -419,10 +404,11 @@ ui <- function(req) {
                                        column(8, offset = 1,
                                               h3("Questions"),
                                               h4(quest["q4", 1]),
-                                              textAreaInput2(inputId = "q4a", label = quest["q4a", 1], width = "90%"),
-                                              textAreaInput2(inputId = "q4b", label = quest["q4b", 1], width = "90%"),
-                                              textAreaInput2(inputId = "q4c", label = quest["q4c", 1], width = "90%"),
-                                              textAreaInput2(inputId = "q4d", label = quest["q4d", 1], width = "90%")
+                                              p(tags$i("Remember to write your answers in the final report.")),
+                                              p(tags$b(quest["q4a", 1], width = "90%")),
+                                              p(tags$b(quest["q4b", 1], width = "90%")),
+                                              p(tags$b(quest["q4c", 1], width = "90%")),
+                                              p(tags$b(quest["q4d", 1], width = "90%"))
                                               )
                                        )
                                      )
@@ -431,22 +417,6 @@ ui <- function(req) {
                         ),
                # 5. Activity A ----
                tabPanel(title = "Activity A", value = "mtab5",
-                        # tags$style(type = 'text/css', '.navbar { background-color: #F3F5F7;
-                        #    font-family: Arial;
-                        #    font-size: 13px;
-                        #    font-weight: bold;
-                        #    color: #FF0000; }',
-                        #
-                        #            '.navbar-dropdown { background-color: white;
-                        #    font-family: Arial;
-                        #    font-size: 13px;
-                        #    color: black; }',
-                        #
-                        #            '.navbar-default .navbar-brand {
-                        #      color: black;
-                        #    }',
-                        #            'ul.nav a:hover { color: #fff !important; }'
-                        # ),
                         tags$style(".nav-tabs {
   background-color: white;
   border-color: #FFF;
@@ -559,14 +529,14 @@ color: black;
                                                             ),
                                                           fluidRow(
                                                             column(4, offset = 1, align = "left", style = paste0("background: ", ques_bg),
-                                                                   textInput(inputId = "q5a", label = quest["q5a", 1] , width = "90%"),
-                                                                   textInput(inputId = "q5b", label = quest["q5b", 1], width = "90%"),
-                                                                   textInput(inputId = "q5c", label = quest["q5c", 1], width = "90%")
+                                                                   p(tags$b(quest["q5a", 1] , width = "90%")),
+                                                                   p(tags$b(quest["q5b", 1], width = "90%")),
+                                                                   p(tags$b(quest["q5c", 1], width = "90%"))
                                                             ),
                                                             column(4, offset = 1, align = "left", style = paste0("background: ", ques_bg),
-                                                                   textInput(inputId = "q5d", label = quest["q5d", 1] , width = "90%"),
-                                                                   textInput(inputId = "q5e", label = quest["q5e", 1], width = "90%"),
-                                                                   textInput(inputId = "q5f", label = quest["q5f", 1], width = "90%")
+                                                                   p(tags$b(quest["q5d", 1] , width = "90%")),
+                                                                   p(tags$b(quest["q5e", 1], width = "90%")),
+                                                                   p(tags$b(quest["q5f", 1], width = "90%"))
                                                                    )
                                                             )
                                                           )
@@ -606,16 +576,15 @@ color: black;
                                                #** Plot of data ----
                                                column(8,
                                                       h3("Data Plot"),
-                                                      p("All plots in this Shiny app are generated using Plotly. This allows you to hover your mouse over the plot to get information from each of the plots. You can inspect the data closely by clicking and zooming into particular areas. There is a tool box at the top of the plot which has the selection function required for Q6."),
-                                                      plotlyOutput("var_plot"),
-                                                      actionButton("clear_sel1", "Clear Selection"),
-                                                      useShinyjs(),  # Set up shinyjs
+                                                      p("All plots in this Shiny app are generated using Plotly. This allows you to hover your mouse over the plot to get information from each of the plots. You can inspect the data closely by clicking and zooming into particular areas. There is also a tool box at the top of the plot."),
                                                       selectizeInput("view_var", "Select variable",
                                                                      choices = unique(neon_vars$Short_name),
                                                                      options = list(
                                                                        placeholder = 'Please select a variable',
                                                                        onInitialize = I('function() { this.setValue(""); }')),
                                                       ),
+                                                      plotlyOutput("var_plot"),
+                                                      useShinyjs(),  # Set up shinyjs
                                                       wellPanel(
                                                         h4("Variable Description"),
                                                         textOutput("txt_out")
@@ -629,12 +598,6 @@ color: black;
                                                       selectInput("stat_calc", label = "Select calculation:", choices = stats),
                                                       wellPanel(
                                                         textOutput("out_stats")
-                                                        ),
-                                                      p("See image below to see location of the 'Box select' and 'Lasso select'."),
-                                                      fluidRow(
-                                                        column(12, align = "center",
-                                                               img(src = "box_select.png", height = "75%", width = "75%", style = "border: 2px solid black;", alt = "A picture containing a plot with a circle.")
-                                                               )
                                                         )
                                                       ),
                                                column(8,
@@ -644,10 +607,7 @@ color: black;
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
                                                                    h4(quest["q6", 1]),
-                                                                   p("Make sure you select data that best represent an annual period (i.e. one or two complete years), be wary of including potential outliers in your selection."),
-                                                                   p("To edit the table you must double click the cell and then type in your answer."),
                                                                    DTOutput("q6_tab"),
-                                                                   bsTooltip("q6_tab", title = "Double click the cell to edit", placement = "top", trigger = "hover"),
                                                                    br()
                                                                    )
                                                             )
@@ -682,18 +642,12 @@ color: black;
                                              fluidRow(
                                                column(4,
                                                       h3("Investigate variable relationships"),
-                                                      p("For Q. 7 you will keep 'Chlorophyll-a' as the y-variable and explore its relationship with the other variables at this site."),
-                                                      selectizeInput("y_var", "Select Y variable",
-                                                                     choices = unique(neon_vars$Short_name),
-                                                                     options = list(
-                                                                       placeholder = 'Please select a variable',
-                                                                       onInitialize = I('function() { this.setValue("Chlorophyll-a"); }'))),
+                                                      p("For Q. 7 you will explore the relationship between chlorophyll-a and the other variables at this site."),
                                                       selectizeInput("x_var", "Select X variable",
                                                                      choices = unique(neon_vars$Short_name),
                                                                      options = list(
                                                                        placeholder = 'Please select a variable',
-                                                                       onInitialize = I('function() { this.setValue(""); }'))),
-                                                      p("While for Q. 8, you can select any two variables and investigate if there is any relationship. e.g. air temperature and surface water temperature")
+                                                                       onInitialize = I('function() { this.setValue(""); }')))
                                                ),
                                                #** Comparison Plot ----
                                                column(6,
@@ -713,9 +667,6 @@ color: black;
                                                                    h3("Questions"),
                                                                    h4(quest["q7", 1]),
                                                                    DTOutput('q7_tab'),
-                                                                   br(),
-                                                                   h4(quest["q8", 1]),
-                                                                   textAreaInput2(inputId = "q8", label = "", width = "90%"),
                                                                    br()
                                                                    )
                                                             )
@@ -775,9 +726,9 @@ color: black;
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
                                                                    h4(quest["q9", 1]),
-                                                                   radioButtons("q9a", quest["q9a", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
-                                                                   radioButtons("q9b", quest["q9b", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
-                                                                   radioButtons("q9c", quest["q9c", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
+                                                                   p(tags$b(quest["q9a", 1])),
+                                                                   p(tags$b(quest["q9b", 1])),
+                                                                   p(tags$b(quest["q9c", 1])),
                                                                    br()
                                                                    )
                                                             )
@@ -820,8 +771,8 @@ color: black;
                                                                    ),
                                                                    br(),
                                                                    h4(quest["q11", 1]),
-                                                                   radioButtons("q11a", quest["q11a", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
-                                                                   radioButtons("q11b", quest["q11b", 1], choices = mod_choices, inline = TRUE, selected = character(0)),
+                                                                   p(tags$b(quest["q11a", 1])),
+                                                                   p(tags$b(quest["q11b", 1])),
                                                                    br()
                                                             ),
                                                             column(2,
@@ -1691,36 +1642,11 @@ color: black;
                           )
                         ),
                         hr(),
-                        # fluidRow(
-                        #   column(12,
-                        #          h2("Completed Module!"),
-                        #          p("This is the end of the module. If you have been inputting your answers into the app you will need to return to the 'Introduction' tab and generate the final report."),
-                        #          actionButton("return_intro2", "Return to Introduction", icon = icon("home"))
-                        #          )
-                        # ),
                         fluidRow(
-                          column(4,
+                          column(10,
                                  h2("Completed Module!"),
-                                 p("This is the end of the module. Now you can generate your final report which will input all your answers and figures into a Microsoft Word document which you can download and submit to your instructor.")
-                          ),
-                          column(4,
-                                 h3("Generate Report"),
-                                 p("This will take the answers you have input into this app and generate a Microsoft Word document (.docx) document with your answers which you can download and make further edits before submitting."),
-                                 actionButton("generate2", "Generate Report (.docx)", icon = icon("file"),
-                                              width = "190px", class = "btn-primary"),
-                                 br(), br(),
-                                 tags$style(type="text/css", "#download2 {background-color:#579277;color: white}"),
-                                 conditionalPanel(condition = "output.reportbuilt2", # This button appears after the report has been generated and is ready for download.
-                                                  downloadButton("download2", "Download Report", width = "60px", style = "width:190px;"
-                                                                 )
-                                                  )
-                                 ),
-                          column(4,
-                                 h3(tags$b("Questions to be completed:")),
-                                 wellPanel(
-                                   htmlOutput("check_list2")
-                                   )
-                                 )
+                                 p("This is the end of the module. Please check through the answers in your final report and be sure you have copy-pasted in all the required plots before you submit to your instructor.")
+                          )
                         ),
                         hr(),
                         )
