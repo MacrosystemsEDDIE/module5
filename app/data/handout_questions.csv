@@ -41,8 +41,9 @@ q15,"Q15. Add the observations to the plot. Calibrate your model by selecting se
 q16,Q16. What is forecast uncertainty? How is forecast uncertainty quantified?
 q17,Q17. Inspect the weather forecast data for the site you have chosen:
 q17a,a. How does increasing the number of ensemble members in the weather forecast affect the size of the uncertainty in future weather?
-q17b,b. Which type of plot (line or distribution) do you think visualizes the forecast uncertainty best?
+q17b,b. Which type of plot (line or distribution) do you think visualizes the forecast uncertainty best? Why?
 q17c,"c. Using the interactivity of the weather forecast plot, compare the air temperature forecasts for the first week (Sep 25 - Oct 1) to the second week (Oct 2 - 8). How does the forecast uncertainty change between the two periods? "
+q17d,d. Use the 'Save plot' button to save the NOAA forecast plot and copy-paste it into your final report.
 q18,"Q18. How does driver uncertainty affect the forecast, specifically, does an increase in the number of members increase or decrease the range of uncertainty in the forecasts? How does that change over time?"
 q19,Q19. What do you think are the main sources of uncertainty in your ecological forecast?
 q20,Q20. How would you describe your forecast of primary productivity at your NEON site so it could be understood by a fellow classmate?

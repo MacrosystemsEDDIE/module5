@@ -410,18 +410,15 @@ server <- function(input, output, session) {#
 
     sel <- tryCatch(df[(selected2$sel$pointNumber+1),,drop=FALSE] , error=function(e){NULL})
 
-
-    return(list(data = df, sel = sel))
+    qaqc <- df[df$Y != 5.2300000,]
+    
+    return(list(data = df, qaqc = qaqc, sel = sel))
   })
 
   lmfit2 <- reactiveValues(m = NULL, b = NULL, r2 = NULL)
 
   observeEvent(input$add_lm2, {
-    if(is.null(selected2$sel)) {
-      df <- wtemp_airtemp()$data
-    } else {
-      df <- selected2$sel[, 2:4]
-    }
+    df <- wtemp_airtemp()$qaqc
     fit <- lm(df[, 3] ~ df[, 2])
     coeffs <- fit$coefficients
     lmfit2$m <- round(coeffs[2], 2)
@@ -479,6 +476,34 @@ server <- function(input, output, session) {#
 
     return(ggplotly(p, dynamicTicks = TRUE, source = "B"))
 
+  })
+  
+  observeEvent(input$run_qaqc1, {
+    
+    output$at_wt <- renderPlotly({
+      validate(
+        need(input$table01_rows_selected != "",
+             message = "Please select a site in Objective 1.")
+      )
+      obj <- wtemp_airtemp()$sel
+      
+      p <- ggplot() +
+        geom_point(data = wtemp_airtemp()$data, aes_string(names(wtemp_airtemp()$data)[2], names(wtemp_airtemp()$data)[3]), color = "gray") +
+        geom_point(data = wtemp_airtemp()$qaqc, aes_string(names(wtemp_airtemp()$data)[2], names(wtemp_airtemp()$data)[3]), color = "black") +
+        ylab("Surface water temperature (\u00B0C)") +
+        xlab("Air temperature (\u00B0C)") +
+        theme_minimal(base_size = 12)
+      
+      if(nrow(obj) != 0) {
+        p <- p +
+          geom_point(data = obj, aes_string(names(obj)[2], names(obj)[3]), color = cols[2])
+      }
+      if(!is.null(lmfit2$m)) {
+        p <- p +
+          geom_abline(slope = lmfit2$m, intercept = lmfit2$b, color = cols[2], linetype = "dashed")
+      }
+      return(ggplotly(p, dynamicTicks = TRUE, source = "B"))
+    })
   })
 
   #** Save SWR and uPAR ----
@@ -545,18 +570,15 @@ server <- function(input, output, session) {#
 
     sel <- tryCatch(df[(selected3$sel$pointNumber+1),,drop=FALSE] , error=function(e){NULL})
 
-
-    return(list(data = df, sel = sel))
+    qaqc <- df[df$Y >= 10,]
+    
+    return(list(data = df, qaqc = qaqc, sel = sel))
   })
 
   lmfit3 <- reactiveValues(m = NULL, b = NULL, r2 = NULL)
 
   observeEvent(input$add_lm3, {
-    if(is.null(selected3$sel)) {
-      df <- swr_upar()$data
-    } else {
-      df <- selected3$sel[, 2:4]
-    }
+    df <- swr_upar()$qaqc
     fit <- lm(df[, 3] ~ df[, 2])
     coeffs <- fit$coefficients
     lmfit3$m <- round(coeffs[2], 2)
@@ -620,6 +642,36 @@ server <- function(input, output, session) {#
     return(ggplotly(p, dynamicTicks = TRUE, source = "C"))
 
   })
+  
+  observeEvent(input$run_qaqc2, {
+    output$sw_upar <- renderPlotly({
+      validate(
+        need(input$table01_rows_selected != "",
+             message = "Please select a site in Objective 1.")
+      )
+      
+      obj <- swr_upar()$sel
+      
+      p <- ggplot() +
+        geom_point(data = swr_upar()$data, aes_string(names(swr_upar()$data)[2], names(swr_upar()$data)[3]), color = "gray") +
+        geom_point(data = swr_upar()$qaqc, aes_string(names(swr_upar()$data)[2], names(swr_upar()$data)[3]), color = "black") +
+        ylab("Underwater PAR (micromolesPerSquareMeterPerSecond)") +
+        xlab("Shortwave radiation (wattsPerSquareMeter)") +
+        theme_minimal(base_size = 12)
+      
+      if(nrow(obj) != 0) {
+        p <- p +
+          geom_point(data = obj, aes_string(names(obj)[2], names(obj)[3]), color = cols[2])
+      }
+      if(!is.null(lmfit3$m)) {
+        p <- p +
+          geom_abline(slope = lmfit3$m, intercept = lmfit3$b, color = cols[2], linetype = "dashed")
+      }
+      
+      return(ggplotly(p, dynamicTicks = TRUE, source = "C"))
+      
+    })
+  })
 
   #** Convert NOAA forecast data ----
   fc_conv <- reactiveValues(lst = NA)
@@ -678,13 +730,6 @@ server <- function(input, output, session) {#
     l1 <- fc_conv$lst
     idvars <- colnames(l1[[1]])
     mlt1 <- reshape::melt(l1, id.vars = idvars)
-    if(min(mlt1$upar, na.rm = TRUE) <= 0) {
-      showModal(modalDialog(
-        title = "Uh oh!",
-        "Inspect your Underwater PAR plot. It looks like you have negative values which isn't possible!
-        Adjust your linear regression and convert the forecast again."
-      ))
-    }
 
   })
 
@@ -736,6 +781,70 @@ server <- function(input, output, session) {#
     gp <- ggplotly(p, dynamicTicks = TRUE)
     return(gp)
 
+  })
+  
+  output$conv_plot2 <- renderPlotly({
+    validate(
+      need(input$table01_rows_selected != "",
+           message = "Please select a site in Objective 1.")
+    )
+    validate(
+      need(input$load_fc > 0, "Load weather forecast in Objective 6.")
+    )
+    validate(
+      need(!is.null(lmfit2$m),
+           message = "Please add a regression line for the air vs. water temperature.")
+    )
+    validate(
+      need(!is.null(lmfit3$m),
+           message = "Please add a regression line for the SWR vs. uPAR.")
+    )
+    validate(
+      need(!is.na(fc_conv$lst),
+           message = "Click 'Convert forecast' in Objective 7.")
+    )
+    validate(
+      need(input$conv_fc > 0, "Click 'Convert forecast' in Objective 7.")
+    )
+    
+    validate(
+      need(input$members2 >= 1 & input$members2 <= 30,
+           message = paste0("The number of members must be between 1 and 30"))
+    )
+    
+    validate(
+      need(input$load_fc2 > 0, "Click 'Load driver forecasts'.")
+    )
+    
+    l1 <- fc_conv$lst
+    idvars <- colnames(l1[[1]])
+    mlt1 <- reshape::melt(l1, id.vars = idvars)
+    # colnames(mlt1)[2:3] <- c("Water temperature", "Underwater PAR")
+    mlt2 <- reshape2::melt(mlt1, id.vars = c("date", "fc_date", "L1")) 
+    
+    ens_membs <- unique(mlt2$L1)
+    plot_membs <- ens_membs[1:input$members2]
+    
+    mlt3 <- mlt2 %>% 
+      filter(L1 %in% plot_membs)
+    
+    p <- ggplot()
+    p <- p +
+      geom_line(data = mlt3, aes(date, value, group = L1, color = fc_date)) +
+      scale_color_manual(values = pair.cols[2]) +
+      facet_wrap(~variable, scales = "free_y", nrow = 2,
+                 strip.position = "left",
+                 labeller = as_labeller(c(wtemp = "Water temperature (\u00B0C)", upar = "Underwater PAR (µmol m-2 s-1)") )) +
+      labs(color = "Forecast date") +
+      xlab("Time") +
+      theme_minimal(base_size = 12) +
+      ylab(NULL) +
+      theme(strip.background = element_blank(),
+            strip.placement = "outside")
+    
+    gp <- ggplotly(p, dynamicTicks = TRUE)
+    return(gp)
+    
   })
 
 
@@ -915,11 +1024,6 @@ server <- function(input, output, session) {#
     fc_idx <- c(2, 6) # which(noaa_dic$noaa_name %in% fc_vars)
     selectInput("fc_var", "Choose variable", choices = noaa_dic$display_name[fc_idx])
   })
-  # Get NOAA forecast variables ----
-  output$sel_fc_dates <- renderUI({
-    checkboxGroupInput("fc_date", "Select date of Forecast", choices = fc_date[1],
-                       selected = fc_date[1])
-  })
 
   # Get NOAA forecast members ----
   output$sel_fc_members <- renderUI({
@@ -935,23 +1039,21 @@ server <- function(input, output, session) {#
 
     validate(
       need(input$table01_rows_selected != "",
-           message = "Please select a site on the 'Activity A' tab")
+           message = "Please select a site on the 'Activity A - Objective 1' tab")
     )
     validate(
-      need(!is.na(par_save$value[5, c(5)]),
-           message = "Please save a parameter set in 'Activity A - Objective 5 - Q 15'")
+      need(!is.na(par_final$value[1, 1]),
+           message = "Please save a parameter set in 'Activity A - Objective 5'")
     )
     validate(
       need(input$load_fc > 0, "Click 'Load Forecast'")
     )
-    validate(
-      need(!is.null(input$fc_date), "Please select a date")
-    )
+    
     validate(
       need(input$members >= 1 & input$members <= membs, paste0("Please select a number of members between 1 and ", membs))
     )
 
-    l1 <- fc_data()[input$fc_date] #Subset by date
+    l1 <- fc_data()["2020-09-25"] #Subset by date
 
     var_idx <- which(noaa_dic$display_name == input$fc_var)
     # Subset by members
@@ -984,22 +1086,18 @@ server <- function(input, output, session) {#
 
 
   #* plot NOAA forecast ----
+  p_noaa_fc <- reactiveValues(plot = NULL)
   output$fc_plot <- renderPlotly({
 
     validate(
       need(input$table01_rows_selected != "",
            message = "Please select a site on the 'Activity A' tab")
     )
-    validate(
-      need(!is.na(par_save$value[5, c(5)]),
-           message = "Please save a parameter set in 'Activity A - Objective 5 - Q 15'")
-    )
+    
     validate(
       need(input$load_fc > 0, "Click 'Load Forecast'")
     )
-    validate(
-      need(!is.null(input$fc_date), "Please select a date")
-    )
+    
     if(input$type == "Distribution") {
       validate(
         need(input$members > 1 & input$members <= 30, paste0("Please select a number of members between 2 and 30."))
@@ -1017,7 +1115,7 @@ server <- function(input, output, session) {#
       geom_hline(yintercept = 0, color = "gray")
 
 
-    l1 <- fc_data()[input$fc_date] #Subset by date
+    l1 <- fc_data()["2020-09-25"] #Subset by date
 
     var_idx <- which(noaa_dic$display_name == input$fc_var)
     # Subset by members
@@ -1085,6 +1183,8 @@ server <- function(input, output, session) {#
       xlab("Time") +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black'))
+    
+    p_noaa_fc$plot <- p 
 
     gp <- ggplotly(p, dynamicTicks = TRUE)
     # Code to remove parentheses in plotly
@@ -1097,132 +1197,19 @@ server <- function(input, output, session) {#
     return(gp)
   })
 
-  #* Save plot for annual ====
-  observeEvent(input$save_noaa_plot, {
-
-    validate(
-      need(input$table01_rows_selected != "",
-           message = "Please select a site on the 'Activity A' tab")
-    )
-
-    validate(
-      need(!is.na(par_save$value[5, c(5)]), "Add parameters to row 'Q15' in the Model Settings table in Objective 5")
-    )
-    validate(
-      need(input$load_fc > 0, "Click 'Load Forecast'")
-    )
-    validate(
-      need(input$members >= 1 & input$members <= membs, paste0("Please select a number of members between 1 and ", membs))
-
-    )
-
-    # Progress bar
-    progress <- shiny::Progress$new()
-    on.exit(progress$close())
-    progress$set(message = "Saving plot as image file for the report.",
-                 detail = "This may take a while. This window will disappear
-                     when it is downloaded.", value = 0.5)
-
-    p <- ggplot()
-
-
-    l1 <- fc_data()[input$fc_date] #Subset by date
-
-    var_idx <- which(noaa_dic$display_name == input$fc_var)
-    # Subset by members
-    l2 <- lapply(l1, function(x) {
-      x[x$L1 == noaa_dic$noaa_name[var_idx], 1:(2 + input$members)]
-
-    })
-
-    idvars <- colnames(l2[[1]])
-    mlt1 <- reshape::melt(l2, id.vars = idvars)
-    colnames(mlt1)[2] <- "fc_date"
-
-    if(input$fc_var == "Air temperature") {
-      mlt1[, -c(1, 2)] <- mlt1[, -c(1, 2)] - 273.15
-      ylab <- "Air temperature (\u00B0C)"
-    } else {
-      ylab <- paste0(noaa_dic$display_name[var_idx] , " (", noaa_dic$units[var_idx], ")")
+  #* Save noaa fc plot ====
+  output$save_noaa_plot <- downloadHandler(
+    filename = function() {
+      paste("NOAA-forecast-plot-", Sys.Date(), ".png", sep="")
+    },
+    content = function(file) {
+      device <- function(..., width, height) {
+        grDevices::png(..., width = width, height = height,
+                       res = 300, units = "in")
+      }
+      ggsave(file, plot = p_noaa_fc$plot, device = device)
     }
-    if(input$fc_var == "Relative humidity") {
-      mlt1[, -c(1, 2)] <- mlt1[, -c(1, 2)] * 100
-    }
-
-    # if(input$type == "line") {
-    # df2$days <- as.numeric(difftime(df2$time, df2$time[1], units = "day"))
-    # mlt <- reshape::melt(df2, id.vars = "time")
-    # }
-    if(input$type == "Distribution") {
-
-      df3 <- apply(mlt1[, -c(1, 2)], 1, function(x){
-        quantile(x, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
-      })
-      df3 <- as.data.frame(t(df3))
-      colnames(df3) <- gsub("%", "", colnames(df3))
-      colnames(df3) <- paste0('p', colnames(df3))
-      df3$time <- mlt1$time
-      df3$fc_date <- mlt1$fc_date
-    }
-
-
-    if(input$type == "Line"){
-
-      mlt2 <- reshape2::melt(mlt1, id.vars = c("time", "fc_date"))
-      p <- p +
-        geom_line(data = mlt2, aes(time, value, group = variable, color = fc_date)) +
-        scale_color_manual(values = pair.cols[2]) +
-        labs(color = "Forecast date")
-    }
-    if(input$type == "Distribution") {
-
-      p <- p +
-        geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = fc_date), alpha = 0.8) +
-        geom_line(data = df3, aes(time, p50, color = fc_date)) +
-        scale_fill_manual(values = pair.cols[1]) +
-        guides(fill = guide_legend(override.aes = list(alpha = c(0.9))),
-               alpha = NULL, title = "Forecast date") +
-        labs(fill = "Forecast date", color = "") +
-        scale_color_manual(values = pair.cols[2])
-    }
-
-
-    ##########
-
-    p <- p +
-      ylab(ylab) +
-      xlab("Time") +
-      theme_classic(base_size = 34) +
-      theme(panel.background = element_rect(fill = NA, color = 'black'))
-
-
-    img_file <- "www/noaa_fc.png"
-
-    # Save as a png file
-    ggsave(img_file, p,  dpi = png_dpi, width = 580, height = 320, units = "mm")
-    progress$set(value = 1)
-    # show("main_content")
-  }, ignoreNULL = FALSE
   )
-
-  # Render image for NOAA plot
-  output$noaa_fc_img <- renderImage({
-
-    validate(
-      need(input$table01_rows_selected != "",
-           message = "Please select a site on the 'Activity A' tab")
-    )
-    validate(
-      need(input$load_fc > 0, "Click 'Load Forecast'")
-    )
-    validate(
-      need(input$save_noaa_plot > 0, "If plot is missing please click 'Save Plot' under the weather forecast plot above.")
-    )
-
-    list(src = "www/noaa_fc.png",
-         alt = "Image failed to render. Please click 'Save plot' again.",
-         width = "100%")
-  }, deleteFile = FALSE)
 
   # Input table for q13 ----
   output$q13a_tab <- DT::renderDT(
@@ -1706,74 +1693,7 @@ server <- function(input, output, session) {#
       ggsave(file, plot = p_mod_run$plot, device = device)
     }
   )
-  # observeEvent(input$save_mod_run, {
-  # 
-  #   validate(
-  #     need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
-  #   )
-  #   validate(
-  #     need(input$run_mod_ann > 0, "Click 'Run Model'")
-  #   )
-  # 
-  #   # Progress bar
-  #   progress <- shiny::Progress$new()
-  #   on.exit(progress$close())
-  #   progress$set(message = "Saving plot as image file for the report.",
-  #                detail = "This may take a while. This window will disappear
-  #                    when it is downloaded.", value = 0.5)
-  # 
-  #   # Load Chl-a observations
-  #   read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
-  #   units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
-  #   file <- file.path("data", "neon", paste0(siteID, "_", read_var, "_", units, ".csv"))
-  #   if(file.exists(file)) {
-  #     chla <- read.csv(file)
-  #     chla[, 1] <- as.POSIXct(chla[, 1], tz = "UTC")
-  #     chla <- chla[(chla[, 1] >= mod_run1()[1, 1] &
-  #                     chla[, 1] <= mod_run1()[nrow(mod_run1()), 1]), ]
-  #   }
-  # 
-  #   xlims <- range(mod_run1()[, 1])
-  #   # ylims <- range(chla[, 2], na.rm = TRUE)
-  # 
-  #   validate(
-  #     need(input$run_mod_ann > 0, "Please run the model")
-  #   )
-  #   p <- ggplot() +
-  #     geom_line(data = mod_run1(), aes_string(names(mod_run1())[1], names(mod_run1())[2], color = shQuote("Model"))) +
-  #     ylab("Chlorophyll-a (μg/L)") +
-  #     xlab("Time") +
-  #     {if(input$add_obs) geom_point(data = chla, aes_string(names(chla)[1], names(chla)[2], color = shQuote("Obs")), size = 4)} +
-  #     # coord_cartesian(xlim = xlims, ylim = ylims) +
-  #     scale_color_manual(values = cols[1:2]) +
-  #     theme_classic(base_size = 34) +
-  #     theme(panel.background = element_rect(fill = NA, color = 'black'))
-  # 
-  #   img_file <- "www/mod_run_2019.png"
-  # 
-  #   # Save as a png file
-  #   ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
-  #   progress$set(value = 1)
-  #   # show("main_content")
-  # }, ignoreInit = TRUE
-  # )
-  # 
-  # # Render image for q15
-  # output$mod_run_img <- renderImage({
-  # 
-  #   validate(
-  #     need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
-  #   )
-  #   validate(
-  #     need(input$save_mod_run > 0, "If plot is missing please click 'Save Plot' under the Primary Productivity plot above.")
-  #   )
-  # 
-  #   list(src = "www/mod_run_2019.png",
-  #        alt = "Image failed to render. Please click 'Save plot' again.",
-  #        # height = "100%",
-  #        width = "100%")
-  # }, deleteFile = FALSE)
-
+  
   #** Put parameters for each model run in table
   
   par_save <- reactiveValues(value = par_df)
@@ -1793,27 +1713,33 @@ server <- function(input, output, session) {#
                                              columnDefs = list(list(width = '10%', targets = "_all"))
                               ),
                               server = FALSE, escape = FALSE)
+  
+  #save final parameter set for use in rest of app
+  par_final <- reactiveValues(value = par_df)
+  observeEvent(input$submit_ques, {
+    par_final$value[1,] <- par_save$value[1,]
+  })
 
 
   # Forecast Plots  ----
   #* Input Uncertainty ====
   # switch off load forecast button
   observe({
-    if(is.na(fc_conv$lst)) {
-      shinyjs::disable("load_fc2")
-    } else {
-      shinyjs::enable("load_fc2")
-    }
+    # if(is.na(fc_conv$lst)) {
+    #   shinyjs::disable("load_fc2")
+    # } else {
+    #   shinyjs::enable("load_fc2")
+    # }
     if(input$load_fc2 > 0) {
       shinyjs::show("run_fc2")
     } else {
       shinyjs::hide("run_fc2")
     }
-    if(input$run_fc2 > 0) {
-      shinyjs::show("save_comm_plot")
-    } else {
-      shinyjs::hide("save_comm_plot")
-    }
+    # if(input$run_fc2 > 0) {
+    #   shinyjs::show("save_comm_plot")
+    # } else {
+    #   shinyjs::hide("save_comm_plot")
+    # }
   })
 
 
@@ -2006,6 +1932,65 @@ server <- function(input, output, session) {#
 
     return(df_wid)
 
+  })
+  
+  output$plot_ecof1 <- renderPlotly({
+    
+    validate(
+      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
+    )
+    validate(
+      need(!is.na(par_save$value[1, 1]),
+           message = "Save calibrated parameters in Activity A - Objective 5")
+    )
+    validate(
+      need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
+    )
+    validate(
+      need(!is.na(fc_conv$lst), "Need to convert NOAA forecast data on the 'Objective 7' tab.")
+    )
+    validate(
+      need(input$load_fc2 > 0, "Click 'Load forecast inputs'")
+    )
+    
+    # Load Chl-a observations
+    read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
+    units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
+    file <- file.path("data", "neon", paste0(siteID, "_", read_var, "_", units, ".csv"))
+    if(file.exists(file)) {
+      chla <- read.csv(file)
+      chla[, 1] <- as.Date(chla[, 1], tz = "UTC")
+    }
+    
+    vlin <- as.Date(fc_data()[[1]][1, 1])
+    chla_obs <- chla[(chla[, 1] >= ((vlin - (7)))) &
+                       chla[, 1] <= vlin, ]
+    
+    p <- ggplot()
+    
+    txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 4), (chla_obs[nrow(chla_obs), 1] + 4)),
+                      y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("Past", "Future"))
+    
+    p <- p +
+      geom_hline(yintercept = 0, color = "gray") +
+      geom_vline(xintercept = vlin, linetype = "dashed") +
+      geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
+      geom_text(data = txt, aes(x, y, label = label)) +
+      ylab("Chlorophyll-a (μg/L)") +
+      xlab("Time") +
+      theme_classic(base_size = 12) +
+      theme(panel.background = element_rect(fill = NA, color = 'black')) +
+      labs(color = "", fill = "")
+    
+    gp <- ggplotly(p, dynamicTicks = TRUE)
+    for (i in 1:length(gp$x$data)){
+      if (!is.null(gp$x$data[[i]]$name)){
+        gp$x$data[[i]]$name =  gsub("\\(","",str_split(gp$x$data[[i]]$name,",")[[1]][1])
+      }
+    }
+    
+    return(gp)
+    
   })
 
   output$plot_ecof2 <- renderPlotly({
