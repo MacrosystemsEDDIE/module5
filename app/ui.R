@@ -1296,7 +1296,7 @@ color: black;
                                                       sliderInput("phy_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px", alt = "A phytoplankton icon.")),
                                                                                            div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right", alt = "A phytoplankton icon."))),
                                                                   min = 0.01, max = 10, step = 0.01, value = 2)
-                                                     ),
+                                                      ),
                                                column(8,
                                                       wellPanel(
                                                         plotlyOutput("plot_ecof1")
@@ -1306,21 +1306,25 @@ color: black;
                                              hr(),
                                              fluidRow(
                                                column(3,
-                                                      actionButton('run_fc2', label = div("Run Forecast", icon("running"))),
-                                                      h4("Model settings"),
-                                                      p("Explore how the forecast looks using the different model settings you saved in Objective 5."),
-                                                      # DTOutput("cal_pars1", width = "50%")
-                                                      DTOutput("modsett", width = "50%"),
-                                                      p("Save your model plot when you are happy with your forecast.")
+                                                      h3("Run forecast"),
+                                                      actionButton('run_fc2', label = div("Run forecast", icon("running")),
+                                                                   width = "70%"),
+                                                      h5(""),
+                                                      wellPanel(
+                                                      radioButtons("type2", "Type of visualization", choices = c(plot_types), selected = "Line")
+                                                      )
                                                       ),
                                                column(8,
-                                                      conditionalPanel("input.type2 == 'Line' | input.type2 == 'Distribution'",
-                                                                       plotlyOutput("plot_ecof2"),
-                                                                       tags$style(type="text/css", "#save_comm_plot {background-color:#9ECBB5;color: black}"),
-                                                                       actionButton("save_comm_plot", "Save plot", icon = icon("save"))
-                                                      )
+                                                      wellPanel(plotlyOutput("plot_ecof2"),
+                                                                tags$style(type="text/css", "#save_comm_plot {background-color:#9ECBB5;color: black}")
+                                                      ),
+                                                      downloadButton("save_comm_plot", "Save plot", icon = icon("download"),
+                                                      align = "right"),
+                                                      h4("Model settings"),
+                                                      DTOutput("modsett", width = "80%")
                                                       )
                                              ),
+                                             hr(),
                                              fluidRow(
                                                column(10, align = "left",
                                                       box(id = "box11", width = 12, status = "primary",
@@ -1329,9 +1333,7 @@ color: black;
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
                                                                    h4(quest["q18", 1]),
-                                                                   textAreaInput2(inputId = "q18", label = "", width = "90%"),
                                                                    h4(quest["q19", 1]),
-                                                                   textAreaInput2(inputId = "q19", label = "", width = "90%"),
                                                                    br()
                                                                    )
                                                             )
@@ -1358,7 +1360,7 @@ color: black;
                                              fluidRow(
                                                column(6,
                                                       wellPanel(
-                                                        imageOutput("comm_fc")
+                                                        plotlyOutput("comm_fc")
                                                       ),
                                                ),
                                                column(6, align = "center",
@@ -1376,7 +1378,6 @@ color: black;
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
                                                                    h4(quest["q20", 1]),
-                                                                   textAreaInput2(inputId = "q20", label = "", width = "90%"),
                                                                    br()
                                                                    )
                                                             )

@@ -1721,28 +1721,6 @@ server <- function(input, output, session) {#
   })
 
 
-  # Forecast Plots  ----
-  #* Input Uncertainty ====
-  # switch off load forecast button
-  observe({
-    # if(is.na(fc_conv$lst)) {
-    #   shinyjs::disable("load_fc2")
-    # } else {
-    #   shinyjs::enable("load_fc2")
-    # }
-    if(input$load_fc2 > 0) {
-      shinyjs::show("run_fc2")
-    } else {
-      shinyjs::hide("run_fc2")
-    }
-    # if(input$run_fc2 > 0) {
-    #   shinyjs::show("save_comm_plot")
-    # } else {
-    #   shinyjs::hide("save_comm_plot")
-    # }
-  })
-
-
 
 
   npz_fc_data <- reactive({
@@ -1784,8 +1762,8 @@ server <- function(input, output, session) {#
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
-      need(!is.na(par_save$value[5, c(5)]),
-           message = "Save calibrated parameters in Activity A - Objective 5 - Q15")
+      need(!is.na(par_save$value[1, 1]),
+           message = "Save calibrated parameters in Activity A - Objective 5")
     )
     validate(
       need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
@@ -1801,12 +1779,6 @@ server <- function(input, output, session) {#
            message = paste0("The number of members must be between 1 and 30"))
     )
 
-    if(is.null(input$modsett_rows_selected)) {
-      showModal(modalDialog(
-        title = "Important Message",
-        "Select a row in the Model Settings table before clicking 'Run Forecast'"
-      ))
-    } else {
       # Reactivate the update buttons
       shinyjs::enable("update_fc2")
       shinyjs::enable("upd_mort_rate")
@@ -1817,27 +1789,21 @@ server <- function(input, output, session) {#
       progress <- shiny::Progress$new()
       # Make sure it closes when we exit this reactive, even if there's an error
       on.exit(progress$close())
-      progress$set(message = paste0("Running NP model with ", input$members2, " forecasts"),
+      progress$set(message = paste0("Running NP model with ", input$members2, " ensemble members"),
                    detail = "This may take a while. This window will disappear
                      when it is finished running.", value = 0.01)
 
       # Add parameters to final data table
-      final_parms$df[1, 1] <- par_save$value$SWT[input$modsett_rows_selected]
-      final_parms$df[1, 2] <- par_save$value$uPAR[input$modsett_rows_selected]
-      final_parms$df[1, 3:6] <- c(input$phy_init2, input$nut_init2,
-                                  par_save$value$Mortality[input$modsett_rows_selected],
-                                  par_save$value$Uptake[input$modsett_rows_selected])
-
-      par_chk <- par_save$value$uPAR[input$modsett_rows_selected]
-      wtemp_chk <- par_save$value$SWT[input$modsett_rows_selected]
+      final_parms$df[1, c(1:3)] <- c(input$phy_init2,
+                                  par_save$value$Mortality[1],
+                                  par_save$value$Uptake[1])
 
       # Parameters from 'Build model'
-      parms[1] <- par_save$value$Uptake[input$modsett_rows_selected] # as.numeric(input$nut_uptake)
-      parms[7] <- par_save$value$Mortality[input$modsett_rows_selected] # as.numeric(input$mort_rate)
+      parms[1] <- par_save$value$Uptake[1] # as.numeric(input$nut_uptake)
+      parms[7] <- par_save$value$Mortality[1] # as.numeric(input$mort_rate)
 
       # Alter Initial conditions
       yini[1] <- input$phy_init2 * 0.016129 # Convert from ug/L to mmolN/m3
-      yini[2] <- input$nut_init2 * 16.129 # Convert from mg/L to mmolN/m3
 
       # progress$inc(0.33, detail = "Running the model")
       fc_length <- input$members2 # length(npz_fc_data())
@@ -1857,19 +1823,10 @@ server <- function(input, output, session) {#
 
         for(i in 2:length(times)) {
 
-          if(all(c(par_chk, wtemp_chk))) {
+          
             out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model,
                                           parms = parms, method = "ode45", inputs = npz_inputs))
-          } else if(par_chk) {
-            out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noT,
-                                          parms = parms, method = "ode45", inputs = npz_inputs))
-          } else if(wtemp_chk) {
-            out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noPAR,
-                                          parms = parms, method = "ode45", inputs = npz_inputs))
-          } else {
-            out <- as.matrix(deSolve::ode(y = yini, times = times[(i-1):i], func = NP_model_noTPAR,
-                                          parms = parms, method = "ode45", inputs = npz_inputs))
-          }
+         
           res[i, -1] <- out[2, c(2, 3)]
           yini <- out[2, c(2:3)]
 
@@ -1879,9 +1836,6 @@ server <- function(input, output, session) {#
         res$Chla <- (res$Phytoplankton * 62) # Convert from mmol/m3 to ug/L # * 4.97 + 1.58
         res <- res[, c("time", "Chla")]
         res$time <- fc_out_dates
-
-
-
 
         # out$time <- npz_inp$Date
         out <- res[, c("time", "Chla")] #, "PHYTO", "ZOO")]
@@ -1893,44 +1847,7 @@ server <- function(input, output, session) {#
       mlt <- reshape2::melt(fc_res, id.vars = "time")
 
       fc_out1$df <- mlt
-    }
-
-  })
-
-
-  output$viz_output2 <- renderDT({
-
-    validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
-    )
-    validate(
-      need(!is.na(par_save$value[5, c(5)]),
-           message = "Save calibrated parameters in Activity A - Objective 5 - Q15")
-    )
-    validate(
-      need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
-    )
-    validate(
-      need(!is.na(fc_conv$lst), "Need to convert NOAA forecast data on the 'Objective 7' tab.")
-    )
-    validate(
-      need(input$load_fc2 > 0, "Click 'Load forecast inputs'")
-    )
-    validate(
-      need(input$members2 >= 1 & input$members2 <= 30,
-           message = paste0("The number of members must be between 1 and 30"))
-    )
-    validate(
-      need(!is.na(fc_out1$df), "Click 'Run Forecast'")
-    )
-
-    df2 <- fc_out1$df
-    df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
-    df2[, 3] <- round(df2[, 3], 2)
-
-    df_wid <- pivot_wider(df2, 1, 4, values_from = 3)
-
-    return(df_wid)
+    
 
   })
   
@@ -1993,14 +1910,15 @@ server <- function(input, output, session) {#
     
   })
 
+  p_comm_fc <- reactiveValues(plot = NULL)
   output$plot_ecof2 <- renderPlotly({
 
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
     )
     validate(
-      need(!is.na(par_save$value[5, c(5)]),
-           message = "Save calibrated parameters in Activity A - Objective 5 - Q15")
+      need(!is.na(par_save$value[1, 1]),
+           message = "Save calibrated parameters in Activity A - Objective 5")
     )
     validate(
       need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
@@ -2015,11 +1933,9 @@ server <- function(input, output, session) {#
       need(input$members2 >= 1 & input$members2 <= 30,
            message = paste0("The number of members must be between 1 and 30"))
     )
-
-
-    # validate(
-    #   need(input$run_fc2 > 0, "Click 'Run Forecast'")
-    # )
+    validate(
+      need(input$run_fc2 > 0, "Click 'Run Forecast'")
+    )
 
     # Load Chl-a observations
     read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
@@ -2036,8 +1952,6 @@ server <- function(input, output, session) {#
 
     p <- ggplot()
 
-    # If forecast is stored then plot - otherwise just plot observations
-    if(!is.na(fc_out1$df)) {
       sub <- fc_out1$df[as.numeric(fc_out1$df$L1) <= input$members2, ]
       if(input$type2 == "Distribution") {
 
@@ -2087,13 +2001,12 @@ server <- function(input, output, session) {#
       }
 
 
-    }
+
 
 
 
     txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 4), (chla_obs[nrow(chla_obs), 1] + 4)),
                       y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("Past", "Future"))
-
 
     p <- p +
       geom_hline(yintercept = 0, color = "gray") +
@@ -2105,8 +2018,11 @@ server <- function(input, output, session) {#
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "")
-
-
+    
+    p_comm_fc$plot <- p +
+      theme_classic() +
+      theme(panel.background = element_rect(fill = NA, color = 'black'))
+   
     gp <- ggplotly(p, dynamicTicks = TRUE)
     for (i in 1:length(gp$x$data)){
       if (!is.null(gp$x$data[[i]]$name)){
@@ -2119,107 +2035,20 @@ server <- function(input, output, session) {#
   })
 
   #* Save plot for communication ====
-  observeEvent(input$save_comm_plot, {
-
-
-    validate(
-      need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
-    )
-    validate(
-      need(input$load_fc > 0, "Need to load NOAA forecast data on the 'Objective 6' tab.")
-    )
-    validate(
-      need(input$load_fc2 > 0, "Load forecast inputs")
-    )
-    validate(
-      need(input$members2 >= 1 & input$members2 <= 30,
-           message = paste0("The number of members must be between 1 and 30"))
-    )
-    validate(
-      need(input$run_fc2 > 0, "Click 'Run Forecast'")
-    )
-
-    # Progress bar
-    progress <- shiny::Progress$new()
-    on.exit(progress$close())
-    progress$set(message = "Saving plot as image file for the report.",
-                 detail = "This may take a while. This window will disappear
-                     when it is downloaded.", value = 0.5)
-
-    # Load Chl-a observations
-    read_var <- neon_vars$id[which(neon_vars$Short_name == "Chlorophyll-a")]
-    units <- neon_vars$units[which(neon_vars$Short_name == "Chlorophyll-a")]
-    file <- file.path("data", "neon", paste0(siteID, "_", read_var, "_", units, ".csv"))
-    if(file.exists(file)) {
-      chla <- read.csv(file)
-      chla[, 1] <- as.Date(chla[, 1], tz = "UTC")
+  output$save_comm_plot <- downloadHandler(
+    filename = function() {
+      paste("first-productivity-forecast-plot-", Sys.Date(), ".png", sep="")
+    },
+    content = function(file) {
+      device <- function(..., width, height) {
+        grDevices::png(..., width = width, height = height,
+                       res = 300, units = "in")
+      }
+      ggsave(file, plot = p_comm_fc$plot, device = device)
     }
-    chla_obs <- chla[(chla[, 1] >= as.Date((fc_out1$df[1, 1] - (7)))) &
-                       chla[, 1] <= as.Date(fc_out1$df[1, 1]), ]
+  )
 
-    sub <- fc_out1$df[as.numeric(fc_out1$df$L1) <= input$members2, ]
-    # if(input$type2 == "Distribution") {
-
-    df3 <- plyr::ddply(sub, "time", function(x) {
-      quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
-    })
-    # df3 <- as.data.frame(t(df3))
-    colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
-    colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
-    # df3$hours <- df2$hours
-    df2 <- df3
-    # }
-
-    sub <- fc_out1$df[as.numeric(fc_out1$df$L1) <= input$members2, ]
-    # if(input$type2 == "Distribution") {
-
-    df3 <- plyr::ddply(sub, "time", function(x) {
-      quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
-    })
-    # df3 <- as.data.frame(t(df3))
-    colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
-    colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
-    # df3$hours <- df2$hours
-    df2 <- df3
-    # }
-
-    txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 4), (chla_obs[nrow(chla_obs), 1] + 4)),
-                      y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("Past", "Future"))
-    p <- ggplot()
-
-    # if(input$type2 == "Distribution") {
-    p <- p +
-      geom_hline(yintercept = 0, color = "gray") +
-      geom_vline(xintercept = df2[1, 1], linetype = "dashed") +
-      geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
-                  alpha = 0.8) +
-      geom_line(data = df2, aes(time, p50, color = "Median - original")) +
-      scale_fill_manual(values = pair.cols[3]) +
-      guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
-      scale_color_manual(values = c("Median - original" = pair.cols[4], "Obs" = cols[1]))
-    # }
-    p <- p +
-      geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs")),
-                 size = 3) +
-      geom_text(data = txt, aes(x, y, label = label), size = 12) +
-      ylab("Chlorophyll-a (μg/L)") +
-      xlab("Time") +
-      theme_classic(base_size = 38) +
-      theme(panel.background = element_rect(fill = NA, color = 'black')) +
-      labs(color = "", fill = "")
-
-
-
-    img_file <- "www/comm_fc_plot.png"
-
-    # Save as a png file
-    ggsave(img_file, p,  dpi = 300, width = 580, height = 320, units = "mm")
-    progress$set(value = 1)
-
-    # show("main_content")
-  }, ignoreNULL = FALSE)
-
-  output$comm_fc <- renderImage({
+  output$comm_fc <- renderPlotly({
 
     validate(
       need(!is.null(input$table01_rows_selected), "Please select a site on the 'Activity A' tab - Objective 1")
@@ -2230,15 +2059,17 @@ server <- function(input, output, session) {#
     validate(
       need(input$run_fc2 > 0, "Need to generate forecast in Objective 8")
     )
-    validate(
-      need(input$save_comm_plot > 0, "If plot is missing please return to Objective 8 and click 'Save Plot'")
-    )
 
-    list(src = "www/comm_fc_plot.png",
-         alt = "Image failed to render. Please click 'Save plot' again.",
-         # height = "100%",
-         width = "100%")
-  }, deleteFile = FALSE)
+    gp <- ggplotly(p_comm_fc$plot, dynamicTicks = TRUE)
+    for (i in 1:length(gp$x$data)){
+      if (!is.null(gp$x$data[[i]]$name)){
+        gp$x$data[[i]]$name =  gsub("\\(","",str_split(gp$x$data[[i]]$name,",")[[1]][1])
+      }
+    }
+    
+    return(gp)
+    
+  })
 
 
   #* Plot for Assessing Forecast ====
@@ -2877,7 +2708,7 @@ server <- function(input, output, session) {#
   # data table of cal_pars1
   # Data table of parameters
   output$modsett <- DT::renderDT(
-    par_save$value[, -c(3:4)], selection = "single", options = list(stateSave = TRUE, dom = 't'), server = FALSE
+    par_save$value[1, ], selection = "single", options = list(stateSave = TRUE, dom = 't'), server = FALSE, editable = FALSE
   )
 
   final_parms <- reactiveValues(df = fc_par_df)

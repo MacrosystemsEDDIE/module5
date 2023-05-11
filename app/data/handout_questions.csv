@@ -44,8 +44,8 @@ q17a,a. How does increasing the number of ensemble members in the weather foreca
 q17b,b. Which type of plot (line or distribution) do you think visualizes the forecast uncertainty best? Why?
 q17c,"c. Using the interactivity of the weather forecast plot, compare the air temperature forecasts for the first week (Sep 25 - Oct 1) to the second week (Oct 2 - 8). How does the forecast uncertainty change between the two periods? "
 q17d,d. Use the 'Save plot' button to save the NOAA forecast plot and copy-paste it into your final report.
-q18,"Q18. How does driver uncertainty affect the forecast, specifically, does an increase in the number of members increase or decrease the range of uncertainty in the forecasts? How does that change over time?"
-q19,Q19. What do you think are the main sources of uncertainty in your ecological forecast?
+q18,"Q18. How does driver uncertainty affect the forecast, and specifically, how does the forecast uncertainty change over time?"
+q19,Q19. How does altering the initial condition of your forecast affect forecast output?
 q20,Q20. How would you describe your forecast of primary productivity at your NEON site so it could be understood by a fellow classmate?
 q21,Q21. How well did your forecast do compared to observations? (include R2 value) Why do you think it is important to assess the forecast?
 q22,Q22. Did your forecast improve when you updated your model parameters? Why do you think it is important to update the model?
