@@ -1,4 +1,4 @@
-ui <- function(req) {
+ui <- function(request) {
 
   tagList( # Added functionality for not losing your settings
     # Java to prompt the students to click a button
@@ -35,7 +35,8 @@ ui <- function(req) {
                tags$header(
                  fluidRow(
                    column(2,
-                          fileInput("upload_answers", "Resume Progress", accept = c(".eddie", ".rds"))
+                          #fileInput("upload_answers", "Resume Progress", accept = c(".eddie", ".rds"))
+                          bookmarkButton()
                           ),
                    column(2,
                           actionButton("help2", label = "Help!", icon = icon("question-circle")), data.step = 7, data.intro = help_text["help", 1]
@@ -1136,8 +1137,7 @@ color: black;
                                                                    h4(quest["q17", 1]),
                                                                    p(tags$b(quest["q17a", 1], width = "90%")),
                                                                    p(tags$b(quest["q17b", 1], width = "90%")),
-                                                                   p(tags$b(quest["q17c", 1], width = "90%")),
-                                                                   p(tags$b(quest["q17d", 1], width = "90%"))
+                                                                   p(tags$b(quest["q17c", 1], width = "90%"))
                                                             )
                                                             )
                                                           )
@@ -1198,7 +1198,7 @@ color: black;
                                                       ),
                                                       p("Because we are using real NEON data, we will need to run",tags$b(" data quality assurance and quality control (QAQC)")," procedures on our data before using the data as inputs to our model. Please click the button below to remove data that are incorrect due to sensor error."),
                                                       actionButton("run_qaqc1", "Run QAQC"),
-                                                      conditionalPanel("input.run_qaqc1 > 0",
+                                                      wellPanel(
                                                                        p("Now, you can add a linear regression to the QAQCed dataset."),
                                                                        actionButton("add_lm2", "Add linear regression"),
                                                                        br(),
@@ -1214,7 +1214,7 @@ color: black;
                                                       ),
                                                       p("Because we are using real NEON data, we will need to run",tags$b(" data quality assurance and quality control (QAQC)")," procedures on our data before using the data as inputs to our model. Please click the button below to remove data that are below the threshold at which the sensor can reliably quantify underwater light."),
                                                       actionButton("run_qaqc2", "Run QAQC"),
-                                                      conditionalPanel("input.run_qaqc2 > 0",
+                                                      wellPanel(
                                                                        p("Now, you can add a linear regression to the QAQCed dataset."),
                                                                        actionButton("add_lm3", "Add linear regression"),
                                                                        br(),
@@ -1359,9 +1359,7 @@ color: black;
                                                ),
                                              fluidRow(
                                                column(6,
-                                                      wellPanel(
-                                                        plotlyOutput("comm_fc")
-                                                      ),
+                                                      p("Communicating a forecast is an important part of forecasting and the method of communication needs to be tailored to your target audience (e.g., the general public, natural resource managers, farmers, etc.)"),
                                                ),
                                                column(6, align = "center",
                                                       img(src = "05-communicate-forecast.png",
@@ -1371,23 +1369,78 @@ color: black;
                                                ),
                                              hr(),
                                              fluidRow(
-                                               column(10, align = "left",
+                                               column(3, align = "left",
                                                       box(id = "box12", width = 12, status = "primary",
                                                           solidHeader = TRUE,
                                                           fluidRow(
                                                             column(10, offset = 1,
-                                                                   h3("Questions"),
-                                                                   h4(quest["q20", 1]),
+                                                                   h4("Question"),
+                                                                   p(tags$b(quest["q20", 1])),
                                                                    br()
                                                                    )
                                                             )
                                                           )
+                                                      ),
+                                               column(8,
+                                                      wellPanel(
+                                                        plotlyOutput("comm_fc")
+                                                      )
                                                       )
                                                ),
+                                             hr(),
+                                             fluidRow(
+                                               column(11, 
+                                                      box(id = "box12", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(10, offset = 1,
+                                                                   h3("Question"),
+                                                                   h4(quest["qX", 1]),
+                                                                   p(tags$b(quest["qXa", 1])),
+                                                                   p(tags$b(quest["qXb", 1])),
+                                                                   br()
+                                                            )
+                                                          )
+                                                      )
+                                               )
+                                               ),
+                                             hr(),
+                                             fluidRow(
+                                               column(12,
+                                                      column(6,
+                                                             wellPanel(
+                                                               plotlyOutput("viz1"),
+                                                               p(tags$em("1. Forecast visualization with each individual ensemble member plotted as a separate line.")),
+                                                               downloadButton("save_viz1", "Save plot", icon = icon("download"), align = "right")
+                                                             )
+                                                             ),
+                                                      column(6,
+                                                             wellPanel(
+                                                               plotlyOutput("viz2"),
+                                                               p(tags$em("2. Forecast visualization with a single line showing the median value of the forecast ensemble.")),
+                                                               downloadButton("save_viz2", "Save plot", icon = icon("download"), align = "right")
+                                                             )
+                                                             ),
+                                                      hr(),
+                                                      column(6, 
+                                                             wellPanel(
+                                                               plotlyOutput("viz3"),
+                                                               p(tags$em("3. Forecast visualization with a shaded area showing the 95% predictive interval of the forecast ensemble.")),
+                                                               downloadButton("save_viz3", "Save plot", icon = icon("download"), align = "right")
+                                                             )
+                                                             ),
+                                                      column(6,
+                                                             wellPanel(
+                                                               plotlyOutput("viz4"),
+                                                               p(tags$em("4. Forecast visualization with a line showing the median and a shaded area showing the 95% predictive interval of the forecast ensemble.")),
+                                                               downloadButton("save_viz4", "Save plot", icon = icon("download"), align = "right")
+                                                             )
+                                                             )
+                                                      )
+                                             ),
                                              fluidRow(
                                                column(5, offset = 1,
                                                       h3("Next step"),
-                                                      p("Communicating a forecast is an important part of forecasting and needs to be tailored to your target audience (e.g. general public, natural resource manager, farmer etc)"),
                                                       p("Next, a week will have past since your forecast was generated so we will compare our forecast to actual observations.")
                                                       )
                                                )
@@ -1405,7 +1458,8 @@ color: black;
                                              fluidRow(
                                                column(5,
                                                       h3("One week later..."),
-                                                      p(style="text-align: justify;", "A week has passed since the forecast, and you have collected a new week of data. Now you are curious to see how well your forecast performed. We can run an actual comparison to see how the forecast predictions compare to actual observed data."),
+                                                      p(style="text-align: justify;", "A week has passed since the forecast, and you have collected a new week of data. Now you are curious to see how well your forecast performed. We can conduct a statistical comparison to see how the forecast predictions compare to actual observed data."),
+                                                      p(style="text-align: justify;", "This is an important step as it indicates how well our model represents the system we are forecasting, as well as gives us an opportunity to improve the model for future forecasts.")
                                                       ),
                                                column(6, align = "center",
                                                       img(src = "06-assess-forecast.png",
@@ -1413,33 +1467,54 @@ color: black;
                                                           width = "70%", alt = "A diagram showing the steps within the ecological forecast cycle.")
                                                       )
                                              ),
+                                             hr(),
+                                             fluidRow(
+                                               column(10,
+                                               h3(tags$b("Add in new observations"))
+                                               )
+                                             ),
                                              fluidRow(
                                                column(3,
-                                                      br(), br(), br(),
                                                       wellPanel(
-                                                        h4("Assess forecast performance"),
-                                                        p(style="text-align: justify;", "Comparing forecast results to actual measurements gives us an indication of how accurately our model is forecasting."),
-                                                        p(style="text-align: justify;", "This is an important step as it indicates how well our model represents the system we are forecasting, as well as gives us an opportunity to improve the model for future forecasts."),
-                                                        checkboxInput("add_newobs", label = "Add new observations", FALSE),
-                                                        conditionalPanel("input.add_newobs",
-                                                                         actionButton('assess_fc3', label = div("Assess forecast",
-                                                                                                                icon("clipboard-check")))
-                                                                         )
+                                                        h4("View most recent observations"),
+                                                        checkboxInput("add_newobs", label = "Add new observations", FALSE)
                                                         )
                                                       ),
-                                               column(5,
-                                                      h3(tags$b("Add in new observations")),
+                                               column(8,
                                                       wellPanel(
                                                         plotlyOutput("plot_ecof3")
                                                         )
+                                               )
+                                             ),
+                                             hr(),
+                                             fluidRow(
+                                               column(10,
+                                               h3(tags$b("Assess forecast"))
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(3,
+                                                      wellPanel(
+                                                        h4(HTML(paste0("Using R",tags$sup("2"), ' to assess forecast performance'))),
+                                                        p(HTML(paste0("R",tags$sup("2"), ', or the coefficient of determination, is a statistical measure that represents the proportion of variation in the dependent variable that can be explained by the independent variable.'))),
+                                                        p(HTML(paste0("R",tags$sup("2"), ' can be used as a measure of forecast skill, where the independent variable is the observed value and the dependent variable is the forecasted value.'))),
+                                                        p(HTML(paste0("R",tags$sup("2"), ' can range from negative values to 1, where smaller values indicate a poor forecast and 1 indicates a perfect forecast.')))
+                                                      )
+                                               ),
+                                               column(3,
+                                                      wellPanel(h4("Using forecasted vs. observed plots to assess forecast performance"),
+                                                                p("Another way to assess forecast skill is by using a forecasted vs. observed plot. Ideally, points on this plot should fall along the diagonal 1:1 line, indicating that forecasted and observed values are very similar.")),  
+                                                      wellPanel(h4("Assess your forecast!"),
+                                                                  actionButton('assess_fc3', label = div("Assess forecast",
+                                                                                                         icon("clipboard-check")))
+                                                      )
                                                       ),
-                                               column(4,
-                                                      h3(tags$b("Plot forecast vs observed")),
+                                               column(5,
                                                       wellPanel(
                                                         plotlyOutput("assess_plot")
                                                         ),
                                                       tags$style(type="text/css", "#save_assess_plot {background-color:#9ECBB5;color: black}"),
-                                                      actionButton("save_assess_plot", "Save plot", icon = icon("save"))
+                                                      downloadButton("save_assess_plot", "Save plot", icon = icon("download"), align = "right")
                                                       )
                                                ),
                                              hr(),
@@ -1450,12 +1525,10 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q21", 1]),
-                                                                   textAreaInput2(inputId = "q21", label = "", width = "90%"),
-                                                            ),
-                                                            column(5, offset = 3, align = "center",
-                                                                   imageOutput("assess_plot_img")
-                                                                   )
+                                                                   h4(HTML(paste0("Q21. Examine the forecasted vs. observed plot as well as the value of R",tags$sup("2"), '.'))),
+                                                                   p(tags$b(quest["q21a", 1])),
+                                                                   p(tags$b(quest["q21b", 1])),
+                                                            )
                                                             )
                                                           )
                                                       )
@@ -1480,8 +1553,6 @@ color: black;
                                              fluidRow(
                                                column(6,
                                                       h3("Update Model"),
-                                                      p(style="text-align: justify;", "How did your forecast perform compared to observations?"),
-                                                      p(style="text-align: justify;", "What does this tell you about the model?"),
                                                       p(style="text-align: justify;", "One of the best things about ecological forecasting is that it allows us to test our hypotheses about how the world works (as described by our model). If there is a poor fit between our forecast and observed data, our model may not be accurately capturing environmental processes."),
                                                       p(style="text-align: justify;", "One of the mechanisms causing a poor fit could be the parameter values. To update the model, adjust the parameters to see if you can improve the forecast for the previous week, before we make another forecast into the future."),
                                                ),
@@ -1493,28 +1564,23 @@ color: black;
                                              ), br(), hr(),
                                              fluidRow(
                                                column(4,
-                                                      h3(tags$b("Initial conditions")),
-                                                      p(tags$b("Phytoplankton")),
-                                                      sliderInput("phy_init3", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px", alt = "A phytoplankton icon.")),
-                                                                                           div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right", alt = "A phytoplankton icon."))),
-                                                                  min = 0.01, max = 10, step = 0.01, value = 2),
-                                                      h3("Parameters"),
+                                                      h3("Adjust Parameters"),
                                                       h4(tags$b("Phytoplankton parameters")),
                                                       p("Use the buttons below to increase or decrease the value of your parameters. The updated parameter values are displayed in a table beneath the plot."),
-                                                      radioButtons("upd_mort_rate", "Mortality Rate", choices = c("Decrease", "Keep the same", "Increase"),
-                                                                   selected = character(0), inline = TRUE),
-                                                      br(),
-                                                      radioButtons("upd_nut_rate", "Nitrogen Uptake", choices = c("Decrease", "Keep the same", "Increase"),
-                                                                   selected = character(0), inline = TRUE),
+                                                      p(tags$b("Mortality")),
+                                                      sliderInput("mort_rate2", label = div(style='width:300px;',
+                                                                                           div(style='float:left;', tags$em('Lower death')),
+                                                                                           div(style='float:right;', tags$em('Higher death'))),
+                                                                  min = 0, max = 1, value = 0.5, step = 0.01),
+                                                      p(tags$b("Nutrient uptake (causes growth)")),
+                                                      sliderInput("nut_uptake2", label = div(style='width:300px;',
+                                                                                            div(style='float:left;', tags$em('Low uptake')),
+                                                                                            div(style='float:right;', tags$em('High uptake'))),
+                                                                  min = 0, max = 1, value = 0.5, step = 0.01),
                                                       br(),
                                                       p("Re-run your forecast with the updated parameters."),
-                                                      box(width = 10, status = "warning",
-                                                          solidHeader = TRUE,
-                                                          p(tags$b("WARNING:"), "You only get one opportunity to update your model parameter so think carefully about what the parameter represents before updating your forecast. You can return to Activity A - Objective 5 to re-familiarise yourself with how the parameters affect model performance.")
-                                                      ),
                                                       actionButton('update_fc2', label = div("Update forecast",
                                                                                              icon("redo-alt"))),
-                                                      textOutput("warn_update"),
                                                       conditionalPanel("input.update_fc2",
                                                                        h3("Forecast updated!")
                                                                        )
@@ -1523,7 +1589,7 @@ color: black;
                                                       wellPanel(
                                                         plotlyOutput("update_plot"),
                                                         tags$style(type="text/css", "#save_update_fc_plot {background-color:#9ECBB5;color: black}"),
-                                                        actionButton("save_update_fc_plot", "Save plot", icon = icon("save"))
+                                                        downloadButton("save_update_fc_plot", "Save plot", icon = icon("save"))
                                                         ),
                                                       h4("Table of parameters"),
                                                       DTOutput("comp_pars", width = "50%")
@@ -1531,27 +1597,42 @@ color: black;
                                                ),
                                              hr(),
                                              fluidRow(
-                                               column(10, align = "left",
+                                               column(10,
+                                                      h3(tags$b("Assess updated forecast"))
+                                               )
+                                             ),
+                                             fluidRow(
+                                               column(3,
+                                                      wellPanel(p("After you have adjusted your parameters, assess your forecast against the observations."),
+                                                                actionButton('assess_fc4', label = div("Assess forecast",
+                                                                                                       icon("clipboard-check")))
+                                                                
+                                                      ),
                                                       box(id = "box14", width = 12, status = "primary",
-                                                          solidHeader = TRUE,
-                                                          fluidRow(
-                                                            column(10, offset = 1,
-                                                                   h3("Questions"),
-                                                                   h4(quest["q22", 1]),
-                                                                   textAreaInput2(inputId = "q22", label = "", width = "90%"),
-                                                                   br()
-                                                            ),
-                                                            column(5, offset = 3, align = "center",
-                                                                   imageOutput("update_plot_img")
-                                                                   )
+                                                                solidHeader = TRUE,
+                                                                fluidRow(
+                                                                  column(10, offset = 1,
+                                                                         h4("Questions"),
+                                                                         p(tags$b(quest["q22", 1])),
+                                                                         br()
+                                                                  )
+                                                                )
                                                             )
-                                                          )
-                                                      )
+                                                     
                                                ),
+                                               column(5,
+                                                      wellPanel(
+                                                        plotlyOutput("assess_plot2")
+                                                      ),
+                                                      tags$style(type="text/css", "#save_assess_plot {background-color:#9ECBB5;color: black}"),
+                                                      downloadButton("save_assess_plot2", "Save plot", icon = icon("download"), align = "right")
+                                               )
+                                             ),
+                                             hr(),
                                              fluidRow(
                                                column(5, offset = 1,
                                                       h3("Next step"),
-                                                      p("Updating the model is similar to updating your hypothesis and this is what makes forecasting so powerful is that it allows you to confront your hypothesis (model) with data and update if neccessary. Next we will generate the next forecast and complete the forecast cycle.")
+                                                      p("Complete a second forecast and recommence the forecast cycle!")
                                                       )
                                                )
                                              ),
@@ -1567,23 +1648,23 @@ color: black;
                                                ),
                                              fluidRow(
                                                column(4,
-                                                      h2("Next Forecast"),
+                                                      h3("Next Forecast"),
                                                       p(style="text-align: justify;", "With an updated model, we can now generate the next forecast driven by a new weather forecast"),
-                                                      h3("Initial conditions"),
+                                                      h4("Initial conditions"),
                                                       p(style="text-align: justify;", "Don't forget to update the initial conditions based on the latest observed data which are shown in the plot."),
                                                       p(tags$b("Phytoplankton")),
                                                       # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
                                                       sliderInput("phy_init4", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px", alt = "A phytoplankton icon.")),
                                                                                            div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right", alt = "A phytoplankton icon."))),
                                                                   min = 0.01, max = 10, step = 0.01, value = 2),
-                                                      p(tags$b("Nitrogen")),
-                                                      sliderInput("nut_init4", label = div(style='width:300px;', div(style='float:left;', img(src = "nutri.png", height = "50px", width = "50px", alt = "A nutrient icon.")),
-                                                                                           div(style='float:right;', img(src = "nutris.png", height = "50px", width = "50px", align = "right", alt = "A nutrient icon."))),
-                                                                  min = 0.01, max = 10, step = 0.01, value = 3),
+                                                      h4("Load and convert new NOAA weather forecast"),
                                                       wellPanel(
                                                         actionButton('load_fc3', label = div("Load forecast inputs", icon("download")),
                                                                      width = "70%"), br(),
                                                         conditionalPanel("input.load_fc3",
+                                                                         br(),
+                                                                         p("Forecast inputs successfully loaded!"),
+                                                                         br(),
                                                                          actionButton('run_fc3', label = div("Run Forecast", icon("running")),
                                                                                       width = "70%")
                                                                          )
@@ -1594,7 +1675,7 @@ color: black;
                                                       wellPanel(
                                                         plotlyOutput("plot_ecof4"),
                                                         tags$style(type="text/css", "#save_new_fc_plot {background-color:#9ECBB5;color: black}"),
-                                                        actionButton("save_new_fc_plot", "Save plot", icon = icon("save"))
+                                                        downloadButton("save_new_fc_plot", "Save plot", icon = icon("save"))
                                                         ),
                                                       br(),
                                                       DTOutput("fc_table", width = "80%")
@@ -1609,12 +1690,7 @@ color: black;
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
                                                                    h4(quest["q23", 1]),
-                                                                   textAreaInput2(inputId = "q23", label = "", width = "90%"),
                                                                    h4(quest["q24", 1]),
-                                                                   textAreaInput2(inputId = "q24", label = "", width = "90%"),
-                                                            ),
-                                                            column(5, offset = 3, align = "center",
-                                                                   imageOutput("new_fc_plot_img")
                                                             )
                                                           )
                                                       )

@@ -1,3 +1,6 @@
+# Enable bookmarking
+enableBookmarking(store = "url")
+
 # Load required libraries
 suppressPackageStartupMessages(library(shiny, quietly = TRUE)); library(shinycssloaders)
 suppressPackageStartupMessages(library(shinyjs, quietly = TRUE, warn.conflicts = FALSE))

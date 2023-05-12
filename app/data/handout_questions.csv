@@ -41,14 +41,18 @@ q15,"Q15. Add the observations to the plot. Calibrate your model by selecting se
 q16,Q16. What is forecast uncertainty? How is forecast uncertainty quantified?
 q17,Q17. Inspect the weather forecast data for the site you have chosen:
 q17a,a. How does increasing the number of ensemble members in the weather forecast affect the size of the uncertainty in future weather?
-q17b,b. Which type of plot (line or distribution) do you think visualizes the forecast uncertainty best? Why?
-q17c,"c. Using the interactivity of the weather forecast plot, compare the air temperature forecasts for the first week (Sep 25 - Oct 1) to the second week (Oct 2 - 8). How does the forecast uncertainty change between the two periods? "
-q17d,d. Use the 'Save plot' button to save the NOAA forecast plot and copy-paste it into your final report.
+q17b,"b. Using the interactivity of the weather forecast plot, compare the air temperature forecasts for the first week (Sep 25 - Oct 1) to the second week (Oct 2 - 8). How does the forecast uncertainty change between the two periods? "
+q17c,c. Use the 'Save plot' button to save the NOAA forecast plot and copy-paste it into your final report.
 q18,"Q18. How does driver uncertainty affect the forecast, and specifically, how does the forecast uncertainty change over time?"
 q19,Q19. How does altering the initial condition of your forecast affect forecast output?
 q20,Q20. How would you describe your forecast of primary productivity at your NEON site so it could be understood by a fellow classmate?
-q21,Q21. How well did your forecast do compared to observations? (include R2 value) Why do you think it is important to assess the forecast?
-q22,Q22. Did your forecast improve when you updated your model parameters? Why do you think it is important to update the model?
+qX,QX. Examine the example forecast visualizations below. 
+qXa,"a. Which of these visualizations do you think most effectively communicates your forecast, and why?"
+qXb,b. Download and copy-paste the visualization that you think best communicates your forecast into your final report.
+q21,Q21. Examine the predicted vs. observed plot as well as the value of R2.
+q21a,a. How well did your forecast do compared to observations?
+q21b,b. Download and copy-paste the forecasted vs. observed plot into your final report.
+q22,Q22. Were you able to successfully improve your forecast by updating your model parameters? Explain what you did and how you know whether your forecast has improved.
 q23,Q23. Describe the new forecast of primary productivity.
 q24,Q24. Why is the forecast cycle described as 'iterative' (i.e. repetition of a process)?
 q25,Q25. Repeat Activity A and B with a different NEON site (ideally from a different region).
