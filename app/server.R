@@ -3673,9 +3673,6 @@ server <- function(input, output, session) {#
   outputOptions(output, 'handoutbuilt', suspendWhenHidden= FALSE)
 
   handout_file <- "Student_handout.docx"
-  # tmp_file2 <- tempfile()
-  # rmarkdown::render("report.Rmd",
-  #                   output_format = "all")
 
   output$stud_dl <-  downloadHandler(
     filename = function() {
@@ -3685,11 +3682,6 @@ server <- function(input, output, session) {#
       file.copy("report.docx", file)
     }
   )
-
-  
-
-
-
 
   observeEvent(input$update_fc2, {
     # Initial conditions
@@ -3733,78 +3725,7 @@ server <- function(input, output, session) {#
   })
 
 
-  # Save answers in .eddie file
-  ans_list <- reactiveValues()
-  observe({
-    ans_list <<- list(
-      name = input$name,
-      param_df = par_save$value,
-      site_row = input$table01_rows_selected,
-      mod_input = input$mod_sens,
-      wt_m = lmfit2()$m,
-      wt_b = lmfit2()$b,
-      wt_r2 = lmfit2()$r2,
-      upar_m = lmfit3()$m,
-      upar_b = lmfit3()$b,
-      upar_r2 = lmfit3()$r2
-    )
-  })
-
-  output$download_answers <- downloadHandler(
-
-    # This function returns a string which tells the client
-    # browser what name to use when saving the file.
-    filename = function() {
-      paste0("module5_answers_", input$id_number, ".eddie") %>%
-        gsub(" ", "_", .)
-    },
-
-    # This function should write data to a file given to it by
-    # the argument 'file'.
-    content = function(file) {
-      # write.csv(ans_list, file)
-      saveRDS(ans_list, file = file)
-    }
-  )
-
-  observeEvent(input$upload_answers, {
-
-    up_answers <<- readRDS(input$upload_answers$datapath)
-    updateTextAreaInput(session, "q12", value = up_answers$a12)
-    updateTextAreaInput(session, "q13a", value = up_answers$a13a)
-    updateTextAreaInput(session, "q13b", value = up_answers$a13b)
-    updateTextAreaInput(session, "q14a", value = up_answers$a14a)
-    updateTextAreaInput(session, "q14b", value = up_answers$a14b)
-    updateTextAreaInput(session, "q15", value = up_answers$a15)
-
-    # Check box
-    idx <- nrow(up_answers$param_df)
-    updateCheckboxGroupInput(session, "mod_sens", selected = up_answers$mod_input)
-    updateSliderInput(session, "phy_init", value = up_answers$param_df$Phytos[idx])
-    updateSliderInput(session, "mort_rate", value = up_answers$param_df$Mortality[idx])
-    updateSliderInput(session, "nut_uptake", value = up_answers$param_df$Uptake[idx])
-
-    # Update reactive values
-    par_save$value <- up_answers$param_df
-    q6_ans$dt <- up_answers$a6
-    lmfit2()$m <- up_answers$wt_m
-    lmfit2()$b <- up_answers$wt_b
-    lmfit2()$r2 <- up_answers$wt_r2
-    lmfit3()$m <- up_answers$upar_m
-    lmfit3()$b <- up_answers$upar_b
-    lmfit3()$r2 <- up_answers$upar_r2
-
-
-    shinyalert(title = "Upload Successful", text = "You will need to navigate to tabs Objective 1, 2 and 3 in Activity A after uploading your file for the inputs to load there. You will also need to load the NOAA data in Objective 6.", type = "success")
-
-  })
-
-  observe({
-    req(input$maintab == "mtab5" & exists("up_answers") & input$tabseries1 == "obj1")
-    req(!is.null(up_answers$site_row))
-    tryCatch(updateSelectizeInput(session, "row_num", selected = up_answers$site_row), error = function(e) {NA})
-  })
-
+  
   # Remove tool tip from forward and back buttons
   observe({
     if(input$nextBtn1 > 2) {
