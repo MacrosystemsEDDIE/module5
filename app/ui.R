@@ -24,7 +24,11 @@ ui <- function(request) {
     tags$html(lang = "en"), # Add language attribute
     tags$head(tags$link(rel = "shortcut icon", href = "macroeddi_ico_green.ico")), # Add icon for web bookmarks
     fluidPage(
-      column(1, offset = 11, align = "right",
+      column(10,
+             br(),
+             p(tags$b("NOTE: Teaching materials associated with this module can be found at http://module5.macrosystemseddie.org."))),
+      column(1, align = "right",
+             br(),
              introBox(
                actionButton("help", label = "Help", icon = icon("question-circle")), data.step = 7, data.intro = help_text["help", 1]
                )
@@ -34,13 +38,13 @@ ui <- function(request) {
                position = "static-top", id = "maintab",
                tags$header(
                  fluidRow(
-                   column(2,
+                   column(3,
                           #fileInput("upload_answers", "Resume Progress", accept = c(".eddie", ".rds"))
-                          bookmarkButton()
+                          bookmarkButton(label = "Bookmark my progress"),
+                          br(), br()
                           ),
-                   column(2,
-                          actionButton("help2", label = "Help!", icon = icon("question-circle")), data.step = 7, data.intro = help_text["help", 1]
-                          )
+                   column(8,
+                          p(tags$em("At any time, use this button to obtain a link that saves your progress.")))
                    )
                  ),
                # 1. Module Overview ----
@@ -214,16 +218,16 @@ ui <- function(request) {
                           hr(),
                           column(4,
                                  h3("Presentation"),
-                                 p("The presentation accompanying this module covers the introduction to forecasting, the nutrient-phytoplankton model (NP) used in this module, and the importance and relevance of ecological forecasts."),
-                                 p("What is a forecast?"),
+                                 p("The presentation accompanying this module provides an introduction to ecological forecasting, the steps in the iterative forecast cycle, and the ecological data and models used in this module."),
+                                 p(tags$b("What is a forecast?")),
                                  tags$ul(
                                    tags$li(module_text["what_forecast", ])
                                  ),
-                                 p("Why do we forecast?"),
+                                 p(tags$b("Why do we forecast?")),
                                  tags$ul(
                                    tags$li(module_text["why_forecast", ])
                                  ),
-                                 p("How do we generate a forecast?"),tags$ul(
+                                 p(tags$b("How do we generate a forecast?")),tags$ul(
                                    tags$li(module_text["how_forecast", ])
                                  ),
                                  p("Click through the slides to recap some of the main points from the lecture.")
@@ -243,7 +247,7 @@ ui <- function(request) {
                         img(src = "project-eddie-banner-2020_green.png", height = 100,
                             width = 1544, top = 5, alt = "Banner for Macrosystems EDDIE"),
                         fluidRow(
-                          column(5,
+                          column(10,
                                  h3("Workflow for this module"),
                                  tags$ol(
                                    tags$li(style="text-align: justify;", module_text["workflow1", ]),
@@ -251,61 +255,21 @@ ui <- function(request) {
                                    tags$li(style="text-align: justify;", module_text["workflow3", ]),
                                    tags$li(style="text-align: justify;", module_text["workflow4", ])
                                    )
-                                 ),
-                          column(6, align = "center", offset = 1,
-                                 br(), br(),
-                                 img(src = "activity_outline.png", height = "80%", style = "border: 2px solid black;",
-                                     width = "80%", tags$style("border: solid 2px black;"), alt = "Diagram showing the outline of the module activities.")
                                  )
                           ),
                         hr(),
                         fluidRow(
-                          column(7, offset = 1,
-                                 h3("Student Activities"),
-                                 p("Within Introduction, Exploration and Activities A, B and C tabs there are questions for students to complete as part of this module. These can be completed by writing your answers into the text boxes within the green boxes. If you do not complete the module in one continuous sitting you can download a file with your responses saved which you can then upload when you return. When you finish the module, you can generate a report which will embed your answers and saved plots into a Word (.docx) file which you can download and make further edits to before submitting to your instructor."),
-                                 box(width = 12, status = "warning",
-                                     solidHeader = TRUE,
-                                     p(tags$b("WARNING:"), " The Shiny app will disconnect from the server if it is left idle for 15 minutes. If this happens you will lose all your inputs into the app. It is recommended to download the user input at the end of the class, but you can also download throughout the class."),
-                                 ),
-                                 p("Alternatively, you can download the questions as a Word (.docx) file  and record your answers there. If you opt for this option, you can hide the green question boxes by unchecking the box below."),
-                                 checkboxInput("show_q1", "Show questions", value = TRUE),
+                          column(6, 
+                                 h3("Student Handout"),
+                                 p("Within the Introduction and Activities A, B and C tabs there are questions for students to complete as part of this module. These can be completed by writing your answers into the final report template, which can be downloaded as a Word document (.docx) below."),
                                  tags$style(type="text/css", "#stud_dl {background-color:#579277;color: white}"),
                                  conditionalPanel("output.handoutbuilt",
-                                                  downloadButton(outputId = "stud_dl", label = "Download Student Handout")
+                                                  downloadButton(outputId = "stud_dl", label = "Download Final Report Template")
                                                   )
-                                 )
-                          ),
-                        hr(),
-                        #* Generate report buttons ----
-                        fluidRow(
-                          column(4, offset = 1,
+                                 ),
+                          column(6,
                                  h3("Saving your progress"),
-                                 p(style="text-align: justify;", "If you run out of time to finish all the activities you can save your progress and return to it at a later date. Click the 'Save Progress' button at the bottom of the page and a file 'module5_answers_ID_number.eddie' will download. Store this file in a safe place locally on your computer."),
-                                 img(src = "save_button.png", height = "100%", style = "border: 2px solid black;",
-                                     width = "100%", tags$style("border: solid 2px black;"), alt = "A picture containing a button."),
-                                 br(),
-                                 hr(),
-                                 h3("Resuming your progress"),
-                                 img(src = "resume_button.png", height = "100%", style = "border: 2px solid black;",
-                                     width = "100%", tags$style("border: solid 2px black;"), alt = "A picture containing a button."),
-                                 br(),
-                                 p(style="text-align: justify;", "To reload the app input you can upload the downloaded '.eddie' file at the top of this page and it will populate your answers into the Shiny app."),
-                                 p(style="text-align: justify;", HTML(paste0(tags$b("Note:"), " You will need to navigate to tabs Objective 1, 2 and 3 in Activity A after uploading your file for the inputs to load there. You will also need to load the NOAA data in Objective 6."))),
-                                 p(style="text-align: justify;", "Currently the plots do not save to the file.  If you generated plots during your last session, you will need to reload the data and reproduce the plots before generating your report.  Additionally, the answers for Q.10 will need to be re-submitted.")
-                                 ),
-                          column(4, offset = 1,
-                                 introBox(
-                                   h3("Generate Report"),
-                                   p(style="text-align: justify;", "This will take the answers you have input into this app and generate a Microsoft Word document (.docx) document with your answers which you can download and make further edits before submitting. Return here when you have completed the module."),
-                                   actionButton("generate", "Generate Report (.docx)", icon = icon("file"),
-                                                width = "190px", class = "btn-primary"),
-                                   br(), br(),
-                                   data.step = 6, data.intro = help_text["finish", 1]
-                                 ),
-                                 tags$style(type="text/css", "#download {background-color:#579277;color: white}"),
-                                 conditionalPanel(condition = "output.reportbuilt", # This button appears after the report has been generated and is ready for download.
-                                                  downloadButton("download", "Download Report", width = "60px", style = "width:190px;")
-                                                  ),
+                                 p(style="text-align: justify;", "If you run out of time to finish all the activities you can save your progress and return to it at a later date. Click the 'Bookmark my progress' button at the top of the page and you will obtain a link, which you should copy to a secure location. When pasted into your web browser, this link will load a Shiny app session that contains your progress."),
                                  br()
                                  )
                           ),
@@ -317,7 +281,7 @@ ui <- function(request) {
                                      fluidRow(
                                        column(8, offset = 1,
                                               h3("Before you start..."),
-                                              p("Input your name and Student ID into your final report (Word document). Then, answer the following questions in the final report"),
+                                              p("Download and input your name and Student ID into your final report (Word document). Then, answer the following questions in the final report"),
                                               introBox(
                                                 h3(tags$b("Think about it!")),
                                                 p(tags$b(quest["q1", 1])),
@@ -1798,14 +1762,6 @@ color: black;
             column(2, align = "center",
                    # style = paste0("background: ", nav_bg),
                    br(),
-                   tags$style(type="text/css", paste0("#download_answers {background-color:#478267;color: white; padding:15px; font-size:18px;font-weight: bold;}")),
-                   hover_download_button(outputId = "download_answers",
-                                         label = "Save Progress",
-                                         class = "butt1",
-                                         button_animation = "glow",
-                                         ),
-                   # downloadButton("download_answers", label = "Download user input", class = "butt1"),
-                   # bsTooltip("download_answers", title = "Download all inputs into the Shiny app", placement = "left", trigger = "hover"),
                    br(), br()
             ),
             column(5, align = "center",
