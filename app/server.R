@@ -3509,12 +3509,15 @@ server <- function(input, output, session) {#
     rv1$prev <- readr::parse_number(curr_tab1) - 1
     rv1$nxt <- readr::parse_number(curr_tab1) + 1
   })
-
+  
   observe({
     toggleState(id = "prevBtn1", condition = rv1$prev > 0)
-    toggleState(id = "nextBtn1", condition = rv1$nxt < 8)
+    if(rv1$nxt > 7 & rv3a$nxt > 12) {
+      shinyjs::disable("nextBtn1")
+    } else {
+      shinyjs::enable("nextBtn1")
+    }
     hide(selector = ".page")
-    # show(paste0("mtab", rv1$nxt))
   })
 
 
@@ -3523,17 +3526,21 @@ server <- function(input, output, session) {#
     curr_tab1 <- input$maintab
     idx <- which(tab_names$tab_id == curr_tab1)
     new_nam <- tab_names$name[idx + 1]
-    if (curr_tab1 == "mtab5") {
+    if (curr_tab1 == "mtab4") {
       curr_obj <- input$tabseries1
       idx2 <- which(tab_names$tab_id == curr_obj)
       new_nam <- tab_names$name[idx2 + 1]
     }
-    if (curr_tab1 == "mtab6") {
+    if (curr_tab1 == "mtab5") {
       curr_obj <- input$tabseries2
       idx2 <- which(tab_names$tab_id == curr_obj)
       new_nam <- tab_names$name[idx2 + 1]
     }
-    if(curr_tab1 == "mtab7") {
+    if(curr_tab1 == "mtab6") {
+      curr_obj <- input$tabseries3
+      idx2 <- which(tab_names$tab_id == curr_obj)
+      new_nam <- tab_names$name[idx2 + 1]    } 
+    if(curr_tab1 == "mtab6" & rv3a$nxt > 12) {
       updateActionButton(session, inputId = "nextBtn1", label = paste("Next >"))
     } else {
       # shinyjs::show(id = "nextBtn1")
@@ -3547,16 +3554,22 @@ server <- function(input, output, session) {#
     idx <- which(tab_names$tab_id == curr_tab1)
     new_nam <- tab_names$name[idx - 1]
 
-    if (curr_tab1 == "mtab5") {
+    if (curr_tab1 == "mtab4") {
       curr_obj <- input$tabseries1
       idx2 <- which(tab_names$tab_id == curr_obj)
       if(curr_obj == "obj1") idx2 <- idx2 - 1 # Move off Activty A label
       new_nam <- tab_names$name[idx2 - 1]
     }
-    if (curr_tab1 == "mtab6") {
+    if (curr_tab1 == "mtab5") {
       curr_obj <- input$tabseries2
       idx2 <- which(tab_names$tab_id == curr_obj)
       if(curr_obj == "obj6") idx2 <- idx2 - 1 # Move off Activty B label
+      new_nam <- tab_names$name[idx2 - 1]
+    }
+    if (curr_tab1 == "mtab6") {
+      curr_obj <- input$tabseries3
+      idx2 <- which(tab_names$tab_id == curr_obj)
+      if(curr_obj == "obj11") idx2 <- idx2 - 1 # Move off Activty C label
       new_nam <- tab_names$name[idx2 - 1]
     }
     if(curr_tab1 == "mtab1") {
@@ -3573,21 +3586,27 @@ server <- function(input, output, session) {#
 
     curr_tab1 <- input$maintab
     idx <- which(tab_names$tab_id == curr_tab1)
-    if (curr_tab1 == "mtab5" & rv1a$nxt < 6) {
+    if (curr_tab1 == "mtab4" & rv1a$nxt < 6) {
       curr_obj <- input$tabseries1
 
       updateTabsetPanel(session, "tabseries1",
                         selected = paste0("obj", rv1a$nxt))
 
-    } else if (curr_tab1 == "mtab6" & rv2a$nxt < 13) {
+    } else if (curr_tab1 == "mtab5" & rv2a$nxt < 11) {
       curr_obj <- input$tabseries2
       updateTabsetPanel(session, "tabseries2",
                         selected = paste0("obj", rv2a$nxt))
+    } else if (curr_tab1 == "mtab6" & rv3a$nxt < 13) {
+      curr_obj <- input$tabseries2
+      updateTabsetPanel(session, "tabseries3",
+                        selected = paste0("obj", rv3a$nxt))
     } else {
       updateTabsetPanel(session, "tabseries1",
                         selected = "obj1")
       updateTabsetPanel(session, "tabseries2",
                         selected = "obj6")
+      updateTabsetPanel(session, "tabseries3",
+                        selected = "obj11")
       updateTabsetPanel(session, "maintab",
                         selected = paste0("mtab", rv1$nxt))
     }
@@ -3598,20 +3617,26 @@ server <- function(input, output, session) {#
   observeEvent(input$prevBtn1, {
     curr_tab1 <- input$maintab
     idx <- which(tab_names$tab_id == curr_tab1)
-    if (curr_tab1 == "mtab5" & rv1a$prev > 0) {
+    if (curr_tab1 == "mtab4" & rv1a$prev > 0) {
       curr_obj <- input$tabseries1
 
       updateTabsetPanel(session, "tabseries1",
                         selected = paste0("obj", rv1a$prev))
 
-    } else if (curr_tab1 == "mtab6" & rv2a$prev > 5) {
+    } else if (curr_tab1 == "mtab5" & rv2a$prev > 5) {
       curr_obj <- input$tabseries2
       updateTabsetPanel(session, "tabseries2",
                         selected = paste0("obj", rv2a$prev))
+    } else if (curr_tab1 == "mtab6" & rv3a$prev > 10) {
+      curr_obj <- input$tabseries3
+      updateTabsetPanel(session, "tabseries3",
+                        selected = paste0("obj", rv3a$prev))
     } else {
       updateTabsetPanel(session, "tabseries1",
                         selected = "obj5")
       updateTabsetPanel(session, "tabseries2",
+                        selected = "obj10")
+      updateTabsetPanel(session, "tabseries3",
                         selected = "obj12")
       updateTabsetPanel(session, "maintab",
                         selected = paste0("mtab", rv1$prev))
@@ -3635,6 +3660,14 @@ server <- function(input, output, session) {#
     rv2a$prev <- readr::parse_number(curr_tab1) - 1
     rv2a$nxt <- readr::parse_number(curr_tab1) + 1
   })
+  
+  #* Tab 3a ----
+  rv3a <- reactiveValues(prev = 0, nxt = 2)
+  observeEvent(input$tabseries3, {
+    curr_tab1 <- input$tabseries3
+    rv3a$prev <- readr::parse_number(curr_tab1) - 1
+    rv3a$nxt <- readr::parse_number(curr_tab1) + 1
+  })
 
   # Return to Introduction tab
   observeEvent(input$return_intro, {
@@ -3651,7 +3684,7 @@ server <- function(input, output, session) {#
   # Embedded Action links
   observeEvent(input$act_A_obj_5, {
     updateTabsetPanel(session, "maintab",
-                      selected = "mtab5")
+                      selected = "mtab4")
     updateTabsetPanel(session, "tabseries1",
                       selected = "obj5")
     shinyjs::runjs("window.scrollTo(0, 0)")
