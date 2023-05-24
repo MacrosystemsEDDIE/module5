@@ -1668,7 +1668,7 @@ server <- function(input, output, session) {#
   #* Save plot for annual ====
   output$save_mod_run <- downloadHandler(
     filename = function() {
-      paste("calibrated-model-plot-", Sys.Date(), ".png", sep="")
+      paste("Q12-plot-", Sys.Date(), ".png", sep="")
     },
     content = function(file) {
       device <- function(..., width, height) {
@@ -3512,7 +3512,7 @@ server <- function(input, output, session) {#
   
   observe({
     toggleState(id = "prevBtn1", condition = rv1$prev > 0)
-    if(rv1$nxt > 7 & rv3a$nxt > 12) {
+    if(rv1$nxt > 6 & rv3a$nxt > 12) {
       shinyjs::disable("nextBtn1")
     } else {
       shinyjs::enable("nextBtn1")
