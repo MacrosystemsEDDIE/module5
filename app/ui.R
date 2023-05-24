@@ -1102,6 +1102,20 @@ color: black;
                                                ),
                                              hr(),
                                              fluidRow(
+                                               column(10, align = "left",
+                                                      box(id = "box_q17", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(10, offset = 1,
+                                                                   h3("Questions"),
+                                                                   h4(quest["q17", 1])
+                                                            )
+                                                          )
+                                                      )
+                                               )
+                                             ),
+                                             hr(),
+                                             fluidRow(
                                                column(5, offset = 1,
                                                       h3("Next step"),
                                                       p("Now we have converted the weather forecast data into inputs that are used by our model (surface water temperature and underwater PAR), we will use them to generate a forecast of primary productivity with the model we built in Objective 5."))
@@ -1197,8 +1211,10 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q17", 1]),
                                                                    h4(quest["q18", 1]),
+                                                                   h4(quest["q19", 1]),
+                                                                   p(tags$b(quest["q19a", 1], width = "90%")),
+                                                                   p(tags$b(quest["q19b", 1], width = "90%")),
                                                                    br()
                                                                    )
                                                             )
@@ -1240,7 +1256,7 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h4("Question"),
-                                                                   p(tags$b(quest["q19", 1])),
+                                                                   p(tags$b(quest["q20", 1])),
                                                                    br()
                                                                    )
                                                             )
@@ -1260,9 +1276,9 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Question"),
-                                                                   h4(quest["q20", 1]),
-                                                                   p(tags$b(quest["q20a", 1])),
-                                                                   p(tags$b(quest["q20b", 1])),
+                                                                   h4(quest["q21", 1]),
+                                                                   p(tags$b(quest["q21a", 1])),
+                                                                   p(tags$b(quest["q21b", 1])),
                                                                    br()
                                                             )
                                                           )
@@ -1306,7 +1322,7 @@ color: black;
                                              fluidRow(
                                                column(5, offset = 1,
                                                       h3("Next step"),
-                                                      p("Next, a week will have past since your forecast was generated so we will compare our forecast to actual observations.")
+                                                      p("Next, a week will have passed since your forecast was generated so we will compare our forecast to actual observations.")
                                                       )
                                                )
                                              ),
@@ -1390,14 +1406,15 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(HTML(paste0("Q21. Examine the forecasted vs. observed plot as well as the value of R",tags$sup("2"), '.'))),
-                                                                   p(tags$b(quest["q21a", 1])),
-                                                                   p(tags$b(quest["q21b", 1]))
+                                                                   h4(HTML(paste0("Q22. Examine the forecasted vs. observed plot as well as the value of R",tags$sup("2"), '.'))),
+                                                                   p(tags$b(quest["q22a", 1])),
+                                                                   p(tags$b(quest["q22b", 1]))
                                                             )
                                                             )
                                                           )
                                                       )
                                                ),
+                                             hr(),
                                              fluidRow(
                                                column(5, offset = 1,
                                                       h3("Next step"),
@@ -1485,19 +1502,7 @@ color: black;
                                              fluidRow(
                                                column(3,
                                                       wellPanel(p("After you have adjusted your parameters, assess your forecast against the observations."),
-                                                                actionButton('assess_fc4', label = div("Assess forecast",
-                                                                                                       icon("clipboard-check")))
-                                                                
-                                                      ),
-                                                      box(id = "box14", width = 12, status = "primary",
-                                                          solidHeader = TRUE,
-                                                          fluidRow(
-                                                            column(10, offset = 1,
-                                                                   h4("Questions"),
-                                                                   p(tags$b(quest["q22", 1])),
-                                                                   br()
-                                                            )
-                                                          )
+                                                                actionButton('assess_fc4', label = div("Assess forecast", icon("clipboard-check")))
                                                       )
                                                       
                                                ),
@@ -1507,6 +1512,25 @@ color: black;
                                                       ),
                                                       tags$style(type="text/css", "#save_assess_plot {background-color:#9ECBB5;color: black}"),
                                                       downloadButton("save_assess_plot2", "Save plot", icon = icon("download"), align = "right")
+                                               )
+                                             ),
+                                             hr(),
+                                             fluidRow(
+                                               column(10, align = "left",
+                                                      box(id = "box_q23", width = 12, status = "primary",
+                                                          solidHeader = TRUE,
+                                                          fluidRow(
+                                                            column(10, offset = 1,
+                                                                   h3("Questions"),
+                                                                   h4(quest["q23", 1]),
+                                                                   p(tags$b(quest["q23a", 1])),
+                                                                   p(tags$b(quest["q23b", 1])),
+                                                                   p(tags$b(quest["q23c", 1])),
+                                                                   p(tags$b(quest["q23d", 1])),
+                                                            br()
+                                                            )
+                                                          )
+                                                      )
                                                )
                                              ),
                                              hr(),
@@ -1570,8 +1594,11 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q23", 1]),
-                                                                   h4(quest["q24", 1])
+                                                                   h4(quest["q24", 1]),
+                                                                   p(tags$b(quest["q24a", 1])),
+                                                                   p(tags$b(quest["q24b", 1])),
+                                                                   p(tags$b(quest["q24c", 1])),
+                                                                   h4(quest["q25", 1])
                                                             )
                                                           )
                                                       )

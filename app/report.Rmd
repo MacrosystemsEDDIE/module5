@@ -43,7 +43,13 @@ mod_sett1 <- data.frame(
   "Uptake" = rep("", 1), row.names = c("Calibrated model settings")
 )
 
-mod_sett <- data.frame(
+mod_sett2 <- data.frame(
+  "Phytos" = rep("", 2),
+  "Mortality" = rep("", 2),
+  "Uptake" = rep("", 2), row.names = c("Calibrated","Updated")
+)
+
+mod_sett3 <- data.frame(
   "Phytos" = rep("", 3),
   "Mortality" = rep("", 3),
   "Uptake" = rep("", 3), row.names = c("Forecast 1", "Updated Forecast", "Forecast 2")
@@ -197,8 +203,8 @@ Answer the following questions:
 knitr::kable(lake_tab) 
 ```
 
-\
-## Objective 2: Explore data\
+
+## Objective 2: Explore data
 
 ***
 `r module_text["obj_02", ]`
@@ -316,44 +322,37 @@ knitr::kable(mod_sett1)
 **Answer:** 
 \
 
-17. `r substr(quest["q17", ], 6, nchar(quest["q17", ]))`
+16. `r substr(quest["q16", ], 6, nchar(quest["q16", ]))`
 \
-    a.  `r substr(quest["q17a", ], 3, nchar(quest["q17a", ]))`  
+    a.  `r substr(quest["q16a", ], 3, nchar(quest["q16a", ]))`  
     \
     **Answer:**  
     \
-    b.  `r substr(quest["q17b", ], 3, nchar(quest["q17b", ]))`  
+    b.  `r substr(quest["q16b", ], 3, nchar(quest["q16b", ]))`  
     \
     **Answer:**   
     \
-    c.  `r substr(quest["q17c", ], 3, nchar(quest["q17c", ]))`  
+    c.  `r substr(quest["q16c", ], 3, nchar(quest["q16c", ]))`  
     \
     **Answer:**   
     \
-*Figure 3. Weather forecast plot at the selected NEON lake generated from National Oceanic and Atmospheric Administration (NOAA)  [Global Ensemble Forecast System](https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs)  (GEFS).* 
-
+    *Please copy-paste your Q-16-plot.png image here.*\
 \
-## Objective 7: Prepare inputs\
+*Figure 2. Weather forecast plot at the selected NEON lake generated from National Oceanic and Atmospheric Administration (NOAA)  [Global Ensemble Forecast System](https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs)  (GEFS).* 
+
+
+## Objective 7: Prepare inputs
 
 ***
 `r module_text["obj_07", ]`
 
 ***
 
-**Linear Regression**\
-`r module_text["linear_regression", ]`\
-The equation form for a linear regression is:\
-$$y = mx + b $$
+17. `r substr(quest["q17", ], 6, nchar(quest["q17", ]))`  
+\
+**Answer:** 
 \
 
-Linear regression equation for surface water temperature and air temperature:
-
-
-$$wtemp = m * airtemp + b $$
-
-Linear regression equation for underwater PAR (uPAR) and shortwave radiation (SWR):
-
-$$uPAR = m * SWR + b $$
 
 ## Objective 8: Forecast\
 
@@ -364,13 +363,23 @@ $$uPAR = m * SWR + b $$
 
 18. `r substr(quest["q18", ], 6, nchar(quest["q18", ]))`  
 \
-**Answer:** 
+**Answer:**   
+\
+*Please copy-paste your Q-18-plot.png image here.*\
+\
+*Figure 3. Ecological forecast for primary productivity at your selected NEON lake for the next 30 days.*  
 \
 
 19. `r substr(quest["q19", ], 6, nchar(quest["q19", ]))`\
 \
-**Answer:**  
-\
+    a.  `r substr(quest["q19a", ], 3, nchar(quest["q19a", ]))`  
+    \
+    **Answer:**  
+    \
+    b.  `r substr(quest["q19b", ], 3, nchar(quest["q19b", ]))`  
+    \
+    **Answer:**   
+    \
 
 ## Objective 9: Communicate forecast\
 
@@ -384,8 +393,19 @@ $$uPAR = m * SWR + b $$
 **Answer:**   
 \
 
-
-*Figure 4. Ecological forecast for primary productivity at your selected NEON lake for the next 30 days.*  
+21. `r substr(quest["q21", ], 6, nchar(quest["q21", ]))`  
+\
+    a.  `r substr(quest["q21a", ], 3, nchar(quest["q21a", ]))`  
+    \
+    **Answer:**  
+    \
+    b.  `r substr(quest["q21b", ], 3, nchar(quest["q21b", ]))`  
+    \
+    **Answer:**   
+    \
+    *Please copy-paste your Q-21-visualization.png image here.*\
+\
+*Figure 4. A visualization of an ecological forecast for primary productivity at your selected NEON lake for the next 30 days. You selected this visualization to optimize forecast communication.*  
 
 \
 
@@ -396,15 +416,22 @@ $$uPAR = m * SWR + b $$
 
 ***
 
-21. `r substr(quest["q21", ], 6, nchar(quest["q21", ]))`  
+22. `r substr(quest["q22", ], 6, nchar(quest["q22", ]))`  
 \
-**Answer:** 
+    a.  `r substr(quest["q22a", ], 3, nchar(quest["q22a", ]))`  
+    \
+    **Answer:**  
+    \
+    b.  `r substr(quest["q22b", ], 3, nchar(quest["q22b", ]))`  
+    \
+    **Answer:**   
+    \
+    *Please copy-paste your Q-22-plot.png image here.*\
+\
+*Figure 5. Assessment of the forecast one week later by comparing the forecast to new observations at your selected NEON lake.*   
 \
 
-
-*Figure 5. Assessment of the forecast one week later and comparing the forecast to new observations at your selected NEON lake.*   
-
-# Activity C: Scale
+# Activity C: Complete the forecast cycle
 
 ## Objective 11: Update model\
 
@@ -413,13 +440,39 @@ $$uPAR = m * SWR + b $$
 
 ***
 
-22. `r substr(quest["q22", ], 6, nchar(quest["q22", ]))`  
+23. `r substr(quest["q23", ], 6, nchar(quest["q23", ]))`  
 \
-**Answer:** 
+    a.  `r substr(quest["q23a", ], 3, nchar(quest["q23a", ]))`  
+    \
+    **Answer:** 
+    \
+    *Table 6. Calibrated and updated primary productivity model settings.*
+    ```{r}
+    knitr::kable(mod_sett2) 
+    ```
+\
+    b.  `r substr(quest["q23b", ], 3, nchar(quest["q23b", ]))`  
+    \
+    **Answer:**   
+    \
+    *Please copy-paste your Q-23b-plot.png image here.*\
+    \
+    c.  `r substr(quest["q23c", ], 3, nchar(quest["q23c", ]))`  
+    \
+    *Figure 6. Updated forecast by updating the model parameters for your selected NEON lake site.*
+\
+    **Answer:**  
+    \
+    *Please copy-paste your Q-23c-plot.png image here.*\
+    \
+    *Figure 7. Assessment of the updated forecast.*   
+    \
+    d.  `r substr(quest["q23d", ], 3, nchar(quest["q23d", ]))`  
+    \
+    **Answer:** 
+    \
 \
 
-
-*Figure 6. Updated forecast by updating the model parameters for your selected NEON lake site.*  
 
 ## Objective 12: Next forecast\
 
@@ -428,24 +481,33 @@ $$uPAR = m * SWR + b $$
 
 ***
 
-23. `r substr(quest["q23", ], 6, nchar(quest["q23", ]))`  
-\
-**Answer:** 
-\
-
-
- 
-*Figure 7. The next ecological forecast using the updated model parameters at your selected NEON lake site.*  
-
-
 24. `r substr(quest["q24", ], 6, nchar(quest["q24", ]))`  
 \
+    a.  `r substr(quest["q24a", ], 3, nchar(quest["q24a", ]))`  
+    \
+    **Answer:** 
+    \
+    *Table 7. Primary productivity model settings for the first forecast, updated forecast, and second forecast.*
+    \
+    ```{r}
+         knitr::kable(mod_sett3) 
+    ```
+    \
+    b.  `r substr(quest["q24b", ], 3, nchar(quest["q24b", ]))`  
+    \
+    **Answer:**   
+    \
+    *Please copy-paste your Q-24-plot.png image here.*\
+    \
+    c.  `r substr(quest["q24c", ], 3, nchar(quest["q24c", ]))`  
+    \
+    **Answer:**  
+    \
+  
+
+25. `r substr(quest["q25", ], 6, nchar(quest["q25", ]))`  
+\
 **Answer:** 
-
-```{r echo = FALSE, results = "asis"}
-kableExtra::kable(mod_sett, caption = "Table 6. Model settings used in the first forecast, updated forecast and the second forecast.", row.names = TRUE)
-
-```
 \
 
 

@@ -1185,7 +1185,7 @@ server <- function(input, output, session) {#
   #* Save noaa fc plot ====
   output$save_noaa_plot <- downloadHandler(
     filename = function() {
-      paste("NOAA-forecast-plot-", Sys.Date(), ".png", sep="")
+      paste("Q16-plot-", Sys.Date(), ".png", sep="")
     },
     content = function(file) {
       device <- function(..., width, height) {
@@ -2018,7 +2018,7 @@ server <- function(input, output, session) {#
   #* Save plot for communication ====
   output$save_comm_plot <- downloadHandler(
     filename = function() {
-      paste("first-productivity-forecast-plot-", Sys.Date(), ".png", sep="")
+      paste("Q18-plot-", Sys.Date(), ".png", sep="")
     },
     content = function(file) {
       device <- function(..., width, height) {
@@ -2128,7 +2128,7 @@ server <- function(input, output, session) {#
   #save
   output$save_viz1 <- downloadHandler(
     filename = function() {
-      paste("example-forecast-visualization-1-", Sys.Date(), ".png", sep="")
+      paste("Q21-visualization-1-", Sys.Date(), ".png", sep="")
     },
     content = function(file) {
       device <- function(..., width, height) {
@@ -2229,7 +2229,7 @@ server <- function(input, output, session) {#
   #save
   output$save_viz4 <- downloadHandler(
     filename = function() {
-      paste("example-forecast-visualization-4-", Sys.Date(), ".png", sep="")
+      paste("Q21-visualization-4-", Sys.Date(), ".png", sep="")
     },
     content = function(file) {
       device <- function(..., width, height) {
@@ -2327,7 +2327,7 @@ server <- function(input, output, session) {#
   #save
   output$save_viz2 <- downloadHandler(
     filename = function() {
-      paste("example-forecast-visualization-2-", Sys.Date(), ".png", sep="")
+      paste("Q21-visualization-2-", Sys.Date(), ".png", sep="")
     },
     content = function(file) {
       device <- function(..., width, height) {
@@ -2426,7 +2426,7 @@ server <- function(input, output, session) {#
   #save
   output$save_viz3 <- downloadHandler(
     filename = function() {
-      paste("example-forecast-visualization-3-", Sys.Date(), ".png", sep="")
+      paste("Q21-visualization-3-", Sys.Date(), ".png", sep="")
     },
     content = function(file) {
       device <- function(..., width, height) {
@@ -2605,7 +2605,7 @@ server <- function(input, output, session) {#
   #* #save
   output$save_assess_plot <- downloadHandler(
     filename = function() {
-      paste("forecasted-vs-observed-", Sys.Date(), ".png", sep="")
+      paste("Q22-plot-", Sys.Date(), ".png", sep="")
     },
     content = function(file) {
       device <- function(..., width, height) {
@@ -2823,7 +2823,7 @@ server <- function(input, output, session) {#
   #* #save
   output$save_update_fc_plot <- downloadHandler(
     filename = function() {
-      paste("updated-forecast-", Sys.Date(), ".png", sep="")
+      paste("Q23b-plot-", Sys.Date(), ".png", sep="")
     },
     content = function(file) {
       device <- function(..., width, height) {
@@ -2940,7 +2940,7 @@ server <- function(input, output, session) {#
   #* #save
   output$save_assess_plot2 <- downloadHandler(
     filename = function() {
-      paste("forecasted-vs-observed-2-", Sys.Date(), ".png", sep="")
+      paste("Q23c-plot-", Sys.Date(), ".png", sep="")
     },
     content = function(file) {
       device <- function(..., width, height) {
@@ -3198,7 +3198,7 @@ server <- function(input, output, session) {#
   #save
   output$save_new_fc_plot <- downloadHandler(
     filename = function() {
-      paste("new-forecast-", Sys.Date(), ".png", sep="")
+      paste("Q24-plot-", Sys.Date(), ".png", sep="")
     },
     content = function(file) {
       device <- function(..., width, height) {
