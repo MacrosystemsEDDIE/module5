@@ -1703,6 +1703,8 @@ server <- function(input, output, session) {#
   par_final <- reactiveValues(value = par_df)
   observeEvent(input$submit_ques, {
     par_final$value[1,] <- par_save$value[1,]
+    shinyalert("Model settings saved!", "Please proceed with the module.", type = "success",
+               closeOnClickOutside = TRUE)
   })
 
 

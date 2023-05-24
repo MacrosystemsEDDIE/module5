@@ -808,7 +808,7 @@ color: black;
                                                column(4,
                                                       h3("Calibrate Model"),
                                                       p(style="text-align: justify;", "Now that we have explored the effects of initial conditions and parameters on your model, use the sliders below to obtain as good a calibration as possible to sensor observations."),
-                                                      p(style="text-align: justify;", "When you have achieved an acceptable model fit, click 'Save model fit' to save your initial conditions and parameters for use in generating a forecast. Then, click 'Download plot' to download a plot of your best-fitting model for inclusion in your final report."),
+                                                      p(style="text-align: justify;", "When you have achieved an acceptable model fit, click 'Save model settings' to save your initial conditions and parameters for use in generating a forecast. Then, click 'Download plot' to download a plot of your best-fitting model for inclusion in your final report."),
                                                       h4("Initial conditions"),
                                                       p(tags$b("Phytoplankton")),
                                                       # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
