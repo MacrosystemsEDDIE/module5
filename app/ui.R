@@ -850,6 +850,11 @@ color: black;
                                                       br(),
                                                       column(12,
                                                       actionButton("submit_ques", "Save model settings", icon = icon("save")),
+                                                      conditionalPanel("input.submit_ques",
+                                                                       br(),
+                                                                       p(tags$b("Model settings successfully saved!")),
+                                                                       br()
+                                                                       ),
                                                       align = "right"
                                                       ),
                                                       br()

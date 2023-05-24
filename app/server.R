@@ -1,5 +1,5 @@
 server <- function(input, output, session) {#
-
+  
   # Help button ----
   observeEvent(input$help, {
     introjs(session, events = list(onbeforechange = readCallback("switchTabs")))
@@ -63,6 +63,11 @@ server <- function(input, output, session) {#
 
   # Select DT rows ----
   observeEvent(input$table01_rows_selected, {
+    
+    #Bookmarking
+    list_of_inputs <- reactiveValuesToList(input)
+    print(list_of_inputs)
+    
     row_selected = neon_sites[input$table01_rows_selected, ]
     siteID <<- neon_sites$siteID[input$table01_rows_selected]
     coords <- st_coordinates(row_selected)
@@ -1703,8 +1708,6 @@ server <- function(input, output, session) {#
   par_final <- reactiveValues(value = par_df)
   observeEvent(input$submit_ques, {
     par_final$value[1,] <- par_save$value[1,]
-    shinyalert("Model settings saved!", "Please proceed with the module.", type = "success",
-               closeOnClickOutside = TRUE)
   })
 
 
@@ -3733,14 +3736,6 @@ server <- function(input, output, session) {#
     selectRows(dt_proxy, input$row_num)
   })
 
-  # Need to exclude the buttons from themselves being bookmarked
-  setBookmarkExclude(c("bookmark1"))
-
-  # Trigger bookmarking with either button
-  observeEvent(input$bookmark1, {
-    session$doBookmark()
-  })
-
   # Save extra values in state$values when we bookmark
   onBookmark(function(state) {
     state$values$sel_row <- input$table01_rows_selected
@@ -3749,7 +3744,7 @@ server <- function(input, output, session) {#
   # Read values from state$values when we restore
   onRestore(function(state) {
     updateTabsetPanel(session, "maintab",
-                      selected = "mtab5")
+                      selected = "mtab4")
     updateTabsetPanel(session, "tabseries1",
                       selected = "obj1")
   })
