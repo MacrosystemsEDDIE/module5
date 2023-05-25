@@ -40,7 +40,7 @@ ui <- function(request) {
                  fluidRow(
                    column(3,
                           #fileInput("upload_answers", "Resume Progress", accept = c(".eddie", ".rds"))
-                          bookmarkButton(label = "Bookmark my progress"),
+                          bookmarkButton(id = "bookmarkBtn", label = "Bookmark my progress"),
                           br(), br()
                           ),
                    column(8,
@@ -1068,6 +1068,12 @@ color: black;
                                                       ),
                                                       p("Because we are using real NEON data, we will need to run",tags$b(" data quality assurance and quality control (QAQC)")," procedures on our data before using the data as inputs to our model. Please click the button below to remove data that are incorrect due to sensor error."),
                                                       actionButton("run_qaqc1", "Run QAQC"),
+                                                      conditionalPanel("input.run_qaqc1",
+                                                                       br(),
+                                                                       p(tags$b("QAQC complete!")),
+                                                                       p(tags$em("If your plot has not changed, this means all data passed QAQC.")),
+                                                                       br()
+                                                      ),
                                                       wellPanel(
                                                                        p("Now, you can add a linear regression to the QAQCed dataset."),
                                                                        actionButton("add_lm2", "Add linear regression"),
@@ -1084,6 +1090,12 @@ color: black;
                                                       ),
                                                       p("Because we are using real NEON data, we will need to run",tags$b(" data quality assurance and quality control (QAQC)")," procedures on our data before using the data as inputs to our model. Please click the button below to remove data that are below the threshold at which the sensor can reliably quantify underwater light."),
                                                       actionButton("run_qaqc2", "Run QAQC"),
+                                                      conditionalPanel("input.run_qaqc2",
+                                                                       br(),
+                                                                       p(tags$b("QAQC complete!")),
+                                                                       p(tags$em("If your plot has not changed, this means all data passed QAQC.")),
+                                                                       br()
+                                                      ),
                                                       wellPanel(
                                                                        p("Now, you can add a linear regression to the QAQCed dataset."),
                                                                        actionButton("add_lm3", "Add linear regression"),

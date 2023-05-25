@@ -4,51 +4,7 @@ server <- function(input, output, session) {#
   observeEvent(input$help, {
     introjs(session, events = list(onbeforechange = readCallback("switchTabs")))
   })
-  observeEvent(input$help2, {
-    shinyalert(title = "Resume Progress", text = "Use this field to upload your '.eddie' file to resume your progress.", type = "info")
-  })
-
-
-  ## observe the Hide button being pressed
-  observeEvent(input$show_q1, {
-
-    if(input$show_q1){
-      shinyjs::show(id = "box1")
-      shinyjs::show(id = "box2")
-      shinyjs::show(id = "box3")
-      shinyjs::show(id = "box4")
-      shinyjs::show(id = "box5")
-      shinyjs::show(id = "box6")
-      shinyjs::show(id = "box7")
-      shinyjs::show(id = "box8")
-      shinyjs::show(id = "box9")
-      shinyjs::show(id = "box10")
-      shinyjs::show(id = "box11")
-      shinyjs::show(id = "box12")
-      shinyjs::show(id = "box13")
-      shinyjs::show(id = "box14")
-      shinyjs::show(id = "box15")
-      shinyjs::show(id = "box16")
-    }else{
-      shinyjs::hide(id = "box1")
-      shinyjs::hide(id = "box2")
-      shinyjs::hide(id = "box3")
-      shinyjs::hide(id = "box4")
-      shinyjs::hide(id = "box5")
-      shinyjs::hide(id = "box6")
-      shinyjs::hide(id = "box7")
-      shinyjs::hide(id = "box8")
-      shinyjs::hide(id = "box9")
-      shinyjs::hide(id = "box10")
-      shinyjs::hide(id = "box11")
-      shinyjs::hide(id = "box12")
-      shinyjs::hide(id = "box13")
-      shinyjs::hide(id = "box14")
-      shinyjs::hide(id = "box15")
-      shinyjs::hide(id = "box16")
-    }
-  })
-
+ 
   output$table01 <- DT::renderDT(
     neon_sites_df[, c(1:2)], selection = "single", options = list(stateSave = TRUE, dom = 't'), rownames = FALSE, server = FALSE
   )
@@ -64,9 +20,9 @@ server <- function(input, output, session) {#
   # Select DT rows ----
   observeEvent(input$table01_rows_selected, {
     
-    #Bookmarking
-    list_of_inputs <- reactiveValuesToList(input)
-    print(list_of_inputs)
+    # #Bookmarking
+    # list_of_inputs <- reactiveValuesToList(input)
+    # print(list_of_inputs)
     
     row_selected = neon_sites[input$table01_rows_selected, ]
     siteID <<- neon_sites$siteID[input$table01_rows_selected]
@@ -3727,13 +3683,29 @@ server <- function(input, output, session) {#
     updateSliderInput(session, "phy_init4", value = phy_init4)
   })
 
-
-
-
-
   observe({
     dt_proxy <- dataTableProxy("table01")
     selectRows(dt_proxy, input$row_num)
+  })
+  
+  #Bookmarking
+  bookmarkingWhitelist <- c("phy_ic","row_num","run_fc3","load_fc3","assess_fc4","update_fc2",
+                            "assess_fc3","run_fc2","load_fc2","conv_fc","add_lm3","run_qaqc2","add_lm2",
+                            "run_qaqc1","load_fc","submit_ques","run_mod_ann","run_mod_parm",
+                            "run_mod_ic","tabseries1","maintab","nut_uptake2","mort_rate2","phy_init2",
+                            "nut_uptake","mort_rate","phy_init","parm_mort_rate","members2",
+                            "add_newobs","add_obs","add_obs_parm","add_obs_ic","phy_init4","table01_rows_selected")
+
+  observeEvent(input$bookmarkBtn, {
+    session$doBookmark()
+  })
+
+  ExcludedIDs <- reactiveVal(value = NULL)
+
+  observe({
+    toExclude <- setdiff(names(input), bookmarkingWhitelist)
+    setBookmarkExclude(toExclude)
+    ExcludedIDs(toExclude)
   })
 
   # Save extra values in state$values when we bookmark
@@ -3751,7 +3723,6 @@ server <- function(input, output, session) {#
 
   onRestored(function(state) {
     updateSelectizeInput(session, "row_num", selected = state$values$sel_row)
-
   })
 
 
