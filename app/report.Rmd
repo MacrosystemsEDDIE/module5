@@ -65,7 +65,7 @@ state_par <- data.frame("States" = rep("",2),
 ***
 ### Name: 
 ### Student ID: 
-#### Completed on: `r time`
+#### Completed on: 
 ***
 
 # **Macrosystems EDDIE Module 5: Introduction to Ecological Forecasting**

@@ -269,6 +269,7 @@ ui <- function(request) {
                                  ),
                           column(6,
                                  h3("Saving your progress"),
+                                 p(style="text-align: justify;", "As you go, fill out answers to questions in the final report Word document. Some of the plots you generate in the Shiny app will be needed for the final report. When prompted, be sure to download these plots you as you work through the app so you can copy-paste them into the final report."),
                                  p(style="text-align: justify;", "If you run out of time to finish all the activities you can save your progress and return to it at a later date. Click the 'Bookmark my progress' button at the top of the page and you will obtain a link, which you should copy to a secure location. When pasted into your web browser, this link will load a Shiny app session that contains your progress."),
                                  br()
                                  )
@@ -281,7 +282,7 @@ ui <- function(request) {
                                      fluidRow(
                                        column(8, offset = 1,
                                               h3("Before you start..."),
-                                              p("Download and input your name and Student ID into your final report (Word document). Then, answer the following questions in the final report"),
+                                              p("Download your final report (Word document) and input your name and Student ID. Then, answer the following questions in the final report."),
                                               introBox(
                                                 h3(tags$b("Think about it!")),
                                                 p(tags$b(quest["q1", 1])),

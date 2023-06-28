@@ -1895,31 +1895,14 @@ server <- function(input, output, session) {#
     p <- ggplot()
 
       sub <- fc_out1()$df[as.numeric(fc_out1()$df$L1) <= input$members2, ]
+      
+      df3 <- plyr::ddply(sub, "time", function(x) {
+        quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
+      })
+      colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
+      colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
+      
       if(input$type2 == "Distribution") {
-
-        df3 <- plyr::ddply(sub, "time", function(x) {
-          quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
-        })
-        # df3 <- as.data.frame(t(df3))
-        colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
-        colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
-        # df3$hours <- df2$hours
-        df2 <- df3
-      } else {
-        df2 <- sub
-        df2$L1 <- paste0("ens", formatC(df2$L1, width = 2, format = "d", flag = "0"))
-      }
-
-      sub <- fc_out1()$df[as.numeric(fc_out1()$df$L1) <= input$members2, ]
-      if(input$type2 == "Distribution") {
-
-        df3 <- plyr::ddply(sub, "time", function(x) {
-          quantile(x$value, c(0.025, 0.05, 0.125, 0.5, 0.875, 0.95, 0.975))
-        })
-        # df3 <- as.data.frame(t(df3))
-        colnames(df3)[-1] <- gsub("%", "", colnames(df3)[-1])
-        colnames(df3)[-1] <- paste0('p', colnames(df3)[-1])
-        # df3$hours <- df2$hours
         df2 <- df3
       } else {
         df2 <- sub
@@ -1928,18 +1911,16 @@ server <- function(input, output, session) {#
 
       if(input$type2 == "Line"){
         p <- p +
-          geom_line(data = df2, aes(time, value, color = L1)) +
-          scale_color_manual(values = c(rep(pair.cols[4], input$members2), cols[1])) +
-          guides(color = FALSE)
+          geom_line(data = df2, aes(time, value, group = L1, color = "Ensemble members")) +
+          scale_color_manual(values = c("Ensemble members" = pair.cols[4], "Observations" = cols[1]))
       }
       if(input$type2 == "Distribution") {
         p <- p +
-          geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
+          geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95% predictive interval"),
                       alpha = 0.8) +
-          geom_line(data = df2, aes(time, p50, color = "Median - original")) +
-          scale_fill_manual(values = pair.cols[3]) +
-          guides(fill = guide_legend(override.aes = list(alpha = c(0.8)))) +
-          scale_color_manual(values = c("Median - original" = pair.cols[4], "Obs" = cols[1]))
+          geom_line(data = df2, aes(time, p50, color = "Median")) +
+          scale_fill_manual(values = c("95% predictive interval" = pair.cols[3])) +
+          scale_color_manual(values = c("Median" = pair.cols[4], "Observations" = cols[1]))
       }
 
 
@@ -1948,12 +1929,12 @@ server <- function(input, output, session) {#
 
 
     txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 4), (chla_obs[nrow(chla_obs), 1] + 4)),
-                      y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("Past", "Future"))
+                      y = rep((max(df3$p97.5, na.rm = TRUE) + 2), 2), label = c("Past", "Future"))
 
     p <- p +
       geom_hline(yintercept = 0, color = "gray") +
       geom_vline(xintercept = vlin, linetype = "dashed") +
-      geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
+      geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Observations"))) +
       geom_text(data = txt, aes(x, y, label = label)) +
       ylab("Chlorophyll-a (μg/L)") +
       xlab("Time") +
@@ -2440,7 +2421,7 @@ server <- function(input, output, session) {#
     df2 <- df3
 
 
-    txt <- data.frame(x = (new_obs[nrow(new_obs), 1] + 5.5), y = (max(new_obs[, 2], na.rm = TRUE) + 6), label = "One week later")
+    txt <- data.frame(x = (new_obs[nrow(new_obs), 1] + 5.5), y = (max(df2$p97.5, na.rm = TRUE) + 2), label = "One week later")
 
     p <- ggplot()
 
@@ -2448,11 +2429,10 @@ server <- function(input, output, session) {#
       geom_hline(yintercept = 0, color = "gray") +
       geom_vline(xintercept = (df2[1, 1]), linetype = "dashed") +
       geom_vline(xintercept = (df2[1, 1] + 7), linetype = "dotted") +
-      geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95th"),
+      geom_ribbon(data = df2, aes(time, ymin = p2.5, ymax = p97.5, fill = "95% predictive interval"),
                   alpha = 0.8) +
       geom_line(data = df2, aes(time, p50, color = "Median")) +
-      scale_fill_manual(values = pair.cols[3]) +
-      guides(fill = guide_legend(override.aes = list(alpha = c(0.8))))
+      scale_fill_manual(values = c("95% predictive interval" = pair.cols[3])) 
 
     p <- p +
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
@@ -2725,11 +2705,9 @@ server <- function(input, output, session) {#
       geom_hline(yintercept = 0, color = "gray") +
       geom_vline(xintercept = fc_out1()$df[1, 1], linetype = "dashed") +
       geom_vline(xintercept = (fc_out1()$df[1, 1] + 7), linetype = "dotted") +
-      geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = "Original"),
+      geom_ribbon(data = df3, aes(time, ymin = p2.5, ymax = p97.5, fill = "95% interval - original"),
                   alpha = 0.8) +
     geom_line(data = df3, aes(time, p50, color = "Median - original")) #+
-    # scale_fill_manual(values = l.cols[2]) +
-    # guides(fill = guide_legend(override.aes = list(alpha = c(0.8))))
 
     if(input$update_fc2 > 0) {
       # Updated model
@@ -2741,19 +2719,24 @@ server <- function(input, output, session) {#
       colnames(df4)[-1] <- paste0('p', colnames(df4)[-1])
 
       p <- p +
-        geom_ribbon(data = df4, aes(time, ymin = p2.5, ymax = p97.5, fill = "Updated"),
+        geom_ribbon(data = df4, aes(time, ymin = p2.5, ymax = p97.5, fill = "95% interval - updated"),
                     alpha = 0.8) +
         geom_line(data = df4, aes(time, p50, color = "Median - updated")) +
-        scale_fill_manual(values = c("Original" = pair.cols[3], "Updated" = pair.cols[5])) +
-        guides(fill = guide_legend(override.aes = list(alpha = c(0.8, 0.8))))
+        scale_fill_manual(values = c("95% interval - original" = pair.cols[3], "95% interval - updated" = pair.cols[5]))+
+        scale_color_manual(values = c("Obs" = cols[1], "New obs" = cols[2], "Median - original" = pair.cols[4], "Median - updated" = pair.cols[6]))
     } else {
       p <- p +
-        scale_fill_manual(values = c("Original" = pair.cols[3]))
+        scale_fill_manual(values = c("95% interval - original" = pair.cols[3]))+
+        scale_color_manual(values = c("Obs" = cols[1], "New obs" = cols[2], "Median - original" = pair.cols[4]))
     }
 
     txt <- data.frame(x = c((chla_obs[nrow(chla_obs), 1] - 4), (chla_obs[nrow(chla_obs), 1] + 10)),
-                      y = rep((max(chla_obs[, 2], na.rm = TRUE) + 2), 2), label = c("7 Days ago", "Today"))
-    if(input$update_fc2 > 0) txt$y <- max(df4$p97.5, na.rm = TRUE)
+                      y = rep((max(df3$p97.5, na.rm = TRUE) + 2), 2), label = c("7 Days ago", "Today"))
+    if(input$update_fc2 > 0){
+      if(max(df4$p97.5, na.rm = TRUE) > max(df3$p97.5, na.rm = TRUE)){
+        txt$y <- max(df4$p97.5, na.rm = TRUE)
+      }
+      }
 
     p <- p +
       geom_point(data = chla_obs, aes_string(names(chla_obs)[1], names(chla_obs)[2], color = shQuote("Obs"))) +
@@ -2761,8 +2744,6 @@ server <- function(input, output, session) {#
       geom_text(data = txt, aes(x, y, label = label)) +
       ylab("Chlorophyll-a") +
       xlab("Time") +
-      {if(input$update_fc2 > 0)         scale_color_manual(values = c("Obs" = cols[1], "New obs" = cols[2], "Median - original" = pair.cols[4], "Median - updated" = pair.cols[6]))} +
-      {if(input$update_fc2 == 0)         scale_color_manual(values = c("Obs" = cols[1], "New obs" = cols[2], "Median - original" = pair.cols[4]))} +
       theme_classic(base_size = 12) +
       theme(panel.background = element_rect(fill = NA, color = 'black')) +
       labs(color = "", fill = "")
