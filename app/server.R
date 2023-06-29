@@ -1562,7 +1562,7 @@ server <- function(input, output, session) {#
       showModal(modalDialog(
         title = "Hmmmmmmmmmmmmm...",
         "Looks like you have been running your model quite a lot!\n
-        Remember this is a simplified model so it will not match the patterns in your data. Aim to get the chlorophyll-a in a similar range to the observed values for Q15 and then proceed with Activity B."
+        Remember this is a simplified model so it will not match the patterns in your data. Aim to get the chlorophyll-a in a similar range to the observed values and then proceed with Activity B."
       ))
     }
   })

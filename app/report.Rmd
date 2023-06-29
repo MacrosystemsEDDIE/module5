@@ -18,10 +18,11 @@ quest <- read.csv("data/handout_questions.csv", row.names = 1)
 module_text <- read.csv("data/module_text.csv", row.names = 1, header = FALSE)
 EF_links <- read.csv("data/eco_forecast_examples.csv")
 
-lake_tab <- data.frame("Characteristic" = c(substr(quest["q4a", ], 3, nchar(quest["q4a", ])),substr(quest["q4b", ], 3, nchar(quest["q4b", ])),substr(quest["q4c", ], 3, nchar(quest["q4c", ])),substr(quest["q4d", ], 3, nchar(quest["q4d", ])),substr(quest["q4e", ], 3, nchar(quest["q4e", ]))),
-                       "Answer" = rep("",5))
+lake_tab <- data.frame("Characteristic" = c(substr(quest["q4a", ], 3, nchar(quest["q4a", ])),substr(quest["q4b", ], 3, nchar(quest["q4b", ])),substr(quest["q4c", ], 3, nchar(quest["q4c", ])),substr(quest["q4d", ], 3, nchar(quest["q4d", ])),substr(quest["q4e", ], 3, nchar(quest["q4e", ])),
+                                            substr(quest["q4f", ], 3, nchar(quest["q4f", ]))),
+                       "Answer" = rep("",6))
 
-env_var_tab <- data.frame("Variable" = c("Air temperature","Water temperature","Nitrogen","Underwater PAR","Chlorophyll-a"),
+env_var_tab <- data.frame("Variable" = c("Air temperature","Surface water temperature","Nitrogen","Underwater PAR","Chlorophyll-a"),
                           "Mean" = rep("",5),
                           "Minimum" = rep("",5),
                           "Maximum" = rep("",5))
@@ -235,7 +236,7 @@ knitr::kable(env_var_tab)
 | **Variable** | **Relationship** |
 | --- | --- |
 | Air temperature |  |
-| Water temperature profile |  |
+| Surface water temperature |  |
 | Nitrogen |  |
 | Underwater PAR |  |
 \
@@ -457,10 +458,10 @@ knitr::kable(mod_sett1)
     \
     *Please copy-paste your Q-23b-plot.png image here.*\
     \
-    c.  `r substr(quest["q23c", ], 3, nchar(quest["q23c", ]))`  
-    \
     *Figure 6. Updated forecast by updating the model parameters for your selected NEON lake site.*
 \
+    c.  `r substr(quest["q23c", ], 3, nchar(quest["q23c", ]))`  
+    \
     **Answer:**  
     \
     *Please copy-paste your Q-23c-plot.png image here.*\

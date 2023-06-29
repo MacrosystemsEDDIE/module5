@@ -537,7 +537,7 @@ color: black;
                                              fluidRow(
                                                column(4,
                                                       h3("Investigate variable relationships"),
-                                                      p("For Q. 7 you will explore the relationship between chlorophyll-a and the other variables at this site."),
+                                                      p("For Q. 6 you will explore the relationship between chlorophyll-a and the other variables at this site. You may or may not discover any relationships between these variables."),
                                                       selectizeInput("x_var", "Select X variable",
                                                                      choices = unique(neon_vars$Short_name),
                                                                      options = list(
@@ -636,6 +636,7 @@ color: black;
                                              p(style="text-align: justify;", "When working with ecological models, the terms 'state variable' and 'parameter' are used. Using the model diagram above, can you identify which are state variables or parameters?"),
                                              p(style="text-align: justify;", module_text["state_var", 1]),
                                              p(style="text-align: justify;", module_text["parameter", 1]),
+                                             p(style="text-align: justify;", module_text["driver", 1]),
                                              fluidRow(
                                                column(12, align = "left",
                                                       box(id = "box7", width = 12, status = "primary",
@@ -740,7 +741,7 @@ color: black;
                                              fluidRow(
                                                column(4, align = "left",
                                                       h3("Explore Initial Conditions"),
-                                                      p("Adjust the slider to values that are within reasonable ranges as seen in the 'Objective 2 - Explore data' tab. Phytoplankton correspond to chlorophyll-a concentrations."),
+                                                      p("Adjust the slider to values that are within the observed range for your lake as seen in the 'Objective 2 - Explore data' tab. It may help to click the 'Add observations to the plots' button to see current chlorophyll-a values, which you can use to inform your choice of initial condition. Phytoplankton correspond to chlorophyll-a concentrations."),
                                                       p(tags$b("Phytoplankton")),
                                                       # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
                                                       sliderInput("phy_ic", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px", alt = "A phytoplankton icon.")),
@@ -1171,11 +1172,7 @@ color: black;
                                                column(3,
                                                       h3("Load Driver Forecasts"),
                                                       actionButton('load_fc2', label = div("Load driver forecasts", icon("download")),
-                                                                   width = "70%"),
-                                                      conditionalPanel("input.load_fc2",
-                                                                       numericInput('members2', 'No. of members (1-30)', 16,
-                                                                                    min = 1, max = 30, step = 1)
-                                                                       )
+                                                                   width = "70%")
                                                ),
                                                column(8,
                                                       wellPanel(

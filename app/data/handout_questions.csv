@@ -20,7 +20,7 @@ q6a,Air temperature
 q6b,Surface water temperature
 q6c,Nitrogen
 q6d,Underwater PAR
-q7,"Q7. Describe the relationship between each of these driving variables and productivity? For example, if the driving variable increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)."
+q7,"Q7. Describe the relationship between each of these driving variables and productivity according to the ecosystem model we are using today (depicted above). For example, if the driving variable increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)."
 q7a,a. Surface water temperature
 q7b,b. Incoming light
 q7c,c. Available nutrients
@@ -35,7 +35,7 @@ q13,Q13. Record the model settings of your best-fit calibrated model in the Q13 
 q14,"Q14. Add the observations to the plot. Calibrate your model by selecting sensitive variables and adjusting the parameters until they best fit the observed data. Save the plot and the parameters, these are what will be used for the forecast."
 q15,Q15. What is forecast uncertainty? How is forecast uncertainty quantified?
 q16,Q16. Inspect the weather forecast data for the site you have chosen:
-q16a,a. How does increasing the number of ensemble members in the weather forecast affect the size of the uncertainty in future weather?
+q16a,a. How does increasing the number of ensemble members in the weather forecast affect your impression of the uncertainty in future weather?
 q16b,"b. Using the interactivity of the weather forecast plot, compare the air temperature forecasts for the first week (Sep 25 - Oct 1) to the second week (Oct 2 - 8). How does the forecast uncertainty change between the two periods? "
 q16c,c. Use the 'Save plot' button to save the NOAA forecast plot and copy-paste it into your final report.
 q17,"Q17. Explain, in your own words, why it is necessary to convert the NOAA forecasts of air temperature and shortwave radiation into forecasts of water temperature and underwater PAR as a step towards generating forecasts of primary productivity."
