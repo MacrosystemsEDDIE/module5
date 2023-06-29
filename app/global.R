@@ -110,7 +110,7 @@ plot_types <- c("Line", "Distribution")
 
 # Sorting variables
 state_vars <- c("Phytoplankton", "Nitrogen")
-process_vars <- c("Mortality", "Uptake")
+process_vars <- c("Mortality rate", "Maximum growth rate")
 
 # Statistics
 stats <- list("Minimum" = "Min.", "Maximum" = "Max.", "Mean" = "Mean")

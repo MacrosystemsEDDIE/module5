@@ -255,7 +255,6 @@ knitr::kable(env_var_tab)
     \
     b.  `r substr(quest["q7b", ], 3, nchar(quest["q7b", ]))`:   
     \
-    c.  `r substr(quest["q7c", ], 3, nchar(quest["q7c", ]))`: 
 \
 
 8. `r substr(quest["q8", ], 5, nchar(quest["q8", ]))` 

@@ -269,7 +269,7 @@ ui <- function(request) {
                                  ),
                           column(6,
                                  h3("Saving your progress"),
-                                 p(style="text-align: justify;", "As you go, fill out answers to questions in the final report Word document. Some of the plots you generate in the Shiny app will be needed for the final report. When prompted, be sure to download these plots you as you work through the app so you can copy-paste them into the final report."),
+                                 p(style="text-align: justify;", "As you go, fill out answers to questions in the final report Word document. Some of the plots you generate in the Shiny app will be needed for the final report. When prompted, be sure to download these plots so you can copy-paste them into the final report."),
                                  p(style="text-align: justify;", "If you run out of time to finish all the activities you can save your progress and return to it at a later date. Click the 'Bookmark my progress' button at the top of the page and you will obtain a link, which you should copy to a secure location. When pasted into your web browser, this link will load a Shiny app session that contains your progress."),
                                  br()
                                  )
@@ -623,7 +623,6 @@ color: black;
                                                                    h4(quest["q7", 1]),
                                                                    p(tags$b(quest["q7a", 1])),
                                                                    p(tags$b(quest["q7b", 1])),
-                                                                   p(tags$b(quest["q7c", 1])),
                                                                    br()
                                                                    )
                                                             )
@@ -633,7 +632,7 @@ color: black;
                                              hr(),
                                              #** Sort state and process variables ----
                                              h2(tags$b("Exercise")),
-                                             p(style="text-align: justify;", "When working with ecological models, the terms 'state variable' and 'parameter' are used. Using the model diagram above, can you identify which are state variables or parameters?"),
+                                             p(style="text-align: justify;", tags$b("Using the model diagram slides above and the text below, can you identify which are state variables or parameters in the model?")),
                                              p(style="text-align: justify;", module_text["state_var", 1]),
                                              p(style="text-align: justify;", module_text["parameter", 1]),
                                              p(style="text-align: justify;", module_text["driver", 1]),

@@ -23,11 +23,10 @@ q6d,Underwater PAR
 q7,"Q7. Describe the relationship between each of these driving variables and productivity according to the ecosystem model we are using today (depicted above). For example, if the driving variable increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)."
 q7a,a. Surface water temperature
 q7b,b. Incoming light
-q7c,c. Available nutrients
 q8,"Q8. Classify the following as either a state variable or a parameter by dragging it into the corresponding bin. Once you have checked your answers, record the correct answers in the final report."
 q9,"Q9. We are using chlorophyll-a as a proxy of aquatic primary productivity. In your final report, describe how you envision each parameter to affect chlorophyll-a concentrations. For example, if the parameter increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)."
-q9a,a. Nutrient uptake by phytoplankton
-q9b,b. Phytoplankton mortality
+q9a,a. Maximum nutrient uptake rate
+q9b,b. Phytoplankton mortality rate
 q10,"Q10. Describe the effect of changing phytoplankton initial conditions on your model run. As you increase or decrease initial conditions, how does this affect modeled primary productivity?"
 q11,"Q11. Describe the effect of changing the phytoplankton mortality parameter on your model run. As you increase or decrease mortality, how does this affect modeled primary productivity?"
 q12,Q12. Copy-paste the plot you downloaded that shows your calibrated model run into your final report.
