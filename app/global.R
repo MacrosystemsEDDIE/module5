@@ -166,7 +166,7 @@ wid_pct3 <- "80%"
 par_df <- data.frame(
   "Phytoplankton" = rep(NA, 1),
   "Mortality" = rep(NA, 1),
-  "Uptake" = rep(NA, 1),
+  "Growth" = rep(NA, 1),
   row.names = c("Current model settings")
 )
 
@@ -176,7 +176,7 @@ fc_par_df <- data.frame(
   "Phytos" = rep(NA, 3),
   "Nitrogen" = rep(NA, 3),
   "Mortality" = rep(NA, 3),
-  "Uptake" = rep(NA, 3), row.names = c("Forecast 1", "Updated Forecast", "Forecast 2")
+  "Growth" = rep(NA, 3), row.names = c("Forecast 1", "Updated Forecast", "Forecast 2")
 )
 
 # Add last update time

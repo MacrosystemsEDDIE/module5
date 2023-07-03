@@ -67,6 +67,7 @@ state_par <- data.frame("States" = rep("",2),
 ### Name: 
 ### Student ID: 
 #### Completed on: 
+#### Copy-paste your save progress link from the Shiny app here for ease of reference:
 ***
 
 # **Macrosystems EDDIE Module 5: Introduction to Ecological Forecasting**
@@ -300,6 +301,8 @@ knitr::kable(state_par)
 \
 13. `r substr(quest["q13", ], 6, nchar(quest["q13", ]))`
 \
+14. `r substr(quest["q14", ], 6, nchar(quest["q14", ]))`
+\
 
 *Table 5. Calibrated primary productivity model settings.*
 ```{r}
@@ -514,6 +517,6 @@ knitr::kable(mod_sett1)
 
 
 
-This module was developed by Moore, T.N., M.E. Lofton, C.C. Carey, and R.Q. Thomas. 22 May 2023. Macrosystems EDDIE: Introduction to Ecological Forecasting. Macrosystems EDDIE Module 5, Version 2. http://module5.macrosystemseddie.org. Module development was supported by NSF grants DEB-1926050 and DBI-1933016.
+This module was developed by Moore, T.N., M.E. Lofton, C.C. Carey, and R.Q. Thomas. 03 July 2023. Macrosystems EDDIE: Introduction to Ecological Forecasting. Macrosystems EDDIE Module 5, Version 2. http://module5.macrosystemseddie.org. Module development was supported by NSF grants DEB-1926050 and DBI-1933016.
 
-This document last modified: 22 May 2023 by MEL.
+This document last modified: 03 July 2023 by MEL.

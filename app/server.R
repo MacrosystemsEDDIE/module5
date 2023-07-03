@@ -1162,7 +1162,7 @@ server <- function(input, output, session) {#
     q13a_table, selection = "none",
     options = list(searching = FALSE, paging = FALSE, ordering = FALSE, dom = "t",
                    height = 500, scrollY = TRUE, autoWidth=TRUE, scrollX = TRUE),
-    server = FALSE, escape = FALSE, rownames= c("Grazing", "Mortality", "Uptake"), colnames = c("Value"),
+    server = FALSE, escape = FALSE, rownames= c("Grazing", "Mortality", "Growth"), colnames = c("Value"),
     callback = JS("table.rows().every(function(i, tab, row) {
                   var $this = $(this.node());
                   $this.attr('id', this.data()[0]);
@@ -1175,7 +1175,7 @@ server <- function(input, output, session) {#
   output$q13b_tab <- DT::renderDT(
     q13b_table, selection = "none",
     options = list(searching = FALSE, paging = FALSE, ordering = FALSE, dom = "t"),
-    server = FALSE, escape = FALSE, rownames= c("Grazing", "Mortality", "Uptake"), colnames = c("Value"),
+    server = FALSE, escape = FALSE, rownames= c("Grazing", "Mortality", "Growth"), colnames = c("Value"),
     callback = JS("table.rows().every(function(i, tab, row) {
                   var $this = $(this.node());
                   $this.attr('id', this.data()[0]);
@@ -1740,7 +1740,7 @@ server <- function(input, output, session) {#
                      when it is finished running.", value = 0.01)
       
       # Parameters from 'Build model'
-      parms[1] <- par_save$value$Uptake[1] # as.numeric(input$nut_uptake)
+      parms[1] <- par_save$value$Growth[1] # as.numeric(input$nut_uptake)
       parms[7] <- par_save$value$Mortality[1] # as.numeric(input$mort_rate)
       
       # Alter Initial conditions
@@ -2581,10 +2581,10 @@ server <- function(input, output, session) {#
              message = paste0("The number of members must be between 1 and 30"))
       )
       validate(
-        need(!is.null(input$nut_uptake2), message = paste0("Select an option for Nitrogen uptake"))
+        need(!is.null(input$nut_uptake2), message = paste0("Select an option for Maximum growth rate"))
       )
       validate(
-        need(!is.null(input$mort_rate2), message = paste0("Select an option for Nitrogen uptake"))
+        need(!is.null(input$mort_rate2), message = paste0("Select an option for Maximum growth rate"))
       )
       
       # shinyjs::disable("update_fc2")
@@ -2780,11 +2780,11 @@ server <- function(input, output, session) {#
   output$comp_pars <- renderDT({
     validate(
       need(!is.na(par_save$value[1, 1]),
-           message = "Save calibrated parameters in Activity A - Objective 5")
+           message = "Save calibrated model settings in Activity A - Objective 5")
     )
-    df <- data.frame("Phytoplankton" = rep(NA, 2), "Mortality" = rep(NA, 2), "Uptake" = rep(NA, 2), row.names = c("Calibrated", "Updated"))
+    df <- data.frame("Phytoplankton" = rep(NA, 2), "Mortality" = rep(NA, 2), "Growth" = rep(NA, 2), row.names = c("Calibrated", "Updated"))
     df[1, ] <- c(par_save$value[1,])
-    df[2, ] <- c(input$phy_init2, input$nut_uptake2, input$mort_rate2)
+    df[2, ] <- c(input$phy_init2, input$mort_rate2, input$nut_uptake2)
 
     datatable(df, rownames = TRUE, options = list(dom = 't'), editable = FALSE)
   })
@@ -3157,7 +3157,7 @@ server <- function(input, output, session) {#
       need(!is.na(par_save$value[1, 1]),
            message = "Save calibrated parameters in Activity A - Objective 5")
     )
-    df <- data.frame("Phytoplankton" = rep(NA, 3), "Mortality" = rep(NA, 3), "Uptake" = rep(NA, 3), row.names = c("Forecast 1", "Updated forecast","Forecast 2"))
+    df <- data.frame("Phytoplankton" = rep(NA, 3), "Mortality" = rep(NA, 3), "Growth" = rep(NA, 3), row.names = c("Forecast 1", "Updated forecast","Forecast 2"))
     df[1, ] <- c(par_save$value[1,])
     df[2, ] <- c(input$phy_init2, input$nut_uptake2, input$mort_rate2)
     df[3, ] <- c(input$phy_init4, input$nut_uptake2, input$mort_rate2)

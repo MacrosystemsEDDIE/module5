@@ -26,25 +26,26 @@ ui <- function(request) {
     fluidPage(
       column(10,
              br(),
-             p(tags$b("Teaching materials associated with this module can be found at http://module5.macrosystemseddie.org."))),
-      column(1, align = "right",
-             br(),
-             introBox(
-               actionButton("help", label = "Help", icon = icon("question-circle")), data.step = 7, data.intro = help_text["help", 1]
-               )
+             p(tags$b("Teaching materials associated with this module can be found at ",
+                      tags$a(href="http://module5.macrosystemseddie.org", 
+                             "http://module5.macrosystemseddie.org.", target="_blank")))
              )
     ),
     navbarPage(title = tags$b("Module 5: Introduction to Ecological Forecasting"),
                position = "static-top", id = "maintab",
                tags$header(
                  fluidRow(
-                   column(3,
+                   column(11,
                           #fileInput("upload_answers", "Resume Progress", accept = c(".eddie", ".rds"))
                           bookmarkButton(id = "bookmarkBtn", label = "Bookmark my progress"),
-                          br(), br()
+                          br(), 
+                          p(tags$em("At any time, use this button to obtain a link that saves your progress."))
                           ),
-                   column(8,
-                          p(tags$em("At any time, use this button to obtain a link that saves your progress.")))
+                   column(1, align = "right",
+                          introBox(
+                            actionButton("help", label = "Help", icon = icon("question-circle")), data.step = 7, data.intro = help_text["help", 1]
+                          )
+                   )
                    )
                  ),
                # 1. Module Overview ----
@@ -741,7 +742,7 @@ color: black;
                                                column(4, align = "left",
                                                       h3("Explore Initial Conditions"),
                                                       p("Adjust the slider to values that are within the observed range for your lake as seen in the 'Objective 2 - Explore data' tab. It may help to click the 'Add observations to the plots' button to see current chlorophyll-a values, which you can use to inform your choice of initial condition. Phytoplankton correspond to chlorophyll-a concentrations."),
-                                                      p(tags$b("Phytoplankton")),
+                                                      p(tags$b("Phytoplankton (ug/L)")),
                                                       # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
                                                       sliderInput("phy_ic", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px", alt = "A phytoplankton icon.")),
                                                                                           div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right", alt = "A phytoplankton icon."))),
@@ -811,7 +812,7 @@ color: black;
                                                       p(style="text-align: justify;", "Now that we have explored the effects of initial conditions and parameters on your model, use the sliders below to obtain as good a calibration as possible to sensor observations."),
                                                       p(style="text-align: justify;", "When you have achieved an acceptable model fit, click 'Save model settings' to save your initial conditions and parameters for use in generating a forecast. Then, click 'Download plot' to download a plot of your best-fitting model for inclusion in your final report."),
                                                       h4("Initial conditions"),
-                                                      p(tags$b("Phytoplankton")),
+                                                      p(tags$b("Phytoplankton (ug/L)")),
                                                       # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
                                                       sliderInput("phy_init", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px", alt = "A phytoplankton icon.")),
                                                                                           div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right", alt = "A phytoplankton icon."))),
@@ -822,10 +823,10 @@ color: black;
                                                                                            div(style='float:left;', tags$em('Lower death')),
                                                                                            div(style='float:right;', tags$em('Higher death'))),
                                                                   min = 0, max = 1, value = 0.5, step = 0.01),
-                                                      p(tags$b("Nutrient uptake (causes growth)")),
+                                                      p(tags$b("Maximum growth rate")),
                                                       sliderInput("nut_uptake", label = div(style='width:300px;',
-                                                                                            div(style='float:left;', tags$em('Low uptake')),
-                                                                                            div(style='float:right;', tags$em('High uptake'))),
+                                                                                            div(style='float:left;', tags$em('Low growth')),
+                                                                                            div(style='float:right;', tags$em('High growth'))),
                                                                   min = 0, max = 1, value = 0.5, step = 0.01),
                                                       br(),
                                                       actionButton("run_mod_ann",
@@ -870,7 +871,8 @@ color: black;
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
                                                                    p(tags$b(quest["q12", 1])),
-                                                                   p(tags$b(quest["q13", 1]))
+                                                                   p(tags$b(quest["q13", 1])),
+                                                                   p(tags$b(quest["q14", 1]))
                                                                    )
                                                             )
                                                           )
@@ -918,6 +920,9 @@ color: black;
                                                       p(style="text-align: justify;", "Uncertainty comes from natural variability in the environment and imperfect knowledge of an ecological system. When generating a forecast, uncertainty can come from the ", tags$b("structure"), " of the model used, the ", tags$b("initial conditions")," of the model, the ", tags$b("parameters"), " of the model, and the ", tags$b("data")," used to drive the model, among other sources."),
                                                       h4("Why is uncertainty important to quantify for a forecast?"),
                                                       p(style="text-align: justify;", "Knowing the uncertainty in a forecast allows forecast users to make informed decisions based on the range of forecasted outcomes and prepare accordingly."),
+                                                      h4(tags$b("To learn more about forecast uncertainty, explore ",
+                                                               tags$a(href="http://module6.macrosystemseddie.org", 
+                                                                      "Macrosystems EDDIE Module 6: Understanding Uncertainty in Ecological Forecasts.", target="_blank"))),
                                                       br()
                                                ),
                                                column(6, align = "center",
@@ -1171,7 +1176,13 @@ color: black;
                                                column(3,
                                                       h3("Load Driver Forecasts"),
                                                       actionButton('load_fc2', label = div("Load driver forecasts", icon("download")),
-                                                                   width = "70%")
+                                                                   width = "70%"),
+                                                      br(),
+                                                      br(),
+                                                      conditionalPanel("input.load_fc2",
+                                                                       numericInput('members2', 'No. of members (1-30)', 16,
+                                                                                    min = 1, max = 30, step = 1)
+                                                      )
                                                ),
                                                column(8,
                                                       wellPanel(
@@ -1183,8 +1194,8 @@ color: black;
                                                fluidRow(
                                                  column(3,
                                                       h3("Set initial conditions"),
-                                                      p(style="text-align: justify;", "Use the plot here, which shows measurements of  Chorophyll-a, to select and update your initial conditions before running your forecast. It is often best that your initial conditions correspond closely to the most recent observations."),
-                                                      p(tags$b("Phytoplankton")),
+                                                      p(style="text-align: justify;", "Use the plot here, which shows measurements of  Chorophyll-a, to select and update the initial conditions of your model before running your forecast. It is often best that the initial, or starting, conditions of your model correspond closely to the most recent observations to produce an accurate forecast."),
+                                                      p(tags$b("Phytoplankton (ug/L)")),
                                                       # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
                                                       sliderInput("phy_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px", alt = "A phytoplankton icon.")),
                                                                                            div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right", alt = "A phytoplankton icon."))),
@@ -1254,7 +1265,17 @@ color: black;
                                                ),
                                              fluidRow(
                                                column(6,
-                                                      p("Communicating a forecast is an important part of forecasting and the method of communication needs to be tailored to your target audience (e.g., the general public, natural resource managers, farmers, etc.)")
+                                                      h3("Effective Forecast Communication"),
+                                                      p("Communicating a forecast is an important part of forecasting and the method of communication needs to be tailored to your target audience (e.g., the general public, natural resource managers, farmers, etc.)."),
+                                                      h4("Important considerations for forecast communication"),
+                                                      tags$ul(
+                                                        tags$li(tags$b("What decision will the user of a forecast be making based on forecast information?"), "For example, a local resident might use a water temperature forecast to decide whether to go swimming, while a water manager may use it to make decisions about water releases from a dam to downstream."),
+                                                        tags$li(tags$b("Exactly what information is needed to make this decision?"), "For example, a swimmer likely only needs a water temperature forecast at the surface, while a water manager might be interested in water temperature across the entire depth of a lake."),
+                                                        tags$li(tags$b("How is forecast uncertainty communicated?"), "Forecast uncertainty can be challenging to communicate in a clear, concise way, but an accurate representation of uncertainty is critical for good decision-making.")
+                                                      ),
+                                                      h4(tags$b("To learn more about forecast communication and decision-making, explore ",
+                                                                tags$a(href="http://module8.macrosystemseddie.org", 
+                                                                       "Macrosystems EDDIE Module 8: Using Ecological Forecasts to Guide Decision Making.", target="_blank")))
                                                ),
                                                column(6, align = "center",
                                                       img(src = "05-communicate-forecast.png",
@@ -1464,7 +1485,7 @@ color: black;
                                              ),
                                              fluidRow(
                                                column(6,
-                                                      h3("Update Model"),
+                                                      h3("Update Model Parameters"),
                                                       p(style="text-align: justify;", "One of the best things about ecological forecasting is that it allows us to test our hypotheses about how the world works (as described by our model). If there is a poor fit between our forecast and observed data, our model may not be accurately capturing environmental processes."),
                                                       p(style="text-align: justify;", "One of the mechanisms causing a poor fit could be the parameter values. To update the model, adjust the parameters to see if you can improve the forecast for the previous week, before we make another forecast into the future.")
                                                ),
@@ -1484,10 +1505,10 @@ color: black;
                                                                                             div(style='float:left;', tags$em('Lower death')),
                                                                                             div(style='float:right;', tags$em('Higher death'))),
                                                                   min = 0, max = 1, value = 0.5, step = 0.01),
-                                                      p(tags$b("Nutrient uptake (causes growth)")),
+                                                      p(tags$b("Maximum growth rate")),
                                                       sliderInput("nut_uptake2", label = div(style='width:300px;',
-                                                                                             div(style='float:left;', tags$em('Low uptake')),
-                                                                                             div(style='float:right;', tags$em('High uptake'))),
+                                                                                             div(style='float:left;', tags$em('Low growth')),
+                                                                                             div(style='float:right;', tags$em('High growth'))),
                                                                   min = 0, max = 1, value = 0.5, step = 0.01),
                                                       br(),
                                                       p("Re-run your forecast with the updated parameters."),
@@ -1503,7 +1524,8 @@ color: black;
                                                         tags$style(type="text/css", "#save_update_fc_plot {background-color:#9ECBB5;color: black}"),
                                                         downloadButton("save_update_fc_plot", "Save plot", icon = icon("save"))
                                                       ),
-                                                      h4("Table of parameters"),
+                                                      h4("Table of model settings"),
+                                                      p(tags$em("Note that the phytoplankton initial condition is carried over from previous objectives. You will have an opportunity to adjust your initial condition in the next objective when you make a second forecast.")),
                                                       DTOutput("comp_pars", width = "50%")
                                                )
                                              ),
@@ -1566,12 +1588,31 @@ color: black;
                                                )
                                              ),
                                              fluidRow(
+                                               column(6,
+                                                      h3("Generating a New Forecast"),
+                                                      p(style="text-align: justify;", "Before generating a new forecast, we must complete two steps:"),
+                                                      h4("1. Assimilate new data"),
+                                                      p(style="text-align: justify;", "The process of updating our model initial conditions and parameters as new observations become available is known as ",tags$b("data assimilation.")),
+                                                      p(style="text-align: justify;", "Data assimilation can be accomplished using a variety of methods, and has been shown to improve accuracy across many forecasting contexts."),
+                                                      h4(tags$b("To learn more about data assimilation, explore ",
+                                                                tags$a(href="http://module7.macrosystemseddie.org", 
+                                                                       "Macrosystems EDDIE Module 7: Using Data to Improve Ecological Forecasts.", target="_blank"))) ,
+                                                      h4("2. Update driver forecasts"),
+                                                      p(style="text-align: justify;", "As new forecasts of air temperature and shortwave radiation are issued by NOAA, we will update the driver forecasts of water temperature and underwater PAR.")
+                                               ),
+                                               column(6, align = "center",
+                                                      img(src = "07-update-model.png",
+                                                          height = "70%",
+                                                          width = "70%", alt = "A diagram showing the steps within the ecological forecast cycle.")
+                                               )
+                                             ), br(), hr(),
+                                             fluidRow(
                                                column(4,
                                                       h3("Next Forecast"),
                                                       p(style="text-align: justify;", "With an updated model, we can now generate the next forecast driven by a new weather forecast"),
                                                       h4("Initial conditions"),
                                                       p(style="text-align: justify;", "Don't forget to update the initial conditions based on the latest observed data which are shown in the plot."),
-                                                      p(tags$b("Phytoplankton")),
+                                                      p(tags$b("Phytoplankton (ug/L)")),
                                                       # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
                                                       sliderInput("phy_init4", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px", alt = "A phytoplankton icon.")),
                                                                                            div(style='float:right;', img(src = "phytos.png", height = "50px", width = "50px", align = "right", alt = "A phytoplankton icon."))),

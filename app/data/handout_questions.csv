@@ -25,13 +25,13 @@ q7a,a. Surface water temperature
 q7b,b. Incoming light
 q8,"Q8. Classify the following as either a state variable or a parameter by dragging it into the corresponding bin. Once you have checked your answers, record the correct answers in the final report."
 q9,"Q9. We are using chlorophyll-a as a proxy of aquatic primary productivity. In your final report, describe how you envision each parameter to affect chlorophyll-a concentrations. For example, if the parameter increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)."
-q9a,a. Maximum nutrient uptake rate
+q9a,a. Maximum growth rate
 q9b,b. Phytoplankton mortality rate
 q10,"Q10. Describe the effect of changing phytoplankton initial conditions on your model run. As you increase or decrease initial conditions, how does this affect modeled primary productivity?"
 q11,"Q11. Describe the effect of changing the phytoplankton mortality parameter on your model run. As you increase or decrease mortality, how does this affect modeled primary productivity?"
 q12,Q12. Copy-paste the plot you downloaded that shows your calibrated model run into your final report.
-q13,Q13. Record the model settings of your best-fit calibrated model in the Q13 table.
-q14,"Q14. Add the observations to the plot. Calibrate your model by selecting sensitive variables and adjusting the parameters until they best fit the observed data. Save the plot and the parameters, these are what will be used for the forecast."
+q13,"Q13. Referring to the plot that shows your calibrated model, describe in your own words how well the model fits the data."
+q14,Q14. Record the model settings of your best-fit calibrated model in the Q14 table.
 q15,Q15. What is forecast uncertainty? How is forecast uncertainty quantified?
 q16,Q16. Inspect the weather forecast data for the site you have chosen:
 q16a,a. How does increasing the number of ensemble members in the weather forecast affect your impression of the uncertainty in future weather?
@@ -40,7 +40,7 @@ q16c,c. Use the 'Save plot' button to save the NOAA forecast plot and copy-paste
 q17,"Q17. Explain, in your own words, why it is necessary to convert the NOAA forecasts of air temperature and shortwave radiation into forecasts of water temperature and underwater PAR as a step towards generating forecasts of primary productivity."
 q18,Q18. Use the 'Save plot' button to save the plot of your forecast and copy-paste it into your final report.
 q19,Q19. Examine the plot depicting your forecast.
-q19a,"a. How does driver uncertainty affect the forecast, and specifically, how does the forecast uncertainty change over time?"
+q19a,"a. Under 'Load Driver Forecasts', remove the effect of driver uncertainty on your forecast by adjusting the number of ensemble members to 1, and re-run your forecast. Then, adjust the number of ensemble members to 30 and re-run the forecast. How does including driver uncertainty affect the forecast?"
 q19b,b. How does altering the initial condition of your forecast affect forecast output?
 q20,Q20. How would you describe your forecast of primary productivity at your NEON site so it could be understood by a fellow classmate?
 q21,Q21. Examine the example forecast visualizations below. 

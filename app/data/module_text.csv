@@ -30,7 +30,7 @@ obj_08,Use forecasted water temperature and uPAR and up-to-date initial conditio
 obj_09,Forecasts that are effectively communicated to the public and managers will be most useful for aiding decision-making. Here you will think about how to communicate your forecast to an end-user.
 obj_10,A fundamental part of the forecast cycle is assessing how well your forecast performed relative to observations. Here we will use a simple assessment of plotting forecast results against observations.
 obj_11,Update our model/hypothesis to improve our forecasts based on the recent observations that have been collected. 
-obj_12,"The forecast cycle is an iterative process. Now after communicating and assessing our forecast and updating our model, we will generate the next forecast. "
+obj_12,"The forecast cycle is an iterative process. Now after communicating and assessing our forecast and updating our model parameters, we will update our driver forecasts and and initial conditions to generate the next forecast. "
 obj_13, Make a hypothesis about how you expect your model to forecast primary productivitiy at a different NEON site. Then test your hypothesis by repeating Activity A Objectives 1 & 5 and Activity B with the other NEON site.
 weather_forecast2,"Weather forecasts are created using multiple runs from the same model, but the initial conditions of the model are altered to generate different potential futures."
 model1,"A model is a representation (physical, conceptual or mathematical) of a real phenomenon that is difficult to observe directly."
