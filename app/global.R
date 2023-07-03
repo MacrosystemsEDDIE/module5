@@ -1,3 +1,6 @@
+# Enable bookmarking
+enableBookmarking(store = "url")
+
 # Load required libraries
 suppressPackageStartupMessages(library(shiny, quietly = TRUE)); library(shinycssloaders)
 suppressPackageStartupMessages(library(shinyjs, quietly = TRUE, warn.conflicts = FALSE))
@@ -9,7 +12,7 @@ library(ncdf4); library(reshape, quietly = TRUE, warn.conflicts = FALSE)
 library(sortable)
 # remotes::install_github('yonicd/slickR') # removed from CRAN - now only on GitHub
 library(slickR); library(tinytex); library(rvest, quietly = TRUE, warn.conflicts = FALSE)
-library(rLakeAnalyzer); library(LakeMetabolizer);
+library(rLakeAnalyzer)
 library(DT, quietly = TRUE, warn.conflicts = FALSE); library(rintrojs); library(hover)
 library(stringr); library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
 library(RColorBrewer); library(ggpubr); library(readr); library(shinyBS); library(httr)
@@ -107,10 +110,10 @@ plot_types <- c("Line", "Distribution")
 
 # Sorting variables
 state_vars <- c("Phytoplankton", "Nitrogen")
-process_vars <- c("Mortality", "Uptake")
+process_vars <- c("Mortality rate", "Maximum growth rate")
 
 # Statistics
-stats <- list("Minimum" = "Min.", "1st Quartile" = "1st Qu.", "Median" = "Median", "Mean" = "Mean", "3rd Quartile" = "3rd Qu.", "Maximum" = "Max.", "Standard Deviation" = "sd")
+stats <- list("Minimum" = "Min.", "Maximum" = "Max.", "Mean" = "Mean")
 
 # Parameters for NP model
 parms <- c(
@@ -132,8 +135,8 @@ calib_model_png <- gsub("www/", "", list.files("www/calib_model/", full.names = 
 
 # Initial conditions for NP
 yini <- c(
-  PHYTO = 2, #mmolN m-3
-  DIN = 9) #mmolN m-3
+  PHYTO = 0.032258, #mmolN m-3; these are derived from default values on sliders
+  DIN = 4.03225) #mmolN m-3
 
 # Load parameters and initial conditions
 site_parms <- read.csv("data/params_site_NP_model.csv", fileEncoding = "UTF-8-BOM")
@@ -151,23 +154,20 @@ q6_table <- data.frame(
 
 wid_pct2 <- "100%"
 q7_table <- data.frame(
-  relationship = c(as.character(textAreaInput(inputId = "q7a", "" , width = wid_pct2)),
-                   as.character(textAreaInput(inputId = "q7b", "" , width = wid_pct2)),
-                   as.character(textAreaInput(inputId = "q7c", "" , width = wid_pct2)),
-                   as.character(textAreaInput(inputId = "q7d", "" , width = wid_pct2)))
+  relationship = c(as.character(p("" , width = wid_pct2)),
+                   as.character(p("" , width = wid_pct2)),
+                   as.character(p("" , width = wid_pct2)),
+                   as.character(p("" , width = wid_pct2)))
 )
 
-mod_choices <- c("Negative", "No change", "Positive")
 
 wid_pct3 <- "80%"
 
 par_df <- data.frame(
-  "SWT" = rep(NA, 5),
-  "uPAR" = rep(NA, 5),
-  "Phytos" = rep(NA, 5),
-  "Nitrogen" = rep(NA, 5),
-  "Mortality" = rep(NA, 5),
-  "Uptake" = rep(NA, 5), row.names = c("Q12", "Q13a", "Q13b", "Q14", "Q15")
+  "Phytoplankton" = rep(NA, 1),
+  "Mortality" = rep(NA, 1),
+  "Growth" = rep(NA, 1),
+  row.names = c("Current model settings")
 )
 
 fc_par_df <- data.frame(
@@ -176,7 +176,7 @@ fc_par_df <- data.frame(
   "Phytos" = rep(NA, 3),
   "Nitrogen" = rep(NA, 3),
   "Mortality" = rep(NA, 3),
-  "Uptake" = rep(NA, 3), row.names = c("Forecast 1", "Updated Forecast", "Forecast 2")
+  "Growth" = rep(NA, 3), row.names = c("Forecast 1", "Updated Forecast", "Forecast 2")
 )
 
 # Add last update time

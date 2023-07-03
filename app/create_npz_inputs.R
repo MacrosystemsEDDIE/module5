@@ -7,7 +7,7 @@ create_npz_inputs <- function(time, PAR = NULL, swr = NULL, temp = NULL) {
   
   # PAR calculations ----
   if(is.null(PAR) & !is.null(swr)) {
-    PAR <- LakeMetabolizer::sw.to.par.base(swr)
+    PAR <- swr*2.114
   }
   
   if(is.null(PAR) & is.null(swr)) {
