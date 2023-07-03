@@ -1674,7 +1674,8 @@ color: black;
                                              fluidRow(
                                                column(12,
                                                       h2("Completed Module!"),
-                                                      p("This is the end of the module. Please check through the answers in your final report and be sure you have copy-pasted in all the required plots before you submit to your instructor.")
+                                                      p("This is the end of the module. Please check through the answers in your final report and be sure you have copy-pasted in all the required plots before you submit to your instructor."),
+                                                      p("Your instructor may ask you to prepare a short presentation of your productivity forecasts to share with other students in the class. This will permit you to compare how productivity forecasts perform among lakes in different eco-regions.")
                                                )
                                              )
                                     ) #end Obj 12 
