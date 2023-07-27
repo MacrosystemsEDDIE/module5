@@ -3483,8 +3483,11 @@ server <- function(input, output, session) {#
       idx2 <- which(tab_names$tab_id == curr_obj)
       new_nam <- tab_names$name[idx2 + 1]    } 
     if(curr_tab1 == "mtab6" & rv3a$nxt > 12) {
-      updateActionButton(session, inputId = "nextBtn1", label = paste("Next >"))
-    } else {
+      updateActionButton(session, inputId = "nextBtn1", label = paste("End of module"))
+    } else if(curr_tab1 == "mtab1") {
+      updateActionButton(session, inputId = "prevBtn1", label = paste("Module begins"))
+    }
+      else {
       # shinyjs::show(id = "nextBtn1")
       updateActionButton(session, inputId = "nextBtn1", label = paste(new_nam, ">"))
     }
