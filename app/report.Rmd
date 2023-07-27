@@ -271,7 +271,7 @@ knitr::kable(state_par)
 
 ***
 
-9. `r substr(quest["q9", ], 6, nchar(quest["q9", ]))`  
+9. `r substr(quest["q9", ], 5, nchar(quest["q9", ]))`  
 \
 **Answer:** 
 
@@ -446,7 +446,7 @@ knitr::kable(mod_sett1)
     \
     **Answer:**   
     \
-    *Please copy-paste your Q-23b-plot.png image here.*\
+    *Please copy-paste your Q-22b-plot.png image here.*\
     \
     *Figure 6. Updated forecast by updating the model parameters for your selected NEON lake site.*
 \
