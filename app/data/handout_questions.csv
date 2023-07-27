@@ -1,61 +1,60 @@
 q_no,Question
 q1,"Q1. How have you used forecasts (ecological, political, sports, any kind!) before in your day-to-day life?"
 q2,Q2. How can ecological forecasts improve both natural resource management and ecological understanding?
-q3,Q3. How do you think forecasts of freshwater primary productivity will differ between warmer lakes and colder lakes?
-q4,Q4. Fill out information about your selected NEON site:
-q4a,a. Name of selected site
-q4b,b. Four letter site identifier
-q4c,c. Latitude
-q4d,d. Longitude
-q4e,e. Lake area (km2)
-q4f,f. Elevation (m)
-q5,Q5. Fill out the table in your Word document with the description of site variables:
+q3,Q3. Fill out information about your selected NEON site:
+q3a,a. Name of selected site
+q3b,b. Four letter site identifier
+q3c,c. Latitude
+q3d,d. Longitude
+q3e,e. Lake area (km2)
+q3f,f. Elevation (m)
+q4,Q4. Fill out the table in your Word document with the description of site variables:
+q4a,Air temperature
+q4b,Surface water temperature
+q4c,Nitrogen
+q4d,Underwater PAR
+q4e,Chlorophyll-a
+q5,"Q5. Describe the effect of each of the following variables on chlorophyll-a. Chlorophyll-a (chl-a) is used as a proxy measurement for phytoplankton concentration and primary productivity in aquatic environments. For each variable, write in the table whether increases in that variable are associated with increases in chl-a (positive relationship), decreases in chl-a (negative relationship), or no change in chl-a (no relationship). "
 q5a,Air temperature
 q5b,Surface water temperature
 q5c,Nitrogen
 q5d,Underwater PAR
-q5e,Chlorophyll-a
-q6,"Q6. Describe the effect of each of the following variables on chlorophyll-a. Chlorophyll-a (chl-a) is used as a proxy measurement for phytoplankton concentration and primary productivity in aquatic environments. For each variable, write in the table whether increases in that variable are associated with increases in chl-a (positive relationship), decreases in chl-a (negative relationship), or no change in chl-a (no relationship). "
-q6a,Air temperature
-q6b,Surface water temperature
-q6c,Nitrogen
-q6d,Underwater PAR
-q7,"Q7. Describe the relationship between each of these driving variables and productivity according to the ecosystem model we are using today (depicted above). For example, if the driving variable increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)."
-q7a,a. Surface water temperature
-q7b,b. Incoming light
-q8,"Q8. Classify the following as either a state variable or a parameter by dragging it into the corresponding bin. Once you have checked your answers, record the correct answers in the final report."
-q9,"Q9. We are using chlorophyll-a as a proxy of aquatic primary productivity. In your final report, describe how you envision each parameter to affect chlorophyll-a concentrations. For example, if the parameter increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)?"
-q9a,a. Maximum growth rate
-q9b,b. Phytoplankton mortality rate
-q10,"Q10. Describe the effect of changing phytoplankton initial conditions on your model run. As you increase or decrease initial conditions, how does this affect modeled primary productivity?"
-q11,"Q11. Describe the effect of changing the phytoplankton mortality parameter on your model run. As you increase or decrease mortality, how does this affect modeled primary productivity?"
-q12,Q12. Copy-paste the plot you downloaded that shows your calibrated model run into your final report by clicking 'Save plot'.
-q13,"Q13. Referring to the plot that shows your calibrated model, describe in your own words how well the model fits the data."
-q14,Q14. Record the model settings of your best-fit calibrated model in the Q14 table in your Word document.
-q15,Q15. What is forecast uncertainty? How is forecast uncertainty quantified?
-q16,Q16. Inspect the weather forecast data for the site you have chosen:
-q16a,a. How does increasing the number of ensemble members in the weather forecast affect your understanding of the magnitude of uncertainty in future weather?
-q16b,b. Compare the air temperature forecasts for the first week (Sep 25 - Oct 1) to the second week (Oct 2 - 8). How does the forecast uncertainty change between the two periods? 
-q16c,c. Use the 'Save plot' button to save the NOAA forecast plot and copy-paste it into your final report.
-q17,"Q17. Explain, in your own words, why it is necessary to convert the NOAA forecasts of air temperature and shortwave radiation into forecasts of water temperature and underwater PAR as a step towards generating forecasts of primary productivity."
-q18,Q18. Use the 'Save plot' button to save the plot of your forecast and copy-paste it into your final report.
-q19,Q19. Examine the plot depicting your forecast.
-q19a,"a. Under 'Load Driver Forecasts', remove the effect of driver uncertainty on your forecast by adjusting the number of ensemble members to 1, and re-run your forecast. Then, adjust the number of ensemble members to 30 and re-run the forecast. How does including driver uncertainty affect the forecast?"
-q19b,b. How does altering the initial condition of your forecast affect forecast output?
-q20,Q20. How would you communicate your forecast of primary productivity at your NEON site so it could be understood by a fellow classmate?
-q21,Q21. Examine the example forecast visualizations below. 
-q21a,"a. Which of these four visualizations do you think most effectively communicates your forecast, and why?"
-q21b,b. Download and copy-paste the visualization that you think best communicates your forecast into your final report.
-q22,Q22. Examine the predicted vs. observed plot as well as the value of R2.
-q22a,a. How well did your forecast do compared to observations?
-q22b,b. Download and copy-paste the forecasted vs. observed plot into your final report.
-q23,Q23. Complete the following steps to document your forecast updating process.
-q23a,a. Record your original and updated model settings in the Q23 table in your final report.
-q23b,b. Download and copy-paste your updated forecast plot into your final report.
-q23c,c. Download and copy-paste the plot assessing your updated forecast into your final report.
-q23d,d. Were you able to successfully improve your forecast by updating your model parameters? Explain what you did and how you know whether your forecast has improved.
-q24,Q24. Document and describe the new forecast of primary productivity.
-q24a,a. Record all your model settings in the Q24 table in your final report.
-q24b,b. Download and copy-paste the plot of your second forecast into your final report.
-q24c,c. Describe the new forecast of primary productivity.
-q25,Q25. Why is the forecast cycle described as 'iterative' (i.e. repetition of a process)?
+q6,"Q6. Describe the relationship between each of these driving variables and productivity according to the ecosystem model we are using today (depicted above). For example, if the driving variable increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)."
+q6a,a. Surface water temperature
+q6b,b. Incoming light
+q7,"Q7. Classify the following as either a state variable or a parameter by dragging it into the corresponding bin. Once you have checked your answers, record the correct answers in the final report."
+q8,"Q8. We are using chlorophyll-a as a proxy of aquatic primary productivity. In your final report, describe how you envision each parameter to affect chlorophyll-a concentrations. For example, if the parameter increases, will it cause productivity to increase (positive), decrease (negative), or have no effect (stay the same)?"
+q8a,a. Maximum growth rate
+q8b,b. Phytoplankton mortality rate
+q9,"Q9. Describe the effect of changing phytoplankton initial conditions on your model run. As you increase or decrease initial conditions, how does this affect modeled primary productivity?"
+q10,"Q10. Describe the effect of changing the phytoplankton mortality parameter on your model run. As you increase or decrease mortality, how does this affect modeled primary productivity?"
+q11,Q11. Copy-paste the plot you downloaded that shows your calibrated model run into your final report by clicking 'Save plot'.
+q12,"Q12. Referring to the plot that shows your calibrated model, describe in your own words how well the model fits the data."
+q13,Q13. Record the model settings of your best-fit calibrated model in the Q13 table in your Word document.
+q14,Q14. What is forecast uncertainty? How is forecast uncertainty quantified?
+q15,Q15. Inspect the weather forecast data for the site you have chosen:
+q15a,a. How does increasing the number of ensemble members in the weather forecast affect your understanding of the magnitude of uncertainty in future weather?
+q15b,b. Compare the air temperature forecasts for the first week (Sep 25 - Oct 1) to the second week (Oct 2 - 8). How does the forecast uncertainty change between the two periods? 
+q15c,c. Use the 'Save plot' button to save the NOAA forecast plot and copy-paste it into your final report.
+q16,"Q16. Explain, in your own words, why it is necessary to convert the NOAA forecasts of air temperature and shortwave radiation into forecasts of water temperature and underwater PAR as a step towards generating forecasts of primary productivity."
+q17,Q17. Use the 'Save plot' button to save the plot of your forecast and copy-paste it into your final report.
+q18,Q18. Examine the plot depicting your forecast.
+q18a,"a. Under 'Load Driver Forecasts', remove the effect of driver uncertainty on your forecast by adjusting the number of ensemble members to 1, and re-run your forecast. Then, adjust the number of ensemble members to 30 and re-run the forecast. How does including driver uncertainty affect the forecast?"
+q18b,b. How does altering the initial condition of your forecast affect forecast output?
+q19,Q19. How would you communicate your forecast of primary productivity at your NEON site so it could be understood by a fellow classmate?
+q20,Q20. Examine the example forecast visualizations below. 
+q20a,"a. Which of these four visualizations do you think most effectively communicates your forecast, and why?"
+q20b,b. Download and copy-paste the visualization that you think best communicates your forecast into your final report.
+q21,Q21. Examine the predicted vs. observed plot as well as the value of R2.
+q21a,a. How well did your forecast do compared to observations?
+q21b,b. Download and copy-paste the forecasted vs. observed plot into your final report.
+q22,Q22. Complete the following steps to document your forecast updating process.
+q22a,a. Record your original and updated model settings in the Q22 table in your final report.
+q22b,b. Download and copy-paste your updated forecast plot into your final report.
+q22c,c. Download and copy-paste the plot assessing your updated forecast into your final report.
+q22d,d. Were you able to successfully improve your forecast by updating your model parameters? Explain what you did and how you know whether your forecast has improved.
+q23,Q23. Document and describe the new forecast of primary productivity.
+q23a,a. Record all your model settings in the Q23 table in your final report.
+q23b,b. Download and copy-paste the plot of your second forecast into your final report.
+q23c,c. Describe the new forecast of primary productivity.
+q24,Q24. Why is the forecast cycle described as 'iterative' (i.e. repetition of a process)?

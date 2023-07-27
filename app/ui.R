@@ -289,8 +289,7 @@ ui <- function(request) {
                                                 p(tags$b(quest["q1", 1])),
                                                 data.step = 5, data.intro = help_text["questions", 1]
                                               ),
-                                              p(tags$b(quest["q2", 1], width = "90%")),
-                                              p(tags$b(quest["q3", 1], width = "90%"))
+                                              p(tags$b(quest["q2", 1], width = "90%"))
                                               )
                                        )
                                      )
@@ -419,20 +418,20 @@ color: black;
                                                           fluidRow(
                                                             column(7, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q4", 1]),
+                                                                   h4(quest["q3", 1]),
                                                                    p("If the information for your lake is not on the NEON website then you can input NA (Not Available) into the text box.")
                                                                    )
                                                             ),
                                                           fluidRow(
                                                             column(4, offset = 1, align = "left", style = paste0("background: ", ques_bg),
-                                                                   p(tags$b(quest["q4a", 1] , width = "90%")),
-                                                                   p(tags$b(quest["q4b", 1], width = "90%")),
-                                                                   p(tags$b(quest["q4c", 1], width = "90%"))
+                                                                   p(tags$b(quest["q3a", 1] , width = "90%")),
+                                                                   p(tags$b(quest["q3b", 1], width = "90%")),
+                                                                   p(tags$b(quest["q3c", 1], width = "90%"))
                                                             ),
                                                             column(4, offset = 1, align = "left", style = paste0("background: ", ques_bg),
-                                                                   p(tags$b(quest["q4d", 1] , width = "90%")),
-                                                                   p(tags$b(quest["q4e", 1], width = "90%")),
-                                                                   p(tags$b(quest["q4f", 1], width = "90%"))
+                                                                   p(tags$b(quest["q3d", 1] , width = "90%")),
+                                                                   p(tags$b(quest["q3e", 1], width = "90%")),
+                                                                   p(tags$b(quest["q3f", 1], width = "90%"))
                                                                    )
                                                             )
                                                           )
@@ -502,7 +501,7 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q5", 1]),
+                                                                   h4(quest["q4", 1]),
                                                                    DTOutput("q6_tab"),
                                                                    br()
                                                                    )
@@ -538,7 +537,7 @@ color: black;
                                              fluidRow(
                                                column(4,
                                                       h3("Investigate variable relationships"),
-                                                      p("For Q. 6 you will explore the relationship between chlorophyll-a and the other variables at this site. You may or may not discover any relationships between these variables."),
+                                                      p("For Q. 5 you will explore the relationship between chlorophyll-a and the other variables at this site. You may or may not discover any relationships between these variables."),
                                                       selectizeInput("x_var", "Select X variable",
                                                                      choices = unique(neon_vars$Short_name),
                                                                      options = list(
@@ -561,7 +560,7 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q6", 1]),
+                                                                   h4(quest["q5", 1]),
                                                                    DTOutput('q7_tab'),
                                                                    br()
                                                                    )
@@ -621,9 +620,9 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q7", 1]),
-                                                                   p(tags$b(quest["q7a", 1])),
-                                                                   p(tags$b(quest["q7b", 1])),
+                                                                   h4(quest["q6", 1]),
+                                                                   p(tags$b(quest["q6a", 1])),
+                                                                   p(tags$b(quest["q6b", 1])),
                                                                    br()
                                                                    )
                                                             )
@@ -644,7 +643,7 @@ color: black;
                                                           fluidRow(
                                                             column(8, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q8", 1]),
+                                                                   h4(quest["q7", 1]),
                                                                    bucket_list(
                                                                      header = "",
                                                                      group_name = "bucket_list_group",
@@ -666,9 +665,9 @@ color: black;
                                                                      )
                                                                    ),
                                                                    br(),
-                                                                   h4(quest["q9", 1]),
-                                                                   p(tags$b(quest["q9a", 1])),
-                                                                   p(tags$b(quest["q9b", 1])),
+                                                                   h4(quest["q8", 1]),
+                                                                   p(tags$b(quest["q8a", 1])),
+                                                                   p(tags$b(quest["q8b", 1])),
                                                                    br()
                                                             ),
                                                             column(2,
@@ -757,7 +756,7 @@ color: black;
                                                           fluidRow(
                                                           column(10, offset = 1,
                                                                  h3("Question"),
-                                                                 p(tags$b(quest["q10", 1]))
+                                                                 p(tags$b(quest["q9", 1]))
                                                           )
                                                         )
                                                       ),
@@ -791,7 +790,7 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Question"),
-                                                                   p(tags$b(quest["q11", 1]))
+                                                                   p(tags$b(quest["q10", 1]))
                                                             )
                                                           )
                                                       ),
@@ -870,9 +869,9 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
+                                                                   p(tags$b(quest["q11", 1])),
                                                                    p(tags$b(quest["q12", 1])),
-                                                                   p(tags$b(quest["q13", 1])),
-                                                                   p(tags$b(quest["q14", 1]))
+                                                                   p(tags$b(quest["q13", 1]))
                                                                    )
                                                             )
                                                           )
@@ -966,7 +965,7 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q15", 1]),
+                                                                   h4(quest["q14", 1]),
                                                                    br()
                                                                    )
                                                             )
@@ -1010,10 +1009,10 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q16", 1]),
-                                                                   p(tags$b(quest["q16a", 1], width = "90%")),
-                                                                   p(tags$b(quest["q16b", 1], width = "90%")),
-                                                                   p(tags$b(quest["q16c", 1], width = "90%"))
+                                                                   h4(quest["q15", 1]),
+                                                                   p(tags$b(quest["q15a", 1], width = "90%")),
+                                                                   p(tags$b(quest["q15b", 1], width = "90%")),
+                                                                   p(tags$b(quest["q15c", 1], width = "90%"))
                                                             )
                                                             )
                                                           )
@@ -1131,7 +1130,7 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q17", 1])
+                                                                   h4(quest["q16", 1])
                                                             )
                                                           )
                                                       )
@@ -1236,10 +1235,10 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
+                                                                   h4(quest["q17", 1]),
                                                                    h4(quest["q18", 1]),
-                                                                   h4(quest["q19", 1]),
-                                                                   p(tags$b(quest["q19a", 1], width = "90%")),
-                                                                   p(tags$b(quest["q19b", 1], width = "90%")),
+                                                                   p(tags$b(quest["q18a", 1], width = "90%")),
+                                                                   p(tags$b(quest["q18b", 1], width = "90%")),
                                                                    br()
                                                                    )
                                                             )
@@ -1291,7 +1290,7 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h4("Question"),
-                                                                   p(tags$b(quest["q20", 1])),
+                                                                   p(tags$b(quest["q19", 1])),
                                                                    br()
                                                                    )
                                                             )
@@ -1311,9 +1310,9 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Question"),
-                                                                   h4(quest["q21", 1]),
-                                                                   p(tags$b(quest["q21a", 1])),
-                                                                   p(tags$b(quest["q21b", 1])),
+                                                                   h4(quest["q20", 1]),
+                                                                   p(tags$b(quest["q20a", 1])),
+                                                                   p(tags$b(quest["q20b", 1])),
                                                                    br()
                                                             )
                                                           )
@@ -1441,9 +1440,9 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(HTML(paste0("Q22. Examine the forecasted vs. observed plot as well as the value of R",tags$sup("2"), '.'))),
-                                                                   p(tags$b(quest["q22a", 1])),
-                                                                   p(tags$b(quest["q22b", 1]))
+                                                                   h4(HTML(paste0("Q21. Examine the forecasted vs. observed plot as well as the value of R",tags$sup("2"), '.'))),
+                                                                   p(tags$b(quest["q21a", 1])),
+                                                                   p(tags$b(quest["q21b", 1]))
                                                             )
                                                             )
                                                           )
@@ -1558,11 +1557,11 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q23", 1]),
-                                                                   p(tags$b(quest["q23a", 1])),
-                                                                   p(tags$b(quest["q23b", 1])),
-                                                                   p(tags$b(quest["q23c", 1])),
-                                                                   p(tags$b(quest["q23d", 1])),
+                                                                   h4(quest["q22", 1]),
+                                                                   p(tags$b(quest["q22a", 1])),
+                                                                   p(tags$b(quest["q22b", 1])),
+                                                                   p(tags$b(quest["q22c", 1])),
+                                                                   p(tags$b(quest["q22d", 1])),
                                                             br()
                                                             )
                                                           )
@@ -1649,11 +1648,11 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q24", 1]),
-                                                                   p(tags$b(quest["q24a", 1])),
-                                                                   p(tags$b(quest["q24b", 1])),
-                                                                   p(tags$b(quest["q24c", 1])),
-                                                                   h4(quest["q25", 1])
+                                                                   h4(quest["q23", 1]),
+                                                                   p(tags$b(quest["q23a", 1])),
+                                                                   p(tags$b(quest["q23b", 1])),
+                                                                   p(tags$b(quest["q23c", 1])),
+                                                                   h4(quest["q24", 1])
                                                             )
                                                           )
                                                       )
@@ -1676,8 +1675,47 @@ color: black;
                                                       h2("Completed Module!"),
                                                       p("Congratulations! This is the end of the module. Please check through the answers in your final report and be sure you have copy-pasted in all the required plots before you submit to your instructor."),
                                                       p("Your instructor may ask you to prepare a short presentation of your productivity forecasts to share with other students in the class. This will permit you to compare how productivity forecasts perform among lakes in different eco-regions."),
-                                                      p("If time permits, we encourage you to explore how your forecast model and results would change if you completed this module for a different NEON site.")
-                                               )
+                                                      p("You’ve now made and updated a forecast - well done! If you are interested in learning more about how forecasts are generated and updated, we encourage you to visit other Macrosystems EDDIE modules:"),
+                                                      fluidRow(
+                                                        column(10, align = "left",
+                                                               box(id = "box15", width = 12, status = "primary",
+                                                                   solidHeader = TRUE,
+                                                                   fluidRow(
+                                                                     column(10, offset = 1,
+                                                                            h3("Additional Macrosystems EDDIE Ecological Forecasting Modules")
+                                                                     )
+                                                                     ),
+                                                                   fluidRow(
+                                                                     column(3, offset = 1,
+                                                                            img(src = "mod6_schematic.png", height = "100%",
+                                                                                width = "100%", align = "left", alt = "A conceptual figure showing a forecast with quantified uncertainty.")
+                                                                            ),
+                                                                     column(7, offset = 0,
+                                                                            p(style="text-align: justify;", tags$a(href = "https://macrosystemseddie.shinyapps.io/module6/", "Macrosystems EDDIE Module 6: Understanding Uncertainty in Ecological Forecasts:"),"This module will introduce students to the concept of uncertainty within an ecological forecast; where uncertainty in a forecast comes from; how uncertainty can be quantified within a forecast; and how uncertainty can be managed.")
+                                                                            )
+                                                                   ),
+                                                                   fluidRow(
+                                                                     column(3, offset = 1,
+                                                                            img(src = "Mod7_conceptual_fig.png", height = "100%",
+                                                                                width = "100%", align = "left", alt = "A conceptual figure showing data from a lake buoy being used to update a forecast.")
+                                                                     ),
+                                                                     column(7, offset = 0,
+                                                                            p(style="text-align: justify;", tags$a(href = "https://macrosystemseddie.shinyapps.io/module7/", "Macrosystems EDDIE Module 7: Using Data to Improve Ecological Forecasts:"),"This module will introduce students to the concept of data assimilation within an ecological forecast; how data assimilation can be used to improve forecast accuracy; how the level of uncertainty and temporal frequency of observations affects forecast output; and how data assimilation can affect decision-making using ecological forecasts.")
+                                                                     )
+                                                                   ),
+                                                                   fluidRow(
+                                                                     column(3, offset = 1,
+                                                                            img(src = "Mod8_conceptual_fig.png", height = "100%",
+                                                                                width = "100%", align = "left", alt = "A conceptual figure showing how forecasts can be visualized, communicated, and used for decision-making.")
+                                                                     ),
+                                                                     column(7, offset = 0,
+                                                                            p(style="text-align: justify;", tags$a(href = "https://macrosystemseddie.shinyapps.io/module8/", "Macrosystems EDDIE Module 8: Using Ecological Forecasts to Guide Decision Making:"),"This module will teach students the basic components of an ecological forecast; how to connect forecast visualizations to forecast user needs for aiding decision-making; and to create their own visualizations of probabilistic forecasts of ecological variables for a specific forecast user.")
+                                                                     )
+                                                                   )
+                                                               )
+                                                        )
+                                                      )
+                                                    )
                                              )
                                     ) #end Obj 12 
                                     ) # end tabset Panel
