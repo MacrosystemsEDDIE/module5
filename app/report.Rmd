@@ -18,25 +18,14 @@ quest <- read.csv("data/handout_questions.csv", row.names = 1)
 module_text <- read.csv("data/module_text.csv", row.names = 1, header = FALSE)
 EF_links <- read.csv("data/eco_forecast_examples.csv")
 
-lake_tab <- data.frame("Characteristic" = c(substr(quest["q4a", ], 3, nchar(quest["q4a", ])),substr(quest["q4b", ], 3, nchar(quest["q4b", ])),substr(quest["q4c", ], 3, nchar(quest["q4c", ])),substr(quest["q4d", ], 3, nchar(quest["q4d", ])),substr(quest["q4e", ], 3, nchar(quest["q4e", ])),
-                                            substr(quest["q4f", ], 3, nchar(quest["q4f", ]))),
+lake_tab <- data.frame("Characteristic" = c(substr(quest["q3a", ], 3, nchar(quest["q3a", ])),substr(quest["q3b", ], 3, nchar(quest["q3b", ])),substr(quest["q3c", ], 3, nchar(quest["q3c", ])),substr(quest["q3d", ], 3, nchar(quest["q3d", ])),substr(quest["q3e", ], 3, nchar(quest["q3e", ])),
+                                            substr(quest["q3f", ], 3, nchar(quest["q3f", ]))),
                        "Answer" = rep("",6))
 
 env_var_tab <- data.frame("Variable" = c("Air temperature","Surface water temperature","Nitrogen","Underwater PAR","Chlorophyll-a"),
                           "Mean" = rep("",5),
                           "Minimum" = rep("",5),
                           "Maximum" = rep("",5))
-
-par_tab <- data.frame(
-  "SWT" = rep("", 5),
-  "uPAR" = rep("", 5),
-  "Phytos" = rep("", 5),
-  "Zoops" = rep("", 5),
-  "Nutrients" = rep("", 5),
-  "Grazing" = rep("", 5),
-  "Mortality" = rep("", 5),
-  "Uptake" = rep("", 5), row.names = c("Q12", "Q13a", "Q13b", "Q14", "Q15")
-  )
 
 mod_sett1 <- data.frame(
   "Phytos" = rep("", 1),
@@ -186,11 +175,6 @@ Answer the following questions:
 **Answer:** 
 \
 
-3. `r substr(quest["q3", ], 4, nchar(quest["q3", ]))`   
-
-**Answer:** 
-\
-
 
 
 # Activity A: Get Data &amp; Build Model
@@ -202,7 +186,7 @@ Answer the following questions:
 
 ***
 
-4. `r substr(quest["q4", ], 4, nchar(quest["q4", ]))`  
+3. `r substr(quest["q3", ], 4, nchar(quest["q3", ]))`  
 
 *Table 1. Site Characteristics*
 ```{r}
@@ -217,7 +201,7 @@ knitr::kable(lake_tab)
 
 ***
 
-5. `r substr(quest["q5", ], 4, nchar(quest["q5", ]))`
+4. `r substr(quest["q4", ], 4, nchar(quest["q4", ]))`
 
 *Table 2. Description of site variables:*  
 
@@ -233,7 +217,7 @@ knitr::kable(env_var_tab)
 
 ***
 
-6. `r substr(quest["q6", ], 4, nchar(quest["q6", ]))`
+5. `r substr(quest["q5", ], 4, nchar(quest["q5", ]))`
 \
 
 *Table 3. Description of effect of each variable on chlorophyll-a*  
@@ -254,15 +238,15 @@ knitr::kable(env_var_tab)
 
 ***
 
-7. `r substr(quest["q7", ], 4, nchar(quest["q7", ]))`  
+6. `r substr(quest["q6", ], 4, nchar(quest["q6", ]))`  
 \
-    a.  `r substr(quest["q7a", ], 3, nchar(quest["q7a", ]))`:   
+    a.  `r substr(quest["q6a", ], 3, nchar(quest["q6a", ]))`:   
     \
-    b.  `r substr(quest["q7b", ], 3, nchar(quest["q7b", ]))`:   
+    b.  `r substr(quest["q6b", ], 3, nchar(quest["q6b", ]))`:   
     \
 \
 
-8. `r substr(quest["q8", ], 5, nchar(quest["q8", ]))` 
+7. `r substr(quest["q7", ], 5, nchar(quest["q7", ]))` 
 \
 
 *Table 4. Sorted parameters and state variables.*
@@ -274,10 +258,10 @@ knitr::kable(state_par)
  
 \
 
-9. `r substr(quest["q9", ], 5, nchar(quest["q9", ]))`
+8. `r substr(quest["q8", ], 5, nchar(quest["q8", ]))`
 \
-    a.  `r substr(quest["q9a", ], 3, nchar(quest["q9a", ]))`: 
-    b.  `r substr(quest["q9b", ], 3, nchar(quest["q9b", ]))`: 
+    a.  `r substr(quest["q8a", ], 3, nchar(quest["q8a", ]))`: 
+    b.  `r substr(quest["q8b", ], 3, nchar(quest["q8b", ]))`: 
 \
 
 ## Objective 5: Build model\
@@ -287,25 +271,25 @@ knitr::kable(state_par)
 
 ***
 
-10. `r substr(quest["q10", ], 6, nchar(quest["q10", ]))`  
+9. `r substr(quest["q9", ], 5, nchar(quest["q9", ]))`  
 \
 **Answer:** 
+
+10. `r substr(quest["q10", ], 6, nchar(quest["q10", ]))`
+\
+**Answer:**   
 
 11. `r substr(quest["q11", ], 6, nchar(quest["q11", ]))`
 \
 **Answer:**   
-
-12. `r substr(quest["q12", ], 6, nchar(quest["q12", ]))`
 \
-**Answer:**   
-\
-*Please copy-paste your Q-12-plot.png image here.*\
+*Please copy-paste your Q-11-plot.png image here.*\
 \
 *Figure 1. Modeled primary productivity for your selected NEON lake compared to chlorophyll-a concentrations, a proxy measurement for aquatic primary productivity.*
 \
-13. `r substr(quest["q13", ], 6, nchar(quest["q13", ]))`
+12. `r substr(quest["q12", ], 6, nchar(quest["q12", ]))`
 \
-14. `r substr(quest["q14", ], 6, nchar(quest["q14", ]))`
+13. `r substr(quest["q13", ], 6, nchar(quest["q13", ]))`
 \
 
 *Table 5. Calibrated primary productivity model settings.*
@@ -324,26 +308,26 @@ knitr::kable(mod_sett1)
 
 ***
 
-15. `r substr(quest["q15", ], 6, nchar(quest["q15", ]))`  
+14. `r substr(quest["q14", ], 6, nchar(quest["q14", ]))`  
 \
 **Answer:** 
 \
 
-16. `r substr(quest["q16", ], 6, nchar(quest["q16", ]))`
+15. `r substr(quest["q15", ], 6, nchar(quest["q15", ]))`
 \
-    a.  `r substr(quest["q16a", ], 3, nchar(quest["q16a", ]))`  
+    a.  `r substr(quest["q15a", ], 3, nchar(quest["q15a", ]))`  
     \
     **Answer:**  
     \
-    b.  `r substr(quest["q16b", ], 3, nchar(quest["q16b", ]))`  
+    b.  `r substr(quest["q15b", ], 3, nchar(quest["q15b", ]))`  
     \
     **Answer:**   
     \
-    c.  `r substr(quest["q16c", ], 3, nchar(quest["q16c", ]))`  
+    c.  `r substr(quest["q15c", ], 3, nchar(quest["q15c", ]))`  
     \
     **Answer:**   
     \
-    *Please copy-paste your Q-16-plot.png image here.*\
+    *Please copy-paste your Q-15-plot.png image here.*\
 \
 *Figure 2. Weather forecast plot at the selected NEON lake generated from National Oceanic and Atmospheric Administration (NOAA)  [Global Ensemble Forecast System](https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs)  (GEFS).* 
 
@@ -355,7 +339,7 @@ knitr::kable(mod_sett1)
 
 ***
 
-17. `r substr(quest["q17", ], 6, nchar(quest["q17", ]))`  
+16. `r substr(quest["q16", ], 6, nchar(quest["q16", ]))`  
 \
 **Answer:** 
 \
@@ -368,22 +352,22 @@ knitr::kable(mod_sett1)
 
 ***
 
-18. `r substr(quest["q18", ], 6, nchar(quest["q18", ]))`  
+17. `r substr(quest["q17", ], 6, nchar(quest["q17", ]))`  
 \
 **Answer:**   
 \
-*Please copy-paste your Q-18-plot.png image here.*\
+*Please copy-paste your Q-17-plot.png image here.*\
 \
 *Figure 3. Ecological forecast for primary productivity at your selected NEON lake for the next 30 days.*  
 \
 
-19. `r substr(quest["q19", ], 6, nchar(quest["q19", ]))`\
+18. `r substr(quest["q18", ], 6, nchar(quest["q18", ]))`\
 \
-    a.  `r substr(quest["q19a", ], 3, nchar(quest["q19a", ]))`  
+    a.  `r substr(quest["q18a", ], 3, nchar(quest["q18a", ]))`  
     \
     **Answer:**  
     \
-    b.  `r substr(quest["q19b", ], 3, nchar(quest["q19b", ]))`  
+    b.  `r substr(quest["q18b", ], 3, nchar(quest["q18b", ]))`  
     \
     **Answer:**   
     \
@@ -395,22 +379,22 @@ knitr::kable(mod_sett1)
 
 ***
 
-20. `r substr(quest["q20", ], 6, nchar(quest["q20", ]))`  
+19. `r substr(quest["q19", ], 6, nchar(quest["q19", ]))`  
 \
 **Answer:**   
 \
 
-21. `r substr(quest["q21", ], 6, nchar(quest["q21", ]))`  
+20. `r substr(quest["q20", ], 6, nchar(quest["q20", ]))`  
 \
-    a.  `r substr(quest["q21a", ], 3, nchar(quest["q21a", ]))`  
+    a.  `r substr(quest["q20a", ], 3, nchar(quest["q20a", ]))`  
     \
     **Answer:**  
     \
-    b.  `r substr(quest["q21b", ], 3, nchar(quest["q21b", ]))`  
+    b.  `r substr(quest["q20b", ], 3, nchar(quest["q20b", ]))`  
     \
     **Answer:**   
     \
-    *Please copy-paste your Q-21-visualization.png image here.*\
+    *Please copy-paste your Q-20-visualization.png image here.*\
 \
 *Figure 4. A visualization of an ecological forecast for primary productivity at your selected NEON lake for the next 30 days. You selected this visualization to optimize forecast communication.*  
 
@@ -423,17 +407,17 @@ knitr::kable(mod_sett1)
 
 ***
 
-22. `r substr(quest["q22", ], 6, nchar(quest["q22", ]))`  
+21. `r substr(quest["q21", ], 6, nchar(quest["q21", ]))`  
 \
-    a.  `r substr(quest["q22a", ], 3, nchar(quest["q22a", ]))`  
+    a.  `r substr(quest["q21a", ], 3, nchar(quest["q21a", ]))`  
     \
     **Answer:**  
     \
-    b.  `r substr(quest["q22b", ], 3, nchar(quest["q22b", ]))`  
+    b.  `r substr(quest["q21b", ], 3, nchar(quest["q21b", ]))`  
     \
     **Answer:**   
     \
-    *Please copy-paste your Q-22-plot.png image here.*\
+    *Please copy-paste your Q-21-plot.png image here.*\
 \
 *Figure 5. Assessment of the forecast one week later by comparing the forecast to new observations at your selected NEON lake.*   
 \
@@ -447,9 +431,9 @@ knitr::kable(mod_sett1)
 
 ***
 
-23. `r substr(quest["q23", ], 6, nchar(quest["q23", ]))`  
+22. `r substr(quest["q22", ], 6, nchar(quest["q22", ]))`  
 \
-    a.  `r substr(quest["q23a", ], 3, nchar(quest["q23a", ]))`  
+    a.  `r substr(quest["q22a", ], 3, nchar(quest["q22a", ]))`  
     \
     **Answer:** 
     \
@@ -458,23 +442,23 @@ knitr::kable(mod_sett1)
     knitr::kable(mod_sett2) 
     ```
 \
-    b.  `r substr(quest["q23b", ], 3, nchar(quest["q23b", ]))`  
+    b.  `r substr(quest["q22b", ], 3, nchar(quest["q22b", ]))`  
     \
     **Answer:**   
     \
-    *Please copy-paste your Q-23b-plot.png image here.*\
+    *Please copy-paste your Q-22b-plot.png image here.*\
     \
     *Figure 6. Updated forecast by updating the model parameters for your selected NEON lake site.*
 \
-    c.  `r substr(quest["q23c", ], 3, nchar(quest["q23c", ]))`  
+    c.  `r substr(quest["q22c", ], 3, nchar(quest["q22c", ]))`  
     \
     **Answer:**  
     \
-    *Please copy-paste your Q-23c-plot.png image here.*\
+    *Please copy-paste your Q-22c-plot.png image here.*\
     \
     *Figure 7. Assessment of the updated forecast.*   
     \
-    d.  `r substr(quest["q23d", ], 3, nchar(quest["q23d", ]))`  
+    d.  `r substr(quest["q22d", ], 3, nchar(quest["q22d", ]))`  
     \
     **Answer:** 
     \
@@ -488,9 +472,9 @@ knitr::kable(mod_sett1)
 
 ***
 
-24. `r substr(quest["q24", ], 6, nchar(quest["q24", ]))`  
+23. `r substr(quest["q23", ], 6, nchar(quest["q23", ]))`  
 \
-    a.  `r substr(quest["q24a", ], 3, nchar(quest["q24a", ]))`  
+    a.  `r substr(quest["q23a", ], 3, nchar(quest["q23a", ]))`  
     \
     **Answer:** 
     \
@@ -500,19 +484,19 @@ knitr::kable(mod_sett1)
          knitr::kable(mod_sett3) 
     ```
     \
-    b.  `r substr(quest["q24b", ], 3, nchar(quest["q24b", ]))`  
+    b.  `r substr(quest["q23b", ], 3, nchar(quest["q23b", ]))`  
     \
     **Answer:**   
     \
-    *Please copy-paste your Q-24-plot.png image here.*\
+    *Please copy-paste your Q-23-plot.png image here.*\
     \
-    c.  `r substr(quest["q24c", ], 3, nchar(quest["q24c", ]))`  
+    c.  `r substr(quest["q23c", ], 3, nchar(quest["q23c", ]))`  
     \
     **Answer:**  
     \
   
 
-25. `r substr(quest["q25", ], 6, nchar(quest["q25", ]))`  
+24. `r substr(quest["q24", ], 6, nchar(quest["q24", ]))`  
 \
 **Answer:** 
 \

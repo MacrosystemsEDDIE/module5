@@ -271,7 +271,7 @@ ui <- function(request) {
                           column(6,
                                  h3("Saving your progress"),
                                  p(style="text-align: justify;", "As you go, fill out answers to questions in the final report Word document. Some of the plots you generate in the Shiny app will be needed for the final report. When prompted, be sure to download these plots so you can copy-paste them into the final report."),
-                                 p(style="text-align: justify;", "If you run out of time to finish all the activities you can save your progress and return to it at a later date. Click the 'Bookmark my progress' button at the top of the page and you will obtain a link, which you should copy to a secure location. When pasted into your web browser, this link will load a Shiny app session that contains your progress."),
+                                 p(style="text-align: justify;", "If you run out of time to finish all the activities you can save your progress and return to it at a later date. Click the 'Bookmark my progress' button at the top of the page and you will obtain a link, which you should save by copy-pasting it at the top of your final report. When you are ready to resume work, paste the link into your web browser, and it will load a Shiny app session that contains your progress."),
                                  br()
                                  )
                           ),
@@ -289,8 +289,7 @@ ui <- function(request) {
                                                 p(tags$b(quest["q1", 1])),
                                                 data.step = 5, data.intro = help_text["questions", 1]
                                               ),
-                                              p(tags$b(quest["q2", 1], width = "90%")),
-                                              p(tags$b(quest["q3", 1], width = "90%"))
+                                              p(tags$b(quest["q2", 1], width = "90%"))
                                               )
                                        )
                                      )
@@ -300,7 +299,7 @@ ui <- function(request) {
                         fluidRow(
                           column(6,
                                  h3("Data sources"),
-                                 p(HTML(paste0('This module will introduce key concepts within Ecological forecasting through exploration of ', a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data", target = "_blank"), ", building a model and then generating a short-term ecological forecast.")))
+                                 p(HTML(paste0('This module will introduce key concepts within ecological forecasting through exploration of ', a(href = "https://www.neonscience.org/", "NEON (National Ecological Observation Network) data", target = "_blank"), ", building a model, and then generating a short-term ecological forecast.")))
                           ),
                           column(6, align = "center",
                                  a(
@@ -419,20 +418,20 @@ color: black;
                                                           fluidRow(
                                                             column(7, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q4", 1]),
+                                                                   h4(quest["q3", 1]),
                                                                    p("If the information for your lake is not on the NEON website then you can input NA (Not Available) into the text box.")
                                                                    )
                                                             ),
                                                           fluidRow(
                                                             column(4, offset = 1, align = "left", style = paste0("background: ", ques_bg),
-                                                                   p(tags$b(quest["q4a", 1] , width = "90%")),
-                                                                   p(tags$b(quest["q4b", 1], width = "90%")),
-                                                                   p(tags$b(quest["q4c", 1], width = "90%"))
+                                                                   p(tags$b(quest["q3a", 1] , width = "90%")),
+                                                                   p(tags$b(quest["q3b", 1], width = "90%")),
+                                                                   p(tags$b(quest["q3c", 1], width = "90%"))
                                                             ),
                                                             column(4, offset = 1, align = "left", style = paste0("background: ", ques_bg),
-                                                                   p(tags$b(quest["q4d", 1] , width = "90%")),
-                                                                   p(tags$b(quest["q4e", 1], width = "90%")),
-                                                                   p(tags$b(quest["q4f", 1], width = "90%"))
+                                                                   p(tags$b(quest["q3d", 1] , width = "90%")),
+                                                                   p(tags$b(quest["q3e", 1], width = "90%")),
+                                                                   p(tags$b(quest["q3f", 1], width = "90%"))
                                                                    )
                                                             )
                                                           )
@@ -502,7 +501,7 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q5", 1]),
+                                                                   h4(quest["q4", 1]),
                                                                    DTOutput("q6_tab"),
                                                                    br()
                                                                    )
@@ -538,7 +537,7 @@ color: black;
                                              fluidRow(
                                                column(4,
                                                       h3("Investigate variable relationships"),
-                                                      p("For Q. 6 you will explore the relationship between chlorophyll-a and the other variables at this site. You may or may not discover any relationships between these variables."),
+                                                      p("For Q. 5 you will explore the relationship between chlorophyll-a and the other variables at this site. You may or may not discover any relationships between these variables."),
                                                       selectizeInput("x_var", "Select X variable",
                                                                      choices = unique(neon_vars$Short_name),
                                                                      options = list(
@@ -561,7 +560,7 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q6", 1]),
+                                                                   h4(quest["q5", 1]),
                                                                    DTOutput('q7_tab'),
                                                                    br()
                                                                    )
@@ -573,7 +572,7 @@ color: black;
                                              fluidRow(
                                                column(12,
                                                       h3("Next step"),
-                                                      p("Next we will use these data and the identified related variables to help build our ecological model.")
+                                                      p("Next we will use these data to help build our ecological model.")
                                                       )
                                                )
                                              ),
@@ -621,9 +620,9 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q7", 1]),
-                                                                   p(tags$b(quest["q7a", 1])),
-                                                                   p(tags$b(quest["q7b", 1])),
+                                                                   h4(quest["q6", 1]),
+                                                                   p(tags$b(quest["q6a", 1])),
+                                                                   p(tags$b(quest["q6b", 1])),
                                                                    br()
                                                                    )
                                                             )
@@ -644,7 +643,7 @@ color: black;
                                                           fluidRow(
                                                             column(8, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q8", 1]),
+                                                                   h4(quest["q7", 1]),
                                                                    bucket_list(
                                                                      header = "",
                                                                      group_name = "bucket_list_group",
@@ -666,9 +665,9 @@ color: black;
                                                                      )
                                                                    ),
                                                                    br(),
-                                                                   h4(quest["q9", 1]),
-                                                                   p(tags$b(quest["q9a", 1])),
-                                                                   p(tags$b(quest["q9b", 1])),
+                                                                   h4(quest["q8", 1]),
+                                                                   p(tags$b(quest["q8a", 1])),
+                                                                   p(tags$b(quest["q8b", 1])),
                                                                    br()
                                                             ),
                                                             column(2,
@@ -703,7 +702,7 @@ color: black;
                                                ),
                                              fluidRow(
                                                column(6,
-                                                      p("Here we are going to use the NP model to simulate primary productivity. We will be comparing our model output to chlorophyll-a sensor data and adjusting the models parameters to try and replicate the sensor measurements. The NP model simulates phytoplankton biomass which we convert to chlorophyll-a to allow comparison between the simulations and field observations."),
+                                                      p("Here we are going to use the NP model to simulate primary productivity. We will be comparing our model output to chlorophyll-a sensor data and adjusting the model parameters to try and replicate the sensor measurements. The NP model simulates phytoplankton biomass, which we convert to chlorophyll-a to allow comparison between the simulations and field observations."),
                                                       h3("Build Model"),
                                                       p(style="text-align: justify;", "We will use observed data from the selected site on the 'Activity A' tab to drive the NP model. We will use the underwater photosynthetic active radiation (uPAR) and surface water temperature as inputs."),
                                                       h4("Calibration tips"),
@@ -757,7 +756,7 @@ color: black;
                                                           fluidRow(
                                                           column(10, offset = 1,
                                                                  h3("Question"),
-                                                                 p(tags$b(quest["q10", 1]))
+                                                                 p(tags$b(quest["q9", 1]))
                                                           )
                                                         )
                                                       ),
@@ -791,7 +790,7 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Question"),
-                                                                   p(tags$b(quest["q11", 1]))
+                                                                   p(tags$b(quest["q10", 1]))
                                                             )
                                                           )
                                                       ),
@@ -809,7 +808,7 @@ color: black;
                                              fluidRow(
                                                column(4,
                                                       h3("Calibrate Model"),
-                                                      p(style="text-align: justify;", "Now that we have explored the effects of initial conditions and parameters on your model, use the sliders below to obtain as good a calibration as possible to sensor observations."),
+                                                      p(style="text-align: justify;", "Now that we have explored the effects of initial conditions and parameters on your model, use the sliders below to obtain as good a calibration as possible to sensor observations. Note that it’s not possible to get a perfect match of model output and observations so try to match as close as possible without getting frustrated."),
                                                       p(style="text-align: justify;", "When you have achieved an acceptable model fit, click 'Save model settings' to save your initial conditions and parameters for use in generating a forecast. Then, click 'Download plot' to download a plot of your best-fitting model for inclusion in your final report."),
                                                       h4("Initial conditions"),
                                                       p(tags$b("Phytoplankton (ug/L)")),
@@ -847,7 +846,7 @@ color: black;
                                                       ),
                                                       br(),
                                                       h4("Model Settings"),
-                                                      p("To generate forecasts in the next activity, you are required to save your calibrated model setup which includes the initial conditions and parameters."),
+                                                      p(tags$b("To generate forecasts in the next activity, you are required to save your calibrated model setup which includes the initial conditions and parameters.")),
                                                       DTOutput("save_par", width = "10%"),
                                                       br(),
                                                       column(12,
@@ -870,9 +869,9 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
+                                                                   p(tags$b(quest["q11", 1])),
                                                                    p(tags$b(quest["q12", 1])),
-                                                                   p(tags$b(quest["q13", 1])),
-                                                                   p(tags$b(quest["q14", 1]))
+                                                                   p(tags$b(quest["q13", 1]))
                                                                    )
                                                             )
                                                           )
@@ -915,12 +914,12 @@ color: black;
                                                column(6,
                                                       h3("Forecast Uncertainty"),
                                                       h4("What is forecast uncertainty?"),
-                                                      p(style="text-align: justify;", "Uncertainty emerges from some kind of error or imperfection in our knowledge and understanding of the ecological system being investigated."),
+                                                      p(style="text-align: justify;", "Forecast uncertainty is the range of possible alternate future conditions predicted by a model. We generate multiple different predictions of the future because the future is inherently unknown."),
                                                       h4("Where does forecast uncertainty come from?"),
-                                                      p(style="text-align: justify;", "Uncertainty comes from natural variability in the environment and imperfect knowledge of an ecological system. When generating a forecast, uncertainty can come from the ", tags$b("structure"), " of the model used, the ", tags$b("initial conditions")," of the model, the ", tags$b("parameters"), " of the model, and the ", tags$b("data")," used to drive the model, among other sources."),
+                                                      p(style="text-align: justify;", "Uncertainty comes from natural variability in the environment and imperfect representation of an ecological system in a model. When generating a forecast, uncertainty can come from the ", tags$b("structure"), " of the model used, the ", tags$b("initial conditions")," of the model, the ", tags$b("parameters"), " of the model, and the ", tags$b("data")," used to drive the model, among other sources."),
                                                       h4("Why is uncertainty important to quantify for a forecast?"),
                                                       p(style="text-align: justify;", "Knowing the uncertainty in a forecast allows forecast users to make informed decisions based on the range of forecasted outcomes and prepare accordingly."),
-                                                      h4(tags$b("To learn more about forecast uncertainty, explore ",
+                                                      h4(tags$b("To learn more about forecast uncertainty, explore our sister module ",
                                                                tags$a(href="http://module6.macrosystemseddie.org", 
                                                                       "Macrosystems EDDIE Module 6: Understanding Uncertainty in Ecological Forecasts.", target="_blank"))),
                                                       br()
@@ -966,7 +965,7 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q15", 1]),
+                                                                   h4(quest["q14", 1]),
                                                                    br()
                                                                    )
                                                             )
@@ -977,8 +976,8 @@ color: black;
                                              fluidRow(
                                                column(3,
                                                       h3("Explore Weather Forecast"),
-                                                      p(style="text-align: justify;", "Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS", target = "_blank"), " forecast for the NEON site you chose in Activity A."),
-                                                      p(style="text-align: justify;", "Inspect the different meteorological outputs. You can adjust the number of ", tags$b("ensemble members,")," which is the number of individual model runs within the forecast. You can also adjust how the forecast is visualized. A line plot shows each ensemble member while the distribution calculates the median (represented as a solid line) and the 95th percentile (represented as a shaded polygon)."),
+                                                      p(style="text-align: justify;", "Here we will load in data from a ", a(href = "https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-ensemble-forecast-system-gefs", "NOAA GEFS", target = "_blank"), " forecast for the NEON site you chose in Activity A by clicking 'Load Forecast'."),
+                                                      p(style="text-align: justify;", "Inspect the different meteorological outputs. You can adjust the number of ", tags$b("ensemble members,")," which is the number of individual model runs within the weather forecast. You can also adjust how the forecast is visualized. A line plot shows each ensemble member while the distribution calculates the median (represented as a solid line) and the 95th percentile (represented as a shaded polygon)."),
                                                       actionButton('load_fc', "Load Forecast", icon = icon("download")), br(),
                                                       wellPanel(
                                                         conditionalPanel("input.load_fc",
@@ -1010,10 +1009,10 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q16", 1]),
-                                                                   p(tags$b(quest["q16a", 1], width = "90%")),
-                                                                   p(tags$b(quest["q16b", 1], width = "90%")),
-                                                                   p(tags$b(quest["q16c", 1], width = "90%"))
+                                                                   h4(quest["q15", 1]),
+                                                                   p(tags$b(quest["q15a", 1], width = "90%")),
+                                                                   p(tags$b(quest["q15b", 1], width = "90%")),
+                                                                   p(tags$b(quest["q15c", 1], width = "90%"))
                                                             )
                                                             )
                                                           )
@@ -1115,7 +1114,7 @@ color: black;
                                              fluidRow(
                                                column(12,
                                                       h3("Convert NOAA weather forecast"),
-                                                      p("The model we are using uses data on a daily timestep so we will aggregate the hourly weather forecast to daily averages first and then use the linear model to convert the 30 members in the ensemble from air temperature (predictor variable) to surface water temperature (response variable) and shortwave radiation (predictor variable) to underwater PAR (response variable)."),
+                                                      p("The model we are using needs data on a daily timestep so we will aggregate the hourly weather forecast to daily averages first and then use the linear model to convert the 30 members in the ensemble from air temperature (predictor variable) to surface water temperature (response variable) and shortwave radiation (predictor variable) to underwater PAR (response variable)."),
                                                       actionButton("conv_fc", "Convert forecast!", icon = icon("exchange-alt")),
                                                       br(),
                                                       wellPanel(
@@ -1131,7 +1130,7 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q17", 1])
+                                                                   h4(quest["q16", 1])
                                                             )
                                                           )
                                                       )
@@ -1141,7 +1140,7 @@ color: black;
                                              fluidRow(
                                                column(5, offset = 1,
                                                       h3("Next step"),
-                                                      p("Now we have converted the weather forecast data into inputs that are used by our model (surface water temperature and underwater PAR), we will use them to generate a forecast of primary productivity with the model we built in Objective 5."))
+                                                      p("Now that we have converted the weather forecast data into inputs that are used by our model (surface water temperature and underwater PAR), we will use them to generate a forecast of primary productivity with the model we built in Objective 5."))
                                                )
                                              ),
                                     #* Objective 8 - Run Forecast ----
@@ -1160,7 +1159,7 @@ color: black;
                                                       h3("Forecasting: running a model into the future with uncertainty"),
                                                       p(style="text-align: justify;", "A key component of what makes an ecological forecast a 'forecast' is that the model is driven by ", tags$b("forecasted"), "driving variables."),
                                                       p(style="text-align: justify;", "Now that we have forecasts of our water temperature and uPAR driving variables, we can use them to run our model into the future with uncertainty."),
-                                                      p(style="text-align: justify;", "In this case, our forecast uncertainty is ultimately derived from uncertainty in the NOAA weather forecasts that we converted to water temperature and uPAR forecasts. So we are accounting for ",tags$b("driver data uncertainty.")," However, as previously mentioned, there are additional sources of forecast uncertainty and you can learn more about these in ",tags$a(href = "https://macrosystemseddie.shinyapps.io/module6/", "Macrosystems EDDIE Module 6: Understanding Uncertainty in Ecological Forecasts.")),
+                                                      p(style="text-align: justify;", "In this case, our forecast uncertainty is ultimately derived from uncertainty in the NOAA weather forecasts that we converted to water temperature and uPAR forecasts. So, in this forecasting example, we are accounting for ",tags$b("driver data uncertainty.")," However, as previously mentioned, there are additional sources of forecast uncertainty, which you can learn more about in ",tags$a(href = "https://macrosystemseddie.shinyapps.io/module6/", "Macrosystems EDDIE Module 6: Understanding Uncertainty in Ecological Forecasts.")),
                                                       p(style="text-align: justify;", "In addition to forecasted driver data, we also need to specify the forecast ",tags$b("initial conditions,")," or starting conditions. In our case, this will be the initial concentration of chlorophyll-a, representing primary productivity."),
                                                       p(style="text-align: justify;", "Then, we will be ready to forecast!")
                                                       ),
@@ -1194,7 +1193,7 @@ color: black;
                                                fluidRow(
                                                  column(3,
                                                       h3("Set initial conditions"),
-                                                      p(style="text-align: justify;", "Use the plot here, which shows measurements of  Chorophyll-a, to select and update the initial conditions of your model before running your forecast. It is often best that the initial, or starting, conditions of your model correspond closely to the most recent observations to produce an accurate forecast."),
+                                                      p(style="text-align: justify;", "Use the plot here, which shows measurements of chlorophyll-a, to select and update the initial conditions of your model before running your forecast. It is often best that the initial, or starting, conditions of your model correspond closely to the most recent observations to produce an accurate forecast.",tags$b("The initial condition selected here will be used to generate the forecast in the plot below.")),
                                                       p(tags$b("Phytoplankton (ug/L)")),
                                                       # slider labels: https://stackoverflow.com/questions/40415471/sliderinput-max-min-text-labels
                                                       sliderInput("phy_init2", label = div(style='width:300px;', div(style='float:left;', img(src = "phyto.png", height = "50px", width = "50px", alt = "A phytoplankton icon.")),
@@ -1236,10 +1235,10 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
+                                                                   h4(quest["q17", 1]),
                                                                    h4(quest["q18", 1]),
-                                                                   h4(quest["q19", 1]),
-                                                                   p(tags$b(quest["q19a", 1], width = "90%")),
-                                                                   p(tags$b(quest["q19b", 1], width = "90%")),
+                                                                   p(tags$b(quest["q18a", 1], width = "90%")),
+                                                                   p(tags$b(quest["q18b", 1], width = "90%")),
                                                                    br()
                                                                    )
                                                             )
@@ -1291,7 +1290,7 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h4("Question"),
-                                                                   p(tags$b(quest["q20", 1])),
+                                                                   p(tags$b(quest["q19", 1])),
                                                                    br()
                                                                    )
                                                             )
@@ -1311,9 +1310,9 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Question"),
-                                                                   h4(quest["q21", 1]),
-                                                                   p(tags$b(quest["q21a", 1])),
-                                                                   p(tags$b(quest["q21b", 1])),
+                                                                   h4(quest["q20", 1]),
+                                                                   p(tags$b(quest["q20a", 1])),
+                                                                   p(tags$b(quest["q20b", 1])),
                                                                    br()
                                                             )
                                                           )
@@ -1357,7 +1356,7 @@ color: black;
                                              fluidRow(
                                                column(5, offset = 1,
                                                       h3("Next step"),
-                                                      p("Next, a week will have passed since your forecast was generated so we will compare our forecast to actual observations.")
+                                                      p("Let’s pretend that a week has passed since your forecast was generated, and we can now compare our forecast to actual observations.")
                                                       )
                                                )
                                              ),
@@ -1441,9 +1440,9 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(HTML(paste0("Q22. Examine the forecasted vs. observed plot as well as the value of R",tags$sup("2"), '.'))),
-                                                                   p(tags$b(quest["q22a", 1])),
-                                                                   p(tags$b(quest["q22b", 1]))
+                                                                   h4(HTML(paste0("Q21. Examine the forecasted vs. observed plot as well as the value of R",tags$sup("2"), '.'))),
+                                                                   p(tags$b(quest["q21a", 1])),
+                                                                   p(tags$b(quest["q21b", 1]))
                                                             )
                                                             )
                                                           )
@@ -1453,7 +1452,7 @@ color: black;
                                              fluidRow(
                                                column(5, offset = 1,
                                                       h3("Next step"),
-                                                      p("When assessing your forecast, you might notice your forecast does not match the observations. One of the reasons could be because the parameters in your model do not represent the conditions at this time. Next we will update the model by making adjustments to the parameters to try and improve the model forecast.")
+                                                      p("When assessing your forecast, you might notice your forecast does not match the observations. One of the reasons could be because the parameters in your model do not represent the conditions at this time. Next, we will update the model by making adjustments to the parameters to try and improve the next forecast into the future.")
                                                       )
                                                )
                                              )
@@ -1558,11 +1557,11 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q23", 1]),
-                                                                   p(tags$b(quest["q23a", 1])),
-                                                                   p(tags$b(quest["q23b", 1])),
-                                                                   p(tags$b(quest["q23c", 1])),
-                                                                   p(tags$b(quest["q23d", 1])),
+                                                                   h4(quest["q22", 1]),
+                                                                   p(tags$b(quest["q22a", 1])),
+                                                                   p(tags$b(quest["q22b", 1])),
+                                                                   p(tags$b(quest["q22c", 1])),
+                                                                   p(tags$b(quest["q22d", 1])),
                                                             br()
                                                             )
                                                           )
@@ -1649,11 +1648,11 @@ color: black;
                                                           fluidRow(
                                                             column(10, offset = 1,
                                                                    h3("Questions"),
-                                                                   h4(quest["q24", 1]),
-                                                                   p(tags$b(quest["q24a", 1])),
-                                                                   p(tags$b(quest["q24b", 1])),
-                                                                   p(tags$b(quest["q24c", 1])),
-                                                                   h4(quest["q25", 1])
+                                                                   h4(quest["q23", 1]),
+                                                                   p(tags$b(quest["q23a", 1])),
+                                                                   p(tags$b(quest["q23b", 1])),
+                                                                   p(tags$b(quest["q23c", 1])),
+                                                                   h4(quest["q24", 1])
                                                             )
                                                           )
                                                       )
@@ -1674,9 +1673,49 @@ color: black;
                                              fluidRow(
                                                column(12,
                                                       h2("Completed Module!"),
-                                                      p("This is the end of the module. Please check through the answers in your final report and be sure you have copy-pasted in all the required plots before you submit to your instructor."),
-                                                      p("Your instructor may ask you to prepare a short presentation of your productivity forecasts to share with other students in the class. This will permit you to compare how productivity forecasts perform among lakes in different eco-regions.")
-                                               )
+                                                      p("Congratulations! This is the end of the module. Please check through the answers in your final report and be sure you have copy-pasted in all the required plots before you submit to your instructor."),
+                                                      p("Your instructor may ask you to prepare a short presentation of your productivity forecasts to share with other students in the class. This will permit you to compare how productivity forecasts perform among lakes in different eco-regions."),
+                                                      p("You’ve now made and updated a forecast - well done! If you are interested in learning more about how forecasts are generated and updated, we encourage you to visit other Macrosystems EDDIE modules:"),
+                                                      fluidRow(
+                                                        column(10, align = "left",
+                                                               box(id = "box15", width = 12, status = "primary",
+                                                                   solidHeader = TRUE,
+                                                                   fluidRow(
+                                                                     column(10, offset = 1,
+                                                                            h3("Additional Macrosystems EDDIE Ecological Forecasting Modules")
+                                                                     )
+                                                                     ),
+                                                                   fluidRow(
+                                                                     column(3, offset = 1,
+                                                                            img(src = "mod6_schematic.png", height = "100%",
+                                                                                width = "100%", align = "left", alt = "A conceptual figure showing a forecast with quantified uncertainty.")
+                                                                            ),
+                                                                     column(7, offset = 0,
+                                                                            p(style="text-align: justify;", tags$a(href = "https://macrosystemseddie.shinyapps.io/module6/", "Macrosystems EDDIE Module 6: Understanding Uncertainty in Ecological Forecasts:"),"This module will introduce students to the concept of uncertainty within an ecological forecast; where uncertainty in a forecast comes from; how uncertainty can be quantified within a forecast; and how uncertainty can be managed.")
+                                                                            )
+                                                                   ),
+                                                                   fluidRow(
+                                                                     column(3, offset = 1,
+                                                                            img(src = "Mod7_conceptual_fig.png", height = "100%",
+                                                                                width = "100%", align = "left", alt = "A conceptual figure showing data from a lake buoy being used to update a forecast.")
+                                                                     ),
+                                                                     column(7, offset = 0,
+                                                                            p(style="text-align: justify;", tags$a(href = "https://macrosystemseddie.shinyapps.io/module7/", "Macrosystems EDDIE Module 7: Using Data to Improve Ecological Forecasts:"),"This module will introduce students to the concept of data assimilation within an ecological forecast; how data assimilation can be used to improve forecast accuracy; how the level of uncertainty and temporal frequency of observations affects forecast output; and how data assimilation can affect decision-making using ecological forecasts.")
+                                                                     )
+                                                                   ),
+                                                                   fluidRow(
+                                                                     column(3, offset = 1,
+                                                                            img(src = "Mod8_conceptual_fig.png", height = "100%",
+                                                                                width = "100%", align = "left", alt = "A conceptual figure showing how forecasts can be visualized, communicated, and used for decision-making.")
+                                                                     ),
+                                                                     column(7, offset = 0,
+                                                                            p(style="text-align: justify;", tags$a(href = "https://macrosystemseddie.shinyapps.io/module8/", "Macrosystems EDDIE Module 8: Using Ecological Forecasts to Guide Decision Making:"),"This module will teach students the basic components of an ecological forecast; how to connect forecast visualizations to forecast user needs for aiding decision-making; and to create their own visualizations of probabilistic forecasts of ecological variables for a specific forecast user.")
+                                                                     )
+                                                                   )
+                                                               )
+                                                        )
+                                                      )
+                                                    )
                                              )
                                     ) #end Obj 12 
                                     ) # end tabset Panel
