@@ -1694,6 +1694,7 @@ color: black;
                                                                             p(style="text-align: justify;", tags$a(href = "https://macrosystemseddie.shinyapps.io/module6/", "Macrosystems EDDIE Module 6: Understanding Uncertainty in Ecological Forecasts:"),"This module will introduce students to the concept of uncertainty within an ecological forecast; where uncertainty in a forecast comes from; how uncertainty can be quantified within a forecast; and how uncertainty can be managed.")
                                                                             )
                                                                    ),
+                                                                   hr(),
                                                                    fluidRow(
                                                                      column(3, offset = 1,
                                                                             img(src = "Mod7_conceptual_fig.png", height = "100%",
@@ -1703,6 +1704,7 @@ color: black;
                                                                             p(style="text-align: justify;", tags$a(href = "https://macrosystemseddie.shinyapps.io/module7/", "Macrosystems EDDIE Module 7: Using Data to Improve Ecological Forecasts:"),"This module will introduce students to the concept of data assimilation within an ecological forecast; how data assimilation can be used to improve forecast accuracy; how the level of uncertainty and temporal frequency of observations affects forecast output; and how data assimilation can affect decision-making using ecological forecasts.")
                                                                      )
                                                                    ),
+                                                                   hr(),
                                                                    fluidRow(
                                                                      column(3, offset = 1,
                                                                             img(src = "Mod8_conceptual_fig.png", height = "100%",
@@ -1711,7 +1713,8 @@ color: black;
                                                                      column(7, offset = 0,
                                                                             p(style="text-align: justify;", tags$a(href = "https://macrosystemseddie.shinyapps.io/module8/", "Macrosystems EDDIE Module 8: Using Ecological Forecasts to Guide Decision Making:"),"This module will teach students the basic components of an ecological forecast; how to connect forecast visualizations to forecast user needs for aiding decision-making; and to create their own visualizations of probabilistic forecasts of ecological variables for a specific forecast user.")
                                                                      )
-                                                                   )
+                                                                   ),
+                                                                   hr()
                                                                )
                                                         )
                                                       )
