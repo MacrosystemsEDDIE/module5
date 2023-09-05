@@ -1,4 +1,4 @@
-site,Temperature,Light (PAR)
+﻿site,Temperature,Light (PAR)
 default,FALSE,FALSE
 CRAM,TRUE,TRUE
 SUGG,TRUE,TRUE

@@ -644,26 +644,26 @@ color: black;
                                                             column(8, offset = 1,
                                                                    h3("Questions"),
                                                                    h4(quest["q7", 1]),
-                                                                   bucket_list(
-                                                                     header = "",
-                                                                     group_name = "bucket_list_group",
-                                                                     orientation = "horizontal",
-                                                                     add_rank_list(
-                                                                       text = tags$b("Drag from here"),
-                                                                       labels = sample(c(state_vars, process_vars)),
-                                                                       input_id = "rank_list_1"
-                                                                     ),
-                                                                     add_rank_list(
-                                                                       text = tags$b("State variable"),
-                                                                       labels = NULL,
-                                                                       input_id = "rank_list_2"
-                                                                     ),
-                                                                     add_rank_list(
-                                                                       text = tags$b("Parameter"),
-                                                                       labels = NULL,
-                                                                       input_id = "rank_list_3"
-                                                                     )
-                                                                   ),
+                                                                   # bucket_list(
+                                                                   #   header = "",
+                                                                   #   group_name = "bucket_list_group",
+                                                                   #   orientation = "horizontal",
+                                                                   #   add_rank_list(
+                                                                   #     text = tags$b("Drag from here"),
+                                                                   #     labels = sample(c(state_vars, process_vars)),
+                                                                   #     input_id = "rank_list_1"
+                                                                   #   ),
+                                                                   #   add_rank_list(
+                                                                   #     text = tags$b("State variable"),
+                                                                   #     labels = NULL,
+                                                                   #     input_id = "rank_list_2"
+                                                                   #   ),
+                                                                   #   add_rank_list(
+                                                                   #     text = tags$b("Parameter"),
+                                                                   #     labels = NULL,
+                                                                   #     input_id = "rank_list_3"
+                                                                   #   )
+                                                                   # ),
                                                                    br(),
                                                                    h4(quest["q8", 1]),
                                                                    p(tags$b(quest["q8a", 1])),
