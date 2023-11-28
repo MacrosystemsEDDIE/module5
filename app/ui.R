@@ -23,6 +23,7 @@ ui <- function(request) {
     tags$style(type = "text/css", "text-align: justify"),
     tags$html(lang = "en"), # Add language attribute
     tags$head(tags$link(rel = "shortcut icon", href = "macroeddi_ico_green.ico")), # Add icon for web bookmarks
+    tags$head(includeHTML(("google-analytics.html"))),
     fluidPage(
       column(10,
              br(),
