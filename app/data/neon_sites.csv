@@ -1,4 +1,4 @@
-siteID,location,type,Description,long,lat,pheno_url
+﻿siteID,location,type,Description,long,lat,pheno_url
 CRAM,Crampton Lake Site,Aquatic,CORE,-89.473688,46.209675,https://phenocam.sr.unh.edu/webcam/sites/NEON.D05.CRAM.DP1.20002/
 SUGG,Suggs Lake Site,Aquatic,CORE,-82.017745,29.68778,https://phenocam.sr.unh.edu/webcam/sites/NEON.D03.SUGG.DP1.20002/
 BARC,Barco Lake Site,Aquatic,CORE,-82.008414,29.675982,https://phenocam.sr.unh.edu/webcam/sites/NEON.D03.BARC.DP1.20002/

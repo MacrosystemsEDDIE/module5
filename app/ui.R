@@ -23,6 +23,7 @@ ui <- function(request) {
     tags$style(type = "text/css", "text-align: justify"),
     tags$html(lang = "en"), # Add language attribute
     tags$head(tags$link(rel = "shortcut icon", href = "macroeddi_ico_green.ico")), # Add icon for web bookmarks
+    tags$head(includeHTML(("google-analytics.html"))),
     fluidPage(
       column(10,
              br(),
@@ -645,21 +646,24 @@ color: black;
                                                                    h3("Questions"),
                                                                    h4(quest["q7", 1]),
                                                                    bucket_list(
-                                                                     header = "",
+                                                                     header = NULL,
                                                                      group_name = "bucket_list_group",
                                                                      orientation = "horizontal",
                                                                      add_rank_list(
-                                                                       text = tags$b("Drag from here"),
-                                                                       labels = sample(c(state_vars, process_vars)),
+                                                                       text = "Drag from here",
+                                                                       labels = list("Phytoplankton",
+                                                                                     "Mortality rate",
+                                                                                     "Nitrogen",
+                                                                                     "Maximum growth rate"),
                                                                        input_id = "rank_list_1"
                                                                      ),
                                                                      add_rank_list(
-                                                                       text = tags$b("State variable"),
+                                                                       text = "State variables",
                                                                        labels = NULL,
                                                                        input_id = "rank_list_2"
                                                                      ),
                                                                      add_rank_list(
-                                                                       text = tags$b("Parameter"),
+                                                                       text = "Parameters",
                                                                        labels = NULL,
                                                                        input_id = "rank_list_3"
                                                                      )

@@ -1,4 +1,4 @@
-noaa_name,display_name,units
+﻿noaa_name,display_name,units
 air_pressure,Air pressure,Pa
 air_temperature,Air temperature,u00B0C
 cloud_are_fraction,Cloud cover,fraction
