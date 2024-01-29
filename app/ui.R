@@ -1413,16 +1413,8 @@ color: black;
                                              ),
                                              fluidRow(
                                                column(3,
-                                                      wellPanel(
-                                                        h4(HTML(paste0("Using R",tags$sup("2"), ' to assess forecast performance'))),
-                                                        p(HTML(paste0("R",tags$sup("2"), ', or the coefficient of determination, is a statistical measure that represents the proportion of variation in the dependent variable that can be explained by the independent variable.'))),
-                                                        p(HTML(paste0("R",tags$sup("2"), ' can be used as a measure of forecast skill, where the independent variable is the observed value and the dependent variable is the forecasted value.'))),
-                                                        p(HTML(paste0("R",tags$sup("2"), ' can range from negative values to 1, where smaller values indicate a poor forecast and 1 indicates a perfect forecast.')))
-                                                      )
-                                               ),
-                                               column(3,
                                                       wellPanel(h4("Using forecasted vs. observed plots to assess forecast performance"),
-                                                                p("Another way to assess forecast skill is by using a forecasted vs. observed plot. Ideally, points on this plot should fall along the diagonal 1:1 line, indicating that forecasted and observed values are very similar.")),  
+                                                                p("One way to assess forecast skill is by using a forecasted vs. observed plot. Ideally, points on this plot should fall along the diagonal 1:1 line, indicating that forecasted and observed values are very similar.")),  
                                                       wellPanel(h4("Assess your forecast!"),
                                                                   actionButton('assess_fc3', label = div("Assess forecast",
                                                                                                          icon("clipboard-check")))
