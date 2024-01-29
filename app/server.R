@@ -2504,12 +2504,6 @@ server <- function(input, output, session) {#
     df <- as_plot()
     origin <- data.frame(x = 0, y = 0) # included to ensure 0,0 is in the plot
 
-    lm1 <- lm(df[, 3] ~ df[, 2])
-    r2 <- round(summary(lm1)$r.squared, 2)
-    r2_txt <- paste0("R2 = ", r2)# bquote(r^2 ~ "=" ~ .(r2))
-
-    txt <- data.frame(x = 2, y = (max(df[, 2], na.rm = TRUE) - 1))
-
     txt2 <- data.frame(y = 0, x = 1, label = "1:1 line")
 
 
@@ -2517,10 +2511,7 @@ server <- function(input, output, session) {#
       geom_abline(intercept = 0, slope = 1) +
       geom_point(data = origin, aes(x, y), alpha = 0) +
       geom_point() +
-      geom_text(data = txt, aes(x, y), label = r2_txt) +
-      # annotate("text", x = txt$x, y = txt$y, label = as.character(expression(paste(r^2, "=", round(summary(lm1)$r.squared, 2)))), parse = TRUE) +
       geom_text(data = txt2, aes(x, y, label = label)) +
-      # scale_color_manual(values = cols[2]) +
       xlab("Observations (Chl-a)") +
       ylab("Forecast values (Chl-a)") +
       theme_classic(base_size = 12) +
@@ -2840,12 +2831,6 @@ server <- function(input, output, session) {#
     df <- as_plot2()
     origin <- data.frame(x = 0, y = 0) # included to ensure 0,0 is in the plot
     
-    lm1 <- lm(df[, 3] ~ df[, 2])
-    r2 <- round(summary(lm1)$r.squared, 2)
-    r2_txt <- paste0("R2 = ", r2)# bquote(r^2 ~ "=" ~ .(r2))
-    
-    txt <- data.frame(x = 2, y = (max(df[, 2], na.rm = TRUE) - 1))
-    
     txt2 <- data.frame(y = 0, x = 1, label = "1:1 line")
     
     
@@ -2853,10 +2838,7 @@ server <- function(input, output, session) {#
       geom_abline(intercept = 0, slope = 1) +
       geom_point(data = origin, aes(x, y), alpha = 0) +
       geom_point() +
-      geom_text(data = txt, aes(x, y), label = r2_txt) +
-      # annotate("text", x = txt$x, y = txt$y, label = as.character(expression(paste(r^2, "=", round(summary(lm1)$r.squared, 2)))), parse = TRUE) +
       geom_text(data = txt2, aes(x, y, label = label)) +
-      # scale_color_manual(values = cols[2]) +
       xlab("Observations (Chl-a)") +
       ylab("Forecast values (Chl-a)") +
       theme_classic(base_size = 12) +
@@ -3159,8 +3141,8 @@ server <- function(input, output, session) {#
     )
     df <- data.frame("Phytoplankton" = rep(NA, 3), "Mortality" = rep(NA, 3), "Growth" = rep(NA, 3), row.names = c("Forecast 1", "Updated forecast","Forecast 2"))
     df[1, ] <- c(par_save$value[1,])
-    df[2, ] <- c(input$phy_init2, input$nut_uptake2, input$mort_rate2)
-    df[3, ] <- c(input$phy_init4, input$nut_uptake2, input$mort_rate2)
+    df[2, ] <- c(input$phy_init2, input$mort_rate2, input$nut_uptake2)
+    df[3, ] <- c(input$phy_init4, input$mort_rate2, input$nut_uptake2)
     
     datatable(df, rownames = TRUE, options = list(dom = 't'), editable = FALSE)
   })
