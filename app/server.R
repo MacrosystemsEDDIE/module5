@@ -3436,7 +3436,7 @@ server <- function(input, output, session) {#
   
   observe({
     toggleState(id = "prevBtn1", condition = rv1$prev > 0)
-    if(rv1$nxt > 6 & rv3a$nxt > 12) {
+    if(rv1$nxt > 5 & rv3a$nxt > 12) {
       shinyjs::disable("nextBtn1")
     } else {
       shinyjs::enable("nextBtn1")

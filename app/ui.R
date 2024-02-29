@@ -307,36 +307,13 @@ ui <- function(request) {
                
                # 5. Activity A ----
                tabPanel(title = "Activity A", value = "mtab4",
-                        tags$style(".nav-tabs {
-  background-color: white;
-  border-color: #FFF;
-  color: black;
-}
-
-.navbar { background-color: #F3F5F7;
-                            font-family: Arial;
-                            font-size: 13px;
-                            font-weight: bold;
-                            color: #FF0000; }
-
-.nav-tabs-custom .nav-tabs li.active:hover a, .nav-tabs-custom .nav-tabs li.active a {
-background-color: white;
-border-color: #FFF;
-color: black;
-}
-.navbar-default .navbar-brand {
-                         color: black;}
-
-.nav-tabs-custom .nav-tabs li.active {
-    border-top-color: #FFF;
-    background-color: white;
-    color: black;
-}"),
                         fluidRow(
                           column(12,
-                                 h3("Activity A: Visualize data from a selected NEON site"),
-                                 h4("Get Data & Build Model"),
-                                 p("Complete objectives 1-3 to gather the information you will need for your model. Then, complete objectives 4-5 to build and calibrate the model you will use to generate the forecast.")
+                                 wellPanel(style = paste0("background: ", obj_bg),
+                                  h2("Activity A: Visualize data from a selected NEON site"),
+                                  h4("Get Data & Build Model"),
+                                  p("Complete objectives 1-3 to gather the information you will need for your model. Then, complete objectives 4-5 to build and calibrate the model you will use to generate the forecast.")
+                                 )
                           )
                         ),
                         tabsetPanel(id = "tabseries1",
@@ -888,10 +865,12 @@ color: black;
                tabPanel(title = "Activity B", value = "mtab5",
                         fluidRow(
                           column(12,
-                                 h3("Activity B: Generate and assess your first forecast"),
+                                 wellPanel(style = paste0("background: ", obj_bg),
+                                 h2("Activity B: Generate and assess your first forecast"),
                                  h4("Forecast!"),
                                  p("Complete objectives 6-11 to complete the steps involved with the forecast.")
                                  )
+                          )
                           ),
                         tabsetPanel(id = "tabseries2",
                                     #* Objective 6 - Examine uncertainty ----
@@ -1449,8 +1428,11 @@ color: black;
                tabPanel(title = "Activity C", value = "mtab6",
                         fluidRow(
                           column(12,
-                                 h3("Activity C - Complete the forecast cycle"),
+                                 wellPanel(style = paste0("background: ", obj_bg),
+                                 h2("Activity C: Complete the forecast cycle"),
+                                 h4("Update model and make new forecast"),
                                  p("For Activity C, you will complete the forecast cycle (and begin it again!) by updating your model and generating a second forecast.")
+                          )
                           )
                         ),
                         tabsetPanel(id = "tabseries3",
@@ -1706,6 +1688,7 @@ color: black;
                                     ) #end Obj 12 
                                     ) # end tabset Panel
                ), #end Act C
+    ), #end navbarPage
     # Tab navigation buttons ----
     br(), hr(),
     introBox(
@@ -1762,12 +1745,9 @@ color: black;
     fluidRow(
       column(8, offset = 1,
              br(),
-             p(module_text["acknowledgement", ], tags$style("color: black;
-font-size: 12px")),
-             p(app_update_txt, tags$style("color: black;
-font-size: 12px"))
+             p(module_text["acknowledgement", ]),
+             p(app_update_txt)
       )
     )
-  )
   )
 }
