@@ -24,29 +24,34 @@ ui <- function(request) {
     tags$html(lang = "en"), # Add language attribute
     tags$head(tags$link(rel = "shortcut icon", href = "macroeddi_ico_green.ico")), # Add icon for web bookmarks
     tags$head(includeHTML(("google-analytics.html"))),
+    tags$header(
+      introBox(
+        img(src = "project-eddie-banner-2020_green.png", height = 100,
+            width = 1544, top = 5, alt = "Banner for Macrosystems EDDIE"),
+        data.step = 1,
+        data.intro = help_text["welcome", 1]
+      )
+    ),
     fluidPage(
-      column(10,
+      column(11,
              br(),
              p(tags$b("Teaching materials associated with this module can be found at ",
                       tags$a(href="http://module5.macrosystemseddie.org", 
-                             "http://module5.macrosystemseddie.org.", target="_blank")))
+                             "http://module5.macrosystemseddie.org.", target="_blank"))),
+             h2(tags$b("Module 5: Introduction to Ecological Forecasting")),
+             bookmarkButton(id = "bookmarkBtn", label = "Bookmark my progress"),
+             p(tags$em("At any time, use this button to obtain a link that saves your progress."))
+             ),
+      column(1, align = "right",
+             br(),
+             introBox(
+               actionButton("help", label = "Help", icon = icon("question-circle")), data.step = 7, data.intro = help_text["help", 1]
              )
+      )
     ),
-    navbarPage(title = tags$b("Module 5: Introduction to Ecological Forecasting"),
-               position = "static-top", id = "maintab",
+    navbarPage(position = "static-top", id = "maintab",
                tags$header(
                  fluidRow(
-                   column(11,
-                          #fileInput("upload_answers", "Resume Progress", accept = c(".eddie", ".rds"))
-                          bookmarkButton(id = "bookmarkBtn", label = "Bookmark my progress"),
-                          br(), 
-                          p(tags$em("At any time, use this button to obtain a link that saves your progress."))
-                          ),
-                   column(1, align = "right",
-                          introBox(
-                            actionButton("help", label = "Help", icon = icon("question-circle")), data.step = 7, data.intro = help_text["help", 1]
-                          )
-                   )
                    )
                  ),
                # 1. Module Overview ----
@@ -56,12 +61,6 @@ ui <- function(request) {
                ),
                value = "mtab1",
                introjsUI(), # must include in UI
-               introBox(
-                 img(src = "project-eddie-banner-2020_green.png", height = 100,
-                     width = 1544, top = 5, alt = "Banner for Macrosystems EDDIE"),
-                 data.step = 1,
-                 data.intro = help_text["welcome", 1]
-               ),
 
                tags$style(".btn-file {
              background-color:#98CAB2;
@@ -214,10 +213,7 @@ ui <- function(request) {
                ),
                # 2. Presentation recap ----
                tabPanel(title = tags$b("Presentation"), value = "mtab2",
-                        img(src = "project-eddie-banner-2020_green.png", height = 100,
-                            width = 1544, top = 5, alt = "Banner for Macrosystems EDDIE"),
                         fluidRow(
-                          hr(),
                           column(4,
                                  h3("Presentation"),
                                  p("The presentation accompanying this module provides an introduction to ecological forecasting, the steps in the iterative forecast cycle, and the ecological data and models used in this module."),
@@ -246,8 +242,6 @@ ui <- function(request) {
                ),
                # 3. Introduction ----
                tabPanel(title = "Introduction", value = "mtab3",
-                        img(src = "project-eddie-banner-2020_green.png", height = 100,
-                            width = 1544, top = 5, alt = "Banner for Macrosystems EDDIE"),
                         fluidRow(
                           column(10,
                                  h3("Workflow for this module"),
@@ -313,38 +307,13 @@ ui <- function(request) {
                
                # 5. Activity A ----
                tabPanel(title = "Activity A", value = "mtab4",
-                        tags$style(".nav-tabs {
-  background-color: white;
-  border-color: #FFF;
-  color: black;
-}
-
-.navbar { background-color: #F3F5F7;
-                            font-family: Arial;
-                            font-size: 13px;
-                            font-weight: bold;
-                            color: #FF0000; }
-
-.nav-tabs-custom .nav-tabs li.active:hover a, .nav-tabs-custom .nav-tabs li.active a {
-background-color: white;
-border-color: #FFF;
-color: black;
-}
-.navbar-default .navbar-brand {
-                         color: black;}
-
-.nav-tabs-custom .nav-tabs li.active {
-    border-top-color: #FFF;
-    background-color: white;
-    color: black;
-}"),
-                        img(src = "project-eddie-banner-2020_green.png", height = 100,
-                            width = 1544, top = 5, alt = "Banner for Macrosystems EDDIE"),
                         fluidRow(
                           column(12,
-                                 h3("Activity A: Visualize data from a selected NEON site"),
-                                 h4("Get Data & Build Model"),
-                                 p("Complete objectives 1-3 to gather the information you will need for your model. Then, complete objectives 4-5 to build and calibrate the model you will use to generate the forecast.")
+                                 wellPanel(style = paste0("background: ", obj_bg),
+                                  h2("Activity A: Visualize data from a selected NEON site"),
+                                  h4("Get Data & Build Model"),
+                                  p("Complete objectives 1-3 to gather the information you will need for your model. Then, complete objectives 4-5 to build and calibrate the model you will use to generate the forecast.")
+                                 )
                           )
                         ),
                         tabsetPanel(id = "tabseries1",
@@ -894,14 +863,14 @@ color: black;
                         ),
                # 5. Activity B ----
                tabPanel(title = "Activity B", value = "mtab5",
-                        img(src = "project-eddie-banner-2020_green.png", height = 100,
-                            width = 1544, top = 5, alt = "Banner for Macrosystems EDDIE"),
                         fluidRow(
                           column(12,
-                                 h3("Activity B: Generate and assess your first forecast"),
+                                 wellPanel(style = paste0("background: ", obj_bg),
+                                 h2("Activity B: Generate and assess your first forecast"),
                                  h4("Forecast!"),
                                  p("Complete objectives 6-11 to complete the steps involved with the forecast.")
                                  )
+                          )
                           ),
                         tabsetPanel(id = "tabseries2",
                                     #* Objective 6 - Examine uncertainty ----
@@ -1457,13 +1426,13 @@ color: black;
                ),
                # 6. Activity C ----
                tabPanel(title = "Activity C", value = "mtab6",
-                        img(src = "project-eddie-banner-2020_green.png", height = 100,
-                            width = 1544, top = 5, alt = "Banner for Macrosystems EDDIE"),
-                        br(),
                         fluidRow(
                           column(12,
-                                 h3("Activity C - Complete the forecast cycle"),
+                                 wellPanel(style = paste0("background: ", obj_bg),
+                                 h2("Activity C: Complete the forecast cycle"),
+                                 h4("Update model and make new forecast"),
                                  p("For Activity C, you will complete the forecast cycle (and begin it again!) by updating your model and generating a second forecast.")
+                          )
                           )
                         ),
                         tabsetPanel(id = "tabseries3",
@@ -1719,6 +1688,7 @@ color: black;
                                     ) #end Obj 12 
                                     ) # end tabset Panel
                ), #end Act C
+    ), #end navbarPage
     # Tab navigation buttons ----
     br(), hr(),
     introBox(
@@ -1775,12 +1745,9 @@ color: black;
     fluidRow(
       column(8, offset = 1,
              br(),
-             p(module_text["acknowledgement", ], tags$style("color: black;
-font-size: 12px")),
-             p(app_update_txt, tags$style("color: black;
-font-size: 12px"))
+             p(module_text["acknowledgement", ]),
+             p(app_update_txt)
       )
     )
-  )
   )
 }
